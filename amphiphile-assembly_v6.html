@@ -161,6 +161,7 @@ button { touch-action: manipulation }
           <button data-pick="hp" aria-pressed="false"><b>HP copolymer</b><small>Folds on cooling</small></button>
           <button data-pick="lcst" aria-pressed="false"><b>UCST polymer</b><small>Collapses on cooling</small></button>
           <button data-pick="mbpoly" aria-pressed="false"><b>Chain in MB water</b><small>Hydrophobic effect from hydrogen bonds</small></button>
+          <button data-pick="brush" aria-pressed="false"><b>Brush + droplet</b><small>Wetting switches with temperature</small></button>
         </div>
       </div>
 
@@ -226,7 +227,7 @@ button { touch-action: manipulation }
 
         <div class="row" data-show="polymer lcst mbpoly"><label for="epsPP">Polymer–polymer attraction ε<sub>PP</sub></label><output id="epsPPO">1.75</output>
           <input type="range" id="epsPP" min="0" max="3" step="0.05" value="1.75"></div>
-        <div class="row" data-show="polymer"><label for="kBend">Chain stiffness k<sub>bend</sub></label><output id="kBendO">6.4</output>
+        <div class="row" data-show="polymer brush"><label for="kBend">Chain stiffness k<sub>bend</sub></label><output id="kBendO">6.4</output>
           <input type="range" id="kBend" min="0" max="15" step="0.1" value="6.4"></div>
 
         <div class="row" data-show="diblock"><label for="epsAB">A–B attraction ε<sub>AB</sub> (lower = more incompatible)</label><output id="epsABO">0.20</output>
@@ -234,7 +235,7 @@ button { touch-action: manipulation }
         <div class="row" data-show="diblock"><label for="fA">A-block fraction f<sub>A</sub> (rebuilds on release)</label><output id="fAO">0.50</output>
           <input type="range" id="fA" min="0.2" max="0.8" step="0.05" value="0.5"></div>
 
-        <div class="row" data-show="polymer diblock lcst mbpoly"><label for="chainLen">Chain length N<sub>c</sub>, beads (rebuilds on release)</label><output id="chainLenO">12</output>
+        <div class="row" data-show="polymer diblock lcst mbpoly brush"><label for="chainLen">Chain length N<sub>c</sub>, beads (rebuilds on release)</label><output id="chainLenO">12</output>
           <input type="range" id="chainLen" min="3" max="40" step="1" value="12"></div>
 
         <div class="row" data-show="demix"><label for="epsSC">S–C attraction ε<sub>SC</sub> (lower = more incompatible)</label><output id="epsSCO">0.30</output>
@@ -257,6 +258,17 @@ button { touch-action: manipulation }
           <p class="note" id="seqNote">Letters H and P only, 3–60 beads. Applying rebuilds the system.</p>
         </div>
 
+        <div class="checks" data-show="brush"><label><input type="checkbox" id="bInvert"> Swap chemistry: end beads attract the liquid, middle beads repel it (rebuilds)</label></div>
+        <div class="row" data-show="brush"><label for="graft">Grafting spacing, σ (larger = sparser; rebuilds on release)</label><output id="graftO">1.6</output>
+          <input type="range" id="graft" min="1.2" max="3" step="0.1" value="1.6"></div>
+        <div class="row" data-show="brush"><label for="nEnd">End beads per chain (rebuilds on release)</label><output id="nEndO">2</output>
+          <input type="range" id="nEnd" min="1" max="4" step="1" value="2"></div>
+        <div class="row" data-show="brush"><label for="epsCC">Brush beads: attraction to each other ε<sub>CC</sub></label><output id="epsCCO">0.30</output>
+          <input type="range" id="epsCC" min="0" max="1.5" step="0.05" value="0.3"></div>
+        <div class="row" data-show="brush"><label for="epsQL">Water-loving beads: attraction to the liquid</label><output id="epsQLO">1.20</output>
+          <input type="range" id="epsQL" min="0" max="2" step="0.05" value="1.2"></div>
+        <div class="row" data-show="brush"><label for="epsHL">Water-repelling beads: attraction to the liquid</label><output id="epsHLO">0.20</output>
+          <input type="range" id="epsHL" min="0" max="2" step="0.05" value="0.2"></div>
         <div class="checks" data-show="mbpoly"><label><input type="checkbox" id="mbHB" checked> Water hydrogen bonds on (turn off for the control: plain LJ water)</label></div>
         <p class="note" data-show="mbpoly">Chain length 1 (default) gives free nonpolar solutes; longer lengths give one or more chains of the same beads.</p>
       </div>
@@ -359,6 +371,19 @@ U_bond(r) = ½ k (r − r₀)²,   k = 200</div>
         <p>Start at T* = 2.2: chains are swollen coils (R<sub>g</sub> ≈ 3.4σ, self-contact ≈ 0.36). Cool to 0.6: they collapse into compact globules (R<sub>g</sub> ≈ 2.6σ, self-contact ≈ 0.59) within tens of τ, the coil-to-globule transition below the θ temperature. Lowering ε<sub>PP</sub> acts like heating.</p>
         <p>Raise the concentration to 20% or more and cooling makes chains stick together into a polymer-rich phase instead. Each chain then keeps roughly its size, so watch the self-contact fraction rather than R<sub>g</sub>.</p>
       </section>
+      <section data-show="brush">
+        <h3>Particles and potentials</h3>
+        <p>A polymer brush: chains of 10 beads grafted on a flat substrate (bottom), 1.6σ apart by default (30 chains), with their first bead fixed. Chains are semiflexible (k<sub>bend</sub> = 1.0) and attract each other weakly (ε = 0.3). The last two beads of every chain are water-repelling (orange, ε = 0.2 with the liquid); the rest are water-loving (teal, ε = 1.2). The box is periodic sideways and empty above the droplet.</p>
+        <p>The droplet is a non-volatile model liquid of flexible 4-bead oligomers (ε = 1.0 between liquid beads), standing in for water. It evaporates very little and its own properties barely change over T* = 0.5–0.9, so changes in wetting come from the surface. The contact angle is estimated from the droplet's height h and footprint half-width a as θ = 2·atan(h/a), the circular-cap relation.</p>
+      </section>
+      <section data-show="brush">
+        <h3>What to look for</h3>
+        <p>Cold (T* = 0.5): the brush is ordered, its water-repelling ends form the top layer, and the droplet beads up (θ ≈ 144°, footprint ≈ 14σ). Heat to 0.7: the chain ends fluctuate and fold, exposing water-loving middle beads, and the droplet spreads (θ ≈ 124°, footprint ≈ 24σ).</p>
+        <p>Swap the chemistry (water-loving ends): θ ≈ 94° when cold, rising to about 106° at 0.7. A control with identical beads (both attractions 1.2) drifts from 98° to 103°, so a few degrees of any change come from the liquid and brush themselves; the chemistry effect is the difference from that drift. Single readings scatter by up to about 10°: the droplet is small, so watch the trend in the plot.</p>
+        <p>The brush-bead attraction ε<sub>CC</sub> (default 0.3) sets how strongly chains stick to each other. Stronger attraction should pack the brush and hold the ends in place, weakening the temperature response; weaker attraction lets the chains fluctuate more. Only the default has been calibrated.</p>
+        <p>A few liquid molecules evaporate: about 3% of the droplet at 0.7 and 6% at 0.9. That is the liquid's real vapour pressure. A more cohesive liquid evaporates less, but then the cold droplet becomes too sluggish to bead up in reasonable time.</p>
+        <p>Sparser grafting reverses the trend. At 2.5σ the angle rises on heating (about 125° to 135°) even though contacts with middle beads grow from 5 to 39. Hardly any liquid enters the brush (under 4%) and none reaches the substrate. The likely cause is roughness: the hot sparse chains tilt and bunch, and the droplet partly bridges the gaps (a Cassie-like state), which raises the apparent angle. Around 1.6σ the brush is dense enough to stay smooth.</p>
+      </section>
       <section data-show="mbpoly">
         <h3>Particles and potentials</h3>
         <p>Mercedes-Benz (MB) water (Ben-Naim 1971; Silverstein, Haymet and Dill 1998): each water is a disk with three hydrogen-bonding arms 120° apart. Two waters form a hydrogen bond when they are about one unit apart and an arm of each points at the other.</p>
@@ -387,7 +412,7 @@ Bussi     K ← stochastic rescale toward ½ N_f k_B T</div>
 // 2D MD engine for soft-matter self-assembly in explicit solvent.
 // Systems: 'dumbbell' A-B amphiphiles | 'polymer' semiflexible crystallizing chains |
 //          'diblock' A_nB_m copolymer | 'demix' binary liquid | 'hp' HP protein | 'lcst' thermoresponsive chains.
-//          'mbpoly' nonpolar chain in Mercedes-Benz (MB) water.
+//          'mbpoly' nonpolar chain in Mercedes-Benz (MB) water | 'brush' grafted brush with a droplet of an oligomer liquid.
 // Bead types: 0 = A, 1 = B, 2 = S (solvent), 3 = P (polymer), 4 = C (second liquid), 5 = H (hydrophobic), 6 = Q (polar), 7 = W (MB water).
 // Reduced LJ units (sigma_S = 1, eps = 1, m = 1, kB = 1).
 function MDEngine(opts) {
@@ -398,6 +423,8 @@ function MDEngine(opts) {
     sigA: 1.2, sigB: 1.0, kBond: 200, T: 2.0, dt: 0.005,
     epsAB: 0.8, fA: 0.5, epsSC: 0.6, xC: 0.5, epsHH: 3.0, sequence: 'HPHPPHHPHPPHPHHPPHPH', epsB: 3.5, wB: 0.04, rB: 1.15,
     mbEps: 1.0, mbSig: 0.085, mbR: 1.0, mbI: 0.1, sigP: 1.0, epsPW: 0.1,
+    boxL: 48, graftSpacing: 1.4, nWater: 480, nEnd: 2, invert: false, epsQW: 0.5, epsHW: 0.1, epsCC: 0.2,
+    liqLen: 4, epsLL: 1.0, epsQL: 1.2, epsHL: 0.2,
     thermostat: 'langevin', gamma: 1.0, tau: 0.5, fmax: 500, seed: 1
   }, opts || {});
   let s = E.p.seed >>> 0 || 1;
@@ -429,6 +456,8 @@ MDEngine.prototype.beadType = function (k) { return this.seq[k]; };
 
 MDEngine.prototype.init = function () {
   const E = this, p = E.p, n = p.nSide;
+  E.fixed = null; E.walls = null; E.nFixed = 0; E.bonds2 = null;
+  if (p.system === 'brush') { E.initBrush(); E.finishInit(); return; }
   const a = 1 / Math.sqrt(p.rho);
   E.L = n * a; const N = n * n; E.N = N;
   E.seq = E.makeSeq(); const Lc = Math.max(1, E.seq.length); E.Lc = Lc;
@@ -486,10 +515,52 @@ MDEngine.prototype.init = function () {
   }
   for (let i = Lc * nMol; i < N; i++) E.type[i] = E.solv;
   if (p.system === 'demix') E.setComposition(p.xC);
+  E.finishInit();
+};
+// Brush: chains grafted upright on a substrate wall at the bottom, an MB water droplet resting on top,
+// vacuum above, periodic in x. Free-end beads (nEnd) are H (type 5), the rest Q (type 6); invert swaps them.
+MDEngine.prototype.initBrush = function () {
+  const E = this, p = E.p, L = p.boxL, Lc = Math.max(3, p.chainLen | 0), gs = p.graftSpacing;
+  const nCh = Math.max(1, Math.floor(L / gs)), nE = Math.max(1, Math.min(Lc - 1, p.nEnd | 0));
+  E.seq = []; for (let k = 0; k < Lc; k++) { const end = k >= Lc - nE; E.seq.push(end !== !!p.invert ? 5 : 6); }
+  const yw = 1.0, b = 0.95, yTop = yw + 0.6 + b * (Lc - 1), nW = Math.max(0, p.nWater | 0);
+  const N = nCh * Lc + nW; E.N = N; E.L = L; E.Lc = Lc; E.nMol = nCh;
+  E.x = new Float64Array(N); E.y = new Float64Array(N); E.vx = new Float64Array(N); E.vy = new Float64Array(N);
+  E.fx = new Float64Array(N); E.fy = new Float64Array(N); E.type = new Uint8Array(N);
+  E.mb = false; E.solv = 4; E.liqType = 4;
+  E.th = new Float64Array(N); E.om = new Float64Array(N); E.tq = new Float64Array(N); E.arm = new Float64Array(6 * N); E.nHB = 0;
+  E.fixed = new Uint8Array(N); E.nFixed = nCh;
+  E.walls = { lo: yw, hi: L - 4, sig: 0.8 }; E.yGraft = yw + 0.6;
+  for (let m = 0; m < nCh; m++) {
+    const xg = (m + 0.5) * (L / nCh);
+    for (let k = 0; k < Lc; k++) { const i = m * Lc + k; E.x[i] = xg; E.y[i] = yw + 0.6 + b * k; E.type[i] = E.seq[k]; }
+    E.fixed[m * Lc] = 1;
+  }
+  // droplet: half-disc of liquid beads on a square lattice above the brush, rows filled in serpentine order
+  // so consecutive beads are neighbours; every liqLen consecutive beads form one flexible oligomer.
+  const a = 1.12, y0 = yTop + 1.3, xc = L / 2, Rd = Math.sqrt(2 * nW * a * a / Math.PI), s0 = nCh * Lc; let placed = s0;
+  for (let r = 0; placed < N && r < 200; r++) {
+    const half = Math.sqrt(Math.max(0, Rd * Rd - (r * a) * (r * a))), cmax = Math.floor(half / a), cols = [];
+    for (let c = -cmax; c <= cmax; c++) cols.push(c);
+    if (r & 1) cols.reverse();
+    for (const c of cols) { if (placed >= N) break; E.x[placed] = (((xc + c * a) % L) + L) % L; E.y[placed] = y0 + r * a; E.type[placed] = 4; placed++; }
+  }
+  E.nWaterPlaced = placed - s0;
+  const lw = Math.max(1, p.liqLen | 0), bl = [];
+  for (let i = s0; i + 1 < placed; i++) {
+    if (((i - s0) % lw) === lw - 1) continue; // chain boundary
+    let dx = E.x[i] - E.x[i + 1], dy = E.y[i] - E.y[i + 1]; if (dx > L / 2) dx -= L; else if (dx < -L / 2) dx += L;
+    if (dx * dx + dy * dy < 1.7 * 1.7) bl.push(i, i + 1); // skip the rare row-end jump
+  }
+  E.bonds2 = new Int32Array(bl);
+};
+MDEngine.prototype.finishInit = function () {
+  const E = this, p = E.p, N = E.N;
   let px = 0, py = 0; const sq = Math.sqrt(p.T);
   for (let i = 0; i < N; i++) { E.vx[i] = sq * E.gauss(); E.vy[i] = sq * E.gauss(); px += E.vx[i]; py += E.vy[i]; }
   px /= N; py /= N; for (let i = 0; i < N; i++) { E.vx[i] -= px; E.vy[i] -= py; }
   if (E.mb) { const sw = Math.sqrt(p.T / p.mbI); for (let i = 0; i < N; i++) if (E.type[i] === 7) { E.th[i] = 2 * Math.PI * E.rand(); E.om[i] = sw * E.gauss(); } }
+  if (E.fixed) for (let i = 0; i < N; i++) if (E.fixed[i]) { E.vx[i] = 0; E.vy[i] = 0; }
   E.time = 0; E.steps = 0;
   E.head = null;
   E.setupTable(); E.setupCells(); E.computeForces();
@@ -509,6 +580,7 @@ MDEngine.prototype.setupTable = function () {
     case 'hp': set(5, 5, p.epsHH); break;
     case 'lcst': set(3, 3, p.epsPP); break; // P-S: WCA core plus the narrow binding well below
     case 'mbpoly': sig[7] = 0.7; sig[3] = p.sigP; set(7, 7, 0.1); set(3, 7, p.epsPW); set(3, 3, p.epsPP); break;
+    case 'brush': set(4, 4, p.epsLL); set(6, 4, p.epsQL); set(5, 4, p.epsHL); set(5, 5, p.epsCC); set(6, 6, p.epsCC); set(5, 6, p.epsCC); break;
   }
   E.sig = sig;
   E.sig2 = new Float64Array(64); E.eps = new Float64Array(64); E.rc2 = new Float64Array(64); E.shift = new Float64Array(64); E.r0 = new Float64Array(64);
@@ -622,6 +694,16 @@ MDEngine.prototype.computeForces = function () {
       }
     }
   }
+  // walls (brush): WCA wall at the substrate and a reflecting one high above the droplet
+  if (E.walls) {
+    const lo = E.walls.lo, hi = E.walls.hi, sw = E.walls.sig, rcw = sw * Math.pow(2, 1 / 6);
+    for (let i = 0; i < E.N; i++) {
+      let d = y[i] - lo;
+      if (d < rcw) { d = Math.max(d, 0.35 * sw); const sr6 = Math.pow(sw / d, 6); fy[i] += 24 * sr6 * (2 * sr6 - 1) / d; U += 4 * sr6 * (sr6 - 1) + 1; }
+      d = hi - y[i];
+      if (d < rcw) { d = Math.max(d, 0.35 * sw); const sr6 = Math.pow(sw / d, 6); fy[i] -= 24 * sr6 * (2 * sr6 - 1) / d; U += 4 * sr6 * (sr6 - 1) + 1; }
+    }
+  }
   // bonds along each molecule
   const kb = E.p.kBond, r0t = E.r0, Lc = E.Lc;
   for (let m = 0; m < E.nMol; m++) {
@@ -637,9 +719,22 @@ MDEngine.prototype.computeForces = function () {
       U += 0.5 * kb * dr * dr;
     }
   }
+  // extra bonds (oligomer liquid of the brush system)
+  if (E.bonds2) {
+    const bl = E.bonds2, r0 = 0.95;
+    for (let q = 0; q < bl.length; q += 2) {
+      const i = bl[q], j = bl[q + 1];
+      let dx = x[i] - x[j], dy = y[i] - y[j];
+      if (dx > hL) dx -= L; else if (dx < -hL) dx += L;
+      if (dy > hL) dy -= L; else if (dy < -hL) dy += L;
+      const r = Math.sqrt(dx * dx + dy * dy), dr = r - r0, ff = -kb * dr / r;
+      fx[i] += ff * dx; fy[i] += ff * dy; fx[j] -= ff * dx; fy[j] -= ff * dy;
+      U += 0.5 * kb * dr * dr;
+    }
+  }
   // bending: U = k (1 - cos a), a = angle between consecutive bond vectors (0 for a straight chain)
   const kB = E.p.kBend;
-  if (E.p.system === 'polymer' && kB > 0) {
+  if ((E.p.system === 'polymer' || E.p.system === 'brush') && kB > 0) {
     for (let m = 0; m < E.nMol; m++) {
       const base = m * Lc;
       for (let q = 0; q < Lc - 2; q++) {
@@ -683,8 +778,9 @@ MDEngine.prototype.rotKinetic = function () {
   return 0.5 * E.p.mbI * K;
 };
 // Kinetic temperature from translational and (MB water) rotational degrees of freedom.
+MDEngine.prototype.dof = function () { return this.fixed ? 2 * (this.N - this.nFixed) + this.nWater() : 2 * this.N - 2 + this.nWater(); };
 MDEngine.prototype.tempKin = function () {
-  const nf = 2 * this.N - 2 + this.nWater();
+  const nf = this.dof();
   return 2 * (this.kinetic() + this.rotKinetic()) / nf;
 };
 
@@ -695,7 +791,9 @@ MDEngine.prototype.step = function () {
   const mb = E.mb, th = E.th, om = E.om, tq = E.tq, type = E.type, iI = 1 / p.mbI;
   if (p.thermostat === 'langevin') {
     const c1 = Math.exp(-p.gamma * dt), c2 = Math.sqrt((1 - c1 * c1) * p.T), c2r = Math.sqrt((1 - c1 * c1) * p.T * iI);
+    const fixed = E.fixed;
     for (let i = 0; i < N; i++) {
+      if (fixed && fixed[i]) continue;
       vx[i] += hdt * fx[i]; vy[i] += hdt * fy[i];
       x[i] += hdt * vx[i]; y[i] += hdt * vy[i];
       vx[i] = c1 * vx[i] + c2 * E.gauss(); vy[i] = c1 * vy[i] + c2 * E.gauss();
@@ -706,19 +804,21 @@ MDEngine.prototype.step = function () {
       }
     }
     E.wrap(); E.computeForces();
-    for (let i = 0; i < N; i++) { vx[i] += hdt * fx[i]; vy[i] += hdt * fy[i]; }
+    for (let i = 0; i < N; i++) { if (fixed && fixed[i]) continue; vx[i] += hdt * fx[i]; vy[i] += hdt * fy[i]; }
     if (mb) for (let i = 0; i < N; i++) if (type[i] === 7) om[i] += hdt * tq[i] * iI;
   } else {
+    const fixed = E.fixed;
     for (let i = 0; i < N; i++) {
+      if (fixed && fixed[i]) continue;
       vx[i] += hdt * fx[i]; vy[i] += hdt * fy[i];
       x[i] += dt * vx[i]; y[i] += dt * vy[i];
       if (mb && type[i] === 7) { om[i] += hdt * tq[i] * iI; th[i] += dt * om[i]; }
     }
     E.wrap(); E.computeForces();
-    for (let i = 0; i < N; i++) { vx[i] += hdt * fx[i]; vy[i] += hdt * fy[i]; }
+    for (let i = 0; i < N; i++) { if (fixed && fixed[i]) continue; vx[i] += hdt * fx[i]; vy[i] += hdt * fy[i]; }
     if (mb) for (let i = 0; i < N; i++) if (type[i] === 7) om[i] += hdt * tq[i] * iI;
     if (p.thermostat === 'none') { E.time += dt; E.steps++; return; } // plain NVE, for testing
-    const Nf = 2 * N - 2 + E.nWater(), K = E.kinetic() + E.rotKinetic(), Kt = 0.5 * Nf * p.T;
+    const Nf = E.dof(), K = E.kinetic() + E.rotKinetic(), Kt = 0.5 * Nf * p.T;
     if (K > 0) {
       const c = Math.exp(-dt / p.tau), R1 = E.gauss();
       const sumR = (Nf - 1) + Math.sqrt(2 * (Nf - 1)) * E.gauss(); // chi^2_{Nf-1}, normal approx
@@ -924,6 +1024,58 @@ MDEngine.prototype.mbStats = function (rcut) {
   const nW = E.nWater(), ppB = nP ? 2 * pp / nP : 0, pwB = nP ? pw / nP : 0;
   return { hbPerWater: nW ? 2 * E.nHB / nW : 0, f: ppB + pwB > 0 ? ppB / (ppB + pwB) : 0, waterPerBead: pwB };
 };
+// Brush + droplet: contact angle from a circular-cap fit (tan(theta/2) = h / a), water contacts with end and middle beads,
+// brush order = mean free-end height over the fully stretched height.
+MDEngine.prototype.brushStats = function () {
+  const E = this, type = E.type, x = E.x, y = E.y, L = E.L, hL = L / 2, Lc = E.Lc, nCh = Lc * E.nMol, N = E.N;
+  const endT = E.seq[Lc - 1], midT = E.seq[0], W = E.liqType || 7, rcC = W === 7 ? 1.3 : 1.5;
+  if (!E._wn || E._wn.length < N) E._wn = new Uint8Array(N);
+  const wn = E._wn; wn.fill(0);
+  if (!E._lp || E._lp.length < N) E._lp = new Int32Array(N);
+  const par = E._lp; for (let i = 0; i < N; i++) par[i] = i;
+  const find = (q) => { while (par[q] !== q) { par[q] = par[par[q]]; q = par[q]; } return q; };
+  let wEnd = 0, wMid = 0;
+  E.forPairs(rcC, (i, j) => {
+    const a = type[i], b = type[j];
+    if (a === W && b === W) { if (wn[i] < 255) wn[i]++; if (wn[j] < 255) wn[j]++; const ri = find(i), rj = find(j); if (ri !== rj) par[ri] = rj; return; }
+    const t = a === W ? b : b === W ? a : -1; if (t < 0) return;
+    if (t === 5) wEnd += (endT === 5 ? 1 : 0), wMid += (endT === 5 ? 0 : 1);
+    else if (t === 6) wEnd += (endT === 6 ? 1 : 0), wMid += (endT === 6 ? 0 : 1);
+  });
+  // brush surface = mean over chains of each chain's highest bead (upright: its end; folded: its top bend)
+  let ySurf = 0, ord = 0;
+  for (let m = 0; m < E.nMol; m++) {
+    const e = m * Lc + Lc - 1; let top = -1e9; for (let k = 0; k < Lc; k++) if (y[m * Lc + k] > top) top = y[m * Lc + k];
+    ySurf += top; ord += (y[e] - E.yGraft) / (0.95 * (Lc - 1));
+  }
+  ySurf /= Math.max(1, E.nMol); ord /= Math.max(1, E.nMol);
+  // droplet = largest connected cluster of liquid beads (vapour molecules excluded); centre by circular mean of x
+  if (!E._lc || E._lc.length < N) E._lc = new Int32Array(N);
+  const csz = E._lc; csz.fill(0); let big = -1, bigN = 0;
+  for (let i = nCh; i < N; i++) if (type[i] === W) { const r = find(i); csz[r]++; if (csz[r] > bigN) { bigN = csz[r]; big = r; } }
+  for (let i = nCh; i < N; i++) wn[i] = type[i] === W && find(i) === big ? 2 : 0;
+  let cs = 0, sn = 0, nl = 0; const ys = [];
+  for (let i = nCh; i < N; i++) if (wn[i] >= 2) { const ang = 2 * Math.PI * x[i] / L; cs += Math.cos(ang); sn += Math.sin(ang); nl++; ys.push(y[i]); }
+  ys.sort((p1, p2) => p1 - p2); const ymax = ys.length ? ys[Math.min(ys.length - 1, Math.floor(0.98 * ys.length))] : -1e9;
+  let theta = 0, width = 0, height = 0;
+  if (nl > 5) {
+    const xc = ((Math.atan2(sn, cs) / (2 * Math.PI)) * L + L) % L;
+    let lo = 1e9, hi = -1e9, ylow = 1e9;
+    for (let i = nCh; i < N; i++) if (wn[i] >= 2 && y[i] < ylow) ylow = y[i];
+    const base = Math.max(ySurf, ylow) + 1.5;
+    for (let i = nCh; i < N; i++) if (wn[i] >= 2 && y[i] < base) {
+      let d = x[i] - xc; if (d > hL) d -= L; else if (d < -hL) d += L;
+      if (d < lo) lo = d; if (d > hi) hi = d;
+    }
+    width = hi > lo ? hi - lo + 1.0 : 0;
+    height = ymax - Math.max(ySurf, ylow - 1.0) + 0.5;
+    if (width >= L - 2) theta = 0; else if (width > 0) theta = 2 * Math.atan(height / (width / 2)) * 180 / Math.PI;
+  }
+  // liquid inside the brush: liquid beads below the mean height of the chain ends
+  let nIn = 0, nLiq = 0, nSub = 0; const ySub = E.walls ? E.walls.lo + 1.3 : -1e9;
+  for (let i = nCh; i < N; i++) if (type[i] === W) { nLiq++; if (y[i] < ySurf) nIn++; if (y[i] < ySub) nSub++; }
+  return { theta, width, height, order: ord, wEnd, wMid, liquid: nl, inside: nLiq ? nIn / nLiq : 0, onSubstrate: nSub, hbPerWater: E.nWater() ? 2 * E.nHB / E.nWater() : 0 };
+};
 // Binary liquid: set the fraction of C beads among all beads.
 MDEngine.prototype.setComposition = function (xC) {
   const E = this, N = E.N, type = E.type, s0 = E.Lc * E.nMol, target = Math.round(Math.max(0, Math.min(1, xC)) * (N - s0));
@@ -1012,6 +1164,10 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
 
   // ---- one definition per system ----
   const SYS = {
+    brush: { conc: 480, min: 120, max: 900, count: true, rebuildConc: true, cold: 0.5, hot: 0.7, start: 0.5, chainLen: 10, kBend: 1.0,
+      trange: [0.4, 1.0], tstep: 0.01, dt: 0.005, preT: 'set', concLab: 'Droplet size, liquid beads (rebuilds on release)',
+      plotLab: 'Contact angle θ (degrees)', plotMax: 180,
+      legend: [['tail', 'Water-repelling bead'], ['head', 'Water-loving bead'], ['mixS', 'Liquid droplet (4-bead oligomers)']] },
     mbpoly: { conc: 60, min: 1, max: 150, count: true, cold: 0.16, hot: 0.32, start: 0.22, box: 36, chainLen: 1, lenMin: 1, epsPP: 0.1,
       trange: [0.12, 0.40], tstep: 0.005, rho: 0.85, dt: 0.01, preT: 0.35, concLab: 'Number of nonpolar solutes',
       plotLab: 'Fraction of solutes in clusters of 3 or more', hl: 'Highlight clustered solutes',
@@ -1057,6 +1213,9 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       case 'hp': { const h = eng.hpStats(1.5);
         return { v: h.buried, cells: [['Buried H', pct(h.buried)], ['H–H contacts / chain', h.intra.toFixed(1)], ['Mean R<sub>g</sub>', rg()],
           ['Chains', eng.nMol], ['Chain length', eng.Lc], ['Interchain H–H', h.inter]] }; }
+      case 'brush': { const b = eng.brushStats();
+        return { v: b.theta, cells: [['Contact angle', b.theta.toFixed(0) + '°'], ['Footprint', b.width.toFixed(1) + ' σ'], ['Liquid inside brush', (100 * b.inside).toFixed(1) + '%'],
+          ['Brush order', b.order.toFixed(2)], ['Contacts: end / middle', b.wEnd + ' / ' + b.wMid], ['Droplet beads', b.liquid]] }; }
       case 'mbpoly': { const rc = 1.3 * p.sigP, m = eng.mbStats(rc);
         if (eng.Lc === 1) { const c = eng.clusters(rc, 3, 3); an = c;
           return { v: c.fracAgg, cells: [['In clusters (≥ 3)', pct(c.fracAgg)], ['Clusters', c.nAgg], ['Largest', c.largest],
@@ -1084,20 +1243,22 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (sys === 'demix') return 1;
     if (sys === 'hp') return cleanSeq().length;
     if (sys === 'mbpoly') return Math.max(1, +$('chainLen').value);
+    if (sys === 'brush') return 0; // not used: chain count comes from the grafting
     return Math.max(sys === 'diblock' ? 4 : 3, +$('chainLen').value);
   }
   function build() {
     const S = SYS[sys], n = +$('size').value, Lc = chainLength(), v = +$('conc').value;
-    const nMol = sys === 'demix' ? 0 : S.count ? v : Math.round(v / 100 * n * n / Lc);
+    const nMol = sys === 'demix' || sys === 'brush' ? 0 : S.count ? v : Math.round(v / 100 * n * n / Lc);
     eng = new MDEngine({ system: sys, nSide: n, nMol, rho: S.rho || 0.6, dt: S.dt || 0.005, T: tset,
       mbEps: $('mbHB').checked ? 1 : 0, epsPW: 0, sigP: 1.5,
+      boxL: 48, graftSpacing: +$('graft').value, epsCC: +$('epsCC').value, epsQL: +$('epsQL').value, epsHL: +$('epsHL').value, invert: $('bInvert').checked, nEnd: +$('nEnd').value, nWater: v,
       thermostat: $('thermo').value, gamma: +$('gamma').value, tau: +$('tau').value, seed: (Math.random() * 1e9) | 0,
       epsSS: 0, epsAS: +$('epsAS').value, epsBB: +$('epsBB').value, sigA: +$('sigA').value, sigB: 1,
       epsPP: +$('epsPP').value, kBend: +$('kBend').value, chainLen: +$('chainLen').value,
       fA: +$('fA').value, epsAB: +$('epsAB').value, epsSC: +$('epsSC').value, xC: v / 100,
       epsHH: +$('epsHH').value, sequence: cleanSeq(), epsB: 0 });
     if (sys !== 'dumbbell' && sys !== 'demix') { // chains start on a lattice: disorder them briefly (dissolved state for LCST)
-      eng.p.T = S.preT !== undefined ? S.preT : sys === 'lcst' ? 0.5 : 3.0; eng.setupTable();
+      eng.p.T = S.preT === 'set' ? tset : S.preT !== undefined ? S.preT : sys === 'lcst' ? 0.5 : 3.0; eng.setupTable();
       const pre = 300;
       for (let k = 0; k < pre; k++) eng.step();
       eng.p.T = tset; eng.setupTable(); eng.time = 0;
@@ -1204,6 +1365,14 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   $('seq').addEventListener('input', () => { $('seqPreset').value = 'custom'; });
   $('seq').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); applySeq(); } });
   $('seqApply').addEventListener('click', applySeq);
+  bindRange('epsQL', (v) => v.toFixed(2), live('epsQL'));
+  bindRange('epsCC', (v) => v.toFixed(2), live('epsCC'));
+  bindRange('epsHL', (v) => v.toFixed(2), live('epsHL'));
+  bindRange('nEnd', (v) => String(v));
+  bindRange('graft', (v) => v.toFixed(1));
+  $('graft').addEventListener('change', () => { if (sys === 'brush') build(); });
+  $('nEnd').addEventListener('change', () => { if (sys === 'brush') build(); });
+  $('bInvert').addEventListener('change', () => { if (sys === 'brush') build(); });
   function applySeq() {
     const q = $('seq').value.toUpperCase().replace(/[^HP]/g, '');
     if (q.length < 3 || q.length > 60) { $('seqNote').className = 'note err'; $('seqNote').textContent = `The sequence needs 3–60 letters H or P; it has ${q.length}.`; return; }
@@ -1233,12 +1402,14 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   function concNote() { if (!eng) return; const solv = eng.N - eng.Lc * eng.nMol, t = $('concNote');
     t.className = 'note';
     if (sys === 'demix') t.textContent = 'Changes apply live: beads switch between S and C.';
+    else if (sys === 'brush') t.textContent = `${eng.nMol} grafted chains of ${eng.Lc} beads; droplet of ${eng.nWaterPlaced} liquid beads.`;
     else if (sys === 'dumbbell') t.textContent = `${eng.nMol} dumbbells, ${solv} solvent beads. Changes apply live.`;
     else t.textContent = `${eng.nMol} chain${eng.nMol === 1 ? '' : 's'} of ${eng.Lc} beads, ${solv} solvent beads. Changes apply live: chains are grown from solvent beads or turned back into solvent.`; }
   let rebuildTimer = null;
   bindRange('conc', (v) => (SYS[sys].count ? String(v) : v + '%'), (v) => {
     if (!eng) return;
     if (sys === 'demix') { eng.setComposition(v / 100); showReport(report()); concNote(); return; }
+    if (SYS[sys].rebuildConc) { clearTimeout(rebuildTimer); rebuildTimer = setTimeout(build, 400); return; }
     const target = Math.min(Math.floor(eng.N / eng.Lc) - 2, SYS[sys].count ? v : Math.round(v / 100 * eng.N / eng.Lc));
     eng.setMolCount(target); showReport(report()); concNote();
     clearTimeout(rebuildTimer);
@@ -1267,6 +1438,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     $('ticks').innerHTML = [0, 1, 2, 3, 4].map((q) => `<span>${(lo + q * (hi - lo) / 4).toFixed(2).replace(/0$/, '')}</span>`).join('');
     const dg = st < 0.01 ? 3 : 2; $('quench').textContent = `Cool to ${S.cold.toFixed(dg - 1)}`; $('melt').textContent = `Heat to ${S.hot.toFixed(dg - 1)}`;
     if (S.epsPP !== undefined) { $('epsPP').value = S.epsPP; $('epsPPO').textContent = S.epsPP.toFixed(2); }
+    const kb = S.kBend !== undefined ? S.kBend : 6.4; $('kBend').value = kb; $('kBendO').textContent = kb.toFixed(1);
     $('byCluster').checked = sys === 'polymer' || sys === 'mbpoly';
   }
   let userBox = $('size').value;
@@ -1295,8 +1467,23 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     ctx.fill();
   }
   function draw() {
+    ctx.save();
+    if (eng.walls) { ctx.translate(0, cv.height); ctx.scale(1, -1); } // brush: substrate at the bottom
+    drawScene();
+    ctx.restore();
+  }
+  function drawScene() {
     const L = eng.L, s = cv.width / L, N = eng.N, x = eng.x, y = eng.y, type = eng.type, sig = eng.sig, Lc = eng.Lc, nCh = Lc * eng.nMol;
     ctx.fillStyle = colors.cell; ctx.fillRect(0, 0, cv.width, cv.height);
+    if (eng.walls) {
+      ctx.fillStyle = colors.line; ctx.fillRect(0, 0, cv.width, eng.walls.lo * s);
+      if ($('showBonds').checked && eng.bonds2) {
+        ctx.strokeStyle = colors.bond; ctx.lineWidth = Math.max(1, 0.12 * s); ctx.beginPath(); const bl = eng.bonds2, hL = L / 2;
+        for (let q = 0; q < bl.length; q += 2) { const i = bl[q], j = bl[q + 1]; if (Math.abs(x[i] - x[j]) > hL) continue; ctx.moveTo(x[i] * s, y[i] * s); ctx.lineTo(x[j] * s, y[j] * s); }
+        ctx.stroke();
+      }
+      disks(colors.mixS, 0.5 * s, (i) => type[i] === 4, nCh, N);
+    }
     if (sys === 'demix') {
       disks(colors.mixS, 0.46 * s, (i) => type[i] === 2, 0, N);
       disks(colors.mixC, 0.46 * s, (i) => type[i] === 4, 0, N);
@@ -1311,7 +1498,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
           for (let a = 0; a < 6; a += 2) { ctx.moveTo(X, Y); ctx.lineTo(X + al * arm[o + a], Y + al * arm[o + a + 1]); } }
         ctx.stroke();
       }
-    } else if ($('showSolv').checked) disks(colors.solv, 0.42 * s, bnd ? (i) => !bnd[i] : () => true, nCh, N);
+    } else if ($('showSolv').checked && !eng.walls) disks(colors.solv, 0.42 * s, bnd ? (i) => !bnd[i] : () => true, nCh, N);
     if (bnd) disks(colors.mixS, 0.42 * s, (i) => bnd[i] === 1, nCh, N);
     if ($('showBonds').checked && Lc > 1) {
       ctx.strokeStyle = colors.bond; ctx.lineWidth = Math.max(1, 0.18 * s); ctx.beginPath(); const hL = L / 2;
