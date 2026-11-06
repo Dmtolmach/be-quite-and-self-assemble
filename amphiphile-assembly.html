@@ -1,0 +1,695 @@
+<title>Amphiphile Assembly Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: instrument bench — square simulation cell on the left, control rack + live readouts on the right, model notes below. */
+:root {
+  --bg: #eef1f3; --panel: #ffffff; --ink: #15202b; --muted: #5b6875; --line: #d4dbe1;
+  --cell: #f8fafb; --head: #1f8a8a; --tail: #d0761f; --solv: #9aa9b6; --bond: #44525e;
+  --accent: #1f8a8a; --accent-ink: #ffffff; --hot: #c4472b; --cold: #2c6fb0;
+  --f-display: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f151b; --panel: #161e26; --ink: #e3e9ee; --muted: #8b99a6; --line: #26323d;
+  --cell: #0b1116; --head: #3bbdb6; --tail: #f0953d; --solv: #3d4b58; --bond: #9fb0bf;
+  --accent: #3bbdb6; --accent-ink: #06201f; --hot: #ee6c4d; --cold: #5c9ee0; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0f151b; --panel: #161e26; --ink: #e3e9ee; --muted: #8b99a6; --line: #26323d;
+  --cell: #0b1116; --head: #3bbdb6; --tail: #f0953d; --solv: #3d4b58; --bond: #9fb0bf;
+  --accent: #3bbdb6; --accent-ink: #06201f; --hot: #ee6c4d; --cold: #5c9ee0; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 14px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px }
+.wrap { max-width: 1240px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px }
+header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px }
+h1 { font-family: var(--f-display); font-weight: 700; font-size: 1.6rem; letter-spacing: -0.01em; margin: 0; text-wrap: balance }
+.sub { color: var(--muted); margin: 0; max-width: 70ch }
+.bench { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 20px; align-items: start }
+@media (max-width: 960px) { .bench { grid-template-columns: minmax(0, 1fr) } }
+.cellbox { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 10px; min-width: 0 }
+#sim { width: 100%; aspect-ratio: 1 / 1; max-width: 100%; display: block; background: var(--cell); border-radius: 6px; touch-action: none }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; color: var(--muted); font-size: 12.5px }
+.legend span { display: inline-flex; align-items: center; gap: 6px }
+.dot { width: 10px; height: 10px; border-radius: 50% }
+.rack { display: flex; flex-direction: column; gap: 14px; min-width: 0 }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px }
+.panel h2 { font-family: var(--f-display); font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 }
+.tbig { display: flex; align-items: baseline; gap: 10px; font-family: var(--f-mono); font-variant-numeric: tabular-nums }
+.tbig b { font-size: 2.1rem; font-weight: 500; letter-spacing: -0.02em }
+.tbig small { color: var(--muted); font-size: 12.5px }
+input[type=range] { width: 100%; accent-color: var(--accent) }
+.trange { position: relative }
+.trange .ticks { display: flex; justify-content: space-between; font-family: var(--f-mono); font-size: 11px; color: var(--muted) }
+#tslider { height: 26px }
+.seg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 8px; overflow: hidden }
+.seg button { font: inherit; font-weight: 500; padding: 7px 10px; border: 0; background: transparent; color: var(--ink); cursor: pointer }
+.seg button[aria-pressed=true] { background: var(--accent); color: var(--accent-ink) }
+.btns { display: flex; flex-wrap: wrap; gap: 8px }
+.btn { font: inherit; font-weight: 500; font-size: 13px; padding: 6px 12px; border-radius: 7px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.btn.cold { color: var(--cold) } .btn.hot { color: var(--hot) }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent) }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.mic { display: flex; flex-direction: column; gap: 8px }
+.meter { height: 8px; border-radius: 4px; background: var(--line); overflow: hidden }
+.meter i { display: block; height: 100%; width: 0; background: var(--accent); transition: width 80ms linear }
+.note { font-size: 12.5px; color: var(--muted); margin: 0 }
+.note.err { color: var(--hot) }
+.readouts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px 12px }
+.ro { display: flex; flex-direction: column; gap: 1px; min-width: 0 }
+.ro span { font-size: 11.5px; color: var(--muted) }
+.ro b { font-family: var(--f-mono); font-weight: 500; font-size: 15px; font-variant-numeric: tabular-nums }
+.plot { width: 100%; height: 96px; display: block }
+.plotlab { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--muted) }
+.plotlab i { font-style: normal; display: inline-flex; align-items: center; gap: 5px }
+.sw { width: 14px; height: 2px; display: inline-block }
+.row { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; align-items: center }
+.row label { font-size: 13px }
+.row output { font-family: var(--f-mono); font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums }
+.row input[type=range] { grid-column: 1 / -1 }
+select { font: inherit; font-size: 13px; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel); color: var(--ink) }
+.checks { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px }
+.checks label { display: inline-flex; gap: 6px; align-items: center }
+details.panel summary { cursor: pointer; list-style: none }
+details.panel summary::-webkit-details-marker { display: none }
+details.panel summary h2::after { content: " ▸" }
+details[open].panel summary h2::after { content: " ▾" }
+.notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px 28px }
+.notes section { min-width: 0 }
+.notes h3 { font-family: var(--f-display); font-size: 15px; margin: 0 0 4px }
+.notes p { margin: 0 0 8px; max-width: 65ch; color: var(--ink) }
+.eq { font-family: var(--f-mono); font-size: 12.5px; background: var(--cell); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; overflow-x: auto; white-space: pre; margin: 6px 0 8px }
+table.eps { border-collapse: collapse; font-family: var(--f-mono); font-size: 12.5px; margin: 4px 0 8px }
+table.eps td, table.eps th { border: 1px solid var(--line); padding: 3px 8px; text-align: center }
+table.eps th { font-weight: 500; color: var(--muted) }
+@media (prefers-reduced-motion: reduce) { .meter i { transition: none } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Amphiphile Assembly Lab</h1>
+      <p class="sub">Live 2D molecular dynamics of A–B dumbbells in explicit solvent at constant N, V, T. Cool the system and the solvophobic tails cluster into micelles; heat it and they dissolve. Change the concentration and the tail attraction while it runs.</p>
+    </div>
+  </header>
+
+  <div class="bench">
+    <div class="cellbox">
+      <canvas id="sim" aria-label="Simulation box"></canvas>
+      <div class="legend">
+        <span><i class="dot" style="background:var(--head)"></i>A head (solvophilic)</span>
+        <span><i class="dot" style="background:var(--tail)"></i>B tail (solvophobic)</span>
+        <span><i class="dot" style="background:var(--solv)"></i>S solvent</span>
+        <span id="boxinfo" style="font-family:var(--f-mono)"></span>
+      </div>
+    </div>
+
+    <div class="rack">
+      <div class="panel">
+        <h2>Temperature</h2>
+        <div class="tbig"><b id="tset">2.00</b><small>T* set point &nbsp;·&nbsp; kinetic <span id="tkin">–</span></small></div>
+        <div class="seg" role="group" aria-label="Temperature source">
+          <button id="modeSlider" aria-pressed="true">Slider</button>
+          <button id="modeMic" aria-pressed="false">Room noise</button>
+        </div>
+        <div class="trange">
+          <input type="range" id="tslider" min="0.30" max="2.50" step="0.01" value="2.00" aria-label="Temperature set point">
+          <div class="ticks"><span>0.3</span><span>1.0</span><span>1.5</span><span>2.0</span><span>2.5</span></div>
+        </div>
+        <div class="btns">
+          <button class="btn cold" id="quench">Quench to 0.5</button>
+          <button class="btn hot" id="melt">Heat to 2.0</button>
+          <button class="btn" id="pause">Pause</button>
+        </div>
+        <div class="mic" id="micbox" hidden>
+          <div class="meter" aria-hidden="true"><i id="micbar"></i></div>
+          <div class="row"><label for="micrange">Sensitivity (dB span)</label><output id="micrangeO">30 dB</output>
+            <input type="range" id="micrange" min="10" max="50" step="1" value="30"></div>
+          <div class="btns"><button class="btn" id="calib">Set quiet level</button></div>
+          <p class="note" id="micnote">Quiet room keeps the system cold. Talk, clap or play music to heat it.</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Live readouts</h2>
+        <div class="readouts">
+          <div class="ro"><span>Aggregated</span><b id="rFrac">–</b></div>
+          <div class="ro"><span>Micelles</span><b id="rN">–</b></div>
+          <div class="ro"><span>Largest</span><b id="rBig">–</b></div>
+          <div class="ro"><span>Mean N<sub>agg</sub></span><b id="rMean">–</b></div>
+          <div class="ro"><span>Dumbbells</span><b id="rMol">–</b></div>
+          <div class="ro"><span>Free, per σ²</span><b id="rFree">–</b></div>
+          <div class="ro"><span>U / N</span><b id="rU">–</b></div>
+          <div class="ro"><span>Time</span><b id="rTime">–</b></div>
+        </div>
+        <div>
+          <div class="plotlab"><span>Temperature</span><span><i><span class="sw" style="background:var(--muted)"></span>set</i> &nbsp; <i><span class="sw" style="background:var(--hot)"></span>kinetic</i></span></div>
+          <canvas class="plot" id="plotT"></canvas>
+        </div>
+        <div>
+          <div class="plotlab"><span>Fraction of molecules in micelles</span><span id="perf"></span></div>
+          <canvas class="plot" id="plotF"></canvas>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Composition and interactions</h2>
+        <div class="row"><label for="conc">Dumbbell concentration (fraction of beads)</label><output id="concO">26%</output>
+          <input type="range" id="conc" min="2" max="60" step="1" value="26"></div>
+        <p class="note" id="concNote">300 dumbbells. Changes apply live: solvent beads are swapped for dumbbells or back.</p>
+        <div class="row"><label for="epsBB">Tail–tail attraction ε<sub>BB</sub></label><output id="epsBBO">2.50</output>
+          <input type="range" id="epsBB" min="0" max="4" step="0.05" value="2.5"></div>
+        <div class="row"><label for="epsAS">Head–solvent attraction ε<sub>AS</sub></label><output id="epsASO">0.00</output>
+          <input type="range" id="epsAS" min="0" max="1.5" step="0.05" value="0"></div>
+        <div class="row"><label for="sigA">Head diameter σ<sub>A</sub></label><output id="sigAO">1.20</output>
+          <input type="range" id="sigA" min="0.8" max="1.8" step="0.05" value="1.2"></div>
+      </div>
+
+      <details class="panel" id="modelPanel">
+        <summary><h2>Model and integrator</h2></summary>
+        <div class="row"><label for="thermo">Thermostat</label>
+          <select id="thermo"><option value="langevin">Langevin (BAOAB)</option><option value="bussi">Bussi velocity rescaling</option></select></div>
+        <div class="row" id="gammaRow"><label for="gamma">Friction γ</label><output id="gammaO">1.00</output>
+          <input type="range" id="gamma" min="0.05" max="5" step="0.05" value="1"></div>
+        <div class="row" id="tauRow" hidden><label for="tau">Coupling time τ<sub>T</sub></label><output id="tauO">0.50</output>
+          <input type="range" id="tau" min="0.05" max="5" step="0.05" value="0.5"></div>
+        <div class="row"><label for="spf">MD steps per frame</label><output id="spfO">12</output>
+          <input type="range" id="spf" min="1" max="60" step="1" value="12"></div>
+      </details>
+
+      <details class="panel">
+        <summary><h2>System and view</h2></summary>
+        <div class="row"><label for="size">Box size</label>
+          <select id="size"><option value="36">36×36 sites · 1296 beads</option><option value="48" selected>48×48 sites · 2304 beads</option><option value="64">64×64 sites · 4096 beads</option></select></div>
+        <div class="btns"><button class="btn primary" id="reset">Rebuild system</button></div>
+        <div class="checks">
+          <label><input type="checkbox" id="showSolv" checked> Show solvent</label>
+          <label><input type="checkbox" id="byCluster"> Color by micelle</label>
+          <label><input type="checkbox" id="showBonds" checked> Show bonds</label>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>What is being simulated</h2>
+    <div class="notes">
+      <section>
+        <h3>Particles and potentials</h3>
+        <p>Each amphiphile is an A–B dumbbell held by a harmonic bond. Every bead feels a Lennard-Jones potential, cut and shifted to zero at r<sub>c</sub>.</p>
+        <div class="eq">U_LJ(r) = 4ε[(σ/r)¹² − (σ/r)⁶] − U_LJ(r_c)
+U_bond(r) = ½ k (r − r₀)²,   k = 200</div>
+        <p>Only the tail–tail pair (and optionally head–solvent) keeps the attractive well, with r<sub>c</sub> = 2.5σ. All other pairs are purely repulsive (WCA, r<sub>c</sub> = 2<sup>1/6</sup>σ). The solvophobic drive is the B–B attraction against an athermal solvent. Number density is 0.6.</p>
+        <table class="eps"><tr><th></th><th>A</th><th>B</th><th>S</th></tr>
+          <tr><th>A</th><td>WCA</td><td>WCA</td><td>ε<sub>AS</sub></td></tr>
+          <tr><th>B</th><td>WCA</td><td>ε<sub>BB</sub>, 2.5σ</td><td>WCA</td></tr>
+          <tr><th>S</th><td>ε<sub>AS</sub></td><td>WCA</td><td>WCA</td></tr></table>
+      </section>
+      <section>
+        <h3>NVT dynamics</h3>
+        <p>Equations of motion are integrated with time step Δt = 0.005 in reduced LJ units, with periodic boundaries and cell lists. Two thermostats are available for comparison.</p>
+        <div class="eq">Langevin  m dv = F dt − γ m v dt + √(2γ m k_B T) dW
+Bussi     K ← stochastic rescale toward ½ N_f k_B T</div>
+        <p>Langevin damps momentum locally, so it slows diffusion and removes hydrodynamics as γ grows. Bussi rescaling preserves momentum and leaves the Newtonian dynamics nearly intact, so solvent flow survives. Compare how fast micelles form under each.</p>
+      </section>
+      <section>
+        <h3>What to look for</h3>
+        <p>Start at T* = 2.0: molecules are dispersed. Quench to 0.5: tails find each other and small micelles grow over tens of τ. Heat back to 2.0: micelles fall apart within a few τ. Breakup is fast and assembly is slow, because assembly needs diffusion and collisions.</p>
+        <p>At fixed T* = 0.5, lower the concentration to about 8%: most molecules stay free. Raise it to 50%: most of them join micelles. Ideal micelle theory says the free-dumbbell density should level off near the critical micelle concentration. The "Free, per σ²" readout lets you test that, but allow 100 τ or more per concentration to equilibrate. Assembly is set by ε<sub>BB</sub>/k<sub>B</sub>T, so lowering ε<sub>BB</sub> acts like heating.</p>
+        <p>A micelle here is any cluster of at least 4 molecules whose tails are within 1.5σ. With large heads the clusters stay small (curvature limit). Shrink σ<sub>A</sub> toward 0.9 and the aggregates grow into elongated strips.</p>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+// 2D MD engine: A-B dumbbells (A = solvophilic head, B = solvophobic tail) in explicit solvent S.
+// Reduced LJ units (sigma_B = sigma_S = 1, eps = 1, m = 1, kB = 1).
+function MDEngine(opts) {
+  const E = this;
+  E.p = Object.assign({
+    nSide: 48, rho: 0.7, nMol: 300,
+    epsSS: 1.0, epsAS: 1.0, epsAA: 0.0, epsBB: 0.0, sigA: 1.2, sigB: 1.0,
+    kBond: 200, T: 1.5, dt: 0.005,
+    thermostat: 'langevin', gamma: 1.0, tau: 0.5,
+    fmax: 500, seed: 1
+  }, opts || {});
+  let s = E.p.seed >>> 0 || 1;
+  E.rand = function () { s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; };
+  let spare = null;
+  E.gauss = function () {
+    if (spare !== null) { const g = spare; spare = null; return g; }
+    let u = 0, v = 0; while (u === 0) u = E.rand(); v = E.rand();
+    const r = Math.sqrt(-2 * Math.log(u)), th = 2 * Math.PI * v;
+    spare = r * Math.sin(th); return r * Math.cos(th);
+  };
+  E.init();
+}
+
+MDEngine.prototype.init = function () {
+  const E = this, p = E.p, n = p.nSide;
+  const a = 1 / Math.sqrt(p.rho);
+  E.L = n * a; const N = n * n; E.N = N;
+  E.x = new Float64Array(N); E.y = new Float64Array(N);
+  E.vx = new Float64Array(N); E.vy = new Float64Array(N);
+  E.fx = new Float64Array(N); E.fy = new Float64Array(N);
+  E.type = new Uint8Array(N); E.partner = new Int32Array(N).fill(-1);
+  // pick nMol horizontal site pairs at random (rows with even pairing)
+  const pairsPerRow = Math.floor(n / 2), nPairs = n * pairsPerRow;
+  const order = []; for (let i = 0; i < nPairs; i++) order.push(i);
+  for (let i = nPairs - 1; i > 0; i--) { const j = Math.floor(E.rand() * (i + 1)); const t = order[i]; order[i] = order[j]; order[j] = t; }
+  const isMol = new Uint8Array(nPairs);
+  const nMol = Math.min(p.nMol, nPairs); for (let k = 0; k < nMol; k++) isMol[order[k]] = 1;
+  // Index layout: molecules first (head=2m, tail=2m+1), then solvent.
+  let im = 0, is = 2 * nMol;
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
+    const pair = r * pairsPerRow + Math.floor(c / 2);
+    const inPair = c < 2 * pairsPerRow;
+    const X = (c + 0.5) * a, Y = (r + 0.5) * a;
+    if (inPair && isMol[pair]) {
+      if (c % 2 === 0) { E.x[2 * im] = X; E.y[2 * im] = Y; }
+      else { E.x[2 * im + 1] = X; E.y[2 * im + 1] = Y; im++; }
+    } else { E.x[is] = X; E.y[is] = Y; is++; }
+  }
+  // randomise dumbbell orientation (swap head/tail half the time)
+  E.nMol = nMol;
+  for (let m = 0; m < nMol; m++) {
+    E.type[2 * m] = 0; E.type[2 * m + 1] = 1; E.partner[2 * m] = 2 * m + 1; E.partner[2 * m + 1] = 2 * m;
+    if (E.rand() < 0.5) { const h = 2 * m, t = 2 * m + 1; let tx = E.x[h], ty = E.y[h]; E.x[h] = E.x[t]; E.y[h] = E.y[t]; E.x[t] = tx; E.y[t] = ty; }
+  }
+  for (let i = 2 * nMol; i < N; i++) E.type[i] = 2;
+  // Maxwell velocities, zero momentum
+  let px = 0, py = 0; const sq = Math.sqrt(p.T);
+  for (let i = 0; i < N; i++) { E.vx[i] = sq * E.gauss(); E.vy[i] = sq * E.gauss(); px += E.vx[i]; py += E.vy[i]; }
+  px /= N; py /= N; for (let i = 0; i < N; i++) { E.vx[i] -= px; E.vy[i] -= py; }
+  E.time = 0; E.steps = 0;
+  E.setupTable(); E.setupCells(); E.computeForces();
+};
+
+MDEngine.prototype.setupTable = function () {
+  const E = this, p = E.p;
+  const sig = [p.sigA, p.sigB, 1];
+  // Attractive well depth per pair (0 => purely repulsive WCA with eps = 1).
+  // A-B and B-S are always WCA: the tail is "solvophobic" because it cannot
+  // offer the solvent the attraction that solvent and heads offer each other.
+  const att = [[p.epsAA || 0, 0, p.epsAS], [0, p.epsBB, 0], [p.epsAS, 0, p.epsSS]];
+  E.sig2 = new Float64Array(9); E.eps = new Float64Array(9); E.rc2 = new Float64Array(9); E.shift = new Float64Array(9);
+  let rcMax = 0;
+  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) {
+    const k = i * 3 + j, sg = 0.5 * (sig[i] + sig[j]), ea = att[i][j];
+    let eps = 1, rc = Math.pow(2, 1 / 6) * sg; // WCA
+    if (ea > 1e-6) { eps = ea; rc = 2.5 * sg; }
+    const sr6 = Math.pow(sg / rc, 6);
+    E.sig2[k] = sg * sg; E.eps[k] = eps; E.rc2[k] = rc * rc; E.shift[k] = 4 * eps * (sr6 * sr6 - sr6);
+    if (rc > rcMax) rcMax = rc;
+  }
+  E.rcMax = Math.max(rcMax, 1.35 * p.sigB, 1.6);
+  if (E.head) E.setupCells();
+  E.r0 = 0.5 * (p.sigA + p.sigB) * 0.95;
+};
+
+MDEngine.prototype.setupCells = function () {
+  const E = this;
+  E.nc = Math.max(3, Math.floor(E.L / E.rcMax));
+  E.cs = E.L / E.nc;
+  E.head = new Int32Array(E.nc * E.nc); E.next = new Int32Array(E.N);
+  E.buildCells();
+};
+
+MDEngine.prototype.buildCells = function () {
+  const E = this, nc = E.nc, inv = 1 / E.cs; E.head.fill(-1);
+  for (let i = 0; i < E.N; i++) {
+    let cx = Math.floor(E.x[i] * inv), cy = Math.floor(E.y[i] * inv);
+    if (cx >= nc) cx = nc - 1; if (cy >= nc) cy = nc - 1; if (cx < 0) cx = 0; if (cy < 0) cy = 0;
+    const c = cy * nc + cx; E.next[i] = E.head[c]; E.head[c] = i;
+  }
+};
+
+MDEngine.prototype.computeForces = function () {
+  const E = this, N = E.N, L = E.L, hL = 0.5 * L, nc = E.nc;
+  const x = E.x, y = E.y, fx = E.fx, fy = E.fy, type = E.type;
+  const sig2 = E.sig2, eps = E.eps, rc2 = E.rc2, shift = E.shift, fmax = E.p.fmax;
+  fx.fill(0); fy.fill(0);
+  E.buildCells();
+  let U = 0, W = 0;
+  const dnx = [0, 1, 1, 0, -1], dny = [0, 0, 1, 1, 1];
+  const head = E.head, next = E.next;
+  for (let cy = 0; cy < nc; cy++) for (let cx = 0; cx < nc; cx++) {
+    const c = cy * nc + cx;
+    for (let nb = 0; nb < 5; nb++) {
+      const ox = (cx + dnx[nb] + nc) % nc, oy = (cy + dny[nb] + nc) % nc;
+      const c2 = oy * nc + ox;
+      for (let i = head[c]; i >= 0; i = next[i]) {
+        const ti = type[i] * 3, xi = x[i], yi = y[i];
+        for (let j = (nb === 0 ? next[i] : head[c2]); j >= 0; j = next[j]) {
+          let dx = xi - x[j], dy = yi - y[j];
+          if (dx > hL) dx -= L; else if (dx < -hL) dx += L;
+          if (dy > hL) dy -= L; else if (dy < -hL) dy += L;
+          const r2 = dx * dx + dy * dy, k = ti + type[j];
+          if (r2 >= rc2[k]) continue;
+          const sr2 = sig2[k] / r2, sr6 = sr2 * sr2 * sr2, e = eps[k];
+          let ff = 24 * e * sr6 * (2 * sr6 - 1) / r2;
+          const fm = ff * Math.sqrt(r2); if (fm > fmax) ff = fmax / Math.sqrt(r2);
+          fx[i] += ff * dx; fy[i] += ff * dy; fx[j] -= ff * dx; fy[j] -= ff * dy;
+          U += 4 * e * sr6 * (sr6 - 1) - shift[k]; W += ff * r2;
+        }
+      }
+    }
+  }
+  // harmonic bonds
+  const kb = E.p.kBond, r0 = E.r0;
+  for (let m = 0; m < E.nMol; m++) {
+    const i = 2 * m, j = i + 1;
+    let dx = x[i] - x[j], dy = y[i] - y[j];
+    if (dx > hL) dx -= L; else if (dx < -hL) dx += L;
+    if (dy > hL) dy -= L; else if (dy < -hL) dy += L;
+    const r = Math.sqrt(dx * dx + dy * dy), dr = r - r0;
+    const ff = -kb * dr / r;
+    fx[i] += ff * dx; fy[i] += ff * dy; fx[j] -= ff * dx; fy[j] -= ff * dy;
+    U += 0.5 * kb * dr * dr; W += ff * r * r;
+  }
+  E.U = U; E.W = W;
+};
+
+MDEngine.prototype.wrap = function () {
+  const E = this, L = E.L, x = E.x, y = E.y;
+  for (let i = 0; i < E.N; i++) {
+    if (x[i] >= L) x[i] -= L; else if (x[i] < 0) x[i] += L;
+    if (y[i] >= L) y[i] -= L; else if (y[i] < 0) y[i] += L;
+  }
+};
+
+MDEngine.prototype.kinetic = function () {
+  const E = this; let K = 0;
+  for (let i = 0; i < E.N; i++) K += E.vx[i] * E.vx[i] + E.vy[i] * E.vy[i];
+  return 0.5 * K;
+};
+
+// One MD step. Langevin: BAOAB splitting. Bussi: velocity Verlet + CSVR rescale.
+MDEngine.prototype.step = function () {
+  const E = this, p = E.p, N = E.N, dt = p.dt, hdt = 0.5 * dt;
+  const x = E.x, y = E.y, vx = E.vx, vy = E.vy, fx = E.fx, fy = E.fy;
+  if (p.thermostat === 'langevin') {
+    const c1 = Math.exp(-p.gamma * dt), c2 = Math.sqrt((1 - c1 * c1) * p.T);
+    for (let i = 0; i < N; i++) {
+      vx[i] += hdt * fx[i]; vy[i] += hdt * fy[i];
+      x[i] += hdt * vx[i]; y[i] += hdt * vy[i];
+      vx[i] = c1 * vx[i] + c2 * E.gauss(); vy[i] = c1 * vy[i] + c2 * E.gauss();
+      x[i] += hdt * vx[i]; y[i] += hdt * vy[i];
+    }
+    E.wrap(); E.computeForces();
+    for (let i = 0; i < N; i++) { vx[i] += hdt * fx[i]; vy[i] += hdt * fy[i]; }
+  } else {
+    for (let i = 0; i < N; i++) {
+      vx[i] += hdt * fx[i]; vy[i] += hdt * fy[i];
+      x[i] += dt * vx[i]; y[i] += dt * vy[i];
+    }
+    E.wrap(); E.computeForces();
+    for (let i = 0; i < N; i++) { vx[i] += hdt * fx[i]; vy[i] += hdt * fy[i]; }
+    // Bussi-Donadio-Parrinello stochastic velocity rescaling
+    const Nf = 2 * N - 2, K = E.kinetic(), Kt = 0.5 * Nf * p.T;
+    if (K > 0) {
+      const c = Math.exp(-dt / p.tau), R1 = E.gauss();
+      const sumR = (Nf - 1) + Math.sqrt(2 * (Nf - 1)) * E.gauss(); // chi^2_{Nf-1}, normal approx (Nf large)
+      const a = Kt / (Nf * K) * (1 - c);
+      let al2 = c + a * (R1 * R1 + sumR) + 2 * Math.sqrt(c * a) * R1;
+      if (al2 < 0) al2 = 0; const al = Math.sqrt(al2);
+      for (let i = 0; i < N; i++) { vx[i] *= al; vy[i] *= al; }
+    }
+  }
+  E.time += dt; E.steps++;
+};
+
+// Tail-tail clusters (union-find over B beads, contact r < rcut). Returns {label, sizes, nAgg, fracAgg, meanAgg}
+MDEngine.prototype.clusters = function (rcut, minSize) {
+  const E = this, nM = E.nMol, L = E.L, hL = 0.5 * L, rc2 = rcut * rcut;
+  const par = new Int32Array(nM); for (let m = 0; m < nM; m++) par[m] = m;
+  const find = (a) => { while (par[a] !== a) { par[a] = par[par[a]]; a = par[a]; } return a; };
+  // tails sit at odd indices < 2nMol; reuse cell list (cell size >= rcut)
+  const nc = E.nc, head = E.head, next = E.next, type = E.type, x = E.x, y = E.y;
+  for (let cy = 0; cy < nc; cy++) for (let cx = 0; cx < nc; cx++) {
+    const c = cy * nc + cx;
+    for (let i = head[c]; i >= 0; i = next[i]) {
+      if (type[i] !== 1) continue;
+      for (let ddy = -1; ddy <= 1; ddy++) for (let ddx = -1; ddx <= 1; ddx++) {
+        const c2 = ((cy + ddy + nc) % nc) * nc + ((cx + ddx + nc) % nc);
+        for (let j = head[c2]; j >= 0; j = next[j]) {
+          if (j <= i || type[j] !== 1) continue;
+          let dx = x[i] - x[j], dy = y[i] - y[j];
+          if (dx > hL) dx -= L; else if (dx < -hL) dx += L;
+          if (dy > hL) dy -= L; else if (dy < -hL) dy += L;
+          if (dx * dx + dy * dy < rc2) { const a = find(i >> 1), b = find(j >> 1); if (a !== b) par[a] = b; }
+        }
+      }
+    }
+  }
+  const size = new Int32Array(nM), label = new Int32Array(nM);
+  for (let m = 0; m < nM; m++) { label[m] = find(m); size[label[m]]++; }
+  let nAgg = 0, inAgg = 0, largest = 0;
+  for (let m = 0; m < nM; m++) { if (size[m] >= minSize) { nAgg++; inAgg += size[m]; } if (size[m] > largest) largest = size[m]; }
+  return { label, size, nAgg, fracAgg: nM ? inAgg / nM : 0, meanAgg: nAgg ? inAgg / nAgg : 0, largest };
+};
+
+if (typeof module !== 'undefined') module.exports = MDEngine;
+
+// ---- live composition changes ----
+// Molecules occupy indices [0, 2*nMol); solvent occupies the rest. Swap keeps that layout.
+MDEngine.prototype.swap = function (i, j) {
+  if (i === j) return;
+  for (const a of [this.x, this.y, this.vx, this.vy, this.fx, this.fy, this.type]) { const t = a[i]; a[i] = a[j]; a[j] = t; }
+};
+// Turn a pair of neighbouring solvent beads into one A-B dumbbell.
+MDEngine.prototype.addMolecule = function () {
+  const E = this, N = E.N, L = E.L, hL = L / 2, s0 = 2 * E.nMol;
+  if (N - s0 < 4) return false;
+  for (let tries = 0; tries < 20; tries++) {
+    const i = s0 + Math.floor(E.rand() * (N - s0));
+    let best = -1, bd = 1.69; // nearest solvent within 1.3 sigma
+    for (let j = s0; j < N; j++) {
+      if (j === i) continue;
+      let dx = E.x[i] - E.x[j], dy = E.y[i] - E.y[j];
+      if (dx > hL) dx -= L; else if (dx < -hL) dx += L;
+      if (dy > hL) dy -= L; else if (dy < -hL) dy += L;
+      const d2 = dx * dx + dy * dy; if (d2 < bd) { bd = d2; best = j; }
+    }
+    if (best < 0) continue;
+    let j = best; const a = s0, b = s0 + 1;
+    E.swap(i, a); if (j === a) j = i;
+    E.swap(j, b);
+    E.type[a] = 0; E.type[b] = 1; E.nMol++;
+    return true;
+  }
+  return false;
+};
+// Turn a random dumbbell back into two solvent beads.
+MDEngine.prototype.removeMolecule = function () {
+  const E = this; if (E.nMol < 1) return false;
+  const m = Math.floor(E.rand() * E.nMol), last = E.nMol - 1;
+  E.swap(2 * m, 2 * last); E.swap(2 * m + 1, 2 * last + 1);
+  E.type[2 * last] = 2; E.type[2 * last + 1] = 2; E.nMol--;
+  return true;
+};
+MDEngine.prototype.setMolCount = function (target) {
+  const E = this; target = Math.max(0, Math.min(Math.floor(E.N / 2) - 2, Math.round(target)));
+  let guard = 0;
+  while (E.nMol < target && guard++ < 5000) if (!E.addMolecule()) break;
+  while (E.nMol > target) E.removeMolecule();
+  E.computeForces();
+  return E.nMol;
+};
+
+</script>
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  let colors = {};
+  const readColors = () => { colors = { head: css('--head'), tail: css('--tail'), solv: css('--solv'), bond: css('--bond'), cell: css('--cell'), muted: css('--muted'), hot: css('--hot'), line: css('--line'), accent: css('--accent') }; };
+  readColors();
+  try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readColors); } catch (e) {}
+  new MutationObserver(readColors).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  const MIN_AGG = 4, RCUT = 1.5;
+  let eng, running = true, frame = 0, clus = null;
+  const hist = { tset: [], tkin: [], frac: [] }, HMAX = 360;
+
+  function build() {
+    const n = +$('size').value, conc = +$('conc').value / 100;
+    const nMol = Math.round(conc * n * n / 2);
+    eng = new MDEngine({ nSide: n, nMol, rho: 0.6, epsSS: 0, epsAS: +$('epsAS').value, epsBB: +$('epsBB').value,
+      sigA: +$('sigA').value, sigB: 1,
+      T: tset, thermostat: $('thermo').value, gamma: +$('gamma').value, tau: +$('tau').value, seed: (Math.random() * 1e9) | 0 });
+    hist.tset.length = hist.tkin.length = hist.frac.length = 0;
+    clus = eng.clusters(RCUT, MIN_AGG);
+    $('boxinfo').textContent = `L = ${eng.L.toFixed(1)}σ · ${eng.N} beads`; concNote();
+  }
+
+  // ---- temperature control ----
+  let tset = 2.0, mode = 'slider';
+  const setT = (v) => { tset = Math.max(0.3, Math.min(2.5, v)); if (eng) eng.p.T = tset; $('tset').textContent = tset.toFixed(2); $('tslider').value = tset; };
+  $('tslider').addEventListener('input', (e) => { if (mode === 'slider') setT(+e.target.value); });
+  $('quench').addEventListener('click', () => { if (mode === 'mic') setMode('slider'); setT(0.5); });
+  $('melt').addEventListener('click', () => { if (mode === 'mic') setMode('slider'); setT(2.0); });
+  $('pause').addEventListener('click', () => { running = !running; $('pause').textContent = running ? 'Pause' : 'Resume'; });
+
+  // ---- microphone ----
+  let audio = null, analyser = null, buf = null, quietDb = -60, micT = 0.5;
+  async function startMic() {
+    try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('nomedia');
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+      audio = new (window.AudioContext || window.webkitAudioContext)();
+      const src = audio.createMediaStreamSource(stream);
+      analyser = audio.createAnalyser(); analyser.fftSize = 2048; src.connect(analyser);
+      buf = new Float32Array(analyser.fftSize);
+      $('micnote').className = 'note'; $('micnote').textContent = 'Listening. Quiet room keeps the system cold; talk, clap or play music to heat it.';
+      setTimeout(calibrate, 600);
+      return true;
+    } catch (e) {
+      $('micnote').className = 'note err';
+      $('micnote').textContent = 'The microphone is blocked in this view. Download the HTML file from the chat and open it in Chrome, Edge or Firefox, then allow microphone access.';
+      return false;
+    }
+  }
+  function levelDb() {
+    if (!analyser) return null;
+    analyser.getFloatTimeDomainData(buf);
+    let s = 0; for (let i = 0; i < buf.length; i++) s += buf[i] * buf[i];
+    return 20 * Math.log10(Math.sqrt(s / buf.length) + 1e-9);
+  }
+  function calibrate() { const samples = []; let k = 0;
+    const id = setInterval(() => { const d = levelDb(); if (d !== null) samples.push(d); if (++k >= 15) { clearInterval(id); if (samples.length) { samples.sort((a, b) => a - b); quietDb = samples[Math.floor(samples.length / 2)] + 3; } } }, 40); }
+  $('calib').addEventListener('click', calibrate);
+  $('micrange').addEventListener('input', (e) => { $('micrangeO').textContent = e.target.value + ' dB'; });
+  async function setMode(m) {
+    mode = m;
+    $('modeSlider').setAttribute('aria-pressed', m === 'slider'); $('modeMic').setAttribute('aria-pressed', m === 'mic');
+    $('micbox').hidden = m !== 'mic'; $('tslider').disabled = m === 'mic';
+    if (m === 'mic') { micT = tset; if (!analyser) await startMic(); else if (audio.state === 'suspended') audio.resume(); }
+  }
+  $('modeSlider').addEventListener('click', () => setMode('slider'));
+  $('modeMic').addEventListener('click', () => setMode('mic'));
+  function micUpdate(dtSec) {
+    const d = levelDb(); if (d === null) return;
+    const span = +$('micrange').value, x = Math.max(0, Math.min(1, (d - quietDb) / span));
+    $('micbar').style.width = (x * 100).toFixed(0) + '%';
+    const target = 0.4 + x * 2.0;
+    const tauUp = 0.4, tauDown = 2.5;   // heats quickly, cools slowly
+    const a = 1 - Math.exp(-dtSec / (target > micT ? tauUp : tauDown));
+    micT += a * (target - micT); setT(micT);
+  }
+
+  // ---- model controls ----
+  const bindRange = (id, fmt, apply) => { const el = $(id), o = $(id + 'O');
+    const f = () => { o.textContent = fmt(+el.value); if (apply) apply(+el.value); }; el.addEventListener('input', f); f(); };
+  bindRange('epsBB', (v) => v.toFixed(2), (v) => { if (eng) { eng.p.epsBB = v; eng.setupTable(); } });
+  bindRange('sigA', (v) => v.toFixed(2), (v) => { if (eng) { eng.p.sigA = v; eng.setupTable(); } });
+  bindRange('epsAS', (v) => v.toFixed(2), (v) => { if (eng) { eng.p.epsAS = v; eng.setupTable(); } });
+
+  bindRange('gamma', (v) => v.toFixed(2), (v) => { if (eng) eng.p.gamma = v; });
+  bindRange('tau', (v) => v.toFixed(2), (v) => { if (eng) eng.p.tau = v; });
+  bindRange('spf', (v) => String(v));
+  const concNote = () => { if (eng) $('concNote').textContent = `${eng.nMol} dumbbells, ${eng.N - 2 * eng.nMol} solvent beads. Changes apply live: solvent beads are swapped for dumbbells or back.`; };
+  bindRange('conc', (v) => v + '%', (v) => { if (eng) { eng.setMolCount(v / 100 * eng.N / 2); clus = eng.clusters(RCUT, MIN_AGG); concNote(); } });
+  $('thermo').addEventListener('change', (e) => { if (eng) eng.p.thermostat = e.target.value;
+    $('gammaRow').hidden = e.target.value !== 'langevin'; $('tauRow').hidden = e.target.value === 'langevin'; });
+  $('reset').addEventListener('click', build);
+  $('size').addEventListener('change', build);
+
+  // ---- rendering ----
+  const cv = $('sim'), ctx = cv.getContext('2d');
+  let dpr = 1, W = 0;
+  function resize() { dpr = Math.min(2, window.devicePixelRatio || 1); W = cv.clientWidth; cv.width = Math.round(W * dpr); cv.height = Math.round(W * dpr); sizePlots(); }
+  window.addEventListener('resize', resize);
+  const CPAL = ['#e0704a', '#3a9bd6', '#9b6bd1', '#d4a72c', '#4cae6b', '#d65a9a', '#2fb5b0', '#8f8f3a'];
+
+  function draw() {
+    const L = eng.L, s = (cv.width) / L, N = eng.N, x = eng.x, y = eng.y, type = eng.type;
+    ctx.fillStyle = colors.cell; ctx.fillRect(0, 0, cv.width, cv.height);
+    const rS = 0.42 * s, rB = 0.5 * eng.p.sigB * s, rA = 0.5 * eng.p.sigA * s;
+    if ($('showSolv').checked) {
+      ctx.fillStyle = colors.solv; ctx.beginPath();
+      for (let i = 2 * eng.nMol; i < N; i++) { const X = x[i] * s, Y = y[i] * s; ctx.moveTo(X + rS, Y); ctx.arc(X, Y, rS, 0, 6.2832); }
+      ctx.fill();
+    }
+    if ($('showBonds').checked) {
+      ctx.strokeStyle = colors.bond; ctx.lineWidth = Math.max(1, 0.18 * s); ctx.beginPath(); const hL = L / 2;
+      for (let m = 0; m < eng.nMol; m++) { const i = 2 * m, j = i + 1;
+        if (Math.abs(x[i] - x[j]) > hL || Math.abs(y[i] - y[j]) > hL) continue;
+        ctx.moveTo(x[i] * s, y[i] * s); ctx.lineTo(x[j] * s, y[j] * s); }
+      ctx.stroke();
+    }
+    const byC = $('byCluster').checked && clus;
+    if (byC) {
+      const groups = new Map();
+      for (let m = 0; m < eng.nMol; m++) { const lab = clus.label[m]; const key = clus.size[lab] >= MIN_AGG ? CPAL[lab % CPAL.length] : colors.muted;
+        if (!groups.has(key)) groups.set(key, []); groups.get(key).push(m); }
+      for (const [col, ms] of groups) { ctx.fillStyle = col; ctx.beginPath();
+        for (const m of ms) for (const i of [2 * m, 2 * m + 1]) { const r = type[i] === 0 ? rA : rB, X = x[i] * s, Y = y[i] * s; ctx.moveTo(X + r, Y); ctx.arc(X, Y, r, 0, 6.2832); }
+        ctx.fill(); }
+    } else {
+      for (const [t, col, r] of [[1, colors.tail, rB], [0, colors.head, rA]]) {
+        ctx.fillStyle = col; ctx.beginPath();
+        for (let i = 0; i < 2 * eng.nMol; i++) { if (type[i] !== t) continue; const X = x[i] * s, Y = y[i] * s; ctx.moveTo(X + r, Y); ctx.arc(X, Y, r, 0, 6.2832); }
+        ctx.fill();
+      }
+    }
+  }
+
+  const pT = $('plotT'), pF = $('plotF');
+  function sizePlots() { for (const c of [pT, pF]) { c.width = Math.round(c.clientWidth * dpr); c.height = Math.round(c.clientHeight * dpr); } }
+  function plot(c, series, ymin, ymax, ticks) {
+    const g = c.getContext('2d'), w = c.width, h = c.height, padL = 30 * dpr, padB = 4 * dpr, padT = 6 * dpr;
+    g.clearRect(0, 0, w, h);
+    g.font = `${10 * dpr}px ${css('--f-mono') || 'monospace'}`; g.fillStyle = colors.muted; g.textAlign = 'right'; g.textBaseline = 'middle';
+    const Y = (v) => padT + (h - padT - padB) * (1 - (v - ymin) / (ymax - ymin));
+    g.strokeStyle = colors.line; g.lineWidth = 1;
+    for (const t of ticks) { const yy = Math.round(Y(t)) + 0.5; g.beginPath(); g.moveTo(padL, yy); g.lineTo(w, yy); g.stroke(); g.fillText(t.toFixed(t < 1 && t > 0 ? 1 : 1), padL - 5 * dpr, yy); }
+    for (const sr of series) { const d = sr.data; if (d.length < 2) continue;
+      g.strokeStyle = sr.color; g.lineWidth = sr.w * dpr; g.setLineDash(sr.dash ? [4 * dpr, 3 * dpr] : []); g.beginPath();
+      for (let k = 0; k < d.length; k++) { const X = padL + (w - padL) * k / (HMAX - 1), yy = Y(Math.max(ymin, Math.min(ymax, d[k]))); k ? g.lineTo(X, yy) : g.moveTo(X, yy); }
+      g.stroke(); g.setLineDash([]);
+      if (sr.dot) { const k = d.length - 1, X = padL + (w - padL) * k / (HMAX - 1); g.fillStyle = sr.color; g.beginPath(); g.arc(X, Y(Math.max(ymin, Math.min(ymax, d[k]))), 3 * dpr, 0, 6.2832); g.fill(); }
+    }
+  }
+  const push = (a, v) => { a.push(v); if (a.length > HMAX) a.shift(); };
+
+  // ---- main loop ----
+  let last = performance.now(), stepCount = 0, perfT = last, sps = 0, tkinAvg = null;
+  function loop(now) {
+    const dtSec = Math.min(0.1, (now - last) / 1000); last = now;
+    if (mode === 'mic') micUpdate(dtSec);
+    if (running) {
+      const n = +$('spf').value;
+      for (let k = 0; k < n; k++) eng.step();
+      stepCount += n;
+      const tk = eng.kinetic() / (eng.N - 1);
+      tkinAvg = tkinAvg === null ? tk : 0.9 * tkinAvg + 0.1 * tk;
+      if (frame % 6 === 0) {
+        clus = eng.clusters(RCUT, MIN_AGG);
+        push(hist.tset, tset); push(hist.tkin, tkinAvg); push(hist.frac, clus.fracAgg);
+        $('tkin').textContent = tkinAvg.toFixed(2);
+        $('rFrac').textContent = (100 * clus.fracAgg).toFixed(0) + '%';
+        $('rN').textContent = clus.nAgg;
+        $('rBig').textContent = clus.largest;
+        $('rMean').textContent = clus.nAgg ? clus.meanAgg.toFixed(1) : '–';
+        $('rU').textContent = (eng.U / eng.N).toFixed(3);
+        $('rMol').textContent = eng.nMol;
+        $('rFree').textContent = (eng.nMol * (1 - clus.fracAgg) / (eng.L * eng.L)).toFixed(4);
+        $('rTime').textContent = eng.time.toFixed(0) + ' τ';
+        plot(pT, [{ data: hist.tset, color: colors.muted, w: 1.5, dash: true }, { data: hist.tkin, color: colors.hot, w: 1.8, dot: true }], 0, 2.6, [0.5, 1.0, 1.5, 2.0, 2.5]);
+        plot(pF, [{ data: hist.frac, color: colors.accent, w: 2, dot: true }], 0, 1, [0.0, 0.5, 1.0]);
+      }
+      frame++;
+    }
+    if (now - perfT > 1000) { sps = stepCount * 1000 / (now - perfT); stepCount = 0; perfT = now; $('perf').textContent = `${Math.round(sps)} steps/s · ${(sps * eng.p.dt).toFixed(1)} τ/s`; }
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  setT(2.0); build(); resize(); requestAnimationFrame((t) => { last = t; perfT = t; loop(t); });
+})();
+</script>
