@@ -1,3 +1,7 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Amphiphile Assembly Lab</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -86,6 +90,18 @@ table.eps { border-collapse: collapse; font-family: var(--f-mono); font-size: 12
 table.eps td, table.eps th { border: 1px solid var(--line); padding: 3px 8px; text-align: center }
 table.eps th { font-weight: 500; color: var(--muted) }
 @media (prefers-reduced-motion: reduce) { .meter i { transition: none } }
+.thhead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px }
+.thhead .btns { align-items: center }
+.thgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 22px }
+@media (max-width: 700px) { .thgrid { grid-template-columns: minmax(0, 1fr) } }
+.thgrid figure { margin: 0; min-width: 0; display: flex; flex-direction: column; gap: 4px }
+.thgrid figcaption { font-size: 12.5px; color: var(--muted) }
+.thgrid figcaption b { color: var(--ink); font-weight: 600 }
+.thplot { width: 100%; height: 160px; display: block }
+.thsum { margin: 0; font-size: 14px; max-width: 80ch }
+.thsum b { font-weight: 650 }
+.thkey { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--muted) }
+.thkey i { font-style: normal; display: inline-flex; align-items: center; gap: 6px }
 .syspick { display: grid; grid-template-columns: 1fr 1fr; gap: 8px }
 .syspick button { font: inherit; text-align: left; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; display: flex; flex-direction: column; gap: 1px }
 .syspick button b { font-weight: 600; font-size: 13.5px }
@@ -161,6 +177,7 @@ button { touch-action: manipulation }
           <button data-pick="hp" aria-pressed="false"><b>HP copolymer</b><small>Folds on cooling</small></button>
           <button data-pick="lcst" aria-pressed="false"><b>UCST polymer</b><small>Collapses on cooling</small></button>
           <button data-pick="mbpoly" aria-pressed="false"><b>Chain in MB water</b><small>Hydrophobic effect from hydrogen bonds</small></button>
+          <button data-pick="ice" aria-pressed="false"><b>Ice</b><small>Melts on heating</small></button>
           <button data-pick="brush" aria-pressed="false"><b>Brush + droplet</b><small>Wetting switches with temperature</small></button>
         </div>
       </div>
@@ -212,7 +229,7 @@ button { touch-action: manipulation }
         </div>
       </div>
 
-      <div class="panel">
+      <div class="panel" id="compPanel">
         <h2>Composition and interactions</h2>
         <div class="row"><label for="conc" id="concLab">Concentration</label><output id="concO">26%</output>
           <input type="range" id="conc" min="2" max="60" step="1" value="26"></div>
@@ -222,8 +239,8 @@ button { touch-action: manipulation }
           <input type="range" id="epsBB" min="0" max="4" step="0.05" value="2.5"></div>
         <div class="row" data-show="dumbbell"><label for="epsAS">Head–solvent attraction ε<sub>AS</sub></label><output id="epsASO">0.00</output>
           <input type="range" id="epsAS" min="0" max="1.5" step="0.05" value="0"></div>
-        <div class="row" data-show="dumbbell"><label for="sigA">Head diameter σ<sub>A</sub></label><output id="sigAO">1.20</output>
-          <input type="range" id="sigA" min="0.8" max="1.8" step="0.05" value="1.2"></div>
+        <div class="row" data-show="dumbbell"><label for="sigA">Head diameter σ<sub>A</sub></label><output id="sigAO">1.00</output>
+          <input type="range" id="sigA" min="0.8" max="1.8" step="0.05" value="1"></div>
 
         <div class="row" data-show="polymer lcst mbpoly"><label for="epsPP">Polymer–polymer attraction ε<sub>PP</sub></label><output id="epsPPO">1.75</output>
           <input type="range" id="epsPP" min="0" max="3" step="0.05" value="1.75"></div>
@@ -258,16 +275,18 @@ button { touch-action: manipulation }
           <p class="note" id="seqNote">Letters H and P only, 3–60 beads. Applying rebuilds the system.</p>
         </div>
 
-        <div class="checks" data-show="brush"><label><input type="checkbox" id="bInvert"> Swap chemistry: end beads attract the liquid, middle beads repel it (rebuilds)</label></div>
+        <div class="checks" data-show="brush"><label><input type="checkbox" id="bInvert"> Swap colours: teal beads at the chain ends, orange in the middle (rebuilds)</label></div>
         <div class="row" data-show="brush"><label for="graft">Grafting spacing, σ (larger = sparser; rebuilds on release)</label><output id="graftO">1.6</output>
           <input type="range" id="graft" min="1.2" max="3" step="0.1" value="1.6"></div>
-        <div class="row" data-show="brush"><label for="nEnd">End beads per chain (rebuilds on release)</label><output id="nEndO">2</output>
+        <div class="row" data-show="brush"><label for="nEnd">End beads per chain (orange, or teal when swapped; rebuilds on release)</label><output id="nEndO">2</output>
           <input type="range" id="nEnd" min="1" max="4" step="1" value="2"></div>
+        <div class="row" data-show="brush"><label for="grav">Gravity g (pulls the droplet onto the brush)</label><output id="gravO">0.003</output>
+          <input type="range" id="grav" min="0" max="0.02" step="0.001" value="0.003"></div>
         <div class="row" data-show="brush"><label for="epsCC">Brush beads: attraction to each other ε<sub>CC</sub></label><output id="epsCCO">0.30</output>
           <input type="range" id="epsCC" min="0" max="1.5" step="0.05" value="0.3"></div>
-        <div class="row" data-show="brush"><label for="epsQL">Water-loving beads: attraction to the liquid</label><output id="epsQLO">1.20</output>
+        <div class="row" data-show="brush"><label for="epsQL">Teal beads: attraction to the liquid</label><output id="epsQLO">1.20</output>
           <input type="range" id="epsQL" min="0" max="2" step="0.05" value="1.2"></div>
-        <div class="row" data-show="brush"><label for="epsHL">Water-repelling beads: attraction to the liquid</label><output id="epsHLO">0.20</output>
+        <div class="row" data-show="brush"><label for="epsHL">Orange beads: attraction to the liquid</label><output id="epsHLO">0.20</output>
           <input type="range" id="epsHL" min="0" max="2" step="0.05" value="0.2"></div>
         <div class="checks" data-show="mbpoly"><label><input type="checkbox" id="mbHB" checked> Water hydrogen bonds on (turn off for the control: plain LJ water)</label></div>
         <p class="note" data-show="mbpoly">Chain length 1 (default) gives free nonpolar solutes; longer lengths give one or more chains of the same beads.</p>
@@ -288,16 +307,47 @@ button { touch-action: manipulation }
 
       <details class="panel">
         <summary><h2>Box and view</h2></summary>
-        <div class="row"><label for="size">Box size</label>
+        <div class="row" id="sizeRow"><label for="size">Box size</label>
           <select id="size"><option value="36">36×36 sites · 1296 beads</option><option value="48" selected>48×48 sites · 2304 beads</option><option value="64">64×64 sites · 4096 beads</option></select></div>
+        <div class="row"><label for="initState">Initial state</label>
+          <select id="initState"><option value="ordered" selected>Ordered (cold equilibrium)</option><option value="disordered">Disordered (hot)</option></select></div>
         <div class="btns"><button class="btn primary" id="reset">Rebuild system</button></div>
         <div class="checks">
           <label data-show="dumbbell polymer diblock hp lcst mbpoly"><input type="checkbox" id="showSolv" checked> Show solvent</label>
-          <label data-show="dumbbell polymer mbpoly"><input type="checkbox" id="byCluster"> <span id="byClusterLab">Color by micelle</span></label>
+          <label data-show="dumbbell polymer mbpoly ice"><input type="checkbox" id="byCluster"> <span id="byClusterLab">Color by micelle</span></label>
           <label data-show="dumbbell polymer diblock hp lcst mbpoly"><input type="checkbox" id="showBonds" checked> Show bonds</label>
         </div>
       </details>
     </div>
+  </div>
+
+  <div class="panel" id="thermoPanel">
+    <div class="thhead">
+      <h2>Energy vs disorder: find the melting point</h2>
+      <div class="btns">
+        <button class="btn hot" id="scanHeat">Heating scan</button>
+        <button class="btn cold" id="scanCool">Cooling scan</button>
+        <button class="btn" id="scanStop" disabled>Stop</button>
+        <select id="scanTau" aria-label="Scan duration"><option value="80">Fast · 80 τ</option><option value="160" selected>Normal · 160 τ</option><option value="320">Slow · 320 τ</option></select>
+      </div>
+    </div>
+    <p class="thsum">Why does heat break structures? Sticking together <b>lowers the energy</b>, so cold molecules build structures. Breaking free <b>increases disorder</b> (entropy): there are many more ways to be scattered than to be neatly packed. Heat makes disorder more valuable, so at some temperature disorder wins and the structure falls apart. Press <b>Heating scan</b>: the computer starts from the ordered structure, warms it up slowly and measures the energy at every temperature. The four graphs then show where the melting point is.</p>
+    <p class="note" id="scanStatus">Tip: after heating, press <b>Cooling scan</b> to watch the structure form again on the way down.</p>
+    <div class="thkey">
+      <i><span class="sw" style="background:var(--hot)"></span>measured while heating</i>
+      <i><span class="sw" style="background:var(--cold)"></span>measured while cooling</i>
+      <i><span class="sw" style="border-top:2px dashed var(--accent);height:0"></span>if it stayed ordered</i>
+      <i><span class="sw" style="border-top:2px dashed var(--tail);height:0"></span>if it stayed broken</i>
+      <i><span class="sw" style="background:var(--ink);width:2px;height:10px"></span>melting point</i>
+    </div>
+    <div class="thgrid">
+      <figure><figcaption><b>1 · Energy U</b>: how much energy the molecules hold. It climbs as the structure breaks, because broken contacts cost energy.</figcaption><canvas class="thplot" id="thU"></canvas></figure>
+      <figure><figcaption><b>2 · Heat capacity C</b>: how much heat it takes to warm up a little. <b>The peak is the melting point</b>: there, heat goes into breaking the structure instead of warming it.</figcaption><canvas class="thplot" id="thC"></canvas></figure>
+      <figure><figcaption><b>3 · Entropy S</b>: the amount of disorder (how many ways the molecules can be arranged). It jumps up when the structure breaks.</figcaption><canvas class="thplot" id="thS"></canvas></figure>
+      <figure><figcaption><b>4 · Free energy F = U − T·S</b>: energy minus “disorder bonus”. Nature picks the state with the <b>lower F</b>. Where the two dashed lines cross, ordered and broken are equally good: the melting point.</figcaption><canvas class="thplot" id="thF"></canvas></figure>
+    </div>
+    <p class="thsum" id="thSummary"></p>
+    <p class="note" id="thUnit"></p>
   </div>
 
   <div class="panel">
@@ -312,7 +362,8 @@ U_bond(r) = ½ k (r − r₀)²,   k = 200</div>
       </section>
       <section data-show="dumbbell">
         <h3>What to look for</h3>
-        <p>Start at T* = 2.0: molecules are dispersed. Cool to 0.5: tails find each other and small micelles grow over tens of τ. Heat back to 2.0: micelles fall apart within a few τ. Breakup is fast and assembly is slow, because assembly needs diffusion and collisions.</p>
+        <p>Starts from five bilayers (a lamellar stack, 48% of beads in dumbbells) at T* = 0.5; with equal head and tail sizes (σ<sub>A</sub> = 1.0) they stay intact. Heat to 2.0: they break up within 5–15 τ (aggregated fraction 99% → about 30%, largest cluster 108 → about 10 molecules). Set σ<sub>A</sub> to 1.2 and rebuild: the bilayers fragment even when cold, because cone-shaped molecules prefer curved micelles (the packing-parameter argument).</p>
+        <p>From a disordered start (Box and view → Initial state) at T* = 2.0, molecules are dispersed. Cool to 0.5: tails find each other and small micelles grow over tens of τ. Heat back to 2.0: micelles fall apart within a few τ. Breakup is fast and assembly is slow, because assembly needs diffusion and collisions.</p>
         <p>At fixed T* = 0.5, lower the concentration to about 8%: most molecules stay free. Raise it to 50%: most join micelles. Ideal micelle theory says the free-dumbbell density levels off near the critical micelle concentration; allow 100 τ or more per concentration to test that. Lowering ε<sub>BB</sub> acts like heating. A micelle is any cluster of at least 4 molecules whose tails are within 1.5σ.</p>
       </section>
 
@@ -324,7 +375,8 @@ U_bond(r) = ½ k (r − r₀)²,   k = 200</div>
       </section>
       <section data-show="polymer">
         <h3>What to look for</h3>
-        <p>At T* = 2.2 the chains form a disordered polymer liquid. Cool to 1.2: within tens of τ, segments align side by side into small hexagonally packed crystallites (gold). Heat to 2.0: they melt within about 10 τ. Crystallinity stays partial (about 20% after 75 τ at 40% polymer, about 30% at 80%), as in real semicrystalline polymers.</p>
+        <p>Starts from a crystal slab of straight, hexagonally packed chains at T* = 1.2: about 85% crystalline, still about 80% after 50 τ. Heat to 2.0: it drops to about 25% within 5 τ but a remnant survives; at 2.5 it melts completely (3% after 30 τ). The crystal melts at a higher temperature than it forms on cooling: hysteresis.</p>
+        <p>From a disordered start at T* = 2.2 the chains form a polymer liquid. Cool to 1.2: within tens of τ, segments align side by side into small hexagonally packed crystallites (gold). Heat to 2.0: they melt within about 10 τ. Crystallinity stays partial (about 20% after 75 τ at 40% polymer, about 30% at 80%), as in real semicrystalline polymers.</p>
         <p>A bead is crystalline when its six-fold order |ψ<sub>6</sub>| exceeds 0.6 and agrees in phase with at least 4 polymer neighbours within 1.45σ, inside a crystallite of 10 or more beads.</p>
       </section>
 
@@ -335,7 +387,8 @@ U_bond(r) = ½ k (r − r₀)²,   k = 200</div>
       </section>
       <section data-show="diblock">
         <h3>What to look for</h3>
-        <p>Cool from 2.2 to 0.8: A and B beads gather into alternating domains and the segregation s rises over tens of τ. The chains stretch slightly as the blocks are pulled apart (watch R<sub>g</sub>). Heat back and the domains dissolve. For short chains in 2D the order–disorder transition is smeared by fluctuations, so expect a gradual change rather than a sharp one.</p>
+        <p>Starts from lamellae, A and B blocks in alternating bands with the chains anchored at the interfaces, at T* = 0.8 (s ≈ 0.9, still 0.87 after 50 τ). Heat to 2.2: the bands mix slowly (s about 0.5 after 50 τ), because whole chains have to diffuse.</p>
+        <p>From a disordered start, cool from 2.2 to 0.8: A and B beads gather into alternating domains and the segregation s rises over tens of τ. The chains stretch slightly as the blocks are pulled apart (watch R<sub>g</sub>). Heat back and the domains dissolve. For short chains in 2D the order–disorder transition is smeared by fluctuations, so expect a gradual change rather than a sharp one.</p>
         <p>s counts A–A, B–B and A–B contacts between different chains (within 1.5σ) and compares the like-contact fraction with that of an ideal mixture: 0 means fully mixed, 1 fully separated. Try f<sub>A</sub> = 0.25 for small A domains in a B matrix.</p>
       </section>
 
@@ -346,7 +399,8 @@ U_bond(r) = ½ k (r − r₀)²,   k = 200</div>
       </section>
       <section data-show="demix">
         <h3>What to look for</h3>
-        <p>Cool from 2.0 to 0.8: S-rich and C-rich domains appear and slowly coarsen. The demixing s rises from about 0.05 to about 0.3 within 50 τ and keeps rising slowly, because coarsening in 2D is slow. At 50% C the domains should form interconnected stripes (spinodal decomposition); at 15–20% C, isolated droplets instead. Compare the Langevin and Bussi thermostats to see how momentum transport affects coarsening.</p>
+        <p>Starts from four stripes of liquid C at T* = 0.8 (s ≈ 0.8). Heat to 2.0: the stripes dissolve (s about 0.3 after 15 τ, 0.1 after 50 τ). Kept cold, the stripes stay but their interfaces roughen (s about 0.6).</p>
+        <p>From a disordered start, cool from 2.0 to 0.8: S-rich and C-rich domains appear and slowly coarsen. The demixing s rises from about 0.05 to about 0.3 within 50 τ and keeps rising slowly, because coarsening in 2D is slow. At 50% C the domains should form interconnected stripes (spinodal decomposition); at 15–20% C, isolated droplets instead. Compare the Langevin and Bussi thermostats to see how momentum transport affects coarsening.</p>
         <p>The domain width is estimated from the fraction of beads touching the other species: width ≈ 2 × bead spacing / interface fraction. It is a rough guide, not a structure-factor measurement.</p>
       </section>
 
@@ -357,7 +411,8 @@ U_bond(r) = ½ k (r − r₀)²,   k = 200</div>
       </section>
       <section data-show="hp">
         <h3>What to look for</h3>
-        <p>Start at T* = 2.3: the chain is an open coil with almost no buried H beads. Cool to 1.0: it collapses and folds with its H beads in a core, and about 80% of H beads end up buried within tens of τ. The crossover is near T* ≈ 2. Folding of a single chain is stochastic: some runs find the fold quickly, others stay trapped for a while, and a fold can partly reopen. Watch the trend in the plot rather than single values. Longer sequences such as the 36-mer fold much more slowly.</p>
+        <p>Starts from the folded chain at T* = 1.0. For the preset sequences the fold comes from simulated annealing; a custom sequence starts as a compact block. Heat to 2.3: the hydrophobic core loosens (buried H from about 0.6–0.9 to 0.1–0.5, noisy), but the chain stays compact for a long time: in this dense solvent a 20-bead chain needs more than 100 τ to swell into an open coil, even with no attraction at all.</p>
+        <p>From a disordered start at T* = 2.3 the chain is an open coil with almost no buried H beads. Cool to 1.0: it collapses and folds with its H beads in a core, and about 80% of H beads end up buried within tens of τ. The crossover is near T* ≈ 2. Folding of a single chain is stochastic: some runs find the fold quickly, others stay trapped for a while, and a fold can partly reopen. Watch the trend in the plot rather than single values. Longer sequences such as the 36-mer fold much more slowly.</p>
         <p>Add more chains to see misfolding and aggregation: H beads stick to other chains instead of forming their own core, and the interchain H–H count grows.</p>
       </section>
 
@@ -368,21 +423,21 @@ U_bond(r) = ½ k (r − r₀)²,   k = 200</div>
       </section>
       <section data-show="lcst">
         <h3>What to look for</h3>
-        <p>Start at T* = 2.2: chains are swollen coils (R<sub>g</sub> ≈ 3.4σ, self-contact ≈ 0.36). Cool to 0.6: they collapse into compact globules (R<sub>g</sub> ≈ 2.6σ, self-contact ≈ 0.59) within tens of τ, the coil-to-globule transition below the θ temperature. Lowering ε<sub>PP</sub> acts like heating.</p>
+        <p>Starts from collapsed globules at T* = 0.6. Heat to 2.2: they swell within about 15 τ (R<sub>g</sub> 1.9σ → 2.9σ, self-contact 0.76 → 0.47).</p>
+        <p>From a disordered start at T* = 2.2 the chains are swollen coils (R<sub>g</sub> ≈ 3.4σ, self-contact ≈ 0.36). Cool to 0.6: they collapse into compact globules (R<sub>g</sub> ≈ 2.6σ, self-contact ≈ 0.59) within tens of τ, the coil-to-globule transition below the θ temperature. Lowering ε<sub>PP</sub> acts like heating.</p>
         <p>Raise the concentration to 20% or more and cooling makes chains stick together into a polymer-rich phase instead. Each chain then keeps roughly its size, so watch the self-contact fraction rather than R<sub>g</sub>.</p>
       </section>
       <section data-show="brush">
         <h3>Particles and potentials</h3>
-        <p>A polymer brush: chains of 10 beads grafted on a flat substrate (bottom), 1.6σ apart by default (30 chains), with their first bead fixed. Chains are semiflexible (k<sub>bend</sub> = 1.0) and attract each other weakly (ε = 0.3). The last two beads of every chain are water-repelling (orange, ε = 0.2 with the liquid); the rest are water-loving (teal, ε = 1.2). The box is periodic sideways and empty above the droplet.</p>
-        <p>The droplet is a non-volatile model liquid of flexible 4-bead oligomers (ε = 1.0 between liquid beads), standing in for water. It evaporates very little and its own properties barely change over T* = 0.5–0.9, so changes in wetting come from the surface. The contact angle is estimated from the droplet's height h and footprint half-width a as θ = 2·atan(h/a), the circular-cap relation.</p>
+        <p>A polymer brush: chains of 10 beads grafted on a flat substrate (bottom), 1.6σ apart by default (30 chains in the default 48σ box), with their first bead fixed. The box size setting gives 36σ, 48σ or 64σ, and the droplet is scaled to match (270, 480 or about 850 beads). Chains are semiflexible (k<sub>bend</sub> = 1.0) and attract each other weakly (ε = 0.3). The last two beads of every chain are water-repelling (orange, ε = 0.2 with the liquid); the rest are water-loving (teal, ε = 1.2). The box is periodic sideways and empty above the droplet.</p>
+        <p>The droplet is a non-volatile model liquid of flexible 4-bead oligomers (ε = 1.0 between liquid beads), standing in for water. It evaporates much less than MB water would. The contact angle is estimated from the droplet's height h and footprint half-width a as θ = 2·atan(h/a), the circular-cap relation.</p>
       </section>
       <section data-show="brush">
         <h3>What to look for</h3>
-        <p>Cold (T* = 0.5): the brush is ordered, its water-repelling ends form the top layer, and the droplet beads up (θ ≈ 144°, footprint ≈ 14σ). Heat to 0.7: the chain ends fluctuate and fold, exposing water-loving middle beads, and the droplet spreads (θ ≈ 124°, footprint ≈ 24σ).</p>
-        <p>Swap the chemistry (water-loving ends): θ ≈ 94° when cold, rising to about 106° at 0.7. A control with identical beads (both attractions 1.2) drifts from 98° to 103°, so a few degrees of any change come from the liquid and brush themselves; the chemistry effect is the difference from that drift. Single readings scatter by up to about 10°: the droplet is small, so watch the trend in the plot.</p>
-        <p>The brush-bead attraction ε<sub>CC</sub> (default 0.3) sets how strongly chains stick to each other. Stronger attraction should pack the brush and hold the ends in place, weakening the temperature response; weaker attraction lets the chains fluctuate more. Only the default has been calibrated.</p>
-        <p>A few liquid molecules evaporate: about 3% of the droplet at 0.7 and 6% at 0.9. That is the liquid's real vapour pressure. A more cohesive liquid evaporates less, but then the cold droplet becomes too sluggish to bead up in reasonable time.</p>
-        <p>Sparser grafting reverses the trend. At 2.5σ the angle rises on heating (about 125° to 135°) even though contacts with middle beads grow from 5 to 39. Hardly any liquid enters the brush (under 4%) and none reaches the substrate. The likely cause is roughness: the hot sparse chains tilt and bunch, and the droplet partly bridges the gaps (a Cassie-like state), which raises the apparent angle. Around 1.6σ the brush is dense enough to stay smooth.</p>
+        <p>Starts with the brush upright at T* = 0.5 and the droplet already beaded into a cap (about 120°).</p>
+        <p>Watch which beads the liquid touches (plot and "Liquid contacts" readout). Cold (T* = 0.5): the brush is ordered and its orange ends form the top layer, so the liquid touches almost only orange beads (teal contacts about 0–3). Heat to 0.7–0.9: the chain ends fluctuate and fold, and liquid contacts with the teal middle beads rise, but modestly and very unevenly between runs: from about 1–3 to 3–7 in most runs, up to about 20 in some. Swap the colours and the opposite happens: the liquid starts on teal ends, and heating replaces part of those contacts with orange middles.</p>
+        <p>The contact angle is shown but should not be over-read. For a droplet this small it fluctuates by about ±20° between runs, and in repeated runs (three seeds, 120 τ each) we could not resolve a systematic temperature change of the angle at the default settings: about 119° at both T* = 0.5 and 0.7. The change in surface chemistry is real; turning it into a measurable change of the angle would need a larger droplet or a stronger chemistry contrast.</p>
+        <p>The liquid has a real vapour pressure, so a few molecules evaporate when hot; gravity (default g = 0.003) pulls the droplet onto the brush. A more cohesive liquid evaporates less, but it also becomes too sluggish to reshape when cold. Sparser grafting (2σ and above) lets chains tilt and bunch, which makes the surface rough.</p>
       </section>
       <section data-show="mbpoly">
         <h3>Particles and potentials</h3>
@@ -393,16 +448,30 @@ U_LJ: ε = 0.1, σ = 0.7 (water)     solutes: σ = 1.5, purely repulsive (WCA) w
       </section>
       <section data-show="mbpoly">
         <h3>What to look for</h3>
+        <p>Starts with 60% of the solutes in small clusters of 7 at T* = 0.22, where clustering stays around 50–58%. Heat to 0.34: it falls to about a third over 50 τ.</p>
         <p>The water network: about 2.5 hydrogen bonds per water at T* = 0.14 (close to the ice-like maximum of 3), 1.7 at 0.20, 1.1 at 0.26 and 0.8 at 0.34. Watch the arms line up into hexagonal patches when cold.</p>
         <p>60 nonpolar solutes with almost no attraction for each other and none for water. Any clustering beyond chance comes from the water: joining up lets it rebuild the hydrogen bonds the solutes break. At T* = 0.22 about 48% of solutes sit in clusters of 3 or more; switch hydrogen bonds off (plain LJ water) and it drops to about 23%. Clustered solutes are highlighted.</p>
         <p>The effect peaks at intermediate temperature: about 41% clustered at T* = 0.16, 48% at 0.22 and 33% at 0.32. When cold, the hydrophobic effect is entropic and weakens on cooling; when hot, the network that drives it melts. Expect doubled association, not a sharp collapse: all-or-nothing hydrophobic collapse needs nonpolar objects much larger than water's structure. A chain of the same beads (chain length above 1) has not been calibrated.</p>
       </section>
+      <section data-show="ice">
+        <h3>What is simulated</h3>
+        <p>836 water molecules in the Mercedes-Benz (MB) model, the same water as in "Chain in MB water". Each molecule is a disk with three arms 120° apart, like a simplified H<sub>2</sub>O that can make three hydrogen bonds. Two molecules bond when they are one unit apart and an arm of each points at the other.</p>
+        <p>The start is a perfect crystal of 2D ice: a honeycomb in which every molecule holds 3 hydrogen bonds. The box is the size of that crystal and stays fixed (constant N, V, T). A molecule counts as ice (blue) when it and all its close neighbours hold 3 hydrogen bonds.</p>
+        <p>Units are those of the MB model: lengths in hydrogen-bond distances, temperature as k<sub>B</sub>T/ε<sub>HB</sub>.</p>
+      </section>
+      <section data-show="ice">
+        <h3>What to look for</h3>
+        <p>Cold (T* = 0.12): the honeycomb stays, about 80–95% ice, with molecules only wobbling. Around T* = 0.18 the crystal starts to fall apart from defects; at 0.22 it is fully liquid within about 20 τ: ice drops to 0%, and hydrogen bonds per molecule from 3 to about 1.4.</p>
+        <p>Cool it again and it does not come straight back: from the liquid, 200 τ at T* = 0.10–0.13 rebuilds only about 40% ice, as small crystals with defects between them. Freezing needs a nucleus to grow from, so a liquid can stay supercooled well below the melting point. The thermodynamics scan shows the same hysteresis.</p>
+        <p>The liquid has the same volume as the ice but is denser in its own right, so it opens small holes when the ice melts. Real ice floats for the same reason: its open hydrogen-bonded lattice takes more room than the liquid.</p>
+      </section>
       <section>
         <h3>NVT dynamics</h3>
-        <p>Equations of motion are integrated with time step Δt = 0.005 in reduced LJ units, with periodic boundaries and cell lists. Two thermostats are available for comparison.</p>
+        <p>Equations of motion are integrated with time step Δt = 0.005 in reduced LJ units, with periodic boundaries and cell lists. Two thermostats are available for comparison. Each system starts from its ordered, cold-equilibrium structure, relaxed for 1 τ, so heating (or noise in the room) can destroy it right away; choose Disordered under Box and view to watch it assemble instead.</p>
+        <p>The thermodynamics scan ramps the temperature linearly and bins the energy by temperature. C = dU/dT is taken from the binned energies, S by integrating dS = dU/T, and F = U − TS. Straight-line fits of U below and above the peak give the two phase branches, extrapolated across the transition; where their free energies cross is the transition estimate. Because the ramp is finite, a heating scan overshoots and a cooling scan undershoots (hysteresis). Single or dilute chains (HP copolymer, UCST polymer at low concentration) give only a smooth crossover with no resolvable peak, and in MB water the dominant peak near T* = 0.2 is the melting of the water's own hydrogen-bond network.</p>
         <div class="eq">Langevin  m dv = F dt − γ m v dt + √(2γ m k_B T) dW
 Bussi     K ← stochastic rescale toward ½ N_f k_B T</div>
-        <p>Langevin damps momentum locally, so it slows diffusion and removes hydrodynamics as γ grows. Bussi rescaling preserves momentum and leaves the Newtonian dynamics nearly intact, so solvent flow survives. Chains start on a lattice and are briefly disordered before each run.</p>
+        <p>Langevin damps momentum locally, so it slows diffusion and removes hydrodynamics as γ grows. Bussi rescaling preserves momentum and leaves the Newtonian dynamics nearly intact, so solvent flow survives. </p>
       </section>
     </div>
   </div>
@@ -412,7 +481,7 @@ Bussi     K ← stochastic rescale toward ½ N_f k_B T</div>
 // 2D MD engine for soft-matter self-assembly in explicit solvent.
 // Systems: 'dumbbell' A-B amphiphiles | 'polymer' semiflexible crystallizing chains |
 //          'diblock' A_nB_m copolymer | 'demix' binary liquid | 'hp' HP protein | 'lcst' thermoresponsive chains.
-//          'mbpoly' nonpolar chain in Mercedes-Benz (MB) water | 'brush' grafted brush with a droplet of an oligomer liquid.
+//          'mbpoly' nonpolar chain in Mercedes-Benz (MB) water | 'ice' MB water starting as hexagonal ice | 'brush' grafted brush with a droplet of an oligomer liquid.
 // Bead types: 0 = A, 1 = B, 2 = S (solvent), 3 = P (polymer), 4 = C (second liquid), 5 = H (hydrophobic), 6 = Q (polar), 7 = W (MB water).
 // Reduced LJ units (sigma_S = 1, eps = 1, m = 1, kB = 1).
 function MDEngine(opts) {
@@ -424,7 +493,8 @@ function MDEngine(opts) {
     epsAB: 0.8, fA: 0.5, epsSC: 0.6, xC: 0.5, epsHH: 3.0, sequence: 'HPHPPHHPHPPHPHHPPHPH', epsB: 3.5, wB: 0.04, rB: 1.15,
     mbEps: 1.0, mbSig: 0.085, mbR: 1.0, mbI: 0.1, sigP: 1.0, epsPW: 0.1,
     boxL: 48, graftSpacing: 1.4, nWater: 480, nEnd: 2, invert: false, epsQW: 0.5, epsHW: 0.1, epsCC: 0.2,
-    liqLen: 4, epsLL: 1.0, epsQL: 1.2, epsHL: 0.2,
+    ordered: false,
+    liqLen: 4, epsLL: 1.0, epsQL: 1.2, epsHL: 0.2, epsLg: 0, rLg: 2.2, wLg: 0.5, gravity: 0,
     thermostat: 'langevin', gamma: 1.0, tau: 0.5, fmax: 500, seed: 1
   }, opts || {});
   let s = E.p.seed >>> 0 || 1;
@@ -456,15 +526,18 @@ MDEngine.prototype.beadType = function (k) { return this.seq[k]; };
 
 MDEngine.prototype.init = function () {
   const E = this, p = E.p, n = p.nSide;
-  E.fixed = null; E.walls = null; E.nFixed = 0; E.bonds2 = null;
+  E.fixed = null; E.walls = null; E.nFixed = 0; E.bonds2 = null; E.hbN = null;
   if (p.system === 'brush') { E.initBrush(); E.finishInit(); return; }
+  if (p.system === 'ice') { E.initIce(); E.finishInit(); return; }
   const a = 1 / Math.sqrt(p.rho);
   E.L = n * a; const N = n * n; E.N = N;
   E.seq = E.makeSeq(); const Lc = Math.max(1, E.seq.length); E.Lc = Lc;
+  E.mb = p.system === 'mbpoly' || p.system === 'ice'; E.solv = E.mb ? 7 : 2;
+  if (p.ordered) { E.initOrdered(); E.finishInit(); return; }
   E.x = new Float64Array(N); E.y = new Float64Array(N);
   E.vx = new Float64Array(N); E.vy = new Float64Array(N);
   E.fx = new Float64Array(N); E.fy = new Float64Array(N);
-  E.mb = p.system === 'mbpoly'; E.solv = E.mb ? 7 : 2;
+  E.mb = p.system === 'mbpoly' || p.system === 'ice'; E.solv = E.mb ? 7 : 2;
   E.th = new Float64Array(N); E.om = new Float64Array(N); E.tq = new Float64Array(N); E.arm = new Float64Array(6 * N); E.nHB = 0;
   E.type = new Uint8Array(N);
   const shuffled = (k) => { const o = []; for (let i = 0; i < k; i++) o.push(i);
@@ -517,6 +590,25 @@ MDEngine.prototype.init = function () {
   if (p.system === 'demix') E.setComposition(p.xC);
   E.finishInit();
 };
+// Ice: MB water on a honeycomb lattice (hexagonal 2D ice, every molecule with 3 hydrogen bonds), filling the box.
+// Rectangular honeycomb cell sqrt(3) d x 3 d with 4 sites; nx : ny chosen so the box is square to 0.3%.
+// ordered = false: same box and number of molecules, random positions and orientations (liquid start).
+MDEngine.prototype.initIce = function () {
+  const E = this, p = E.p, d = p.mbR, nx = p.iceNx || 19, ny = p.iceNy || 11, N = 4 * nx * ny;
+  const L = ny * 3 * d, sx = L / (nx * Math.sqrt(3) * d), w = Math.sqrt(3) * d * sx;
+  E.L = L; E.N = N; E.seq = []; E.Lc = 1; E.nMol = 0; E.solv = 7; E.mb = true;
+  E.x = new Float64Array(N); E.y = new Float64Array(N); E.vx = new Float64Array(N); E.vy = new Float64Array(N);
+  E.fx = new Float64Array(N); E.fy = new Float64Array(N); E.type = new Uint8Array(N).fill(7);
+  E.th = new Float64Array(N); E.om = new Float64Array(N); E.tq = new Float64Array(N); E.arm = new Float64Array(6 * N); E.nHB = 0;
+  E.hbN = new Uint8Array(N);
+  // A sites: arms at 90, 210, 330 deg (bond up to a B site); B sites: arms at 270, 30, 150 deg
+  const sites = [[0, 0, 'A'], [0, d, 'B'], [w / 2, 1.5 * d, 'A'], [w / 2, 2.5 * d, 'B']];
+  let i = 0;
+  for (let cy = 0; cy < ny; cy++) for (let cx = 0; cx < nx; cx++) for (const [u, v, s] of sites) {
+    E.x[i] = cx * w + u + 0.25 * w; E.y[i] = cy * 3 * d + v + 0.25 * d; E.th[i] = s === 'A' ? Math.PI / 2 : -Math.PI / 2; i++; }
+  if (!p.ordered) for (let k = 0; k < N; k++) E.th[k] = 2 * Math.PI * E.rand();
+  E.keepTh = true;
+};
 // Brush: chains grafted upright on a substrate wall at the bottom, an MB water droplet resting on top,
 // vacuum above, periodic in x. Free-end beads (nEnd) are H (type 5), the rest Q (type 6); invert swaps them.
 MDEngine.prototype.initBrush = function () {
@@ -538,9 +630,10 @@ MDEngine.prototype.initBrush = function () {
   }
   // droplet: half-disc of liquid beads on a square lattice above the brush, rows filled in serpentine order
   // so consecutive beads are neighbours; every liqLen consecutive beads form one flexible oligomer.
-  const a = 1.12, y0 = yTop + 1.3, xc = L / 2, Rd = Math.sqrt(2 * nW * a * a / Math.PI), s0 = nCh * Lc; let placed = s0;
+  const a = 1.12, y0 = yTop + 1.3, xc = L / 2, s0 = nCh * Lc; let placed = s0;
+  const th0 = p.ordered ? 2 * Math.PI / 3 : Math.PI / 2, Rd = Math.sqrt(nW * a * a / (th0 - Math.sin(th0) * Math.cos(th0))), yC = -Rd * Math.cos(th0);
   for (let r = 0; placed < N && r < 200; r++) {
-    const half = Math.sqrt(Math.max(0, Rd * Rd - (r * a) * (r * a))), cmax = Math.floor(half / a), cols = [];
+    const dyc = r * a - yC, half = Math.sqrt(Math.max(0, Rd * Rd - dyc * dyc)), cmax = Math.floor(half / a), cols = [];
     for (let c = -cmax; c <= cmax; c++) cols.push(c);
     if (r & 1) cols.reverse();
     for (const c of cols) { if (placed >= N) break; E.x[placed] = (((xc + c * a) % L) + L) % L; E.y[placed] = y0 + r * a; E.type[placed] = 4; placed++; }
@@ -554,12 +647,136 @@ MDEngine.prototype.initBrush = function () {
   }
   E.bonds2 = new Int32Array(bl);
 };
+// ---------- ordered (cold-equilibrium) initial states ----------
+MDEngine.prototype.alloc = function (N) {
+  const E = this; E.N = N;
+  E.x = new Float64Array(N); E.y = new Float64Array(N); E.vx = new Float64Array(N); E.vy = new Float64Array(N);
+  E.fx = new Float64Array(N); E.fy = new Float64Array(N); E.type = new Uint8Array(N);
+  E.th = new Float64Array(N); E.om = new Float64Array(N); E.tq = new Float64Array(N); E.arm = new Float64Array(6 * N); E.nHB = 0;
+};
+// Molecules from explicit coordinates; solvent on lattice sites at least `excl` from every molecule bead.
+// Random solvent sites are dropped so the total stays n^2 beads where possible.
+MDEngine.prototype.placeMolecules = function (mols, excl, extraMin) {
+  const E = this, p = E.p, n = p.nSide, L = E.L, a = L / n, Lc = E.Lc, nMol = mols.length, nm = Lc * nMol;
+  const wrap = (v) => ((v % L) + L) % L, g = Math.max(3, Math.floor(L / Math.max(excl, 0.6))), cs = L / g;
+  const cell = []; for (let i = 0; i < g * g; i++) cell.push([]);
+  for (const m of mols) for (const [x0, y0] of m) { const x = wrap(x0), y = wrap(y0); cell[Math.min(g - 1, (y / cs) | 0) * g + Math.min(g - 1, (x / cs) | 0)].push(x, y); }
+  const e2 = excl * excl, sites = [];
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
+    const X = (c + 0.5) * a, Y = (r + 0.5) * a, cx = Math.min(g - 1, (X / cs) | 0), cy = Math.min(g - 1, (Y / cs) | 0); let ok = true;
+    for (let dy = -1; dy <= 1 && ok; dy++) for (let dx = -1; dx <= 1 && ok; dx++) {
+      const arr = cell[((cy + dy + g) % g) * g + ((cx + dx + g) % g)];
+      for (let q = 0; q < arr.length; q += 2) { let ddx = X - arr[q], ddy = Y - arr[q + 1];
+        if (ddx > L / 2) ddx -= L; else if (ddx < -L / 2) ddx += L; if (ddy > L / 2) ddy -= L; else if (ddy < -L / 2) ddy += L;
+        if (ddx * ddx + ddy * ddy < e2) { ok = false; break; } }
+    }
+    if (ok) sites.push(X, Y);
+  }
+  // optional second, staggered lattice to top up the solvent (small solvent beads, e.g. MB water)
+  if (extraMin && sites.length / 2 < n * n - nm) {
+    const m2 = extraMin * extraMin;
+    for (let r = 0; r < n && sites.length / 2 < n * n - nm; r++) for (let c = 0; c < n && sites.length / 2 < n * n - nm; c++) {
+      const X = (c + 1) * a, Y = (r + 1) * a; let ok = true;
+      const cx = Math.min(g - 1, ((X % L) / cs) | 0), cy = Math.min(g - 1, ((Y % L) / cs) | 0);
+      for (let dy = -1; dy <= 1 && ok; dy++) for (let dx = -1; dx <= 1 && ok; dx++) {
+        const arr = cell[((cy + dy + g) % g) * g + ((cx + dx + g) % g)];
+        for (let q = 0; q < arr.length; q += 2) { let ddx = X - arr[q], ddy = Y - arr[q + 1];
+          ddx -= L * Math.round(ddx / L); ddy -= L * Math.round(ddy / L); if (ddx * ddx + ddy * ddy < e2) { ok = false; break; } }
+      }
+      if (!ok) continue;
+      for (let q = 0; q < sites.length && ok; q += 2) { let ddx = (X % L) - sites[q], ddy = (Y % L) - sites[q + 1];
+        ddx -= L * Math.round(ddx / L); ddy -= L * Math.round(ddy / L); if (ddx * ddx + ddy * ddy < m2) ok = false; }
+      if (ok) sites.push(X % L, Y % L);
+    }
+  }
+  const ns = sites.length / 2, keep = Math.max(0, Math.min(ns, n * n - nm)), order = [];
+  for (let i = 0; i < ns; i++) order.push(i);
+  for (let i = ns - 1; i > 0; i--) { const j = Math.floor(E.rand() * (i + 1)); const t = order[i]; order[i] = order[j]; order[j] = t; }
+  E.alloc(nm + keep); E.nMol = nMol;
+  let k = 0;
+  for (const m of mols) { for (let q = 0; q < Lc; q++) { E.x[k] = wrap(m[q][0]); E.y[k] = wrap(m[q][1]); E.type[k] = E.seq[q]; k++; } }
+  for (let q = 0; q < keep; q++) { const o = order[q]; E.x[k] = sites[2 * o]; E.y[k] = sites[2 * o + 1]; E.type[k] = E.solv; k++; }
+};
+// Compact serpentine block of Lc beads at spacing d, centred on (cx, cy), rotated by ang.
+MDEngine.prototype.globule = function (Lc, d, cx, cy, ang) {
+  const w = Math.ceil(Math.sqrt(Lc)), h = Math.ceil(Lc / w), c = Math.cos(ang), s = Math.sin(ang), out = [];
+  for (let k = 0; k < Lc; k++) { const row = (k / w) | 0, col = (row & 1) ? w - 1 - (k % w) : k % w;
+    const u = (col - (w - 1) / 2) * d, v = (row - (h - 1) / 2) * d; out.push([cx + c * u - s * v, cy + s * u + c * v]); }
+  return out;
+};
+// Place a list of objects (arrays of bead coordinates around the origin) on a jittered grid of slots.
+MDEngine.prototype.spreadObjects = function (objs) {
+  const E = this, L = E.L, ng = Math.max(1, Math.ceil(Math.sqrt(objs.length))), pitch = L / ng, slots = [];
+  for (let i = 0; i < ng * ng; i++) slots.push(i);
+  for (let i = slots.length - 1; i > 0; i--) { const j = Math.floor(E.rand() * (i + 1)); const t = slots[i]; slots[i] = slots[j]; slots[j] = t; }
+  return objs.map((o, q) => { const sl = slots[q], cx = ((sl % ng) + 0.5) * pitch, cy = (((sl / ng) | 0) + 0.5) * pitch;
+    return o.map(([x, y]) => [x + cx, y + cy]); });
+};
+MDEngine.prototype.initOrdered = function () {
+  const E = this, p = E.p, n = p.nSide, L = E.L, Lc = E.Lc, a = L / n, mols = [];
+  const want = Math.max(0, Math.min(p.nMol, Math.floor(n * n / Math.max(1, Lc)) - 2));
+  switch (p.system) {
+    case 'dumbbell': { // stack of bilayers (lamellar phase): tails inside, heads facing the solvent
+      const m = Math.max(4, Math.round(L / (p.bilayerSpacing || 1.15))), nb = Math.max(1, Math.min(Math.floor(L / 4.5), Math.round(want / (2 * m))));
+      const bl = 0.95 * 0.5 * (p.sigA + p.sigB), dT = 0.56;
+      for (let k = 0; k < nb; k++) { const yc = (k + 0.5) * L / nb;
+        for (let i = 0; i < m; i++) { const x = (i + 0.5) * L / m, x2 = x + 0.5 * L / m;
+          mols.push([[x, yc - dT - bl], [x, yc - dT]]); mols.push([[x2, yc + dT + bl], [x2, yc + dT]]); } }
+      E.placeMolecules(mols, 1.0); break; }
+    case 'polymer': { // crystal slab: straight parallel chains, hexagonal packing
+      const dx = 0.95, dy = 0.97, per = Math.max(1, Math.floor(L / (Lc * dx + 0.6))), pitch = L / per, rows = Math.ceil(want / per), y0 = L / 2 - (rows - 1) * dy / 2;
+      for (let q = 0; q < want; q++) { const row = (q / per) | 0, col = q % per, x0 = col * pitch + (row & 1 ? dx / 2 : 0), ch = [];
+        for (let j = 0; j < Lc; j++) ch.push([x0 + j * dx, y0 + row * dy]); mols.push(ch); }
+      E.placeMolecules(mols, 0.95); break; }
+    case 'diblock': { // lamellae: A and B blocks in alternating bands, chains anchored at the A-B interfaces
+      const nA = E.seq.filter((t) => t === 0).length, nB = Lc - nA, np = Math.max(1, Math.round(L / (1.9 * Lc))), P = L / np, tA = P * nA / Lc, tB = P - tA;
+      const step = (half, nb) => nb > 1 ? Math.min(0.95, Math.max(0.3, (half - 0.475 - 0.5) / (nb - 1))) : 0.95;
+      const dyA = step(tA / 2, nA), dyB = step(tB / 2, nB), dxA = Math.sqrt(Math.max(0, 0.9025 - dyA * dyA)), dxB = Math.sqrt(Math.max(0, 0.9025 - dyB * dyB));
+      const nI = 2 * np, perI = Math.max(1, Math.ceil(want / nI)), sx = L / perI;
+      for (let q = 0; q < want; q++) { const it = q % nI, col = (q / nI) | 0, per = (it / 2) | 0, up = it & 1;
+        const yI = per * P + (up ? 0 : tA), sA = up ? 1 : -1, xc = (col + 0.5) * sx + (up ? sx / 2 : 0), ch = new Array(Lc);
+        for (let u = 0; u < nA; u++) ch[nA - 1 - u] = [xc + (u & 1 ? dxA : 0), yI + sA * (0.475 + u * dyA)];
+        for (let u = 0; u < nB; u++) ch[nA + u] = [xc + (u & 1 ? dxB : 0), yI - sA * (0.475 + u * dyB)];
+        mols.push(ch); }
+      E.placeMolecules(mols, 0.95); break; }
+    case 'demix': { // two separated liquids: a stripe of C across the box
+      E.placeMolecules([], 0.95);
+      const nC = Math.round(Math.max(0, Math.min(1, p.xC)) * E.N), idx = [];
+      const P = L / Math.max(1, p.demixStripes || 1); // stripes of C, one per period P
+      for (let i = 0; i < E.N; i++) idx.push([Math.abs((E.y[i] % P) - P / 2) + 1e-3 * E.rand(), i]);
+      idx.sort((u, v) => u[0] - v[0]);
+      for (let q = 0; q < nC; q++) E.type[idx[q][1]] = 4;
+      break; }
+    case 'hp': { // folded chains: precomputed native folds for the preset sequences, compact blocks otherwise
+      const key = E.seq.map((t) => (t === 5 ? 'H' : 'P')).join(''), fold = MDEngine.HP_FOLDS[key], objs = [];
+      for (let q = 0; q < want; q++) { const ang = 2 * Math.PI * E.rand(), c = Math.cos(ang), s = Math.sin(ang);
+        objs.push(fold ? fold.map(([u, v]) => [c * u - s * v, s * u + c * v]) : E.globule(Lc, 1.0, 0, 0, ang)); }
+      E.placeMolecules(E.spreadObjects(objs), 0.95); break; }
+    case 'lcst': { // UCST polymer: collapsed globules
+      const objs = []; for (let q = 0; q < want; q++) objs.push(E.globule(Lc, 1.0, 0, 0, 2 * Math.PI * E.rand()));
+      E.placeMolecules(E.spreadObjects(objs), 0.95); break; }
+    case 'mbpoly': { // hydrophobic solutes in small clusters (60%) and free (40%); chains as globules
+      const objs = [], d = 1.12 * p.sigP;
+      if (Lc === 1) {
+        const nCl = Math.floor(0.6 * want / 7);
+        for (let q = 0; q < nCl; q++) { const o = [[0, 0]]; for (let k = 0; k < 6; k++) o.push([d * Math.cos(k * Math.PI / 3), d * Math.sin(k * Math.PI / 3)]); objs.push(o); }
+        for (let q = 7 * nCl; q < want; q++) objs.push([[0, 0]]);
+        const placed = E.spreadObjects(objs); for (const o of placed) for (const b of o) mols.push([b]);
+      } else { for (let q = 0; q < want; q++) objs.push(E.globule(Lc, 1.0 * p.sigP, 0, 0, 2 * Math.PI * E.rand())); mols.push(...E.spreadObjects(objs)); }
+      E.placeMolecules(mols, 0.95, 0.72); break; } // top up water on a staggered lattice to keep its density
+    default: E.placeMolecules([], 0.95);
+  }
+};
+// Folds of the preset HP sequences, from simulated annealing (eps_HH = 3, T 2.3 -> 0.9 over 150 tau), best of 3-4 runs.
+MDEngine.HP_FOLDS = {"HPHPHPHPHPHPHPHPHPHP":[[0.46,0.18],[0.77,1.1],[-0.26,1.05],[-0.11,2.07],[-1,1.75],[-1.9,2.19],[-2.49,1.41],[-2.59,0.38],[-1.61,0.81],[-1.65,-0.34],[-0.76,0.05],[-0.56,-0.88],[0.45,-0.88],[0.27,-1.91],[1.24,-1.62],[1.55,-2.62],[2.34,-1.87],[2.48,-0.87],[1.56,-0.5],[1.82,0.5]],"PPPHHPPHHPPPPPHHHHHHHPPHHPPPPHHPPHPP":[[3.5,-2.97],[4.49,-2.8],[3.9,-1.94],[3.08,-1.33],[2.52,-2.21],[1.56,-2.59],[0.89,-1.76],[1.81,-1.3],[2.4,-0.45],[3.22,0.2],[3.21,1.18],[3.12,2.13],[2.12,2.27],[1.48,1.45],[1.96,0.52],[1.36,-0.28],[0.47,0.37],[0.27,-0.65],[-0.53,0.08],[-0.74,-0.99],[-1.51,-0.31],[-1.94,-1.24],[-2.82,-0.78],[-2.49,0.21],[-1.62,0.76],[-0.74,1.31],[-0.44,2.26],[-1.01,3.05],[-1.78,2.43],[-2.41,1.62],[-3.29,1.1],[-3.79,1.93],[-4.41,1.11],[-3.85,0.21],[-3.97,-0.79],[-4.04,-1.79]],"HHHHHHHHHHHHHHHHHHHH":[[0.19,-2.88],[0.47,-1.93],[-0.57,-1.95],[-1.17,-1.03],[-0.1,-0.93],[0.89,-0.91],[1.61,-1.66],[2.06,-0.7],[1.47,0.29],[1.96,1.22],[0.89,1.29],[0.29,2.15],[-0.73,1.96],[-1.78,1.87],[-2.29,0.94],[-1.73,0.01],[-1.2,0.94],[-0.61,0.08],[-0.12,1.05],[0.46,0.18]],"HPHPPHHPHPPHPHHPPHPH":[[0.98,-1.38],[1.28,-2.37],[0.31,-2.47],[-0.48,-3.09],[-0.95,-2.15],[-0.19,-1.52],[-0.84,-0.68],[-1.7,-0.05],[-1.09,0.75],[-1.89,1.22],[-1.34,1.99],[-0.42,1.65],[-0.47,2.73],[0.46,2.31],[0.69,1.28],[1.77,1.2],[2.16,0.27],[1.14,0.4],[0.59,-0.47],[0.02,0.39]],"HHHHHHHHHHPPPPPPPPPP":[[-0.15,1.95],[0.04,0.92],[0.89,1.56],[1.09,2.6],[1.91,1.87],[2.21,0.87],[2.39,-0.15],[1.42,-0.64],[1.26,0.37],[0.31,-0.13],[0.54,-1.15],[0.66,-2.13],[-0.16,-2.82],[-1.18,-3.09],[-1.06,-2.04],[-0.94,-1.01],[-1.02,0.02],[-2.09,0.21],[-2.9,0.92],[-3.23,1.85]]};
 MDEngine.prototype.finishInit = function () {
   const E = this, p = E.p, N = E.N;
+  E.solvMask = { dumbbell: 4, polymer: 4, diblock: 4, hp: 4, lcst: 4 }[p.system] || 0; // type 2 = S; demix, MB water, brush: none
   let px = 0, py = 0; const sq = Math.sqrt(p.T);
   for (let i = 0; i < N; i++) { E.vx[i] = sq * E.gauss(); E.vy[i] = sq * E.gauss(); px += E.vx[i]; py += E.vy[i]; }
   px /= N; py /= N; for (let i = 0; i < N; i++) { E.vx[i] -= px; E.vy[i] -= py; }
-  if (E.mb) { const sw = Math.sqrt(p.T / p.mbI); for (let i = 0; i < N; i++) if (E.type[i] === 7) { E.th[i] = 2 * Math.PI * E.rand(); E.om[i] = sw * E.gauss(); } }
+  if (E.mb) { const sw = Math.sqrt(p.T / p.mbI); for (let i = 0; i < N; i++) if (E.type[i] === 7) { if (!E.keepTh) E.th[i] = 2 * Math.PI * E.rand(); E.om[i] = sw * E.gauss(); } }
+  E.keepTh = false;
   if (E.fixed) for (let i = 0; i < N; i++) if (E.fixed[i]) { E.vx[i] = 0; E.vy[i] = 0; }
   E.time = 0; E.steps = 0;
   E.head = null;
@@ -579,6 +796,7 @@ MDEngine.prototype.setupTable = function () {
     case 'demix': set(2, 2, 1); set(4, 4, 1); set(2, 4, p.epsSC); break;
     case 'hp': set(5, 5, p.epsHH); break;
     case 'lcst': set(3, 3, p.epsPP); break; // P-S: WCA core plus the narrow binding well below
+    case 'ice': sig[7] = 0.7; set(7, 7, 0.1); break;
     case 'mbpoly': sig[7] = 0.7; sig[3] = p.sigP; set(7, 7, 0.1); set(3, 7, p.epsPW); set(3, 3, p.epsPP); break;
     case 'brush': set(4, 4, p.epsLL); set(6, 4, p.epsQL); set(5, 4, p.epsHL); set(5, 5, p.epsCC); set(6, 6, p.epsCC); set(5, 6, p.epsCC); break;
   }
@@ -597,6 +815,11 @@ MDEngine.prototype.setupTable = function () {
     if (p.system === 'lcst' && ((i === 3 && j === 2) || (i === 2 && j === 3)) && p.epsB > 0) {
       E.gEps[k] = p.epsB; E.gR0[k] = p.rB; E.gW2[k] = p.wB * p.wB;
       const rg = p.rB + 4 * p.wB; if (rg > rc) { rc = rg; E.rc2[k] = rc * rc; }
+    }
+    // brush liquid: weak, broad extra cohesion between liquid beads (lowers vapour pressure, little force at contact)
+    if (p.system === 'brush' && i === 4 && j === 4 && p.epsLg > 0) {
+      E.gEps[k] = p.epsLg; E.gR0[k] = p.rLg; E.gW2[k] = p.wLg * p.wLg;
+      const rg = p.rLg + 3 * p.wLg; if (rg > rc) { rc = rg; E.rc2[k] = rc * rc; }
     }
     if (rc > rcMax) rcMax = rc;
   }
@@ -628,13 +851,13 @@ MDEngine.prototype.computeForces = function () {
   const sig2 = E.sig2, eps = E.eps, rc2 = E.rc2, shift = E.shift, fmax = E.p.fmax, ljrc2 = E.ljrc2, gEps = E.gEps, gR0 = E.gR0, gW2 = E.gW2;
   fx.fill(0); fy.fill(0);
   E.buildCells();
-  let U = 0;
+  let U = 0, Uss = 0; const sm = E.solvMask || 0; // Uss: energy of solvent-solvent pairs (background)
   // MB water: arm unit vectors at theta, theta + 120, theta + 240 degrees
   const mb = E.mb, th = E.th, tq = E.tq, arm = E.arm;
   const eHB = E.p.mbEps, Rhb = E.p.mbR, s2 = E.p.mbSig * E.p.mbSig, i2s2 = 0.5 / s2, hbCut = 6 * E.p.mbSig;
-  let nHB = 0;
+  let nHB = 0; const hbN = E.hbN;
   if (mb) {
-    tq.fill(0);
+    tq.fill(0); if (hbN) hbN.fill(0);
     const C = -0.5, S = Math.sqrt(3) / 2;
     for (let i = 0; i < E.N; i++) if (type[i] === 7) {
       const c = Math.cos(th[i]), s = Math.sin(th[i]), o = 6 * i;
@@ -661,11 +884,12 @@ MDEngine.prototype.computeForces = function () {
           if (r2 < ljrc2[k]) {
             const sr2 = sig2[k] / r2, sr6 = sr2 * sr2 * sr2, e = eps[k];
             ff = 24 * e * sr6 * (2 * sr6 - 1) / r2;
-            U += 4 * e * sr6 * (sr6 - 1) - shift[k];
+            const up = 4 * e * sr6 * (sr6 - 1) - shift[k]; U += up;
+            if (sm && (sm >> type[i] & 1) && (sm >> type[j] & 1)) Uss += up;
           }
           const r = Math.sqrt(r2);
           const ge = gEps[k];
-          if (ge > 0) { const xx = r - gR0[k], ex = Math.exp(-0.5 * xx * xx / gW2[k]); ff -= ge * xx * ex / (gW2[k] * r); U -= ge * ex; }
+          if (ge > 0) { const xx = r - gR0[k], ex = Math.exp(-0.5 * xx * xx / gW2[k]); ff -= ge * xx * ex / (gW2[k] * r); U -= ge * ex; if (sm && (sm >> type[i] & 1) && (sm >> type[j] & 1)) Uss -= ge * ex; }
           if (ff * r > fmax) ff = fmax / r;
           fx[i] += ff * dx; fy[i] += ff * dy; fx[j] -= ff * dx; fy[j] -= ff * dy;
           // MB hydrogen bond: U = -eHB G(r - R) sum_k G(i_k.u - 1) sum_l G(j_l.u + 1), u = unit vector i -> j
@@ -682,7 +906,7 @@ MDEngine.prototype.computeForces = function () {
               }
               const uhb = -eHB * Gr * A * B;
               if (uhb < -1e-12) {
-                U += uhb; if (uhb < -0.5 * eHB) nHB++;
+                U += uhb; if (sm & 128) Uss += uhb; if (uhb < -0.5 * eHB) { nHB++; if (hbN) { hbN[i]++; hbN[j]++; } }
                 const dUdr = eHB * drr / s2 * Gr * A * B, dUda = -eHB * Gr * (Ad * B + A * Bd);
                 const Fjx = -(dUdr * ux - dUda * uy / r), Fjy = -(dUdr * uy + dUda * ux / r);
                 fx[j] += Fjx; fy[j] += Fjy; fx[i] -= Fjx; fy[i] -= Fjy;
@@ -704,6 +928,9 @@ MDEngine.prototype.computeForces = function () {
       if (d < rcw) { d = Math.max(d, 0.35 * sw); const sr6 = Math.pow(sw / d, 6); fy[i] -= 24 * sr6 * (2 * sr6 - 1) / d; U += 4 * sr6 * (sr6 - 1) + 1; }
     }
   }
+  // gravity (brush): constant downward force on every mobile bead, U = g y
+  const g = E.p.gravity;
+  if (E.walls && g > 0) { const fixed = E.fixed; for (let i = 0; i < E.N; i++) { if (fixed && fixed[i]) continue; fy[i] -= g; U += g * y[i]; } }
   // bonds along each molecule
   const kb = E.p.kBond, r0t = E.r0, Lc = E.Lc;
   for (let m = 0; m < E.nMol; m++) {
@@ -755,7 +982,7 @@ MDEngine.prototype.computeForces = function () {
       }
     }
   }
-  E.U = U; E.nHB = nHB;
+  E.U = U; E.Uss = Uss; E.nHB = nHB;
 };
 
 MDEngine.prototype.wrap = function () {
@@ -1012,6 +1239,17 @@ MDEngine.prototype.lcstStats = function (rcut) {
   return { f: ppB + psB > 0 ? ppB / (ppB + psB) : 0, ppPerBead: ppB, psPerBead: psB,
     boundPerBead: nP ? nb / nP : 0, boundSolvFrac: nS ? nBoundS / nS : 0, bound };
 };
+// Ice: a molecule is ice-like when it and all molecules within the first shell hold 3 hydrogen bonds
+// (fraction of fully bonded molecules alone is also high in cold liquid patches, so require the neighbours too).
+MDEngine.prototype.iceStats = function () {
+  const E = this, N = E.N, h = E.hbN; if (!h) return { ice: 0, hbPerWater: 0, full: 0 };
+  const ok = new Uint8Array(N); for (let i = 0; i < N; i++) ok[i] = h[i] >= 3 ? 1 : 0;
+  const bad = new Uint8Array(N);
+  E.forPairs(1.25, (i, j) => { if (!ok[j]) bad[i] = 1; if (!ok[i]) bad[j] = 1; });
+  let nIce = 0, nFull = 0; for (let i = 0; i < N; i++) { if (ok[i]) { nFull++; if (!bad[i]) nIce++; } }
+  const isIce = new Uint8Array(N); for (let i = 0; i < N; i++) isIce[i] = ok[i] && !bad[i] ? 1 : 0;
+  return { ice: nIce / N, full: nFull / N, hbPerWater: 2 * E.nHB / N, isIce };
+};
 // MB system: hydrogen bonds per water; polymer self-contact fraction and water contacts per polymer bead.
 MDEngine.prototype.mbStats = function (rcut) {
   const E = this, type = E.type; let pp = 0, pw = 0, nP = 0;
@@ -1150,7 +1388,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
 (function () {
   const $ = (id) => document.getElementById(id);
   const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-  const CNAMES = ['head', 'tail', 'solv', 'bond', 'poly', 'cryst', 'mixS', 'mixC', 'cell', 'muted', 'hot', 'line', 'accent'];
+  const CNAMES = ['head', 'tail', 'solv', 'bond', 'poly', 'cryst', 'mixS', 'mixC', 'cell', 'muted', 'hot', 'line', 'accent', 'cold', 'ink'];
   let colors = {};
   const readColors = () => { colors = {}; for (const c of CNAMES) colors[c] = css('--' + c); };
   readColors();
@@ -1164,30 +1402,34 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
 
   // ---- one definition per system ----
   const SYS = {
-    brush: { conc: 480, min: 120, max: 900, count: true, rebuildConc: true, cold: 0.5, hot: 0.7, start: 0.5, chainLen: 10, kBend: 1.0,
+    brush: { scan: [0.4, 1.0], conc: 480, min: 120, max: 900, count: true, rebuildConc: true, cold: 0.5, hot: 0.7, start: 0.5, chainLen: 10, kBend: 1.0,
       trange: [0.4, 1.0], tstep: 0.01, dt: 0.005, preT: 'set', concLab: 'Droplet size, liquid beads (rebuilds on release)',
-      plotLab: 'Contact angle θ (degrees)', plotMax: 180,
-      legend: [['tail', 'Water-repelling bead'], ['head', 'Water-loving bead'], ['mixS', 'Liquid droplet (4-bead oligomers)']] },
-    mbpoly: { conc: 60, min: 1, max: 150, count: true, cold: 0.16, hot: 0.32, start: 0.22, box: 36, chainLen: 1, lenMin: 1, epsPP: 0.1,
+      plotLab: 'Liquid contacts with teal (water-loving) beads', plotMax: 100,
+      legend: [['tail', 'Orange beads (repel the liquid)'], ['head', 'Teal beads (attract the liquid)'], ['mixS', 'Blue: liquid droplet (4-bead oligomers)']] },
+    mbpoly: { scan: [0.14, 0.40], conc: 60, min: 1, max: 150, count: true, cold: 0.16, hot: 0.34, start: 0.34, ordT: 0.22, box: 36, chainLen: 1, lenMin: 1, epsPP: 0.1,
       trange: [0.12, 0.40], tstep: 0.005, rho: 0.85, dt: 0.01, preT: 0.35, concLab: 'Number of nonpolar solutes',
       plotLab: 'Fraction of solutes in clusters of 3 or more', hl: 'Highlight clustered solutes',
       legend: [['poly', 'P nonpolar solute, free'], ['cryst', 'P in a cluster'], ['solv', 'W water (lines: hydrogen-bond arms)']] },
-    dumbbell: { conc: 26, min: 2, max: 60, cold: 0.5, hot: 2.0, start: 2.0, concLab: 'Dumbbell concentration (fraction of beads)',
-      plotLab: 'Fraction of molecules in micelles', hl: 'Color by micelle',
+    ice: { scan: [0.10, 0.30], conc: 0, min: 0, max: 1, count: true, cold: 0.12, hot: 0.26, start: 0.26, ordT: 0.12, box: 36,
+      trange: [0.08, 0.36], tstep: 0.005, dt: 0.01, preT: 0.35, concLab: '',
+      plotLab: 'Fraction of molecules in ice', hl: 'Highlight ice (blue)',
+      legend: [['cold', 'Water in ice (3 hydrogen bonds, neighbours too)'], ['solv', 'Liquid water'], ['bond', 'Lines: hydrogen-bond arms']] },
+    dumbbell: { scan: [0.4, 2.0], conc: 50, min: 2, max: 60, cold: 0.5, hot: 2.0, start: 2.0, concLab: 'Dumbbell concentration (fraction of beads)',
+      plotLab: 'Fraction of molecules in aggregates (bilayers, micelles)', hl: 'Color by aggregate',
       legend: [['head', 'A head (solvophilic)'], ['tail', 'B tail (solvophobic)'], ['solv', 'S solvent']] },
-    polymer: { conc: 40, min: 2, max: 95, cold: 1.2, hot: 2.0, start: 2.2, chainLen: 12, epsPP: 1.75, concLab: 'Polymer concentration (fraction of beads)',
+    polymer: { scan: [1.0, 2.5], conc: 40, min: 2, max: 95, cold: 1.2, hot: 2.0, start: 2.2, chainLen: 12, epsPP: 1.75, concLab: 'Polymer concentration (fraction of beads)',
       plotLab: 'Crystalline fraction of polymer beads', hl: 'Highlight crystallites',
       legend: [['poly', 'P polymer, amorphous'], ['cryst', 'P crystalline'], ['solv', 'S solvent']] },
-    diblock: { conc: 70, min: 5, max: 95, cold: 0.8, hot: 2.2, start: 2.2, chainLen: 16, concLab: 'Copolymer concentration (fraction of beads)',
+    diblock: { scan: [0.6, 2.4], conc: 70, min: 5, max: 95, cold: 0.8, hot: 2.2, start: 2.2, chainLen: 16, concLab: 'Copolymer concentration (fraction of beads)',
       plotLab: 'A–B segregation s (0 mixed, 1 separated)',
       legend: [['head', 'A block'], ['tail', 'B block'], ['solv', 'S solvent (good for both)']] },
-    demix: { conc: 50, min: 5, max: 95, cold: 0.8, hot: 2.0, start: 2.0, concLab: 'Fraction of liquid C',
+    demix: { scan: [0.6, 2.2], conc: 50, min: 5, max: 95, cold: 0.8, hot: 2.0, start: 2.0, concLab: 'Fraction of liquid C',
       plotLab: 'Demixing s (0 mixed, 1 separated)',
       legend: [['mixS', 'Liquid S'], ['mixC', 'Liquid C']] },
-    hp: { conc: 1, min: 1, max: 8, count: true, cold: 1.0, hot: 2.3, start: 2.3, box: 36, concLab: 'Number of chains',
+    hp: { scan: [0.8, 2.5], conc: 1, min: 1, max: 8, count: true, cold: 1.0, hot: 2.3, start: 2.3, box: 36, concLab: 'Number of chains',
       plotLab: 'Buried hydrophobic beads (H with ≥ 2 H neighbours)',
       legend: [['tail', 'H hydrophobic'], ['head', 'P polar'], ['solv', 'S solvent']] },
-    lcst: { conc: 5, min: 1, max: 40, cold: 0.6, hot: 2.2, start: 2.2, chainLen: 20, epsPP: 1.0, preT: 3.0, concLab: 'Polymer concentration (fraction of beads)',
+    lcst: { scan: [0.5, 2.3], conc: 5, min: 1, max: 40, cold: 0.6, hot: 2.2, start: 2.2, chainLen: 20, epsPP: 1.0, preT: 3.0, concLab: 'Polymer concentration (fraction of beads)',
       plotLab: 'Polymer self-contact fraction (P–P share of polymer contacts)',
       legend: [['poly', 'P polymer'], ['solv', 'S solvent (athermal)']] }
   };
@@ -1197,7 +1439,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const p = eng.p, rg = () => eng.meanRg().toFixed(2) + ' σ';
     switch (sys) {
       case 'dumbbell': { const c = eng.clusters(RCUT, MIN_AGG, 1); an = c;
-        return { v: c.fracAgg, cells: [['Aggregated', pct(c.fracAgg)], ['Micelles', c.nAgg], ['Largest', c.largest],
+        return { v: c.fracAgg, cells: [['Aggregated', pct(c.fracAgg)], ['Aggregates', c.nAgg], ['Largest', c.largest],
           ['Mean N<sub>agg</sub>', c.nAgg ? c.meanAgg.toFixed(1) : '–'], ['Dumbbells', eng.nMol],
           ['Free, per σ²', (eng.nMol * (1 - c.fracAgg) / (eng.L * eng.L)).toFixed(4)]] }; }
       case 'polymer': { const k = eng.crystal(1.45, 4, 10); an = k;
@@ -1214,8 +1456,9 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
         return { v: h.buried, cells: [['Buried H', pct(h.buried)], ['H–H contacts / chain', h.intra.toFixed(1)], ['Mean R<sub>g</sub>', rg()],
           ['Chains', eng.nMol], ['Chain length', eng.Lc], ['Interchain H–H', h.inter]] }; }
       case 'brush': { const b = eng.brushStats();
-        return { v: b.theta, cells: [['Contact angle', b.theta.toFixed(0) + '°'], ['Footprint', b.width.toFixed(1) + ' σ'], ['Liquid inside brush', (100 * b.inside).toFixed(1) + '%'],
-          ['Brush order', b.order.toFixed(2)], ['Contacts: end / middle', b.wEnd + ' / ' + b.wMid], ['Droplet beads', b.liquid]] }; }
+        const teal = p.invert ? b.wEnd : b.wMid;
+        return { v: teal, cells: [['Contact angle', b.theta.toFixed(0) + '°'], ['Footprint', b.width.toFixed(1) + ' σ'], ['Liquid inside brush', (100 * b.inside).toFixed(1) + '%'],
+          ['Brush order', b.order.toFixed(2)], ['Liquid contacts: orange / teal', (p.invert ? b.wMid : b.wEnd) + ' / ' + (p.invert ? b.wEnd : b.wMid)], ['Droplet beads', b.liquid]] }; }
       case 'mbpoly': { const rc = 1.3 * p.sigP, m = eng.mbStats(rc);
         if (eng.Lc === 1) { const c = eng.clusters(rc, 3, 3); an = c;
           return { v: c.fracAgg, cells: [['In clusters (≥ 3)', pct(c.fracAgg)], ['Clusters', c.nAgg], ['Largest', c.largest],
@@ -1223,6 +1466,9 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
         an = null;
         return { v: m.f, cells: [['Self-contact', m.f.toFixed(2)], ['Water contacts / bead', m.waterPerBead.toFixed(2)], ['Mean R<sub>g</sub>', rg()],
           ['H-bonds / water', m.hbPerWater.toFixed(2)], ['Chains', eng.nMol], ['Chain length', eng.Lc]] }; }
+      case 'ice': { const q = eng.iceStats(); an = q;
+        return { v: q.ice, cells: [['Ice', pct(q.ice)], ['H-bonds / molecule', q.hbPerWater.toFixed(2)], ['With 3 H-bonds', pct(q.full)],
+          ['Molecules', eng.N], ['Energy / molecule', (eng.U / eng.N).toFixed(2)], ['Density', (eng.N / (eng.L * eng.L)).toFixed(2) + ' / σ²']] }; }
       case 'lcst': { const c = eng.lcstStats(1.5), r = eng.meanRg(); an = null;
         return { v: c.f, cells: [['Self-contact', c.f.toFixed(2)], ['Mean R<sub>g</sub>', r.toFixed(2) + ' σ'], ['Solvent contacts / bead', c.psPerBead.toFixed(2)],
           ['Chains', eng.nMol], ['Chain length', eng.Lc], ['R<sub>g</sub> vs rebuild', (r / rg0).toFixed(2) + '×']] }; }
@@ -1246,20 +1492,24 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (sys === 'brush') return 0; // not used: chain count comes from the grafting
     return Math.max(sys === 'diblock' ? 4 : 3, +$('chainLen').value);
   }
-  function build() {
+  function build(opts) {
+    opts = opts || {};
+    if (!opts.keepThermo) { if (scan) stopScan(false); thermoReset(); }
     const S = SYS[sys], n = +$('size').value, Lc = chainLength(), v = +$('conc').value;
     const nMol = sys === 'demix' || sys === 'brush' ? 0 : S.count ? v : Math.round(v / 100 * n * n / Lc);
     eng = new MDEngine({ system: sys, nSide: n, nMol, rho: S.rho || 0.6, dt: S.dt || 0.005, T: tset,
       mbEps: $('mbHB').checked ? 1 : 0, epsPW: 0, sigP: 1.5,
-      boxL: 48, graftSpacing: +$('graft').value, epsCC: +$('epsCC').value, epsQL: +$('epsQL').value, epsHL: +$('epsHL').value, invert: $('bInvert').checked, nEnd: +$('nEnd').value, nWater: v,
+      ordered: opts.ordered !== undefined ? opts.ordered : isOrdered(), demixStripes: 4, bilayerSpacing: 1.15,
+      boxL: n, gravity: +$('grav').value, graftSpacing: +$('graft').value, epsCC: +$('epsCC').value, epsQL: +$('epsQL').value, epsHL: +$('epsHL').value, invert: $('bInvert').checked, nEnd: +$('nEnd').value, nWater: v,
       thermostat: $('thermo').value, gamma: +$('gamma').value, tau: +$('tau').value, seed: (Math.random() * 1e9) | 0,
       epsSS: 0, epsAS: +$('epsAS').value, epsBB: +$('epsBB').value, sigA: +$('sigA').value, sigB: 1,
       epsPP: +$('epsPP').value, kBend: +$('kBend').value, chainLen: +$('chainLen').value,
       fA: +$('fA').value, epsAB: +$('epsAB').value, epsSC: +$('epsSC').value, xC: v / 100,
       epsHH: +$('epsHH').value, sequence: cleanSeq(), epsB: 0 });
-    if (sys !== 'dumbbell' && sys !== 'demix') { // chains start on a lattice: disorder them briefly (dissolved state for LCST)
-      eng.p.T = S.preT === 'set' ? tset : S.preT !== undefined ? S.preT : sys === 'lcst' ? 0.5 : 3.0; eng.setupTable();
-      const pre = 300;
+    const ord = eng.p.ordered;
+    if (ord || (sys !== 'dumbbell' && sys !== 'demix')) { // ordered: relax the built structure; disordered: melt the lattice
+      eng.p.T = ord || S.preT === 'set' ? tset : S.preT !== undefined ? S.preT : 3.0; eng.setupTable();
+      const pre = ord ? 200 : 300;
       for (let k = 0; k < pre; k++) eng.step();
       eng.p.T = tset; eng.setupTable(); eng.time = 0;
       const sc = Math.sqrt(tset / Math.max(1e-6, eng.tempKin())); // start at the set temperature
@@ -1282,11 +1532,11 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (eng) eng.p.T = tset;
     $('tset').textContent = $('tsetM').textContent = tset.toFixed((SYS[sys].tstep || 0.01) < 0.01 ? 3 : 2); $('tslider').value = $('tsliderM').value = tset;
   }
-  $('tslider').addEventListener('input', (e) => { if (mode === 'slider') setT(+e.target.value); });
-  $('tsliderM').addEventListener('input', (e) => { if (mode === 'slider') setT(+e.target.value); });
+  $('tslider').addEventListener('input', (e) => { if (scan) stopScan(false); if (mode === 'slider') setT(+e.target.value); });
+  $('tsliderM').addEventListener('input', (e) => { if (scan) stopScan(false); if (mode === 'slider') setT(+e.target.value); });
   $('micM').addEventListener('click', () => setMode(mode === 'mic' ? 'slider' : 'mic'));
-  $('quench').addEventListener('click', () => { if (mode === 'mic') setMode('slider'); setT(SYS[sys].cold); });
-  $('melt').addEventListener('click', () => { if (mode === 'mic') setMode('slider'); setT(SYS[sys].hot); });
+  $('quench').addEventListener('click', () => { if (scan) stopScan(false); if (mode === 'mic') setMode('slider'); setT(SYS[sys].cold); });
+  $('melt').addEventListener('click', () => { if (scan) stopScan(false); if (mode === 'mic') setMode('slider'); setT(SYS[sys].hot); });
   $('pause').addEventListener('click', () => { running = !running; $('pause').textContent = running ? 'Pause' : 'Resume'; });
 
   // ---- microphone ----
@@ -1370,6 +1620,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   bindRange('epsHL', (v) => v.toFixed(2), live('epsHL'));
   bindRange('nEnd', (v) => String(v));
   bindRange('graft', (v) => v.toFixed(1));
+  bindRange('grav', (v) => v.toFixed(3), (v) => { if (eng && eng.walls) eng.p.gravity = v; });
   $('graft').addEventListener('change', () => { if (sys === 'brush') build(); });
   $('nEnd').addEventListener('change', () => { if (sys === 'brush') build(); });
   $('bInvert').addEventListener('change', () => { if (sys === 'brush') build(); });
@@ -1417,11 +1668,20 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   });
   $('thermo').addEventListener('change', (e) => { if (eng) eng.p.thermostat = e.target.value;
     $('gammaRow').hidden = e.target.value !== 'langevin'; $('tauRow').hidden = e.target.value === 'langevin'; });
-  $('reset').addEventListener('click', build);
-  $('size').addEventListener('change', build);
+  $('reset').addEventListener('click', () => build());
+  $('initState').addEventListener('change', () => { if (mode !== 'mic') setT(startT()); build(); });
+  $('size').addEventListener('change', () => {
+    if (sys === 'brush') { // brush box is n σ wide and tall; scale the droplet with the box area so it fits under the ceiling
+      const n = +$('size').value, c = $('conc'), v = Math.max(+c.min, Math.min(+c.max, Math.round(480 * (n / 48) * (n / 48))));
+      c.value = v; $('concO').textContent = String(v);
+    }
+    build();
+  });
 
   // ---- switching systems ----
   const pickers = [...document.querySelectorAll('[data-pick]')];
+  const isOrdered = () => $('initState').value === 'ordered';
+  const startT = () => { const S = SYS[sys]; return isOrdered() ? (S.ordT !== undefined ? S.ordT : S.cold) : S.start; };
   function applySysUI() {
     const S = SYS[sys];
     document.querySelector('.wrap').dataset.sys = sys;
@@ -1439,15 +1699,137 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const dg = st < 0.01 ? 3 : 2; $('quench').textContent = `Cool to ${S.cold.toFixed(dg - 1)}`; $('melt').textContent = `Heat to ${S.hot.toFixed(dg - 1)}`;
     if (S.epsPP !== undefined) { $('epsPP').value = S.epsPP; $('epsPPO').textContent = S.epsPP.toFixed(2); }
     const kb = S.kBend !== undefined ? S.kBend : 6.4; $('kBend').value = kb; $('kBendO').textContent = kb.toFixed(1);
-    $('byCluster').checked = sys === 'polymer' || sys === 'mbpoly';
+    $('byCluster').checked = sys === 'polymer' || sys === 'mbpoly' || sys === 'ice';
+    $('compPanel').hidden = $('sizeRow').hidden = sys === 'ice';
   }
   let userBox = $('size').value;
   $('size').addEventListener('change', () => { if (!SYS[sys].box) userBox = $('size').value; });
+  // ---------- thermodynamics: temperature scans ----------
+  const NB = 30; let scan = null, thermo = null;
+  function thermoReset() {
+    const [lo, hi] = SYS[sys].scan, mk = () => ({ sum: new Float64Array(NB), cnt: new Float64Array(NB), sumT: new Float64Array(NB) });
+    thermo = { lo, hi, heat: null, cool: null, last: null, mk };
+    $('thSummary').textContent = ''; drawThermo();
+  }
+  function energyRef() { // energy of the molecules (solvent-solvent background removed) per molecule bead, or of the whole system per bead
+    if (eng.solvMask) { let nm = 0; for (let i = 0; i < eng.N; i++) if (!(eng.solvMask >> eng.type[i] & 1)) nm++; return { n: Math.max(1, nm), mol: true }; }
+    return { n: eng.N, mol: false };
+  }
+  function startScan(dir) {
+    stopScan(false);
+    if (mode === 'mic') setMode('slider');
+    const [lo, hi] = SYS[sys].scan, tau = +$('scanTau').value;
+    if (!thermo || thermo.lo !== lo) thermoReset();
+    if (dir === 'heat') { setT(lo); build({ ordered: true, keepThermo: true }); }
+    else setT(hi);
+    thermo[dir] = thermo.mk(); thermo.last = dir;
+    scan = { dir, Ta: dir === 'heat' ? lo : hi, Tb: dir === 'heat' ? hi : lo, tau, hold: dir === 'heat' ? 3 : 5, t0: eng.time, ref: energyRef() };
+    $('thUnit').textContent = scan.ref.mol
+      ? 'Numbers are per molecule bead, in the simulation’s own units. The solvent’s energy is left out: it changes smoothly and would hide the melting point. Entropy and free energy are counted from the start of the scan.'
+      : (sys === 'ice' ? 'Numbers are per water molecule' : 'Numbers are per bead') + ', in the simulation’s own units. Entropy and free energy are counted from the start of the scan.';
+    for (const id of ['scanHeat', 'scanCool']) $(id).disabled = true; $('scanStop').disabled = false;
+  }
+  function stopScan(finished) {
+    if (!scan) return;
+    const d = scan.dir; scan = null;
+    for (const id of ['scanHeat', 'scanCool']) $(id).disabled = false; $('scanStop').disabled = true;
+    $('scanStatus').textContent = finished ? `${d === 'heat' ? 'Heating' : 'Cooling'} scan finished.` + (d === 'heat' ? ' Now try Cooling scan: does the structure come back at the same temperature?' : '') : 'Scan stopped.';
+    drawThermo();
+  }
+  function scanStep() {
+    const s = scan, t = eng.time - s.t0;
+    if (t < s.hold) { setT(s.Ta); $('scanStatus').textContent = `Settling at T = ${s.Ta.toFixed(2)} before ${s.dir === 'heat' ? 'heating' : 'cooling'} starts…`; return; }
+    const f = (t - s.hold) / s.tau;
+    if (f >= 1) { stopScan(true); return; }
+    setT(s.Ta + (s.Tb - s.Ta) * f);
+    $('scanStatus').textContent = `${s.dir === 'heat' ? 'Heating' : 'Cooling'} slowly from ${s.Ta.toFixed(2)} to ${s.Tb.toFixed(2)}: ${(100 * f).toFixed(0)}% done, now T = ${tset.toFixed(2)}. Watch the molecules and the graphs.`;
+  }
+  function scanSample() {
+    const s = scan; if (eng.time - s.t0 < s.hold) return;
+    const d = thermo[s.dir], k = Math.max(0, Math.min(NB - 1, Math.floor((tset - thermo.lo) / (thermo.hi - thermo.lo) * NB)));
+    d.sum[k] += (eng.U - (eng.Uss || 0)) / s.ref.n; d.cnt[k]++; d.sumT[k] += tset;
+  }
+  function binsOf(d) { const T = [], U = []; if (!d) return { T, U }; for (let k = 0; k < NB; k++) if (d.cnt[k] >= 3) { T.push(d.sumT[k] / d.cnt[k]); U.push(d.sum[k] / d.cnt[k]); } return { T, U }; }
+  // U(T) -> smoothed U, C = dU/dT, S = int dU/T, F = U - TS; low/high-T branches (linear U fits) give F_low, F_high, crossing at T*.
+  function analyzeScan(T, U) {
+    const nb = T.length; if (nb < 8) return null;
+    const Us = U.map((_, k) => { let s = 0, n = 0; for (let j = k - 1; j <= k + 1; j++) if (j >= 0 && j < nb) { s += U[j]; n++; } return s / n; });
+    const C = Us.map((_, k) => { const i = Math.max(0, k - 1), j = Math.min(nb - 1, k + 1); return (Us[j] - Us[i]) / (T[j] - T[i]); });
+    const S = [0]; for (let k = 1; k < nb; k++) S.push(S[k - 1] + (Us[k] - Us[k - 1]) * 2 / (T[k] + T[k - 1]));
+    const F = Us.map((u, k) => u - T[k] * S[k]);
+    let kp = 1; for (let k = 1; k < nb - 1; k++) if (C[k] > C[kp]) kp = k;
+    const avg = (i0, i1) => { let s = 0; for (let k = i0; k <= i1; k++) s += C[k]; return s / (i1 - i0 + 1); }, base = Math.max(avg(0, 2), avg(nb - 3, nb - 1), 1e-6),
+      significant = kp >= 3 && kp <= nb - 4 && C[kp] > 1.5 * base; // a peak well inside the range, clearly above both ends
+    const m = Math.max(2, Math.round(0.15 * nb));
+    const fit = (i0, i1) => { let n = 0, sx = 0, sy = 0, sxx = 0, sxy = 0; for (let k = i0; k <= i1; k++) { n++; sx += T[k]; sy += U[k]; sxx += T[k] * T[k]; sxy += T[k] * U[k]; }
+      const b = (n * sxy - sx * sy) / Math.max(1e-12, n * sxx - sx * sx), a = (sy - b * sx) / n, kr = Math.round((i0 + i1) / 2); return { a, b, Tr: T[kr], Sr: S[kr] }; };
+    const br = (f) => ({ U: (x) => f.a + f.b * x, S: (x) => f.Sr + f.b * Math.log(x / f.Tr), F: (x) => f.a + f.b * x - x * (f.Sr + f.b * Math.log(x / f.Tr)) });
+    const L = br(fit(0, Math.max(1, kp - m))), H = br(fit(Math.min(nb - 2, kp + m), nb - 1));
+    let Tx = null, prev = null;
+    for (let q = 0; q <= 400; q++) { const x = T[0] + (T[nb - 1] - T[0]) * q / 400, d = H.F(x) - L.F(x);
+      if (prev && Math.sign(d) !== Math.sign(prev.d) && d !== 0) { Tx = prev.x + (x - prev.x) * prev.d / (prev.d - d); break; } prev = { x, d }; }
+    if (Tx !== null && (Tx < T[Math.max(0, kp - 2 * m)] || Tx > T[Math.min(nb - 1, kp + 2 * m)])) Tx = null; // crossing far from the peak: not a two-state transition
+    const Tt = Tx !== null ? Tx : T[kp];
+    return { T, U, Us, C, S, F, Tpeak: T[kp], significant, Tx, Tt, dU: H.U(Tt) - L.U(Tt), dS: H.S(Tt) - L.S(Tt), L, H };
+  }
+  function xyPlot(c, xlim, series, vlines, yfmt) {
+    const g = c.getContext('2d'), w = c.width, h = c.height, padL = 46 * dpr, padB = 18 * dpr, padT = 6 * dpr, padR = 6 * dpr;
+    g.clearRect(0, 0, w, h);
+    let y0 = Infinity, y1 = -Infinity;
+    for (const s of series) for (const v of s.y) if (isFinite(v)) { if (v < y0) y0 = v; if (v > y1) y1 = v; }
+    g.font = `${10 * dpr}px ${css('--f-mono') || 'monospace'}`; g.fillStyle = colors.muted;
+    if (!isFinite(y0)) { g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('no data yet', w / 2, h / 2); return; }
+    if (y1 - y0 < 1e-9) { y0 -= 0.5; y1 += 0.5; } const py = 0.08 * (y1 - y0); y0 -= py; y1 += py;
+    const X = (x) => padL + (w - padL - padR) * (x - xlim[0]) / (xlim[1] - xlim[0]), Y = (y) => padT + (h - padT - padB) * (1 - (y - y0) / (y1 - y0));
+    g.strokeStyle = colors.line; g.lineWidth = 1; g.textAlign = 'right'; g.textBaseline = 'middle';
+    for (let q = 0; q <= 2; q++) { const v = y0 + (y1 - y0) * q / 2, yy = Math.round(Y(v)) + 0.5; g.beginPath(); g.moveTo(padL, yy); g.lineTo(w - padR, yy); g.stroke(); g.fillText(yfmt(v), padL - 5 * dpr, yy); }
+    g.textAlign = 'center'; g.textBaseline = 'top';
+    for (let q = 0; q <= 4; q++) { const v = xlim[0] + (xlim[1] - xlim[0]) * q / 4; g.fillText(v.toFixed(2), X(v), h - padB + 4 * dpr); }
+    g.save(); g.beginPath(); g.rect(padL, padT, w - padL - padR, h - padT - padB); g.clip();
+    for (const s of series) { if (s.x.length < 2) continue;
+      g.strokeStyle = s.color; g.lineWidth = (s.w || 1.8) * dpr; g.setLineDash(s.dash ? [5 * dpr, 4 * dpr] : []); g.beginPath();
+      s.x.forEach((x, k) => { const xx = X(x), yy = Y(s.y[k]); k ? g.lineTo(xx, yy) : g.moveTo(xx, yy); }); g.stroke(); g.setLineDash([]);
+      if (s.dots) { g.fillStyle = s.color; s.x.forEach((x, k) => { g.beginPath(); g.arc(X(x), Y(s.y[k]), 2 * dpr, 0, 6.2832); g.fill(); }); } }
+    for (const v of vlines) { g.strokeStyle = v.color; g.lineWidth = 1.5 * dpr; g.setLineDash([2 * dpr, 3 * dpr]); g.beginPath(); g.moveTo(X(v.x), padT); g.lineTo(X(v.x), h - padB); g.stroke(); g.setLineDash([]); }
+    g.restore();
+  }
+  function drawThermo() {
+    if (!thermo) return;
+    const xl = [thermo.lo, thermo.hi], res = {}, f3 = (v) => v.toFixed(Math.abs(v) < 10 ? 2 : 1);
+    for (const d of ['heat', 'cool']) { const b = binsOf(thermo[d]); res[d] = { b, a: analyzeScan(b.T, b.U), col: d === 'heat' ? colors.hot : colors.cold }; }
+    const lastD = (res.heat.a && res.heat.a.significant) || !res.cool.a ? (res.heat.a ? 'heat' : thermo.last) : 'cool', A = lastD ? res[lastD].a : null, grid = [];
+    for (let q = 0; q <= 60; q++) grid.push(xl[0] + (xl[1] - xl[0]) * q / 60);
+    const vl = []; for (const d of ['heat', 'cool']) { const a = res[d].a; if (a && a.significant) vl.push({ x: a.Tt, color: res[d].col }); }
+    const br = (fn, col) => (A && A.significant ? [{ x: grid, y: grid.map((x) => A.L[fn](x)), color: colors.accent, dash: true, w: 1.4 }, { x: grid, y: grid.map((x) => A.H[fn](x)), color: colors.tail, dash: true, w: 1.4 }] : []);
+    xyPlot(thU, xl, [...br('U'), ...['heat', 'cool'].map((d) => ({ x: res[d].b.T, y: res[d].b.U, color: res[d].col, dots: true, w: 1.2 }))], vl, f3);
+    xyPlot(thC, xl, ['heat', 'cool'].filter((d) => res[d].a).map((d) => ({ x: res[d].a.T, y: res[d].a.C, color: res[d].col, w: 2 })), vl, f3);
+    xyPlot(thS, xl, A ? [...br('S'), { x: A.T, y: A.S, color: res[lastD].col, w: 2 }] : [], vl, f3);
+    xyPlot(thF, xl, A ? [...br('F'), { x: A.T, y: A.F, color: res[lastD].col, w: 2 }] : [], vl, f3);
+    // summary
+    const unit = scan ? (scan.ref.mol ? ' per molecule bead' : ' per bead') : '';
+    const hA = res.heat.a, cA = res.cool.a, sum = $('thSummary');
+    if (!hA && !cA) { sum.textContent = scan ? 'Measuring… the result appears here after the scan passes the melting point.' : ''; return; }
+    const one = (a, name) => !a ? '' : a.significant
+      ? `<b>${name}</b>: melting point T ≈ <b>${a.Tt.toFixed(2)}</b>. Breaking the structure costs energy (ΔU = ${a.dU.toFixed(2)}) but gains disorder (ΔS = ${a.dS.toFixed(2)}). ` +
+        `At the melting point the two balance: T × ΔS = ${a.Tt.toFixed(2)} × ${a.dS.toFixed(2)} ≈ ${(a.Tt * a.dS).toFixed(2)}, the same as ΔU.`
+      : name === 'Cooling' && hA && hA.significant
+        ? `<b>Cooling</b>: no clear peak: the structure did not have time to rebuild. Building takes longer than breaking; try the slow scan, or wait at a low temperature and watch it form.`
+        : `<b>${name}</b>: no sharp melting point. This system changes gradually, like butter softening rather than ice melting.`;
+    let txt = [one(hA, 'Heating'), one(cA, 'Cooling')].filter(Boolean).join('<br>');
+    if ((hA && hA.significant) || (cA && cA.significant)) txt += '<br>Colder than the melting point, energy wins and the structure stays; hotter, disorder wins and it falls apart.';
+    if (hA && cA && hA.significant && cA.significant) txt += `<br>Heating and cooling give different answers (${hA.Tt.toFixed(2)} and ${cA.Tt.toFixed(2)}). Breaking up and building take time, so a scan overshoots in both directions; the true melting point lies in between. While cooling, structures often don’t finish rebuilding before the scan ends, so graphs 3 and 4 use the heating scan. A slower scan brings the two answers closer.`;
+    sum.innerHTML = txt;
+  }
+  const thU = $('thU'), thC = $('thC'), thS = $('thS'), thF = $('thF');
+  $('scanHeat').addEventListener('click', () => startScan('heat'));
+  $('scanCool').addEventListener('click', () => startScan('cool'));
+  $('scanStop').addEventListener('click', () => stopScan(false));
+
   function setSys(s) {
     if (s === sys || !SYS[s]) return;
     sys = s; applySysUI();
     $('size').value = SYS[s].box ? String(SYS[s].box) : userBox;
-    if (mode !== 'mic') setT(SYS[s].start);
+    if (mode !== 'mic') setT(startT());
     build();
   }
   for (const b of pickers) b.addEventListener('click', () => setSys(b.dataset.pick));
@@ -1491,8 +1873,13 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     }
     const bnd = sys === 'lcst' && an && an.bound ? an.bound : null;
     if (eng.mb) {
-      if ($('showSolv').checked) {
-        disks(colors.solv, 0.35 * s, () => true, nCh, N);
+      if (sys === 'ice') {
+        const ic = $('byCluster').checked && an && an.isIce ? an.isIce : null;
+        disks(colors.solv, 0.35 * s, ic ? (i) => !ic[i] : () => true, 0, N);
+        if (ic) disks(colors.cold, 0.35 * s, (i) => ic[i] === 1, 0, N);
+      }
+      if (sys === 'ice' || $('showSolv').checked) {
+        if (sys !== 'ice') disks(colors.solv, 0.35 * s, () => true, nCh, N);
         ctx.strokeStyle = colors.bond; ctx.lineWidth = Math.max(1, 0.08 * s); ctx.beginPath(); const arm = eng.arm, al = 0.5 * s;
         for (let i = nCh; i < N; i++) { const X = x[i] * s, Y = y[i] * s, o = 6 * i;
           for (let a = 0; a < 6; a += 2) { ctx.moveTo(X, Y); ctx.lineTo(X + al * arm[o + a], Y + al * arm[o + a + 1]); } }
@@ -1531,7 +1918,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   }
 
   const pT = $('plotT'), pF = $('plotF');
-  function sizePlots() { for (const c of [pT, pF]) { c.width = Math.round(c.clientWidth * dpr); c.height = Math.round(c.clientHeight * dpr); } }
+  function sizePlots() { for (const c of [pT, pF, $('thU'), $('thC'), $('thS'), $('thF')]) { c.width = Math.round(c.clientWidth * dpr); c.height = Math.round(c.clientHeight * dpr); } if (typeof drawThermo === 'function' && thermo) drawThermo(); }
   function plot(c, series, ymin, ymax, ticks) {
     const g = c.getContext('2d'), w = c.width, h = c.height, padL = 30 * dpr, padB = 4 * dpr, padT = 6 * dpr;
     g.clearRect(0, 0, w, h);
@@ -1552,11 +1939,13 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   let last = performance.now(), stepCount = 0, perfT = last, sps = 0, tkinAvg = null;
   function loop(now) {
     const dtSec = Math.min(0.1, (now - last) / 1000); last = now;
-    if (mode === 'mic') micUpdate(dtSec);
+    if (scan && running) scanStep();
+    else if (mode === 'mic') micUpdate(dtSec);
     if (running) {
       const n = +$('spf').value, t0 = performance.now();
       for (let k = 0; k < n; k++) eng.step();
       autoSpeed(n, performance.now() - t0);
+      if (scan) scanSample();
       stepCount += n;
       const tk = eng.tempKin();
       tkinAvg = tkinAvg === null ? tk : 0.9 * tkinAvg + 0.1 * tk;
@@ -1569,6 +1958,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
         const [tlo, thi] = SYS[sys].trange || [0.3, 2.5], tt = [1, 2, 3, 4].map((q) => +(q * thi / 4).toFixed(2));
         plot(pT, [{ data: hist.tset, color: colors.muted, w: 1.5, dash: true }, { data: hist.tkin, color: colors.hot, w: 1.8, dot: true }], 0, thi * 1.04, tt);
         plot(pF, [{ data: hist.frac, color: colors.accent, w: 2, dot: true }], 0, plotMax, [0, plotMax / 2, plotMax]);
+        if (scan && frame % 18 === 0) drawThermo();
       }
       frame++;
     }
@@ -1579,6 +1969,6 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
 
   if (isPhone) { $('size').value = '36'; userBox = '36'; }
   applySysUI();
-  setT(SYS[sys].start); build(); resize(); requestAnimationFrame((t) => { last = t; perfT = t; loop(t); });
+  setT(startT()); build(); resize(); drawThermo(); requestAnimationFrame((t) => { last = t; perfT = t; loop(t); });
 })();
 </script>
