@@ -109,14 +109,26 @@ table.eps th { font-weight: 500; color: var(--muted) }
 .gstat b.in { color: var(--accent) } .gstat b.out { color: var(--hot) }
 .gbar { height: 10px; border-radius: 5px; background: var(--line); overflow: hidden } .gbar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s }
 .gband { position: relative; height: 22px; border-radius: 6px; background: var(--line); overflow: hidden }
-.gband .zone { position: absolute; top: 0; bottom: 0; background: color-mix(in srgb, var(--accent) 35%, transparent) }
+.gband .tick { position: absolute; top: 0; bottom: 0; border-left: 2px solid var(--cryst); padding-left: 3px; font-size: 10px; line-height: 22px; color: var(--cryst); white-space: nowrap }
+.gstat b.gst { color: var(--cryst); letter-spacing: 1px }
 .gband .now { position: absolute; top: 0; bottom: 0; width: 3px; margin-left: -1px; background: var(--ink) }
 .gmic { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; cursor: pointer }
 #gamePanel .btn:disabled { opacity: .45; cursor: default }
 .gres { margin: 0; font-size: 15px; max-width: 80ch } .gres .big { font-size: 22px; color: var(--cryst); letter-spacing: 2px }
 @media (prefers-reduced-motion: reduce) { .gbar i { transition: none } }
 @media (max-width: 700px) { .gstat b { font-size: 14px } .ghud { padding: 6px 8px; gap: 5px } .ghead { font-size: 12px } .ghud .gstat { gap: 6px } .gstat span { font-size: 10.5px }
-  .ingame #sim { width: min(100%, 34svh) } .ingame .legend { display: none } .gband { height: 14px } .gbar { height: 7px } .ghud .gres { font-size: 12.5px } .htip { display: none } }
+  .ingame #sim { width: min(100%, 34svh) } .ingame .legend { display: none } .gband { height: 16px } .gband .tick { line-height: 16px } .gbar { height: 7px } .ghud .gres { font-size: 12.5px } .htip { display: none } }
+.offmode { display: none !important }
+.modeseg { display: grid; grid-template-columns: repeat(3, 1fr) }
+.modeseg button { font-weight: 600 }
+.thermo { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--line); padding-top: 10px }
+.thermo h2 { font-family: var(--f-display); font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 }
+.thermo .note { margin: 0 }
+.thmore { font-size: 13px; color: var(--muted) } .thmore summary { cursor: pointer; color: var(--accent) } .thmore p { margin: 6px 0; max-width: 90ch }
+.thgrid figcaption span { color: var(--muted); display: block }
+.inscan #sim { width: min(100%, calc(100vh - 440px)); width: min(100%, calc(100svh - 440px)); min-width: 260px; margin: 0 auto }
+@media (min-width: 701px) { .thermo .thgrid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px } .thermo .thplot { height: 130px } .thgrid figcaption { font-size: 11.5px; line-height: 1.3 } }
+@media (max-width: 700px) { .inscan .cellbox { position: static } .inscan #sim { width: min(100%, 46svh); min-width: 0 } .thermo .thgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px } .thermo .thplot { height: 110px } .thgrid figcaption { font-size: 11.5px; line-height: 1.3 } }
 .thhead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px }
 .thhead .btns { align-items: center }
 .thgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 22px }
@@ -186,11 +198,11 @@ button { touch-action: manipulation }
       <div class="ghud" id="ghud" hidden>
         <div class="ghead"><div><b id="hudTitle"></b> <span id="hudGoal"></span> <span class="htip" id="hudTip"></span></div><div class="btns" style="flex:none;gap:6px"><button class="btn primary" id="gagain" hidden>Play again</button><button class="btn" id="gquit">Give up</button></div></div>
         <div class="gstat">
-          <div><span id="gvalLab">Now</span><b id="gval">–</b></div>
+          <div><span id="gvalLab">Score</span><b id="gval">–</b></div>
           <div><span>Time left</span><b id="gtime">–</b></div>
-          <div><span>Held in target</span><b id="ghold">–</b></div>
+          <div><span>Stars now</span><b id="gstars" class="gst">☆☆☆</b></div>
         </div>
-        <div class="gband" aria-hidden="true" title="Shaded: target. Line: now"><div class="zone" id="gzone"></div><div class="now" id="gnow"></div></div>
+        <div class="gband" id="gband" aria-hidden="true" title="Line: your score now. Marks: star levels"><div class="now" id="gnow"></div></div>
         <div class="gbar" aria-hidden="true"><i id="gbar"></i></div>
         <p class="gres" id="gres" aria-live="polite"></p>
       </div>
@@ -202,12 +214,51 @@ button { touch-action: manipulation }
         <div class="meter" id="mmeter" hidden aria-hidden="true"><i id="micbarM"></i></div>
       </div>
       <div class="legend"><span id="legendItems" style="display:contents"></span><span id="boxinfo" style="font-family:var(--f-mono)"></span></div>
+      <div class="thermo" id="thermoPanel" data-mode="scan">
+        <div class="thhead">
+          <h2>Energy scan: find the melting point</h2>
+          <div class="btns">
+            <button class="btn hot" id="scanHeat">Heating scan</button>
+            <button class="btn cold" id="scanCool">Cooling scan</button>
+            <button class="btn" id="scanStop" disabled>Stop</button>
+            <select id="scanTau" aria-label="Scan duration"><option value="80">Fast · 80 τ</option><option value="160" selected>Normal · 160 τ</option><option value="320">Slow · 320 τ</option></select>
+          </div>
+        </div>
+        <p class="note" id="scanStatus">Press <b>Heating scan</b>: the computer starts from the ordered structure, warms it slowly and measures the energy at every temperature. Then try <b>Cooling scan</b>.</p>
+        <div class="thgrid">
+          <figure><figcaption><b>1 · Energy U</b> <span>climbs as it breaks</span></figcaption><canvas class="thplot" id="thU"></canvas></figure>
+          <figure><figcaption><b>2 · Heat capacity C</b> <span>peak = melting point</span></figcaption><canvas class="thplot" id="thC"></canvas></figure>
+          <figure><figcaption><b>3 · Entropy S</b> <span>disorder, jumps up</span></figcaption><canvas class="thplot" id="thS"></canvas></figure>
+          <figure><figcaption><b>4 · Free energy F = U − TS</b> <span>lower wins</span></figcaption><canvas class="thplot" id="thF"></canvas></figure>
+        </div>
+        <div class="thkey">
+          <i><span class="sw" style="background:var(--hot)"></span>heating</i>
+          <i><span class="sw" style="background:var(--cold)"></span>cooling</i>
+          <i><span class="sw" style="border-top:2px dashed var(--accent);height:0"></span>if it stayed ordered</i>
+          <i><span class="sw" style="border-top:2px dashed var(--tail);height:0"></span>if it stayed broken</i>
+          <i><span class="sw" style="background:var(--ink);width:2px;height:10px"></span>melting point</i>
+        </div>
+        <p class="thsum" id="thSummary"></p>
+        <details class="thmore"><summary>What do the graphs mean?</summary>
+          <p>Why does heat break structures? Sticking together <b>lowers the energy</b>, so cold molecules build structures. Breaking free <b>increases disorder</b> (entropy): there are many more ways to be scattered than to be neatly packed. Heat makes disorder more valuable, so at some temperature disorder wins and the structure falls apart.</p>
+          <p><b>1 · Energy U</b>: how much energy the molecules hold. It climbs as the structure breaks, because broken contacts cost energy. At constant volume it plays the role of the enthalpy H.</p>
+          <p><b>2 · Heat capacity C</b>: how much heat it takes to warm up a little. The peak is the melting point: there, heat goes into breaking the structure instead of warming it.</p>
+          <p><b>3 · Entropy S</b>: the amount of disorder (how many ways the molecules can be arranged). It jumps up when the structure breaks.</p>
+          <p><b>4 · Free energy F = U − T·S</b>: energy minus the “disorder bonus”. Nature picks the state with the lower F. Where the two dashed lines cross, ordered and broken are equally good: that is the melting point.</p>
+          <p class="note" id="thUnit"></p>
+        </details>
+      </div>
     </div>
 
     <div class="rack">
-      <div class="panel" id="gamePanel">
+      <div class="seg modeseg" role="group" aria-label="Mode">
+        <button data-appmode="explore" aria-pressed="true">Explore</button>
+        <button data-appmode="game" aria-pressed="false">Game</button>
+        <button data-appmode="scan" aria-pressed="false">Energy scan</button>
+      </div>
+      <div class="panel" id="gamePanel" data-mode="game">
         <h2>Game: steer the molecules with your voice</h2>
-        <p class="ghint" style="color:var(--ink)">Silence cools the box, noise heats it. Pick a challenge and press Start. Bring the molecules into the target state and keep them there until the bar fills up.</p>
+        <p class="ghint" style="color:var(--ink)">Silence cools the box, noise heats it. Each game lasts 30 seconds: get the best structure you can before time runs out. Just going silent never earns a star.</p>
         <div class="gpick" id="gpick"></div>
         <div class="gsel" id="gsel" hidden>
           <p class="ggoal" id="ggoal"></p>
@@ -219,7 +270,7 @@ button { touch-action: manipulation }
         </div>
       </div>
 
-      <div class="panel">
+      <div class="panel" data-mode="explore scan">
         <h2>System</h2>
         <div class="syspick" role="group" aria-label="System">
           <button data-pick="dumbbell" aria-pressed="true"><b>Amphiphiles</b><small>Micelles form on cooling</small></button>
@@ -234,7 +285,7 @@ button { touch-action: manipulation }
         </div>
       </div>
 
-      <div class="panel">
+      <div class="panel" data-mode="explore game scan">
         <h2>Temperature</h2>
         <div class="tbig tfull"><b id="tset">2.00</b><small>T* set point &nbsp;·&nbsp; kinetic <span id="tkin">–</span></small></div>
         <div class="seg tfull" role="group" aria-label="Temperature source">
@@ -259,7 +310,7 @@ button { touch-action: manipulation }
         </div>
       </div>
 
-      <div class="panel">
+      <div class="panel" data-mode="explore">
         <h2>Live readouts</h2>
         <div class="readouts">
           <div class="ro"><span id="l0">–</span><b id="r0">–</b></div>
@@ -281,7 +332,7 @@ button { touch-action: manipulation }
         </div>
       </div>
 
-      <div class="panel" id="compPanel">
+      <div class="panel" id="compPanel" data-mode="explore">
         <h2>Composition and interactions</h2>
         <div class="row"><label for="conc" id="concLab">Concentration</label><output id="concO">26%</output>
           <input type="range" id="conc" min="2" max="60" step="1" value="26"></div>
@@ -344,7 +395,7 @@ button { touch-action: manipulation }
         <p class="note" data-show="mbpoly">Chain length 1 (default) gives free nonpolar solutes; longer lengths give one or more chains of the same beads.</p>
       </div>
 
-      <details class="panel" id="modelPanel">
+      <details class="panel" id="modelPanel" data-mode="explore">
         <summary><h2>Model and integrator</h2></summary>
         <div class="row"><label for="thermo">Thermostat</label>
           <select id="thermo"><option value="langevin">Langevin (BAOAB)</option><option value="bussi">Bussi velocity rescaling</option></select></div>
@@ -357,7 +408,7 @@ button { touch-action: manipulation }
         <div class="checks"><label><input type="checkbox" id="autoSpf" checked> Adjust steps per frame automatically to keep the animation smooth</label></div>
       </details>
 
-      <details class="panel">
+      <details class="panel" data-mode="explore">
         <summary><h2>Box and view</h2></summary>
         <div class="row" id="sizeRow"><label for="size">Box size</label>
           <select id="size"><option value="36">36×36 sites · 1296 beads</option><option value="48" selected>48×48 sites · 2304 beads</option><option value="64">64×64 sites · 4096 beads</option></select></div>
@@ -371,35 +422,6 @@ button { touch-action: manipulation }
         </div>
       </details>
     </div>
-  </div>
-
-  <div class="panel" id="thermoPanel">
-    <div class="thhead">
-      <h2>Energy vs disorder: find the melting point</h2>
-      <div class="btns">
-        <button class="btn hot" id="scanHeat">Heating scan</button>
-        <button class="btn cold" id="scanCool">Cooling scan</button>
-        <button class="btn" id="scanStop" disabled>Stop</button>
-        <select id="scanTau" aria-label="Scan duration"><option value="80">Fast · 80 τ</option><option value="160" selected>Normal · 160 τ</option><option value="320">Slow · 320 τ</option></select>
-      </div>
-    </div>
-    <p class="thsum">Why does heat break structures? Sticking together <b>lowers the energy</b>, so cold molecules build structures. Breaking free <b>increases disorder</b> (entropy): there are many more ways to be scattered than to be neatly packed. Heat makes disorder more valuable, so at some temperature disorder wins and the structure falls apart. Press <b>Heating scan</b>: the computer starts from the ordered structure, warms it up slowly and measures the energy at every temperature. The four graphs then show where the melting point is.</p>
-    <p class="note" id="scanStatus">Tip: after heating, press <b>Cooling scan</b> to watch the structure form again on the way down.</p>
-    <div class="thkey">
-      <i><span class="sw" style="background:var(--hot)"></span>measured while heating</i>
-      <i><span class="sw" style="background:var(--cold)"></span>measured while cooling</i>
-      <i><span class="sw" style="border-top:2px dashed var(--accent);height:0"></span>if it stayed ordered</i>
-      <i><span class="sw" style="border-top:2px dashed var(--tail);height:0"></span>if it stayed broken</i>
-      <i><span class="sw" style="background:var(--ink);width:2px;height:10px"></span>melting point</i>
-    </div>
-    <div class="thgrid">
-      <figure><figcaption><b>1 · Energy U</b>: how much energy the molecules hold. It climbs as the structure breaks, because broken contacts cost energy.</figcaption><canvas class="thplot" id="thU"></canvas></figure>
-      <figure><figcaption><b>2 · Heat capacity C</b>: how much heat it takes to warm up a little. <b>The peak is the melting point</b>: there, heat goes into breaking the structure instead of warming it.</figcaption><canvas class="thplot" id="thC"></canvas></figure>
-      <figure><figcaption><b>3 · Entropy S</b>: the amount of disorder (how many ways the molecules can be arranged). It jumps up when the structure breaks.</figcaption><canvas class="thplot" id="thS"></canvas></figure>
-      <figure><figcaption><b>4 · Free energy F = U − T·S</b>: energy minus “disorder bonus”. Nature picks the state with the <b>lower F</b>. Where the two dashed lines cross, ordered and broken are equally good: the melting point.</figcaption><canvas class="thplot" id="thF"></canvas></figure>
-    </div>
-    <p class="thsum" id="thSummary"></p>
-    <p class="note" id="thUnit"></p>
   </div>
 
   <div class="panel">
@@ -1758,49 +1780,47 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   }
   let userBox = $('size').value;
   $('size').addEventListener('change', () => { if (!SYS[sys].box) userBox = $('size').value; });
-  // ---------- game: reach a target state and hold it ----------
-  // Targets and time limits come from headless runs (several seeds): each is reachable with the right temperature, not with any temperature.
+  // ---------- game: 30 seconds to reach the best possible state ----------
+  // Each game runs a fixed amount of simulation time D, paced to take 30 s (longer on a device too slow to keep up), so scores are comparable.
+  // Star thresholds come from headless runs over 3 seeds: going silent at once (deep quench) scores below one star in every game;
+  // the best scores need slow cooling (ice) or a cool-but-not-frozen temperature (liquids, block chains).
+  const GAME_SEC = 30;
   const GAMES = [
-    { id: 'pop', title: 'Pop the bilayers', sub: 'Amphiphiles · make noise', sys: 'dumbbell', ordered: true, T0: 0.5, range: [0.4, 2.4], box: '48',
-      goal: 'The membranes are stable. Heat them until fewer than 40% of the molecules are still in membranes, and keep them broken.',
-      hint: 'Shout, clap or play music. When the membranes break, keep the noise up: if you go quiet they start to stick together again.',
-      lab: 'In membranes', lo: 0, hi: 0.4, hold: 10, limit: 80, fmt: (v) => pct(v),
-      win: 'Heat shakes the molecules hard enough that the oily tails can no longer stay hidden together. The structure falls apart.' },
-    { id: 'freeze', title: 'Freeze the lake', sub: 'Ice · be quiet', sys: 'ice', ordered: false, T0: 0.26, range: [0.10, 0.30],
-      goal: 'The water is liquid. Cool it until at least 35% of it is ice, and keep it frozen.',
-      hint: 'Go quiet and wait. Ice does not appear at once: first tiny crystals must form, then they grow. Watch for blue patches.',
-      lab: 'Ice', lo: 0.35, hi: 1, hold: 15, limit: 300, fmt: (v) => pct(v),
-      win: 'Water froze, but into many small crystals with messy borders between them, which is why the ice share stays well below 100%. Real ice made fast is cloudy for the same reason.' },
-    { id: 'half', title: 'Half-frozen', sub: 'Ice · fine control', sys: 'ice', ordered: true, T0: 0.12, range: [0.10, 0.30],
-      goal: 'Start from perfect ice. Melt it until only 30–60% is ice, and hold it in that band.',
-      hint: 'Melting starts suddenly once it gets warm enough, so make noise gently and stop as soon as the ice share drops. If it melts too far, refreezing is slow: be careful!',
-      lab: 'Ice', lo: 0.30, hi: 0.60, hold: 25, limit: 250, fmt: (v) => pct(v),
-      win: 'Ice melts fast but freezes slowly: freezing has to start new crystals first. That is why it is easy to overshoot when melting and hard to come back.' },
-    { id: 'poly', title: 'Crystallize the polymer', sub: 'Stiff polymer · be quiet', sys: 'polymer', ordered: false, T0: 2.2, range: [0.7, 2.4], box: '36',
-      goal: 'The polymer chains are a tangled melt. Cool them until at least 40% of the beads are in crystals, and keep them there.',
-      hint: 'Stay quiet. The chains need time to straighten and line up side by side, so it takes a while. Watch the orange crystals grow.',
-      lab: 'Crystalline', lo: 0.40, hi: 1, hold: 10, limit: 220, fmt: (v) => pct(v),
-      win: 'Stiff chains packed side by side: a polymer crystal. Real plastics such as polyethylene are partly crystalline in the same way, with tangled parts in between.' },
-    { id: 'demix', title: 'Separate the liquids', sub: 'Binary liquid · be quiet', sys: 'demix', ordered: false, T0: 2.0, range: [0.3, 2.0], box: '36',
-      goal: 'Two liquids are mixed like milk in coffee. Cool them until they separate (demixing s at least 0.45), and keep them apart.',
-      hint: 'Silence makes the liquids prefer their own kind, like oil and water. The blobs then slowly grow.',
-      lab: 'Demixing s', lo: 0.45, hi: 1, hold: 10, limit: 220, fmt: (v) => v.toFixed(2),
-      win: 'Cold, the molecules prefer their own kind and the liquids separate into growing blobs. Warm, mixing wins because it gives more disorder.' },
+    { id: 'ice', title: 'Grow the biggest ice crystal', sub: 'Ice · slow cooling wins', sys: 'ice', ordered: false, T0: 0.26, range: [0.02, 0.30], D: 150,
+      lab: 'Ice', fmt: (v) => pct(v), stars: [0.40, 0.48, 0.55],
+      goal: 'The water is liquid. You have 30 seconds to turn as much of it as possible into ice. Your score is the ice share when the time runs out.',
+      hint: 'Going silent at once freezes the water into a jumble: no star. Ice needs time to grow in order. Start with some noise, then get quieter little by little.',
+      lesson: { good: 'Cooling slowly gave the molecules time to find their places in the honeycomb, so the crystals grew large. This is annealing: how glassmakers and metal workers make strong, clear materials.',
+        bad: 'Cooled too fast, the molecules lock in wherever they happen to be; kept at one temperature, the crystals grow too slowly or melt again. Try starting a bit warm and cooling step by step.' } },
+    { id: 'demix', title: 'Separate the liquids', sub: 'Binary liquid · not too cold', sys: 'demix', ordered: false, T0: 1.0, range: [0.02, 1.0], D: 90, box: '36',
+      lab: 'Demixing s', fmt: (v) => v.toFixed(2), stars: [0.60, 0.72, 0.79],
+      goal: 'Two liquids are mixed like milk in coffee. In 30 seconds, separate them as much as you can. Your score is the demixing s at the end (0 mixed, 1 fully separated).',
+      hint: 'Total silence freezes the molecules before they can sort themselves: no star. Find a level that is cold enough to separate but warm enough to move.',
+      lesson: { good: 'Cool enough that the molecules prefer their own kind, warm enough that they can still move: the blobs grow quickly. Too cold, and everything freezes in place.',
+        bad: 'Very cold molecules hardly move, so they stay stuck next to the wrong neighbours. Try a little noise to keep them moving.' } },
+    { id: 'blocks', title: 'Sort the block chains', sub: 'Diblock copolymer · not too cold', sys: 'diblock', ordered: false, T0: 1.6, range: [0.02, 1.6], D: 90, box: '36',
+      lab: 'Segregation s', fmt: (v) => v.toFixed(2), stars: [0.70, 0.76, 0.80],
+      goal: 'Each chain has a teal half and an orange half, all mixed up. In 30 seconds, sort the halves into separate teal and orange zones. Your score is the segregation s at the end.',
+      hint: 'Silence freezes the chains before they untangle: no star. Keep the box cool but alive, and cool further near the end.',
+      lesson: { good: 'The halves sorted themselves into zones. The chains hold the two kinds together, so the zones stay narrow: this is how block copolymers make nano-patterns.',
+        bad: 'Frozen too fast, the chains stay tangled with the wrong neighbours. Try keeping some noise so they can move.' } },
   ];
-  let game = null, gameSel = null, gameRange = null;
+  let game = null, gameSel = null, gameRange = null, gameCarry = 0;
   const curRange = () => gameRange || SYS[sys].trange || [0.3, 2.5];
-  const bestKey = (g) => 'mdlab-best-' + g.id;
+  const bestKey = (g) => 'mdlab-best2-' + g.id;
   const getBest = (g) => { try { const v = localStorage.getItem(bestKey(g)); return v ? +v : null; } catch (e) { return null; } };
   const setBest = (g, v) => { try { localStorage.setItem(bestKey(g), String(v)); } catch (e) {} };
-  const starsFor = (g, tUsed) => (tUsed <= g.limit / 3 ? 3 : tUsed <= 2 * g.limit / 3 ? 2 : 1);
+  const starsFor = (g, v) => g.stars.filter((s) => v >= s).length;
+  const starStr = (n) => '★'.repeat(n) + '☆'.repeat(3 - n);
   function renderPick() {
     $('gpick').innerHTML = GAMES.map((g) => { const b = getBest(g);
-      return `<button data-game="${g.id}" aria-pressed="${gameSel === g}"><b>${g.title}</b><small>${g.sub}</small><span class="stars">${b ? '★'.repeat(starsFor(g, b)) + ' best ' + b.toFixed(0) : ''}</span></button>`; }).join('');
+      return `<button data-game="${g.id}" aria-pressed="${gameSel === g}"><b>${g.title}</b><small>${g.sub}</small><span class="stars">${b !== null ? starStr(starsFor(g, b)) + ' best ' + g.fmt(b) : ''}</span></button>`; }).join('');
   }
   function selectGame(id) {
     if (game) endGame(null);
     gameSel = GAMES.find((g) => g.id === id); renderPick();
-    $('gsel').hidden = false; $('ggoal').textContent = gameSel.goal; $('ghint').textContent = 'Tip: ' + gameSel.hint;
+    $('gsel').hidden = false; $('ggoal').textContent = gameSel.goal;
+    $('ghint').innerHTML = 'Tip: ' + gameSel.hint + `<br>Stars: ${gameSel.stars.map((s, k) => '★'.repeat(k + 1) + ' ' + gameSel.fmt(s)).join(' · ')}`;
     $('gstart').textContent = 'Start';
   }
   function startGame() {
@@ -1808,13 +1828,15 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (scan) stopScan(false);
     gameRange = g.range;
     sys = g.sys; applySysUI();
-    if (g.box) $('size').value = g.box; else if (SYS[sys].box) $('size').value = String(SYS[sys].box);
+    $('size').value = g.box || (SYS[sys].box ? String(SYS[sys].box) : $('size').value);
     $('initState').value = g.ordered ? 'ordered' : 'disordered';
     for (const id of ['tslider', 'tsliderM']) { const el = $(id); el.min = g.range[0]; el.max = g.range[1]; }
     setT(g.T0); build({ game: true });
-    game = { g, t0: eng.time, last: eng.time, hold: 0, ema: null };
-    $('gvalLab').textContent = g.lab; $('gval').textContent = $('ghold').textContent = '–'; $('gval').className = ''; $('gtime').textContent = g.limit;
-    $('gzone').style.left = (100 * g.lo) + '%'; $('gzone').style.width = (100 * (g.hi - g.lo)) + '%';
+    game = { g, t0: eng.time, last: eng.time, ema: null, rate: g.D / GAME_SEC };
+    gameCarry = 0; running = true; $('pause').textContent = 'Pause';
+    $('gvalLab').textContent = g.lab; $('gval').textContent = '–'; $('gstars').textContent = starStr(0); $('gtime').textContent = GAME_SEC;
+    const band = $('gband'); band.querySelectorAll('.tick').forEach((x) => x.remove());
+    g.stars.forEach((s, k) => { const d = document.createElement('div'); d.className = 'tick'; d.style.left = (100 * s) + '%'; d.textContent = '★'.repeat(k + 1); band.appendChild(d); });
     $('gnow').style.left = '0%'; $('gbar').style.width = '0%'; $('gres').textContent = '';
     $('hudTitle').textContent = g.title + ':'; $('hudGoal').textContent = g.goal; $('hudTip').textContent = 'Tip: ' + g.hint;
     $('ghud').hidden = false; document.querySelector('.wrap').classList.add('ingame'); $('gquit').textContent = 'Give up'; $('gagain').hidden = true;
@@ -1823,35 +1845,53 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     else setMode('slider');
     const hud = $('ghud'); if (hud.scrollIntoView) hud.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
   }
+  function gameSteps(dtSec) { // steps this frame so that D time units take 30 s; limited by what the device can do
+    const want = game.rate * dtSec / eng.p.dt + gameCarry, cap = msPerStep ? Math.max(1, Math.floor(2 * BUDGET_MS / msPerStep)) : 30;
+    const n = Math.max(0, Math.min(cap, Math.floor(want))); gameCarry = Math.min(want - n, 5); return n;
+  }
   function endGame(result) {
     const G = game; game = null;
     $('gstart').disabled = false; $('gstart').textContent = 'Play again'; $('gquit').textContent = 'Close';
     if (!G || !result) { closeHud(); return; }
+    const g = G.g, v = G.ema, st = starsFor(g, v), b = getBest(g), rec = b === null || v > b; if (rec) setBest(g, v);
     $('hudGoal').textContent = $('hudTip').textContent = ''; $('gagain').hidden = false;
-    const g = G.g, used = eng.time - G.t0;
-    if (result === 'win') {
-      const st = starsFor(g, used), b = getBest(g), rec = b === null || used < b; if (rec) setBest(g, used);
-      $('gres').innerHTML = `<span class="big">${'★'.repeat(st)}${'☆'.repeat(3 - st)}</span> <b>You did it</b> in ${used.toFixed(0)} time units${rec ? ' (new best!)' : ''}. ${g.win}`;
-    } else $('gres').innerHTML = `<b>Time is up.</b> ${g.hint} Try again?`;
+    $('gres').innerHTML = `<span class="big">${starStr(st)}</span> <b>Score ${g.fmt(v)}</b>${rec ? ' (new best!)' : ''}. ` +
+      (st ? g.lesson.good : g.lesson.bad) + (st < 3 ? ` Next star at ${g.fmt(g.stars[st])}.` : ' Top score!');
     renderPick();
   }
   function gameUpdate(v) {
     const G = game, g = G.g, now = eng.time, dt = now - G.last; G.last = now;
-    G.ema = G.ema === null ? v : G.ema + (1 - Math.exp(-dt / 1.0)) * (v - G.ema); // smooth over about 1 time unit
-    const inside = G.ema >= g.lo && G.ema <= g.hi;
-    G.hold = inside ? G.hold + dt : 0;
-    const left = Math.max(0, g.limit - (now - G.t0));
-    $('gval').textContent = g.fmt(G.ema); $('gval').className = inside ? 'in' : 'out';
-    $('gtime').textContent = left.toFixed(0); $('ghold').textContent = `${Math.min(G.hold, g.hold).toFixed(0)} / ${g.hold}`;
+    G.ema = G.ema === null ? v : G.ema + (1 - Math.exp(-dt / 2.0)) * (v - G.ema); // smooth over about 2 time units
+    const frac = Math.min(1, (now - G.t0) / g.D), st = starsFor(g, G.ema);
+    $('gval').textContent = g.fmt(G.ema); $('gstars').textContent = starStr(st);
+    $('gtime').textContent = Math.ceil(GAME_SEC * (1 - frac)) + ' s';
     $('gnow').style.left = (100 * Math.max(0, Math.min(1, G.ema))) + '%';
-    $('gbar').style.width = (100 * Math.min(1, G.hold / g.hold)) + '%';
-    if (G.hold >= g.hold) endGame('win'); else if (left <= 0) endGame('lose');
+    $('gbar').style.width = (100 * frac) + '%';
+    if (frac >= 1) endGame('done');
   }
   $('gpick').addEventListener('click', (e) => { const b = e.target.closest('[data-game]'); if (b) selectGame(b.dataset.game); });
   $('gstart').addEventListener('click', startGame); $('gagain').addEventListener('click', startGame);
+  renderPick();
+
   function closeHud() { $('ghud').hidden = true; document.querySelector('.wrap').classList.remove('ingame'); resize(); }
   $('gquit').addEventListener('click', () => { const was = !!game; endGame(null); if (was) { gameRange = null; applySysUI(); setT(tset); } closeHud(); });
   renderPick();
+
+  // ---------- app modes: explore / game / energy scan ----------
+  let appMode = 'explore';
+  function setAppMode(m) {
+    if (m !== 'game') { if (game) endGame(null); else if (!$('ghud').hidden) closeHud(); }
+    if (m !== 'game' && gameRange) { gameRange = null; applySysUI(); setT(tset); }
+    if (m !== 'scan' && scan) stopScan(false);
+    appMode = m;
+    document.querySelectorAll('[data-appmode]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.appmode === m)));
+    document.querySelectorAll('[data-mode]').forEach((el) => el.classList.toggle('offmode', !el.dataset.mode.split(' ').includes(m)));
+    const w = document.querySelector('.wrap'); w.classList.toggle('inscan', m === 'scan');
+    if (m === 'game' && !gameSel) selectGame(GAMES[0].id);
+    resize(); if (m === 'scan') drawThermo();
+    try { localStorage.setItem('mdlab-mode', m); } catch (e) {}
+  }
+  document.querySelectorAll('[data-appmode]').forEach((b) => b.addEventListener('click', () => setAppMode(b.dataset.appmode)));
 
   // ---------- thermodynamics: temperature scans ----------
   const NB = 30; let scan = null, thermo = null;
@@ -2092,9 +2132,9 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (scan && running) scanStep();
     else if (mode === 'mic') micUpdate(dtSec);
     if (running) {
-      const n = +$('spf').value, t0 = performance.now();
+      const n = game ? gameSteps(dtSec) : +$('spf').value, t0 = performance.now();
       for (let k = 0; k < n; k++) eng.step();
-      autoSpeed(n, performance.now() - t0);
+      if (game) { if (n) { const m = (performance.now() - t0) / n; msPerStep = msPerStep === null ? m : 0.9 * msPerStep + 0.1 * m; } } else autoSpeed(n, performance.now() - t0);
       if (scan) scanSample();
       stepCount += n;
       const tk = eng.tempKin();
@@ -2119,6 +2159,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
 
   if (isPhone) { $('size').value = '36'; userBox = '36'; }
   applySysUI();
-  setT(startT()); build(); resize(); drawThermo(); requestAnimationFrame((t) => { last = t; perfT = t; loop(t); });
+  setT(startT()); build(); resize(); drawThermo();
+  { let m0 = 'explore'; try { m0 = localStorage.getItem('mdlab-mode') || 'explore'; } catch (e) {} setAppMode(['explore', 'game', 'scan'].includes(m0) ? m0 : 'explore'); } requestAnimationFrame((t) => { last = t; perfT = t; loop(t); });
 })();
 </script>
