@@ -103,7 +103,8 @@ table.eps th { font-weight: 500; color: var(--muted) }
 .ghud .gstat div { padding: 4px 8px; background: var(--panel) } .ghud .gres:empty { display: none }
 .ingame #sim { width: min(100%, calc(100vh - 300px)); width: min(100%, calc(100svh - 300px)); margin: 0 auto }
 .ggoal { font-size: 14px; margin: 0; font-weight: 500 } .ghint { margin: 0; color: var(--muted); font-size: 13.5px; max-width: 80ch }
-.gstat { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px }
+.gstat { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px }
+.gband .best { position: absolute; top: 0; bottom: 0; width: 3px; margin-left: -1px; background: var(--cryst); display: none }
 .gstat div { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; display: flex; flex-direction: column; gap: 2px }
 .gstat span { font-size: 12px; color: var(--muted) } .gstat b { font-family: var(--f-mono); font-weight: 500; font-size: 16px }
 .gstat b.in { color: var(--accent) } .gstat b.out { color: var(--hot) }
@@ -200,9 +201,10 @@ button { touch-action: manipulation }
         <div class="gstat">
           <div><span id="gvalLab">Score</span><b id="gval">–</b></div>
           <div><span>Time left</span><b id="gtime">–</b></div>
-          <div><span>Stars now</span><b id="gstars" class="gst">☆☆☆</b></div>
+          <div><span>Best this run</span><b id="gpeak">–</b></div>
+          <div><span>Stars</span><b id="gstars" class="gst">☆☆☆</b></div>
         </div>
-        <div class="gband" id="gband" aria-hidden="true" title="Line: your score now. Marks: star levels"><div class="now" id="gnow"></div></div>
+        <div class="gband" id="gband" aria-hidden="true" title="Line: your score now. Marks: star levels"><div class="best" id="gbest"></div><div class="now" id="gnow"></div></div>
         <div class="gbar" aria-hidden="true"><i id="gbar"></i></div>
         <p class="gres" id="gres" aria-live="polite"></p>
       </div>
@@ -258,7 +260,7 @@ button { touch-action: manipulation }
       </div>
       <div class="panel" id="gamePanel" data-mode="game">
         <h2>Game: steer the molecules with your voice</h2>
-        <p class="ghint" style="color:var(--ink)">Silence cools the box, noise heats it. Each game lasts 30 seconds: get the best structure you can before time runs out. Just going silent never earns a star.</p>
+        <p class="ghint" style="color:var(--ink)">Silence cools the box, noise heats it. Each game lasts 30 seconds: your score is the best structure you reach, and at the end you see it. Just going silent never earns a star.</p>
         <div class="gpick" id="gpick"></div>
         <div class="gsel" id="gsel" hidden>
           <p class="ggoal" id="ggoal"></p>
@@ -280,6 +282,7 @@ button { touch-action: manipulation }
           <button data-pick="hp" aria-pressed="false"><b>HP copolymer</b><small>Folds on cooling</small></button>
           <button data-pick="lcst" aria-pressed="false"><b>UCST polymer</b><small>Collapses on cooling</small></button>
           <button data-pick="mbpoly" aria-pressed="false"><b>Chain in MB water</b><small>Hydrophobic effect from hydrogen bonds</small></button>
+          <button data-pick="plates" aria-pressed="false"><b>Plates in water</b><small>Water-fearing surfaces stick</small></button>
           <button data-pick="ice" aria-pressed="false"><b>Ice</b><small>Melts on heating</small></button>
           <button data-pick="brush" aria-pressed="false"><b>Brush + droplet</b><small>Wetting switches with temperature</small></button>
         </div>
@@ -334,7 +337,7 @@ button { touch-action: manipulation }
 
       <div class="panel" id="compPanel" data-mode="explore">
         <h2>Composition and interactions</h2>
-        <div class="row"><label for="conc" id="concLab">Concentration</label><output id="concO">26%</output>
+        <div class="row" id="concRow"><label for="conc" id="concLab">Concentration</label><output id="concO">26%</output>
           <input type="range" id="conc" min="2" max="60" step="1" value="26"></div>
         <p class="note" id="concNote"></p>
 
@@ -391,7 +394,15 @@ button { touch-action: manipulation }
           <input type="range" id="epsQL" min="0" max="2" step="0.05" value="1.2"></div>
         <div class="row" data-show="brush"><label for="epsHL">Orange beads: attraction to the liquid</label><output id="epsHLO">0.20</output>
           <input type="range" id="epsHL" min="0" max="2" step="0.05" value="0.2"></div>
-        <div class="checks" data-show="mbpoly"><label><input type="checkbox" id="mbHB" checked> Water hydrogen bonds on (turn off for the control: plain LJ water)</label></div>
+        <div class="row" data-show="plates"><label for="plateKind">Plate surface</label>
+          <select id="plateKind"><option value="0" selected>Water-fearing (hydrophobic)</option><option value="0.8">Water-loving (hydrophilic)</option></select></div>
+        <div class="checks" data-show="plates"><label><input type="checkbox" id="plateHold" checked> Hold the plates in place (untick to release them)</label></div>
+        <p class="note" data-show="plates">Watch the gap while the plates are held, then release them. Switch the surface while it runs: water-loving plates pull water back into the gap.</p>
+        <div class="row" data-show="plates"><label for="plateGap">Start gap</label>
+          <select id="plateGap"><option value="2.2" selected>One water layer</option><option value="3.2">Two water layers</option></select></div>
+        <div class="row" data-show="plates"><label for="plateLen">Plate length (beads)</label><output id="plateLenO">12</output>
+          <input type="range" id="plateLen" min="6" max="18" step="1" value="12"></div>
+        <div class="checks" data-show="mbpoly plates"><label><input type="checkbox" id="mbHB" checked> Water hydrogen bonds on (turn off for the control: plain LJ water)</label></div>
         <p class="note" data-show="mbpoly">Chain length 1 (default) gives free nonpolar solutes; longer lengths give one or more chains of the same beads.</p>
       </div>
 
@@ -416,7 +427,8 @@ button { touch-action: manipulation }
           <select id="initState"><option value="ordered" selected>Ordered (cold equilibrium)</option><option value="disordered">Disordered (hot)</option></select></div>
         <div class="btns"><button class="btn primary" id="reset">Rebuild system</button></div>
         <div class="checks">
-          <label data-show="dumbbell polymer diblock hp lcst mbpoly"><input type="checkbox" id="showSolv" checked> Show solvent</label>
+          <label data-show="dumbbell polymer diblock hp lcst mbpoly plates"><input type="checkbox" id="showSolv" checked> Show solvent</label>
+          <label data-show="mbpoly plates"><input type="checkbox" id="showShell" checked> Highlight hydration-shell water</label>
           <label data-show="dumbbell polymer mbpoly ice"><input type="checkbox" id="byCluster"> <span id="byClusterLab">Color by micelle</span></label>
           <label data-show="dumbbell polymer diblock hp lcst mbpoly"><input type="checkbox" id="showBonds" checked> Show bonds</label>
         </div>
@@ -527,6 +539,19 @@ U_LJ: ε = 0.1, σ = 0.7 (water)     solutes: σ = 1.5, purely repulsive (WCA) w
         <p>60 nonpolar solutes with almost no attraction for each other and none for water. Any clustering beyond chance comes from the water: joining up lets it rebuild the hydrogen bonds the solutes break. At T* = 0.22 about 48% of solutes sit in clusters of 3 or more; switch hydrogen bonds off (plain LJ water) and it drops to about 23%. Clustered solutes are highlighted.</p>
         <p>The effect peaks at intermediate temperature: about 41% clustered at T* = 0.16, 48% at 0.22 and 33% at 0.32. When cold, the hydrophobic effect is entropic and weakens on cooling; when hot, the network that drives it melts. Expect doubled association, not a sharp collapse: all-or-nothing hydrophobic collapse needs nonpolar objects much larger than water's structure. A chain of the same beads (chain length above 1) has not been calibrated.</p>
       </section>
+      <section data-show="plates">
+        <h3>What is simulated</h3>
+        <p>Two flat plates, each a stiff row of nonpolar beads, sit in Mercedes-Benz water (the same water as in "Chain in MB water" and "Ice"). The plates repel each other and, when water-fearing, only repel the water too: nothing in the model pulls them together directly. They start parallel, one or two water layers apart.</p>
+        <p>Plates start held in place; untick the box to release them. Blue water is the hydration shell, the water touching a plate. The readouts compare its hydrogen bonds with those of the water further away.</p>
+      </section>
+      <section data-show="plates">
+        <h3>What to look for</h3>
+        <p>Water keeps away from water-fearing plates: a thin dry zone surrounds them, and only about 8–13 water molecules touch them, against 35–40 for water-loving plates. Held one water layer apart, the water-fearing gap dries out within about 10 time units (dewetting). Release the plates and they close to contact.</p>
+        <p>Why: water next to a plate loses some of its hydrogen bonds (about 1.5 per molecule instead of 2 in the bulk, see the readouts). Water-loving plates pay this back by attracting the water. Water-fearing plates give nothing back, so the water is better off when the plates touch and hide two faces from it. That push from the water is the hydrophobic interaction.</p>
+        <p>Switch to water-loving plates: water comes back into the gap (3–6 molecules) and the plates stay about 1.7–3 σ apart, held apart by the water layer.</p>
+        <p>Two layers apart, the plates did not close within 150 time units in our runs: the effect needs the gap to be narrow enough that the water in it cannot keep its hydrogen bonds.</p>
+        <p>An honest caveat: with hydrogen bonds switched off, water-fearing plates also stick. Any dense liquid pushes big flat objects together, because the liquid gets more room when they touch (the depletion effect). In this 2D model we could not separate how much of the pull comes from each, so the water-loving plates are the clean comparison: same plates, same crowding, only the surface changes.</p>
+      </section>
       <section data-show="ice">
         <h3>What is simulated</h3>
         <p>836 water molecules in the Mercedes-Benz (MB) model, the same water as in "Chain in MB water". Each molecule is a disk with three arms 120° apart, like a simplified H<sub>2</sub>O that can make three hydrogen bonds. Two molecules bond when they are one unit apart and an arm of each points at the other.</p>
@@ -589,6 +614,7 @@ MDEngine.prototype.makeSeq = function () {
     case 'dumbbell': return [0, 1];
     case 'polymer': case 'lcst': return new Array(n).fill(3);
     case 'mbpoly': return new Array(Math.max(1, p.chainLen | 0)).fill(3); // 1 = free nonpolar solutes
+    case 'plates': return new Array(Math.max(3, p.plateLen | 0)).fill(3); // two stiff nonpolar plates
     case 'diblock': { const L = Math.max(4, n), nA = Math.max(1, Math.min(L - 1, Math.round(p.fA * L)));
       return new Array(L).fill(1).fill(0, 0, nA); }
     case 'hp': { let q = String(p.sequence || '').toUpperCase().replace(/[^HP]/g, ''); if (q.length < 3) q = 'HPHPPHHPHPPHPHHPPHPH';
@@ -606,12 +632,12 @@ MDEngine.prototype.init = function () {
   const a = 1 / Math.sqrt(p.rho);
   E.L = n * a; const N = n * n; E.N = N;
   E.seq = E.makeSeq(); const Lc = Math.max(1, E.seq.length); E.Lc = Lc;
-  E.mb = p.system === 'mbpoly' || p.system === 'ice'; E.solv = E.mb ? 7 : 2;
-  if (p.ordered) { E.initOrdered(); E.finishInit(); return; }
+  E.mb = p.system === 'mbpoly' || p.system === 'ice' || p.system === 'plates'; E.solv = E.mb ? 7 : 2;
+  if (p.ordered || p.system === 'plates') { E.initOrdered(); E.finishInit(); return; }
   E.x = new Float64Array(N); E.y = new Float64Array(N);
   E.vx = new Float64Array(N); E.vy = new Float64Array(N);
   E.fx = new Float64Array(N); E.fy = new Float64Array(N);
-  E.mb = p.system === 'mbpoly' || p.system === 'ice'; E.solv = E.mb ? 7 : 2;
+  E.mb = p.system === 'mbpoly' || p.system === 'ice' || p.system === 'plates'; E.solv = E.mb ? 7 : 2;
   E.th = new Float64Array(N); E.om = new Float64Array(N); E.tq = new Float64Array(N); E.arm = new Float64Array(6 * N); E.nHB = 0;
   E.type = new Uint8Array(N);
   const shuffled = (k) => { const o = []; for (let i = 0; i < k; i++) o.push(i);
@@ -829,6 +855,12 @@ MDEngine.prototype.initOrdered = function () {
     case 'lcst': { // UCST polymer: collapsed globules
       const objs = []; for (let q = 0; q < want; q++) objs.push(E.globule(Lc, 1.0, 0, 0, 2 * Math.PI * E.rand()));
       E.placeMolecules(E.spreadObjects(objs), 0.95); break; }
+    case 'plates': { // two parallel plates (stiff rods of nonpolar beads), centre-to-centre gap p.plateGap, water everywhere else
+      const d = 0.95 * p.sigP, len = (Lc - 1) * d, g = p.plateGap || 3.2;
+      for (const yc of [L / 2 - g / 2, L / 2 + g / 2]) { const ch = []; for (let j = 0; j < Lc; j++) ch.push([L / 2 - len / 2 + j * d, yc]); mols.push(ch); }
+      E.placeMolecules(mols, 0.5 * (p.sigP + 0.7) + 0.05, 0.72);
+      if (p.plateFix) { E.fixed = new Uint8Array(E.N); E.fixed.fill(1, 0, 2 * Lc); E.nFixed = 2 * Lc; }
+      break; }
     case 'mbpoly': { // hydrophobic solutes in small clusters (60%) and free (40%); chains as globules
       const objs = [], d = 1.12 * p.sigP;
       if (Lc === 1) {
@@ -845,7 +877,8 @@ MDEngine.prototype.initOrdered = function () {
 MDEngine.HP_FOLDS = {"HPHPHPHPHPHPHPHPHPHP":[[0.46,0.18],[0.77,1.1],[-0.26,1.05],[-0.11,2.07],[-1,1.75],[-1.9,2.19],[-2.49,1.41],[-2.59,0.38],[-1.61,0.81],[-1.65,-0.34],[-0.76,0.05],[-0.56,-0.88],[0.45,-0.88],[0.27,-1.91],[1.24,-1.62],[1.55,-2.62],[2.34,-1.87],[2.48,-0.87],[1.56,-0.5],[1.82,0.5]],"PPPHHPPHHPPPPPHHHHHHHPPHHPPPPHHPPHPP":[[3.5,-2.97],[4.49,-2.8],[3.9,-1.94],[3.08,-1.33],[2.52,-2.21],[1.56,-2.59],[0.89,-1.76],[1.81,-1.3],[2.4,-0.45],[3.22,0.2],[3.21,1.18],[3.12,2.13],[2.12,2.27],[1.48,1.45],[1.96,0.52],[1.36,-0.28],[0.47,0.37],[0.27,-0.65],[-0.53,0.08],[-0.74,-0.99],[-1.51,-0.31],[-1.94,-1.24],[-2.82,-0.78],[-2.49,0.21],[-1.62,0.76],[-0.74,1.31],[-0.44,2.26],[-1.01,3.05],[-1.78,2.43],[-2.41,1.62],[-3.29,1.1],[-3.79,1.93],[-4.41,1.11],[-3.85,0.21],[-3.97,-0.79],[-4.04,-1.79]],"HHHHHHHHHHHHHHHHHHHH":[[0.19,-2.88],[0.47,-1.93],[-0.57,-1.95],[-1.17,-1.03],[-0.1,-0.93],[0.89,-0.91],[1.61,-1.66],[2.06,-0.7],[1.47,0.29],[1.96,1.22],[0.89,1.29],[0.29,2.15],[-0.73,1.96],[-1.78,1.87],[-2.29,0.94],[-1.73,0.01],[-1.2,0.94],[-0.61,0.08],[-0.12,1.05],[0.46,0.18]],"HPHPPHHPHPPHPHHPPHPH":[[0.98,-1.38],[1.28,-2.37],[0.31,-2.47],[-0.48,-3.09],[-0.95,-2.15],[-0.19,-1.52],[-0.84,-0.68],[-1.7,-0.05],[-1.09,0.75],[-1.89,1.22],[-1.34,1.99],[-0.42,1.65],[-0.47,2.73],[0.46,2.31],[0.69,1.28],[1.77,1.2],[2.16,0.27],[1.14,0.4],[0.59,-0.47],[0.02,0.39]],"HHHHHHHHHHPPPPPPPPPP":[[-0.15,1.95],[0.04,0.92],[0.89,1.56],[1.09,2.6],[1.91,1.87],[2.21,0.87],[2.39,-0.15],[1.42,-0.64],[1.26,0.37],[0.31,-0.13],[0.54,-1.15],[0.66,-2.13],[-0.16,-2.82],[-1.18,-3.09],[-1.06,-2.04],[-0.94,-1.01],[-1.02,0.02],[-2.09,0.21],[-2.9,0.92],[-3.23,1.85]]};
 MDEngine.prototype.finishInit = function () {
   const E = this, p = E.p, N = E.N;
-  E.solvMask = { dumbbell: 4, polymer: 4, diblock: 4, hp: 4, lcst: 4 }[p.system] || 0; // type 2 = S; demix, MB water, brush: none
+  E.solvMask = { dumbbell: 4, polymer: 4, diblock: 4, hp: 4, lcst: 4 }[p.system] || 0;
+  if (E.mb && !E.hbN) E.hbN = new Uint8Array(N); // type 2 = S; demix, MB water, brush: none
   let px = 0, py = 0; const sq = Math.sqrt(p.T);
   for (let i = 0; i < N; i++) { E.vx[i] = sq * E.gauss(); E.vy[i] = sq * E.gauss(); px += E.vx[i]; py += E.vy[i]; }
   px /= N; py /= N; for (let i = 0; i < N; i++) { E.vx[i] -= px; E.vy[i] -= py; }
@@ -871,6 +904,7 @@ MDEngine.prototype.setupTable = function () {
     case 'hp': set(5, 5, p.epsHH); break;
     case 'lcst': set(3, 3, p.epsPP); break; // P-S: WCA core plus the narrow binding well below
     case 'ice': sig[7] = 0.7; set(7, 7, 0.1); break;
+    case 'plates': sig[7] = 0.7; sig[3] = p.sigP; set(7, 7, 0.1); set(3, 7, p.epsPW); break;
     case 'mbpoly': sig[7] = 0.7; sig[3] = p.sigP; set(7, 7, 0.1); set(3, 7, p.epsPW); set(3, 3, p.epsPP); break;
     case 'brush': set(4, 4, p.epsLL); set(6, 4, p.epsQL); set(5, 4, p.epsHL); set(5, 5, p.epsCC); set(6, 6, p.epsCC); set(5, 6, p.epsCC); break;
   }
@@ -1035,7 +1069,7 @@ MDEngine.prototype.computeForces = function () {
   }
   // bending: U = k (1 - cos a), a = angle between consecutive bond vectors (0 for a straight chain)
   const kB = E.p.kBend;
-  if ((E.p.system === 'polymer' || E.p.system === 'brush') && kB > 0) {
+  if ((E.p.system === 'polymer' || E.p.system === 'brush' || E.p.system === 'plates') && kB > 0) {
     for (let m = 0; m < E.nMol; m++) {
       const base = m * Lc;
       for (let q = 0; q < Lc - 2; q++) {
@@ -1336,6 +1370,35 @@ MDEngine.prototype.mbStats = function (rcut) {
   const nW = E.nWater(), ppB = nP ? 2 * pp / nP : 0, pwB = nP ? pw / nP : 0;
   return { hbPerWater: nW ? 2 * E.nHB / nW : 0, f: ppB + pwB > 0 ? ppB / (ppB + pwB) : 0, waterPerBead: pwB };
 };
+// Hydration shell (MB systems): water within rs of a nonpolar bead. Returns shell size and hydrogen bonds per molecule
+// in the shell and in the bulk, plus a per-molecule shell mask for drawing.
+MDEngine.prototype.shellStats = function (rs) {
+  const E = this, N = E.N, type = E.type, h = E.hbN;
+  if (!E._sh || E._sh.length < N) E._sh = new Uint8Array(N);
+  const sh = E._sh; sh.fill(0);
+  E.forPairs(rs || 1.15, (i, j) => { if (type[i] === 3 && type[j] === 7) sh[j] = 1; else if (type[j] === 3 && type[i] === 7) sh[i] = 1; });
+  let nS = 0, hS = 0, nB = 0, hB = 0;
+  for (let i = 0; i < N; i++) if (type[i] === 7) { const k = h ? h[i] : 0; if (sh[i]) { nS++; hS += k; } else { nB++; hB += k; } }
+  return { shell: nS, hbShell: nS ? hS / nS : 0, hbBulk: nB ? hB / nB : 0, mask: sh };
+};
+// Two plates: centre distance projected on the plate normal, angle between plates, water molecules in the gap.
+MDEngine.prototype.plateStats = function () {
+  const E = this, L = E.L, Lc = E.Lc, x = E.x, y = E.y, type = E.type, N = E.N;
+  const mi = (v) => v - L * Math.round(v / L);
+  const geo = (m) => { const b = m * Lc; let cx = 0, cy = 0; for (let j = 0; j < Lc; j++) { cx += mi(x[b + j] - x[b]); cy += mi(y[b + j] - y[b]); }
+    cx = x[b] + cx / Lc; cy = y[b] + cy / Lc; const ux = mi(x[b + Lc - 1] - x[b]), uy = mi(y[b + Lc - 1] - y[b]), n = Math.hypot(ux, uy) || 1; return { cx, cy, ux: ux / n, uy: uy / n }; };
+  const A = geo(0), B = geo(1);
+  let ux = A.ux, uy = A.uy; if (ux * B.ux + uy * B.uy < 0) { ux -= B.ux; uy -= B.uy; } else { ux += B.ux; uy += B.uy; }
+  const un = Math.hypot(ux, uy) || 1; ux /= un; uy /= un; const nx = -uy, ny = ux;
+  const dx = mi(B.cx - A.cx), dy = mi(B.cy - A.cy), sep = Math.abs(dx * nx + dy * ny), slide = Math.abs(dx * ux + dy * uy);
+  const ang = Math.acos(Math.min(1, Math.abs(A.ux * B.ux + A.uy * B.uy))) * 180 / Math.PI;
+  const mx = A.cx + dx / 2, my = A.cy + dy / 2, half = 0.5 * 0.95 * E.p.sigP * (Lc - 1) - 0.5 * slide;
+  let gap = 0;
+  if (half > 0) for (let i = 0; i < N; i++) if (type[i] === 7) { const rx = mi(x[i] - mx), ry = mi(y[i] - my), a = rx * ux + ry * uy, c = rx * nx + ry * ny;
+    if (Math.abs(a) < half && Math.abs(c) < sep / 2 - 0.35) gap++; }
+  const dist = Math.hypot(dx, dy);
+  return { sep, slide, ang, gap, dist };
+};
 // Brush + droplet: contact angle from a circular-cap fit (tan(theta/2) = h / a), water contacts with end and middle beads,
 // brush order = mean free-end height over the fully stretched height.
 MDEngine.prototype.brushStats = function () {
@@ -1470,6 +1533,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   new MutationObserver(readColors).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
   const MIN_AGG = 4, RCUT = 1.5, SPACING = 1 / Math.sqrt(0.6);
+  let shellMask = null;
   let eng, running = true, frame = 0, an = null, sys = 'dumbbell', plotMax = 1, rg0 = 1;
   const hist = { tset: [], tkin: [], frac: [] }, HMAX = 360;
   const pct = (v) => (100 * v).toFixed(0) + '%';
@@ -1484,6 +1548,10 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       trange: [0.12, 0.40], tstep: 0.005, rho: 0.85, dt: 0.01, preT: 0.35, concLab: 'Number of nonpolar solutes',
       plotLab: 'Fraction of solutes in clusters of 3 or more', hl: 'Highlight clustered solutes',
       legend: [['poly', 'P nonpolar solute, free'], ['cryst', 'P in a cluster'], ['solv', 'W water (lines: hydrogen-bond arms)']] },
+    plates: { scan: [0.14, 0.40], conc: 0, min: 0, max: 1, count: true, cold: 0.16, hot: 0.34, start: 0.18, ordT: 0.18, box: 36,
+      trange: [0.12, 0.40], tstep: 0.005, rho: 0.85, dt: 0.01, concLab: '', plotMax: 12,
+      plotLab: 'Water molecules in the gap between the plates', hl: '',
+      legend: [['poly', 'Plate beads (nonpolar)'], ['cold', 'Hydration-shell water'], ['solv', 'Bulk water (lines: hydrogen-bond arms)']] },
     ice: { scan: [0.10, 0.30], conc: 0, min: 0, max: 1, count: true, cold: 0.12, hot: 0.26, start: 0.26, ordT: 0.12, box: 36,
       trange: [0.08, 0.36], tstep: 0.005, dt: 0.01, preT: 0.35, concLab: '',
       plotLab: 'Fraction of molecules in ice', hl: 'Highlight ice (blue)',
@@ -1533,10 +1601,13 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
         const teal = p.invert ? b.wEnd : b.wMid;
         return { v: teal, cells: [['Contact angle', b.theta.toFixed(0) + '°'], ['Footprint', b.width.toFixed(1) + ' σ'], ['Liquid inside brush', (100 * b.inside).toFixed(1) + '%'],
           ['Brush order', b.order.toFixed(2)], ['Liquid contacts: orange / teal', (p.invert ? b.wMid : b.wEnd) + ' / ' + (p.invert ? b.wEnd : b.wMid)], ['Droplet beads', b.liquid]] }; }
-      case 'mbpoly': { const rc = 1.3 * p.sigP, m = eng.mbStats(rc);
+      case 'plates': { const q = eng.plateStats(), sh = eng.shellStats(1.15); shellMask = sh.mask; an = null;
+        return { v: q.gap, cells: [['Water in the gap', q.gap], ['Plate distance', q.sep.toFixed(2) + ' σ'], ['Shell water', sh.shell],
+          ['H-bonds / shell water', sh.hbShell.toFixed(2)], ['H-bonds / bulk water', sh.hbBulk.toFixed(2)], ['Plate angle', q.ang.toFixed(0) + '°']] }; }
+      case 'mbpoly': { const rc = 1.3 * p.sigP, m = eng.mbStats(rc), sh = eng.shellStats(0.5 * (p.sigP + 0.7) + 0.3); shellMask = sh.mask;
         if (eng.Lc === 1) { const c = eng.clusters(rc, 3, 3); an = c;
-          return { v: c.fracAgg, cells: [['In clusters (≥ 3)', pct(c.fracAgg)], ['Clusters', c.nAgg], ['Largest', c.largest],
-            ['H-bonds / water', m.hbPerWater.toFixed(2)], ['Solutes', eng.nMol], ['Water contacts / solute', m.waterPerBead.toFixed(2)]] }; }
+          return { v: c.fracAgg, cells: [['In clusters (≥ 3)', pct(c.fracAgg)], ['Largest cluster', c.largest], ['Shell water', sh.shell],
+            ['H-bonds / shell water', sh.hbShell.toFixed(2)], ['H-bonds / bulk water', sh.hbBulk.toFixed(2)], ['Solutes', eng.nMol]] }; }
         an = null;
         return { v: m.f, cells: [['Self-contact', m.f.toFixed(2)], ['Water contacts / bead', m.waterPerBead.toFixed(2)], ['Mean R<sub>g</sub>', rg()],
           ['H-bonds / water', m.hbPerWater.toFixed(2)], ['Chains', eng.nMol], ['Chain length', eng.Lc]] }; }
@@ -1574,12 +1645,13 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const S = SYS[sys], n = +$('size').value, Lc = chainLength(), v = +$('conc').value;
     const nMol = sys === 'demix' || sys === 'brush' ? 0 : S.count ? v : Math.round(v / 100 * n * n / Lc);
     eng = new MDEngine({ system: sys, nSide: n, nMol, rho: S.rho || 0.6, dt: S.dt || 0.005, T: tset,
-      mbEps: $('mbHB').checked ? 1 : 0, epsPW: 0, sigP: 1.5,
-      ordered: opts.ordered !== undefined ? opts.ordered : isOrdered(), demixStripes: 4, bilayerSpacing: 1.15,
+      mbEps: $('mbHB').checked ? 1 : 0, epsPW: sys === 'plates' ? +$('plateKind').value : 0, sigP: sys === 'plates' ? 1.0 : 1.5,
+      plateLen: +$('plateLen').value, plateGap: +$('plateGap').value, plateFix: $('plateHold').checked,
+      ordered: sys === 'plates' ? true : opts.ordered !== undefined ? opts.ordered : isOrdered(), demixStripes: 4, bilayerSpacing: 1.15,
       boxL: n, gravity: +$('grav').value, graftSpacing: +$('graft').value, epsCC: +$('epsCC').value, epsQL: +$('epsQL').value, epsHL: +$('epsHL').value, invert: $('bInvert').checked, nEnd: +$('nEnd').value, nWater: v,
       thermostat: $('thermo').value, gamma: +$('gamma').value, tau: +$('tau').value, seed: (Math.random() * 1e9) | 0,
       epsSS: 0, epsAS: +$('epsAS').value, epsBB: +$('epsBB').value, sigA: +$('sigA').value, sigB: 1,
-      epsPP: +$('epsPP').value, kBend: +$('kBend').value, chainLen: +$('chainLen').value,
+      epsPP: +$('epsPP').value, kBend: sys === 'plates' ? 150 : +$('kBend').value, chainLen: +$('chainLen').value,
       fA: +$('fA').value, epsAB: +$('epsAB').value, epsSC: +$('epsSC').value, xC: v / 100,
       epsHH: +$('epsHH').value, sequence: cleanSeq(), epsB: 0 });
     const ord = eng.p.ordered;
@@ -1687,6 +1759,13 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     }
     if (sys !== 'dumbbell' && sys !== 'demix' && sys !== 'hp') build(); });
   $('mbHB').addEventListener('change', (e) => { if (eng && eng.mb) eng.p.mbEps = e.target.checked ? 1 : 0; });
+  $('plateKind').addEventListener('change', (e) => { if (eng && sys === 'plates') { eng.p.epsPW = +e.target.value; eng.setupTable(); } });
+  $('plateGap').addEventListener('change', () => { if (sys === 'plates') { $('plateHold').checked = true; build(); } });
+  $('plateHold').addEventListener('change', (e) => { if (!eng || sys !== 'plates') return; const n2 = 2 * eng.Lc;
+    if (e.target.checked) { eng.fixed = new Uint8Array(eng.N); eng.fixed.fill(1, 0, n2); eng.nFixed = n2; for (let i = 0; i < n2; i++) { eng.vx[i] = 0; eng.vy[i] = 0; } }
+    else { eng.fixed = null; eng.nFixed = 0; } });
+  $('plateLen').addEventListener('input', (e) => { $('plateLenO').textContent = e.target.value; });
+  $('plateLen').addEventListener('change', () => { if (sys === 'plates') build(); });
   $('seqPreset').addEventListener('change', (e) => { if (e.target.value !== 'custom') { $('seq').value = e.target.value; build(); } else $('seq').focus(); });
   $('seq').addEventListener('input', () => { $('seqPreset').value = 'custom'; });
   $('seq').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); applySeq(); } });
@@ -1777,6 +1856,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const kb = S.kBend !== undefined ? S.kBend : 6.4; $('kBend').value = kb; $('kBendO').textContent = kb.toFixed(1);
     $('byCluster').checked = sys === 'polymer' || sys === 'mbpoly' || sys === 'ice';
     $('compPanel').hidden = $('sizeRow').hidden = sys === 'ice';
+    $('concRow').hidden = $('concNote').hidden = sys === 'plates';
   }
   let userBox = $('size').value;
   $('size').addEventListener('change', () => { if (!SYS[sys].box) userBox = $('size').value; });
@@ -1788,19 +1868,19 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   const GAMES = [
     { id: 'ice', title: 'Grow the biggest ice crystal', sub: 'Ice · slow cooling wins', sys: 'ice', ordered: false, T0: 0.26, range: [0.02, 0.30], D: 150,
       lab: 'Ice', fmt: (v) => pct(v), stars: [0.40, 0.48, 0.55],
-      goal: 'The water is liquid. You have 30 seconds to turn as much of it as possible into ice. Your score is the ice share when the time runs out.',
+      goal: 'The water is liquid. You have 30 seconds to turn as much of it as possible into ice. Your score is the most ice you reach during the run.',
       hint: 'Going silent at once freezes the water into a jumble: no star. Ice needs time to grow in order. Start with some noise, then get quieter little by little.',
       lesson: { good: 'Cooling slowly gave the molecules time to find their places in the honeycomb, so the crystals grew large. This is annealing: how glassmakers and metal workers make strong, clear materials.',
         bad: 'Cooled too fast, the molecules lock in wherever they happen to be; kept at one temperature, the crystals grow too slowly or melt again. Try starting a bit warm and cooling step by step.' } },
     { id: 'demix', title: 'Separate the liquids', sub: 'Binary liquid · not too cold', sys: 'demix', ordered: false, T0: 1.0, range: [0.02, 1.0], D: 90, box: '36',
       lab: 'Demixing s', fmt: (v) => v.toFixed(2), stars: [0.60, 0.72, 0.79],
-      goal: 'Two liquids are mixed like milk in coffee. In 30 seconds, separate them as much as you can. Your score is the demixing s at the end (0 mixed, 1 fully separated).',
+      goal: 'Two liquids are mixed like milk in coffee. In 30 seconds, separate them as much as you can. Your score is the highest demixing s you reach (0 mixed, 1 fully separated).',
       hint: 'Total silence freezes the molecules before they can sort themselves: no star. Find a level that is cold enough to separate but warm enough to move.',
       lesson: { good: 'Cool enough that the molecules prefer their own kind, warm enough that they can still move: the blobs grow quickly. Too cold, and everything freezes in place.',
         bad: 'Very cold molecules hardly move, so they stay stuck next to the wrong neighbours. Try a little noise to keep them moving.' } },
     { id: 'blocks', title: 'Sort the block chains', sub: 'Diblock copolymer · not too cold', sys: 'diblock', ordered: false, T0: 1.6, range: [0.02, 1.6], D: 90, box: '36',
       lab: 'Segregation s', fmt: (v) => v.toFixed(2), stars: [0.70, 0.76, 0.80],
-      goal: 'Each chain has a teal half and an orange half, all mixed up. In 30 seconds, sort the halves into separate teal and orange zones. Your score is the segregation s at the end.',
+      goal: 'Each chain has a teal half and an orange half, all mixed up. In 30 seconds, sort the halves into separate teal and orange zones. Your score is the highest segregation s you reach.',
       hint: 'Silence freezes the chains before they untangle: no star. Keep the box cool but alive, and cool further near the end.',
       lesson: { good: 'The halves sorted themselves into zones. The chains hold the two kinds together, so the zones stay narrow: this is how block copolymers make nano-patterns.',
         bad: 'Frozen too fast, the chains stay tangled with the wrong neighbours. Try keeping some noise so they can move.' } },
@@ -1832,7 +1912,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     $('initState').value = g.ordered ? 'ordered' : 'disordered';
     for (const id of ['tslider', 'tsliderM']) { const el = $(id); el.min = g.range[0]; el.max = g.range[1]; }
     setT(g.T0); build({ game: true });
-    game = { g, t0: eng.time, last: eng.time, ema: null, rate: g.D / GAME_SEC };
+    game = { g, t0: eng.time, last: eng.time, ema: null, rate: g.D / GAME_SEC, peak: -Infinity, peakSec: 0, snap: null };
+    $('gpeak').textContent = '–'; $('gbest').style.display = 'none';
     gameCarry = 0; running = true; $('pause').textContent = 'Pause';
     $('gvalLab').textContent = g.lab; $('gval').textContent = '–'; $('gstars').textContent = starStr(0); $('gtime').textContent = GAME_SEC;
     const band = $('gband'); band.querySelectorAll('.tick').forEach((x) => x.remove());
@@ -1849,20 +1930,35 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const want = game.rate * dtSec / eng.p.dt + gameCarry, cap = msPerStep ? Math.max(1, Math.floor(2 * BUDGET_MS / msPerStep)) : 30;
     const n = Math.max(0, Math.min(cap, Math.floor(want))); gameCarry = Math.min(want - n, 5); return n;
   }
+  function takeSnap() { // full state, so the best moment can be shown and the run continued from it
+    const s = { x: eng.x.slice(0, eng.N), y: eng.y.slice(0, eng.N), vx: eng.vx.slice(0, eng.N), vy: eng.vy.slice(0, eng.N), T: tset, time: eng.time };
+    if (eng.th) { s.th = eng.th.slice(0, eng.N); s.om = eng.om.slice(0, eng.N); }
+    return s;
+  }
+  function restoreSnap(s) {
+    eng.x.set(s.x); eng.y.set(s.y); eng.vx.set(s.vx); eng.vy.set(s.vy); if (s.th) { eng.th.set(s.th); eng.om.set(s.om); }
+    eng.computeForces(); setT(s.T);
+  }
   function endGame(result) {
     const G = game; game = null;
     $('gstart').disabled = false; $('gstart').textContent = 'Play again'; $('gquit').textContent = 'Close';
     if (!G || !result) { closeHud(); return; }
-    const g = G.g, v = G.ema, st = starsFor(g, v), b = getBest(g), rec = b === null || v > b; if (rec) setBest(g, v);
+    const g = G.g, v = G.peak, st = starsFor(g, v), b = getBest(g), rec = b === null || v > b; if (rec) setBest(g, v);
     $('hudGoal').textContent = $('hudTip').textContent = ''; $('gagain').hidden = false;
-    $('gres').innerHTML = `<span class="big">${starStr(st)}</span> <b>Score ${g.fmt(v)}</b>${rec ? ' (new best!)' : ''}. ` +
+    if (G.snap) { restoreSnap(G.snap); running = false; $('pause').textContent = 'Resume'; const r = report(); showReport(r);
+      $('gval').textContent = g.fmt(r.v); $('gval').className = ''; $('gnow').style.left = (100 * Math.max(0, Math.min(1, r.v))) + '%'; }
+    $('gres').innerHTML = `<span class="big">${starStr(st)}</span> <b>Score ${g.fmt(v)}</b>${rec ? ' (new best ever!)' : ` (best ever ${g.fmt(Math.max(b, v))})`}. ` +
+      `The box now shows your best moment, reached at ${G.peakSec.toFixed(0)} s; press Resume to let it run on. ` +
       (st ? g.lesson.good : g.lesson.bad) + (st < 3 ? ` Next star at ${g.fmt(g.stars[st])}.` : ' Top score!');
     renderPick();
   }
   function gameUpdate(v) {
     const G = game, g = G.g, now = eng.time, dt = now - G.last; G.last = now;
     G.ema = G.ema === null ? v : G.ema + (1 - Math.exp(-dt / 2.0)) * (v - G.ema); // smooth over about 2 time units
-    const frac = Math.min(1, (now - G.t0) / g.D), st = starsFor(g, G.ema);
+    const frac = Math.min(1, (now - G.t0) / g.D);
+    if (G.ema > G.peak) { G.peak = G.ema; G.peakSec = GAME_SEC * frac; G.snap = takeSnap(); $('gpeak').textContent = g.fmt(G.peak);
+      $('gbest').style.display = 'block'; $('gbest').style.left = (100 * Math.max(0, Math.min(1, G.peak))) + '%'; }
+    const st = starsFor(g, G.peak);
     $('gval').textContent = g.fmt(G.ema); $('gstars').textContent = starStr(st);
     $('gtime').textContent = Math.ceil(GAME_SEC * (1 - frac)) + ' s';
     $('gnow').style.left = (100 * Math.max(0, Math.min(1, G.ema))) + '%';
@@ -1871,6 +1967,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   }
   $('gpick').addEventListener('click', (e) => { const b = e.target.closest('[data-game]'); if (b) selectGame(b.dataset.game); });
   $('gstart').addEventListener('click', startGame); $('gagain').addEventListener('click', startGame);
+  // resuming after a game keeps the best structure as the starting point
   renderPick();
 
   function closeHud() { $('ghud').hidden = true; document.querySelector('.wrap').classList.remove('ingame'); resize(); }
@@ -2069,7 +2166,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
         if (ic) disks(colors.cold, 0.35 * s, (i) => ic[i] === 1, 0, N);
       }
       if (sys === 'ice' || $('showSolv').checked) {
-        if (sys !== 'ice') disks(colors.solv, 0.35 * s, () => true, nCh, N);
+        if (sys !== 'ice') { const sm = $('showShell').checked && shellMask && (sys === 'mbpoly' || sys === 'plates') ? shellMask : null;
+          disks(colors.solv, 0.35 * s, sm ? (i) => !sm[i] : () => true, nCh, N); if (sm) disks(colors.cold, 0.35 * s, (i) => sm[i] === 1, nCh, N); }
         ctx.strokeStyle = colors.bond; ctx.lineWidth = Math.max(1, 0.08 * s); ctx.beginPath(); const arm = eng.arm, al = 0.5 * s;
         for (let i = nCh; i < N; i++) { const X = x[i] * s, Y = y[i] * s, o = 6 * i;
           for (let a = 0; a < 6; a += 2) { ctx.moveTo(X, Y); ctx.lineTo(X + al * arm[o + a], Y + al * arm[o + a + 1]); } }
