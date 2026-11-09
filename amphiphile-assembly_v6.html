@@ -109,7 +109,7 @@ table.eps th { font-weight: 500; color: var(--muted) }
 .gstat div { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; display: flex; flex-direction: column; gap: 2px }
 .gstat span { font-size: 12px; color: var(--muted) } .gstat b { font-family: var(--f-mono); font-weight: 500; font-size: 16px }
 .gstat b.in { color: var(--accent) } .gstat b.out { color: var(--hot) }
-.gbar { height: 10px; border-radius: 5px; background: var(--line); overflow: hidden } .gbar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s }
+.gbar { position: relative; height: 10px; border-radius: 5px; background: var(--line); overflow: hidden } .gbar .win { position: absolute; top: 0; bottom: 0; background: var(--hot); opacity: .6 } .gbar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s }
 .gband { position: relative; height: 22px; border-radius: 6px; background: var(--line); overflow: hidden }
 .gband .tick { position: absolute; top: 0; bottom: 0; border-left: 2px solid var(--cryst); padding-left: 3px; font-size: 10px; line-height: 22px; color: var(--cryst); white-space: nowrap }
 .gstat b.gst { color: var(--cryst); letter-spacing: 1px }
@@ -218,7 +218,7 @@ button { touch-action: manipulation }
         <div class="gstat">
           <div><span id="gvalLab">Score</span><b id="gval">–</b></div>
           <div><span>Time left</span><b id="gtime">–</b></div>
-          <div><span>Best this run</span><b id="gpeak">–</b></div>
+          <div><span id="gpeakLab">Best this run</span><b id="gpeak">–</b></div>
           <div><span>Stars</span><b id="gstars" class="gst">☆☆☆</b></div>
         </div>
         <div class="gband" id="gband" aria-hidden="true" title="Line: your score now. Marks: star levels"><div class="best" id="gbest"></div><div class="now" id="gnow"></div></div>
@@ -623,7 +623,6 @@ U_LJ: ε = 0.1, σ = 0.7 (water)     solutes: σ = 1.5, purely repulsive (WCA) w
         <p><b>Medium (T* ≈ 1.6–3): unfolded and clumped.</b> The folds open (under 10% of native contacts left), the sticky beads come out (a fifth to a third touch the solvent), and proteins that meet stick together: 60–80 sticky contacts between proteins, three quarters of the proteins in clumps.</p>
         <p><b>Hot (T* = 5–7): dissolving.</b> The proteins stay unfolded, but heat breaks contacts faster: about 45 sticky contacts at 5 and 28 at 7, on the way down to the 10 that unsticky proteins (ε<sub>XX</sub> = 0) make just by bumping into each other.</p>
         <p>So clumping rises and then falls with temperature: the hidden beads need heat to come out, and too much heat pulls them apart.</p>
-        <p>Try the game "Stick the proteins together": the best scores come from heating first and then calming down.</p>
       </section>
       <section data-show="crypt">
         <h3>In everyday life</h3>
@@ -865,7 +864,7 @@ MDEngine.prototype.placeMolecules = function (mols, excl, extraMin) {
   const E = this, p = E.p, n = p.nSide, L = E.L, a = L / n, Lc = E.Lc, nMol = mols.length, nm = Lc * nMol;
   const wrap = (v) => ((v % L) + L) % L, g = Math.max(3, Math.floor(L / Math.max(excl, 0.6))), cs = L / g;
   const cell = []; for (let i = 0; i < g * g; i++) cell.push([]);
-  for (const m of mols) for (const [x0, y0] of m) { const x = wrap(x0), y = wrap(y0); cell[Math.min(g - 1, (y / cs) | 0) * g + Math.min(g - 1, (x / cs) | 0)].push(x, y); }
+  for (const m of (E._exclExtra ? mols.concat([E._exclExtra]) : mols)) for (const [x0, y0] of m) { const x = wrap(x0), y = wrap(y0); cell[Math.min(g - 1, (y / cs) | 0) * g + Math.min(g - 1, (x / cs) | 0)].push(x, y); }
   const e2 = excl * excl, sites = [];
   for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
     const X = (c + 0.5) * a, Y = (r + 0.5) * a, cx = Math.min(g - 1, (X / cs) | 0), cy = Math.min(g - 1, (Y / cs) | 0); let ok = true;
@@ -922,7 +921,19 @@ MDEngine.prototype.initOrdered = function () {
   const E = this, p = E.p, n = p.nSide, L = E.L, Lc = E.Lc, a = L / n, mols = [];
   const want = Math.max(0, Math.min(p.nMol, Math.floor(n * n / Math.max(1, Lc)) - 2));
   switch (p.system) {
-    case 'dumbbell': { // stack of bilayers (lamellar phase): tails inside, heads facing the solvent
+    case 'dumbbell': if (p.nDrug > 0) { // loaded micelles: nd drug beads in the core, a ring of tails around them, heads outside
+        const nd = p.drugPerMic || 3, rd = nd > 1 ? 0.6 : 0, rt = rd + 1.0, nt = Math.floor(2 * Math.PI * rt / 1.0), bl = 0.95 * 0.5 * (p.sigA + p.sigB);
+        const nMic = Math.max(1, Math.min(Math.floor(p.nDrug / nd), Math.floor(want / nt))), objs = [];
+        for (let m = 0; m < nMic; m++) { const o = [], ph = 2 * Math.PI * E.rand();
+          for (let k = 0; k < nd; k++) { const t = ph + 2 * Math.PI * k / nd; o.push([rd * Math.cos(t), rd * Math.sin(t)]); }
+          for (let k = 0; k < nt; k++) { const t = ph + 2 * Math.PI * (k + 0.5) / nt; o.push([(rt + bl) * Math.cos(t), (rt + bl) * Math.sin(t)], [rt * Math.cos(t), rt * Math.sin(t)]); }
+          objs.push(o); }
+        const placed = E.spreadObjects(objs), drugs = [];
+        for (const o of placed) { for (let k = 0; k < nd; k++) drugs.push(o[k]); for (let k = nd; k < o.length; k += 2) mols.push([o[k], o[k + 1]]); }
+        E._exclExtra = drugs; E.placeMolecules(mols, 1.0); E._exclExtra = null;
+        let k = E.N - 1; for (const [dx, dy] of drugs) { E.x[k] = ((dx % L) + L) % L; E.y[k] = ((dy % L) + L) % L; E.type[k] = 4; k--; }
+        E.nDrug = drugs.length; break; }
+    { // stack of bilayers (lamellar phase): tails inside, heads facing the solvent
       const m = Math.max(4, Math.round(L / (p.bilayerSpacing || 1.15))), nb = Math.max(1, Math.min(Math.floor(L / 4.5), Math.round(want / (2 * m))));
       const bl = 0.95 * 0.5 * (p.sigA + p.sigB), dT = 0.56;
       for (let k = 0; k < nb; k++) { const yc = (k + 0.5) * L / nb;
@@ -1021,7 +1032,8 @@ MDEngine.prototype.setupTable = function () {
   const att = []; for (let i = 0; i < 8; i++) att.push(new Array(8).fill(0));
   const set = (a, b, v) => { att[a][b] = v; att[b][a] = v; };
   switch (p.system) {
-    case 'dumbbell': sig[0] = p.sigA; sig[1] = p.sigB; set(0, 0, p.epsAA); set(1, 1, p.epsBB); set(0, 2, p.epsAS); set(2, 2, p.epsSS); break;
+    case 'dumbbell': sig[0] = p.sigA; sig[1] = p.sigB; set(0, 0, p.epsAA); set(1, 1, p.epsBB); set(0, 2, p.epsAS); set(2, 2, p.epsSS);
+      if (p.nDrug > 0) { set(4, 1, p.epsDB); set(4, 4, p.epsDD || 0); } break; // drug (type 4): oily, sits among the tails
     case 'polymer': set(3, 3, p.epsPP); break;
     case 'diblock': set(0, 0, 1); set(1, 1, 1); set(0, 1, p.epsAB); set(0, 2, 1); set(1, 2, 1); set(2, 2, 1); break;
     case 'demix': set(2, 2, 1); set(4, 4, 1); set(2, 4, p.epsSC); break;
@@ -1524,6 +1536,32 @@ MDEngine.prototype.cryptStats = function (rcut) {
   let inAgg = 0, largest = 1; for (let m = 0; m < nM; m++) { if (size[find(m)] >= 2) inAgg++; if (size[m] > largest) largest = size[m]; }
   const label = new Int32Array(nM); for (let m = 0; m < nM; m++) label[m] = find(m);
   return { folded: tot ? nat / tot : 0, exposed: nX ? xExp / nX : 0, xx, agg: nM ? inAgg / nM : 0, largest, label, size };
+};
+// Drug delivery (dumbbell + drug beads, type 4): a drug bead is held when at least `need` tail beads (B) touch it.
+MDEngine.prototype.drugStats = function (rcut, need) {
+  const E = this, type = E.type, nd = need || 2;
+  if (!E._dn || E._dn.length < E.N) E._dn = new Uint8Array(E.N);
+  const cnt = E._dn; cnt.fill(0);
+  let nD = 0; for (let i = 0; i < E.N; i++) if (type[i] === 4) nD++;
+  E.forPairs(rcut || 1.5, (i, j) => { const a = type[i], b = type[j];
+    if (a === 4 && b === 1 && cnt[i] < 255) cnt[i]++; else if (b === 4 && a === 1 && cnt[j] < 255) cnt[j]++; });
+  let held = 0; for (let i = 0; i < E.N; i++) if (type[i] === 4 && cnt[i] >= nd) held++;
+  return { n: nD, held, released: nD - held, frac: nD ? (nD - held) / nD : 0, cnt };
+};
+// Rescue (crypt): per protein, the fraction of native contacts formed (q) and whether it touches another protein with a
+// sticky (X-X) contact. A protein is rescued when q >= qMin and it touches no other protein.
+MDEngine.prototype.rescueStats = function (rcut, qMin) {
+  const E = this, type = E.type, Lc = E.Lc, nM = E.nMol, nCh = Lc * nM, x = E.x, y = E.y, L = E.L, go = E.go || [], qm = qMin || 0.5;
+  const q = new Float64Array(nM), stuck = new Uint8Array(nM), nG = go.length / 3;
+  for (let m = 0; m < nM; m++) { let nat = 0;
+    for (let k = 0; k < go.length; k += 3) { const i = m * Lc + go[k], j = m * Lc + go[k + 1];
+      let dx = x[i] - x[j], dy = y[i] - y[j]; dx -= L * Math.round(dx / L); dy -= L * Math.round(dy / L); if (dx * dx + dy * dy < 1.44 * go[k + 2] * go[k + 2]) nat++; }
+    q[m] = nG ? nat / nG : 0; }
+  E.forPairs(rcut || 1.5, (i, j) => { if (i >= nCh || j >= nCh || type[i] !== 5 || type[j] !== 5) return;
+    const a = (i / Lc) | 0, b = (j / Lc) | 0; if (a !== b) { stuck[a] = 1; stuck[b] = 1; } });
+  let rescued = 0, folded = 0, nStuck = 0; const ok = new Uint8Array(nM);
+  for (let m = 0; m < nM; m++) { if (q[m] >= qm) folded++; if (stuck[m]) nStuck++; if (q[m] >= qm && !stuck[m]) { rescued++; ok[m] = 1; } }
+  return { rescued, folded, stuck: nStuck, q, ok, n: nM };
 };
 // Gel path (crypt): graph of proteins linked by sticky (X-X) contacts between different proteins. In the largest
 // connected cluster, find the longest shortest path (double breadth-first search) and its length along protein centres.
@@ -2229,7 +2267,18 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Thirty-five folded proteins. In 30 seconds, link them into a gel: proteins held together by at least two sticky contacts. Your score is the longest path through the gel, from protein to protein (shown in red); the box is 62 σ wide.": "Kolmekymmentäviisi laskostunutta proteiinia. Liitä ne 30 sekunnissa geeliksi: proteiinit, joita pitää yhdessä vähintään kaksi tahmeaa kontaktia. Pisteesi on geelin pisin polku proteiinista proteiiniin (punaisella); laatikko on 62 σ leveä.",
   "<b>Gel.</b> Two proteins count as linked when at least two of their sticky beads touch. Linked proteins form a network; the red line is the longest path through it, from protein to protein, and the readout gives its length. When the path gets longer than the box (62 σ), the network spans the whole system: the solution has become a gel. With the game settings (35 proteins, ε<sub>XX</sub> = 5, 90 time units), staying at 2.2 gave paths of 150–175 σ, heating to 3.0 and then cooling to 1.6 gave 145–175 σ, full heat (7.0) only 40–80 σ, and staying cold about 10 σ.": "<b>Geeli.</b> Kaksi proteiinia lasketaan liittyneiksi, kun vähintään kaksi niiden tahmeaa helmeä koskettaa toisiaan. Liittyneet proteiinit muodostavat verkoston; punainen viiva on sen pisin polku proteiinista proteiiniin, ja lukema kertoo sen pituuden. Kun polku on laatikkoa (62 σ) pidempi, verkosto ulottuu koko systeemin läpi: liuoksesta on tullut geeli. Pelin asetuksilla (35 proteiinia, ε<sub>XX</sub> = 5, 90 aikayksikköä) lämpötilassa 2,2 pysyminen antoi 150–175 σ:n polkuja, kuumennus 3,0:aan ja jäähdytys 1,6:een 145–175 σ, täysi lämpö (7,0) vain 40–80 σ ja kylmänä pysyminen noin 10 σ.",
   "Live 2D molecular dynamics. Control the temperature with your voice.": "Reaaliaikaista 2D-molekyylidynamiikkaa. Säädä lämpötilaa äänelläsi.",
-  "Vibe coded by": "Vibe-koodannut"
+  "Vibe coded by": "Vibe-koodannut",
+  "Deliver the drug": "Toimita lääkeaine",
+  "Amphiphiles · hit the target windows": "Amfifiilit · osu kohdeikkunoihin",
+  "The micelles need a moment to open, so start the noise just before a window and stop just before it ends. Stay quiet between windows so the micelles hold on to the rest.": "Misellien avautuminen vie hetken, joten aloita meteli juuri ennen ikkunaa ja lopeta juuri ennen sen loppua. Ole hiljaa ikkunoiden välillä, jotta misellit pitävät loput lääkeaineesta sisällään.",
+  "Delivered": "Toimitettu",
+  "Short, well-timed bursts of heat opened the micelles exactly when the drug was needed, and the cold kept it locked inside the rest of the time. Temperature-sensitive carriers are designed to do just this at a warmed tumour.": "Lyhyet, hyvin ajoitetut lämpöpulssit avasivat misellit juuri silloin, kun lääkeainetta tarvittiin, ja kylmä piti sen sisällä muun ajan. Lämpöherkät kantajat suunnitellaan toimimaan juuri näin lämmitetyssä kasvaimessa.",
+  "Heat frees the drug a little after it starts and keeps freeing it for a moment after it stops, so late or long bursts waste it. Watch the windows on the time bar and start a little early.": "Lämpö alkaa vapauttaa lääkeainetta pienellä viiveellä ja jatkaa sitä hetken lämmityksen loputtua, joten myöhäiset tai pitkät pulssit tuhlaavat sitä. Seuraa ikkunoita aikapalkissa ja aloita hieman etuajassa.",
+  "Lost": "Menetetty",
+  "Target window: release now! {s} s": "Kohdeikkuna: vapauta nyt! {s} s",
+  "Next target window in {s} s": "Seuraava kohdeikkuna {s} s:n päästä",
+  "No more windows: keep it cold": "Ei enää ikkunoita: pidä systeemi kylmänä",
+  "Micelles carry a drug (violet stars) in their oily cores. Heat breaks them open and frees the drug. Free drug inside a red target window reaches the target (blue stars); free drug at any other time is lost (grey). Your score is the share of the drug delivered.": "Misellit kuljettavat lääkeainetta (violetit tähdet) öljymäisissä ytimissään. Lämpö avaa ne ja vapauttaa lääkeaineen. Punaisen kohdeikkunan aikana vapautunut lääkeaine päätyy kohteeseen (siniset tähdet); muulloin vapautunut menetetään (harmaa). Pisteesi on kohteeseen toimitetun lääkeaineen osuus."
  },
  "sv": {
   "Amphiphile Assembly Lab": "Självorganiseringslabbet",
@@ -2697,7 +2746,18 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Thirty-five folded proteins. In 30 seconds, link them into a gel: proteins held together by at least two sticky contacts. Your score is the longest path through the gel, from protein to protein (shown in red); the box is 62 σ wide.": "Trettiofem veckade proteiner. Länka dem på 30 sekunder till en gel: proteiner som hålls ihop av minst två klibbiga kontakter. Din poäng är den längsta vägen genom gelen, från protein till protein (visad i rött); lådan är 62 σ bred.",
   "<b>Gel.</b> Two proteins count as linked when at least two of their sticky beads touch. Linked proteins form a network; the red line is the longest path through it, from protein to protein, and the readout gives its length. When the path gets longer than the box (62 σ), the network spans the whole system: the solution has become a gel. With the game settings (35 proteins, ε<sub>XX</sub> = 5, 90 time units), staying at 2.2 gave paths of 150–175 σ, heating to 3.0 and then cooling to 1.6 gave 145–175 σ, full heat (7.0) only 40–80 σ, and staying cold about 10 σ.": "<b>Gel.</b> Två proteiner räknas som länkade när minst två av deras klibbiga kulor rör varandra. Länkade proteiner bildar ett nätverk; den röda linjen är den längsta vägen genom det, från protein till protein, och mätvärdet anger dess längd. När vägen blir längre än lådan (62 σ) sträcker sig nätverket genom hela systemet: lösningen har blivit en gel. Med spelets inställningar (35 proteiner, ε<sub>XX</sub> = 5, 90 tidsenheter) gav 2,2 hela tiden vägar på 150–175 σ, uppvärmning till 3,0 och sedan nedkylning till 1,6 gav 145–175 σ, full värme (7,0) bara 40–80 σ och att hålla kallt cirka 10 σ.",
   "Live 2D molecular dynamics. Control the temperature with your voice.": "Molekyldynamik i 2D i realtid. Styr temperaturen med rösten.",
-  "Vibe coded by": "Vibe-kodad av"
+  "Vibe coded by": "Vibe-kodad av",
+  "Deliver the drug": "Leverera läkemedlet",
+  "Amphiphiles · hit the target windows": "Amfifiler · träffa målfönstren",
+  "The micelles need a moment to open, so start the noise just before a window and stop just before it ends. Stay quiet between windows so the micelles hold on to the rest.": "Micellerna behöver ett ögonblick för att öppnas, så börja låta strax före ett fönster och sluta strax innan det tar slut. Var tyst mellan fönstren så att micellerna håller kvar resten.",
+  "Delivered": "Levererat",
+  "Short, well-timed bursts of heat opened the micelles exactly when the drug was needed, and the cold kept it locked inside the rest of the time. Temperature-sensitive carriers are designed to do just this at a warmed tumour.": "Korta, vältajmade värmepulser öppnade micellerna precis när läkemedlet behövdes, och kylan höll det inneslutet resten av tiden. Temperaturkänsliga bärare utformas för att göra just detta i en uppvärmd tumör.",
+  "Heat frees the drug a little after it starts and keeps freeing it for a moment after it stops, so late or long bursts waste it. Watch the windows on the time bar and start a little early.": "Värmen frisätter läkemedlet med en viss fördröjning och fortsätter en stund efter att den upphört, så sena eller långa pulser slösar bort det. Följ fönstren på tidslinjen och börja lite i förväg.",
+  "Lost": "Förlorat",
+  "Target window: release now! {s} s": "Målfönster: frisätt nu! {s} s",
+  "Next target window in {s} s": "Nästa målfönster om {s} s",
+  "No more windows: keep it cold": "Inga fler fönster: håll systemet kallt",
+  "Micelles carry a drug (violet stars) in their oily cores. Heat breaks them open and frees the drug. Free drug inside a red target window reaches the target (blue stars); free drug at any other time is lost (grey). Your score is the share of the drug delivered.": "Miceller bär ett läkemedel (violetta stjärnor) i sina oljiga kärnor. Värme bryter upp dem och frisätter läkemedlet. Läkemedel som frisätts under ett rött målfönster når målet (blå stjärnor); läkemedel som frisätts vid andra tidpunkter går förlorat (grått). Din poäng är andelen levererat läkemedel."
  },
  "ru": {
   "Amphiphile Assembly Lab": "Лаборатория самосборки",
@@ -3165,7 +3225,18 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Thirty-five folded proteins. In 30 seconds, link them into a gel: proteins held together by at least two sticky contacts. Your score is the longest path through the gel, from protein to protein (shown in red); the box is 62 σ wide.": "Тридцать пять свёрнутых белков. За 30 секунд свяжите их в гель: белки, которые держатся вместе хотя бы двумя липкими контактами. Ваш счёт — самый длинный путь через гель, от белка к белку (показан красным); ячейка шириной 62 σ.",
   "<b>Gel.</b> Two proteins count as linked when at least two of their sticky beads touch. Linked proteins form a network; the red line is the longest path through it, from protein to protein, and the readout gives its length. When the path gets longer than the box (62 σ), the network spans the whole system: the solution has become a gel. With the game settings (35 proteins, ε<sub>XX</sub> = 5, 90 time units), staying at 2.2 gave paths of 150–175 σ, heating to 3.0 and then cooling to 1.6 gave 145–175 σ, full heat (7.0) only 40–80 σ, and staying cold about 10 σ.": "<b>Гель.</b> Два белка считаются связанными, если касаются хотя бы две их липкие бусины. Связанные белки образуют сетку; красная линия — самый длинный путь по ней, от белка к белку, а показание даёт его длину. Когда путь длиннее ячейки (62 σ), сетка пронизывает всю систему: раствор стал гелем. С настройками игры (35 белков, ε<sub>XX</sub> = 5, 90 единиц времени) постоянные 2,2 дали пути 150–175 σ, нагрев до 3,0 и охлаждение до 1,6 — 145–175 σ, полный нагрев (7,0) лишь 40–80 σ, а холод — около 10 σ.",
   "Live 2D molecular dynamics. Control the temperature with your voice.": "Молекулярная динамика в 2D в реальном времени. Управляйте температурой голосом.",
-  "Vibe coded by": "Создано вайб-кодингом:"
+  "Vibe coded by": "Создано вайб-кодингом:",
+  "Deliver the drug": "Доставьте лекарство",
+  "Amphiphiles · hit the target windows": "Амфифилы · попадите в окна мишени",
+  "The micelles need a moment to open, so start the noise just before a window and stop just before it ends. Stay quiet between windows so the micelles hold on to the rest.": "Мицеллам нужно немного времени, чтобы раскрыться, поэтому начинайте шуметь чуть раньше окна и замолкайте чуть раньше его конца. Между окнами сохраняйте тишину, чтобы мицеллы удерживали остальное лекарство.",
+  "Delivered": "Доставлено",
+  "Short, well-timed bursts of heat opened the micelles exactly when the drug was needed, and the cold kept it locked inside the rest of the time. Temperature-sensitive carriers are designed to do just this at a warmed tumour.": "Короткие, точно рассчитанные импульсы нагрева раскрывали мицеллы именно тогда, когда было нужно лекарство, а в остальное время холод удерживал его внутри. Термочувствительные носители разрабатывают именно для этого: высвобождения в нагретой опухоли.",
+  "Heat frees the drug a little after it starts and keeps freeing it for a moment after it stops, so late or long bursts waste it. Watch the windows on the time bar and start a little early.": "Нагрев высвобождает лекарство с небольшой задержкой и продолжает высвобождать его ещё некоторое время после прекращения, поэтому поздние или долгие импульсы тратят его впустую. Следите за окнами на шкале времени и начинайте чуть заранее.",
+  "Lost": "Потеряно",
+  "Target window: release now! {s} s": "Окно мишени: высвобождайте сейчас! {s} с",
+  "Next target window in {s} s": "Следующее окно мишени через {s} с",
+  "No more windows: keep it cold": "Окон больше нет: держите систему холодной",
+  "Micelles carry a drug (violet stars) in their oily cores. Heat breaks them open and frees the drug. Free drug inside a red target window reaches the target (blue stars); free drug at any other time is lost (grey). Your score is the share of the drug delivered.": "Мицеллы переносят лекарство (фиолетовые звёздочки) в своих гидрофобных ядрах. Нагрев разрушает их и высвобождает лекарство. Лекарство, высвободившееся во время красного окна мишени, достигает мишени (синие звёздочки); высвободившееся в другое время теряется (серое). Ваш счёт — доля доставленного лекарства."
  }
 };
   let LANG = 'en';
@@ -3339,6 +3410,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       epsPP: +$('epsPP').value, kBend: sys === 'plates' ? 150 : +$('kBend').value, chainLen: +$('chainLen').value,
       fA: +$('fA').value, epsAB: +$('epsAB').value, epsSC: +$('epsSC').value, xC: v / 100,
       epsHH: +$('epsHH').value, sequence: cleanSeq(), cryptSeq: 'PPPPPXXXPPXXXXPPXXXXXPPXXXXPPXXXPPPPP', epsGo: 2.5, goCut: 1.6, epsXX: +$('epsXX').value, epsB: 0 };
+    if (opts.game && gameSel && gameSel.prm) Object.assign(prm, gameSel.prm); else prm.nDrug = 0;
     eng = new MDEngine(prm);
     eng2 = sys === 'plates' && $('plateCompare').checked ? new MDEngine(Object.assign({}, prm, { epsPW: 0, plateHB: 0 })) : null;
     const ord = eng.p.ordered;
@@ -3559,6 +3631,16 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // Star thresholds come from headless runs over 3 seeds: going silent at once (deep quench) scores below one star in every game;
   // the best scores need slow cooling (ice) or a cool-but-not-frozen temperature (liquids, block chains).
   const GAME_SEC = 30;
+  // drug game: free drug (fewer than 2 tail neighbours) is delivered inside a target window, lost outside one
+  let drugLast = 0;
+  function drugTick() {
+    const G = game; if (!G || !eng.nDrug) return drugLast;
+    const t = eng.time - G.t0, inW = (G.win || []).some(([a, b]) => t >= a && t < b), r = eng.drugStats(1.5, 2);
+    for (let i = 0; i < eng.N; i++) if (eng.type[i] === 4 && r.cnt[i] < 2) { if (inW) { eng.type[i] = 3; G.del++; } else { eng.type[i] = 6; G.lost++; } }
+    drugLast = 100 * G.del / eng.nDrug; return drugLast;
+  }
+  function drugWindow() { const G = game; if (!G || !G.win) return null; const t = eng.time - G.t0;
+    for (const [a, b] of G.win) { if (t >= a && t < b) return { on: true, left: (b - t) / G.rate }; if (t < a) return { on: false, left: (a - t) / G.rate }; } return { on: false, left: null }; }
   const GAMES = [
     { id: 'ice', title: 'Grow the biggest ice crystal', sub: 'Ice · slow cooling wins', sys: 'ice', ordered: false, range: [0.02, 0.30], D: 150,
       lab: 'Ice', fmt: (v) => pct(v), stars: [0.40, 0.48, 0.55],
@@ -3572,12 +3654,15 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       hint: 'Total silence freezes the molecules before they can sort themselves: no star. Find a level that is cold enough to separate but warm enough to move.',
       lesson: { good: 'Cool enough that the molecules prefer their own kind, warm enough that they can still move: the blobs grow quickly. Too cold, and everything freezes in place.',
         bad: 'Very cold molecules hardly move, so they stay stuck next to the wrong neighbours. Try a little noise to keep them moving.' } },
-    { id: 'stick', title: 'Stick the proteins together', sub: 'Protein unfolding · 25 proteins', sys: 'crypt', ordered: true, range: [0.6, 7.0], D: 90, box: '48', conc: 25, epsXX: 5,
-      lab: 'Sticky contacts', fmt: (v) => v.toFixed(0), stars: [45, 58, 70], scale: 90, value: () => eng.cryptStats(1.5).xx,
-      goal: 'Twenty-five folded proteins hide their sticky beads. In 30 seconds, make as many sticky contacts between different proteins as you can. Your score is the highest number you reach.',
-      hint: 'Silence keeps them folded: no contacts. Full noise boils the clumps apart. Heat first to open the folds, then calm down so the sticky beads hold on.',
-      lesson: { good: 'Heat opened the folds and exposed the sticky beads; a cooler middle temperature then let them hold on to each other. Too cold and the beads stay hidden, too hot and every contact breaks at once.',
-        bad: 'The sticky beads only meet when the proteins are unfolded, and they only hold when it is not too hot. Try heating first, then settling at a medium noise level.' } },
+    { id: 'drug', title: 'Deliver the drug', sub: 'Amphiphiles · hit the target windows', sys: 'dumbbell', ordered: true, range: [0.4, 2.5], D: 60, box: '48', conc: 26,
+      prm: { nDrug: 90, drugPerMic: 3, epsDB: 2.5, epsBB: 2.5, epsAS: 0, sigA: 1.0 }, raw: true, noSnap: true, side: 'Lost',
+      lab: 'Delivered', fmt: (v) => v.toFixed(0) + '%', stars: [40, 65, 85], scale: 100,
+      setup: (G) => { const w = []; let a = 6 + 4 * Math.random(); while (a + 4 <= 58) { w.push([a, a + 4]); a += 4 + 5 + 4 * Math.random(); } G.win = w; G.del = 0; G.lost = 0; },
+      value: () => drugTick(),
+      goal: 'Micelles carry a drug (violet stars) in their oily cores. Heat breaks them open and frees the drug. Free drug inside a red target window reaches the target (blue stars); free drug at any other time is lost (grey). Your score is the share of the drug delivered.',
+      hint: 'The micelles need a moment to open, so start the noise just before a window and stop just before it ends. Stay quiet between windows so the micelles hold on to the rest.',
+      lesson: { good: 'Short, well-timed bursts of heat opened the micelles exactly when the drug was needed, and the cold kept it locked inside the rest of the time. Temperature-sensitive carriers are designed to do just this at a warmed tumour.',
+        bad: 'Heat frees the drug a little after it starts and keeps freeing it for a moment after it stops, so late or long bursts waste it. Watch the windows on the time bar and start a little early.' } },
     { id: 'gel', title: 'Grow the longest gel strand', sub: 'Protein unfolding · 35 proteins', sys: 'crypt', ordered: true, range: [0.6, 7.0], D: 90, box: '48', conc: 35, epsXX: 5,
       lab: 'Gel path', fmt: (v) => v.toFixed(0) + ' σ', stars: [80, 130, 170], scale: 200, value: () => { gelShow = eng.gelPath(1.5, 2); return gelShow.len; },
       goal: 'Thirty-five folded proteins. In 30 seconds, link them into a gel: proteins held together by at least two sticky contacts. Your score is the longest path through the gel, from protein to protein (shown in red); the box is 62 σ wide.',
@@ -3631,6 +3716,10 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const g = gameSel; if (!g) return;
     prepGame(g);
     game = { g, t0: eng.time, last: eng.time, ema: null, rate: g.D / GAME_SEC, peak: -Infinity, peakSec: 0, snap: null };
+    if (g.setup) g.setup(game);
+    const gb = document.querySelector('.gbar'); gb.querySelectorAll('.win').forEach((x) => x.remove());
+    for (const [w0, w1] of game.win || []) { const d = document.createElement('div'); d.className = 'win'; d.style.left = (100 * w0 / g.D) + '%'; d.style.width = (100 * (w1 - w0) / g.D) + '%'; gb.appendChild(d); }
+    $('gpeakLab').textContent = T(g.side || 'Best this run');
     $('gpeak').textContent = '–'; $('gbest').style.display = 'none';
     gameCarry = 0; running = true; $('pause').textContent = T('Pause');
     $('gvalLab').textContent = T(g.lab); $('gval').textContent = '–'; $('gstars').textContent = starStr(0); $('gtime').textContent = GAME_SEC;
@@ -3667,16 +3756,17 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (G.snap) { restoreSnap(G.snap); running = false; $('pause').textContent = T('Resume'); const r = report(); showReport(r);
       if (g.value) g.value(); const rv = G.peak; $('gval').textContent = g.fmt(rv); $('gval').className = ''; $('gnow').style.left = (100 * Math.max(0, Math.min(1, rv / (g.scale || 1)))) + '%'; }
     $('gres').innerHTML = `<span class="big">${starStr(st)}</span> <b>${T('Score {s}', { s: g.fmt(v) })}</b> ${rec ? T('(new best ever!)') : T('(best ever {b})', { b: g.fmt(Math.max(b, v)) })}. ` +
-      T('The box now shows your best moment, reached at {s} s; press Resume to let it run on.', { s: G.peakSec.toFixed(0) }) + ' ' +
+      (G.snap ? T('The box now shows your best moment, reached at {s} s; press Resume to let it run on.', { s: G.peakSec.toFixed(0) }) + ' ' : '') +
       T(st ? g.lesson.good : g.lesson.bad) + ' ' + (st < 3 ? T('Next star at {v}.', { v: g.fmt(g.stars[st]) }) : T('Top score!')) + ' ' + T('Your average so far: {a} (games played: {n}).', { n: S.n, a: g.fmt(S.sum / S.n) });
     renderPick();
   }
   function gameUpdate(v) {
     const G = game, g = G.g, now = eng.time, dt = now - G.last; G.last = now;
-    G.ema = G.ema === null ? v : G.ema + (1 - Math.exp(-dt / 2.0)) * (v - G.ema); // smooth over about 2 time units
+    G.ema = G.ema === null || g.raw ? v : G.ema + (1 - Math.exp(-dt / 2.0)) * (v - G.ema); // smooth over about 2 time units (raw: cumulative scores)
     const frac = Math.min(1, (now - G.t0) / g.D);
-    if (G.ema > G.peak) { G.peak = G.ema; G.peakSec = GAME_SEC * frac; G.snap = takeSnap(); $('gpeak').textContent = g.fmt(G.peak);
+    if (G.ema > G.peak) { G.peak = G.ema; G.peakSec = GAME_SEC * frac; if (!g.noSnap) G.snap = takeSnap(); if (!g.side) $('gpeak').textContent = g.fmt(G.peak);
       $('gbest').style.display = 'block'; $('gbest').style.left = (100 * Math.max(0, Math.min(1, G.peak / (g.scale || 1)))) + '%'; }
+    if (g.side) $('gpeak').textContent = g.fmt(eng.nDrug ? 100 * (G.lost || 0) / eng.nDrug : 0);
     const st = starsFor(g, G.peak);
     $('gval').textContent = g.fmt(G.ema); $('gstars').textContent = starStr(st);
     $('gtime').textContent = Math.ceil(GAME_SEC * (1 - frac)) + ' s';
@@ -3859,8 +3949,26 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     ctx.save();
     if (eng.walls) { ctx.translate(0, cv.height); ctx.scale(1, -1); } // brush: substrate at the bottom
     drawScene();
+    if (sys === 'dumbbell' && eng.nDrug) drawDrug();
     if (sys === 'crypt' && gelShow && gelShow.path.length > 1 && appMode === 'game' && ((game && game.g.id === 'gel') || (!game && gameSel && gameSel.id === 'gel'))) drawGel(gelShow);
     ctx.restore();
+  }
+  function drawDrug() {
+    const s = cv.width / eng.L, type = eng.type;
+    disks(colors.muted, 0.42 * s, (i) => type[i] === 6, 0, eng.N);
+    // drug as stars (drawn over everything, in all periodic copies near the edges) so it stands out from the beads
+    const star = (col, t, R) => { ctx.fillStyle = col; ctx.strokeStyle = colors.ink; ctx.lineWidth = Math.max(1, 0.08 * s); ctx.beginPath();
+      for (let i = 0; i < eng.N; i++) { if (type[i] !== t) continue; const X = eng.x[i] * s, Y = eng.y[i] * s;
+        for (let k = 0; k < 10; k++) { const r = k & 1 ? 0.45 * R : R, a = -Math.PI / 2 + k * Math.PI / 5, px = X + r * Math.cos(a), py = Y + r * Math.sin(a); k ? ctx.lineTo(px, py) : ctx.moveTo(px, py); }
+        ctx.closePath(); }
+      ctx.fill(); ctx.stroke(); };
+    star(colors.cold, 3, 0.85 * s); star(colors.poly, 4, 0.95 * s);
+    const w = drugWindow(); if (!w) return;
+    ctx.save(); ctx.font = `700 ${15 * dpr}px ${css('--f-body') || 'sans-serif'}`; ctx.textBaseline = 'top'; ctx.textAlign = 'center';
+    if (w.on) { ctx.strokeStyle = colors.hot; ctx.lineWidth = 8 * dpr; ctx.strokeRect(4 * dpr, 4 * dpr, cv.width - 8 * dpr, cv.height - 8 * dpr); }
+    const msg = w.on ? T('Target window: release now! {s} s', { s: w.left.toFixed(1) }) : w.left !== null ? T('Next target window in {s} s', { s: w.left.toFixed(1) }) : T('No more windows: keep it cold');
+    const tw = ctx.measureText(msg).width + 16 * dpr; ctx.fillStyle = w.on ? colors.hot : colors.ink; ctx.globalAlpha = 0.85;
+    ctx.fillRect((cv.width - tw) / 2, 10 * dpr, tw, 24 * dpr); ctx.globalAlpha = 1; ctx.fillStyle = colors.cell; ctx.fillText(msg, cv.width / 2, 14 * dpr); ctx.restore();
   }
   // longest gel path: thick red line through the centres of the linked proteins (minimum-image steps, drawn in all periodic copies)
   function drawGel(gp) {
@@ -3919,7 +4027,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
           for (let a = 0; a < 6; a += 2) { ctx.moveTo(X, Y); ctx.lineTo(X + al * arm[o + a], Y + al * arm[o + a + 1]); } }
         ctx.stroke();
       }
-    } else if ($('showSolv').checked && !eng.walls) disks(colors.solv, 0.42 * s, bnd ? (i) => !bnd[i] : () => true, nCh, N);
+    } else if ($('showSolv').checked && !eng.walls) disks(colors.solv, 0.42 * s, bnd ? (i) => !bnd[i] : eng.nDrug ? (i) => type[i] === 2 : () => true, nCh, N);
     if (bnd) disks(colors.mixS, 0.42 * s, (i) => bnd[i] === 1, nCh, N);
     if ($('showBonds').checked && Lc > 1) {
       ctx.strokeStyle = colors.bond; ctx.lineWidth = Math.max(1, 0.18 * s); ctx.beginPath(); const hL = L / 2;
@@ -4034,7 +4142,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     applyStatic(); refreshTexts(); document.title = T('Shut Up and Get Structured');
   }
   $('lang').addEventListener('change', (e) => setLang(e.target.value));
-  window.__eng = () => eng; // for tests
+  window.__eng = () => eng; window.__game = () => game; // for tests
   window.__i18nData = () => { const out = [];
     for (const S of Object.values(SYS)) { for (const k of ['concLab', 'plotLab', 'hl']) if (S[k]) out.push(S[k]); for (const [, tx] of S.legend || []) out.push(tx); }
     for (const g of GAMES) out.push(g.title, g.sub, g.goal, g.hint, g.lab, g.lesson.good, g.lesson.bad);
