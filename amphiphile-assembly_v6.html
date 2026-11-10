@@ -103,7 +103,7 @@ table.eps th { font-weight: 500; color: var(--muted) }
 .ghead b { font-weight: 650 } .ghead .btn { padding: 4px 10px }
 .htip { color: var(--muted) }
 .ghud .gstat div { padding: 4px 8px; background: var(--panel); justify-content: space-between } .ghud .gres:empty { display: none }
-.ingame #sim { width: min(100%, calc(100vh - 300px)); width: min(100%, calc(100svh - 300px)); margin: 0 auto }
+.ingame #sim { width: min(100%, calc(100vh - 360px)); width: min(100%, calc(100svh - 360px)); margin: 0 auto }
 .ggoal { font-size: 14px; margin: 0; font-weight: 500 } .ghint { margin: 0; color: var(--muted); font-size: 13.5px; max-width: 80ch }
 .gstat { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px }
 .gband .best { position: absolute; top: 0; bottom: 0; width: 3px; margin-left: -1px; background: var(--cryst); display: none }
@@ -127,9 +127,36 @@ table.eps th { font-weight: 500; color: var(--muted) }
 @media (max-width: 700px) { .ghud .gstat div { align-items: center; text-align: center; padding: 4px 2px } .ghud .gstat span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; font-size: 10px } .ghead { text-align: center; flex-direction: column; align-items: center; gap: 6px } .gres { text-align: center } .gstat b { font-size: 14px } .ghud { padding: 6px 8px; gap: 5px } .ghead { font-size: 12px } .ghud .gstat { gap: 6px } .gstat span { font-size: 10.5px }
   .ingame #sim { width: min(100%, 34svh) } .ingame .legend { display: none } .gband { height: 16px } .gband .tick { line-height: 16px } .gbar { height: 7px } .ghud .gres { font-size: 12.5px } .htip { display: none } }
 .offmode { display: none !important }
+.gfx { position: absolute; pointer-events: none; display: grid; place-items: center; z-index: 6; overflow: hidden; border-radius: 6px }
+.gfx .cd { grid-area: 1 / 1; font-family: var(--f-display); font-weight: 700; font-size: clamp(64px, 22vmin, 170px); line-height: 1; color: var(--accent);
+  -webkit-text-stroke: 3px var(--panel); paint-order: stroke fill; text-shadow: 0 4px 18px color-mix(in srgb, var(--ink) 25%, transparent); animation: cdpop 0.8s ease-out both }
+.gfx .cd.go { color: var(--hot) }
+.gfx .sp { grid-area: 1 / 1; font-size: clamp(54px, 16vmin, 120px); line-height: 1; color: var(--cryst); letter-spacing: 4px;
+  -webkit-text-stroke: 2px color-mix(in srgb, var(--ink) 55%, var(--cryst)); paint-order: stroke fill; animation: starpop 1.3s cubic-bezier(.2,.9,.3,1.2) both }
+.gfx .bit { grid-area: 1 / 1; font-size: 22px; color: var(--cryst); animation: burst 1.1s ease-out both }
+@keyframes cdpop { 0% { transform: scale(1.9); opacity: 0 } 18% { transform: scale(1); opacity: 1 } 78% { opacity: 1 } 100% { transform: scale(0.85); opacity: 0 } }
+@keyframes starpop { 0% { transform: scale(0.2) rotate(-25deg); opacity: 0 } 30% { transform: scale(1.25) rotate(6deg); opacity: 1 } 50% { transform: scale(1) rotate(0) } 82% { opacity: 1 } 100% { transform: translateY(-24px) scale(1.05); opacity: 0 } }
+@keyframes burst { 0% { transform: rotate(var(--a)) translateY(0) scale(0.4); opacity: 0 } 15% { opacity: 1 } 100% { transform: rotate(var(--a)) translateY(calc(-1 * var(--d))) scale(1); opacity: 0 } }
+#gstars.bump { animation: bump 0.6s ease-out }
+@keyframes bump { 0% { transform: scale(1) } 35% { transform: scale(1.45) } 100% { transform: scale(1) } }
+@media (prefers-reduced-motion: reduce) { .gfx .cd, .gfx .sp { animation-duration: 0.8s; animation-name: fadeonly } .gfx .bit { display: none } #gstars.bump { animation: none }
+  @keyframes fadeonly { 0% { opacity: 0 } 20% { opacity: 1 } 80% { opacity: 1 } 100% { opacity: 0 } } }
 .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 4px } .brand .logo { flex: none } @media (max-width: 700px) { body header { flex-direction: column; align-items: stretch; gap: 10px } body header .langbox { position: static; align-self: flex-end }
   body header > div:not(.langbox) { padding-right: 0; text-align: center; width: 100% } .brand { justify-content: center } .brand .logo { width: 34px; height: 34px } header .sub { margin-left: auto; margin-right: auto } }
-header { position: relative } .langbox { position: absolute; top: 0; right: 0 } header > div:not(.langbox) { padding-right: 120px }
+header { position: relative } .langbox { position: absolute; top: 0; right: 0; display: flex; gap: 8px; align-items: center } header > div:not(.langbox) { padding-right: 170px }
+.helpbtn { width: 32px; height: 32px; padding: 0; border-radius: 50%; font-weight: 700; font-size: 15px; color: var(--accent); border-color: var(--accent) }
+.tour { position: fixed; inset: 0; z-index: 50 }
+.tour .spot { position: fixed; border-radius: 10px; box-shadow: 0 0 0 9999px color-mix(in srgb, #0b1116 62%, transparent); outline: 2px solid var(--accent); outline-offset: 2px; transition: all .25s ease; pointer-events: none }
+.tour .spot.none { box-shadow: 0 0 0 9999px color-mix(in srgb, #0b1116 62%, transparent); outline: none; width: 0; height: 0; left: 50%; top: 50% }
+.tcard { position: fixed; width: min(360px, calc(100vw - 32px)); background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px;
+  box-shadow: 0 14px 40px -12px rgba(0,0,0,.5); transition: top .25s ease, left .25s ease }
+.tcard h3 { margin: 0; font-family: var(--f-display); font-size: 16px; text-wrap: balance } .tcard p { margin: 0; font-size: 14px; line-height: 1.45 }
+.tcard .tnav { display: flex; align-items: center; gap: 8px } .tcard .tnav .cnt { margin-right: auto; color: var(--muted); font-size: 12px; font-family: var(--f-mono) }
+.tcard .tx { position: absolute; top: 8px; right: 8px; border: 0; background: none; color: var(--muted); font-size: 20px; line-height: 1; cursor: pointer; padding: 4px 8px }
+.tdemo { display: flex; flex-direction: column; gap: 4px } .tdemo canvas { width: 100%; aspect-ratio: 16 / 9; background: var(--cell); border-radius: 8px; display: block }
+.tdemo small { color: var(--muted); font-size: 12.5px; min-height: 1.2em }
+@media (max-width: 700px) { header > div:not(.langbox) { padding-right: 0 } }
+@media (prefers-reduced-motion: reduce) { .tour .spot, .tcard { transition: none } }
 .langbox select { font: inherit; font-size: 13px; padding: 4px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--ink) }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0) }
 .muted { color: var(--muted) }
@@ -140,7 +167,7 @@ header { position: relative } .langbox { position: absolute; top: 0; right: 0 } 
 .thermo .note { margin: 0 }
 .thmore { font-size: 13px; color: var(--muted) } .thmore summary { cursor: pointer; color: var(--accent) } .thmore p { margin: 6px 0; max-width: 90ch }
 .thgrid figcaption span { color: var(--muted); display: block }
-.inscan #sim { width: min(100%, calc(100vh - 440px)); width: min(100%, calc(100svh - 440px)); min-width: 260px; margin: 0 auto }
+.inscan #sim { width: min(100%, calc(100vh - 500px)); width: min(100%, calc(100svh - 500px)); min-width: 260px; margin: 0 auto }
 @media (min-width: 701px) { .thermo .thgrid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px } .thermo .thplot { height: 130px } .thgrid figcaption { font-size: 11.5px; line-height: 1.3 } }
 @media (max-width: 700px) { .inscan .cellbox { position: static } .inscan #sim { width: min(100%, 46svh); min-width: 0 } .thermo .thgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px } .thermo .thplot { height: 110px } .thgrid figcaption { font-size: 11.5px; line-height: 1.3 } }
 .thhead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px }
@@ -167,7 +194,15 @@ header { position: relative } .langbox { position: absolute; top: 0; right: 0 } 
 .seqbox label { font-size: 13px }
 .seqbox input[type=text] { grid-column: 1 / -1; font-family: var(--f-mono); font-size: 13px; letter-spacing: 0.06em; padding: 7px 9px; border-radius: 6px; border: 1px solid var(--line); background: var(--cell); color: var(--ink); min-width: 0; text-transform: uppercase }
 .seqbox .btn, .seqbox .note { grid-column: 1 / -1; justify-self: start }
-.mbar { display: none }
+.cellbox { position: relative }
+.mbar { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 4px 14px; align-items: center; padding: 2px 2px 0 }
+.mbar-t { display: flex; flex-direction: column; font-family: var(--f-mono); font-variant-numeric: tabular-nums; line-height: 1.15; min-width: 7.5ch }
+.mbar-t b { font-size: 1.7rem; font-weight: 500; letter-spacing: -0.02em }
+.mbar-t small { font-size: 11.5px; color: var(--muted) }
+.mbar .btn[aria-pressed=true] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent) }
+.mbar .meter { grid-column: 1 / -1; height: 6px }
+.mbar .trange { min-width: 0 } .mbar input[type=range] { height: 26px }
+.tfull { display: none !important }
 button { touch-action: manipulation }
 @media (pointer: coarse) {
   input[type=range] { height: 32px }
@@ -185,13 +220,7 @@ button { touch-action: manipulation }
   #sim { width: min(100%, 46vh); width: min(100%, 46svh); margin: 0 auto }
   .legend { font-size: 11px; gap: 4px 12px; justify-content: center }
   #boxinfo { display: none !important }
-  .mbar { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 4px 12px; align-items: center }
-  .mbar-t { display: flex; flex-direction: column; font-family: var(--f-mono); font-variant-numeric: tabular-nums; line-height: 1.15 }
-  .mbar-t b { font-size: 1.35rem; font-weight: 500 }
-  .mbar-t small { font-size: 10.5px; color: var(--muted) }
-  .mbar .btn[aria-pressed=true] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent) }
-  .mbar .meter { grid-column: 1 / -1; height: 5px }
-  .tfull { display: none !important }
+  .mbar { gap: 4px 12px } .mbar-t b { font-size: 1.35rem } .mbar-t small { font-size: 10.5px } .mbar .meter { height: 5px } .mbar .ticks { display: none }
   .panel { padding: 12px 14px }
   .readouts { gap: 8px 10px }
   .ro b { font-size: 13.5px }
@@ -203,7 +232,7 @@ button { touch-action: manipulation }
 
 <div class="wrap" data-sys="dumbbell">
   <header>
-    <div class="langbox"><label for="lang" class="sr">Language</label>
+    <div class="langbox"><button class="btn helpbtn" id="helpBtn" aria-label="Help: quick tour" title="Help: quick tour">?</button><label for="lang" class="sr">Language</label>
       <select id="lang" aria-label="Language"><option value="en">English</option><option value="fi">Suomi</option><option value="sv">Svenska</option><option value="ru">Русский</option></select></div>
     <div>
       <div class="brand"><svg class="logo" viewBox="0 0 48 48" width="44" height="44" aria-hidden="true"><line x1="32.7" y1="29.0" x2="39.8" y2="33.1" stroke="var(--bond)" stroke-width="2"/><circle cx="32.7" cy="29.0" r="3.3" fill="var(--tail)"/><circle cx="39.8" cy="33.1" r="4.8" fill="var(--head)"/><line x1="24.0" y1="34.0" x2="24.0" y2="42.3" stroke="var(--bond)" stroke-width="2"/><circle cx="24.0" cy="34.0" r="3.3" fill="var(--tail)"/><circle cx="24.0" cy="42.3" r="4.8" fill="var(--head)"/><line x1="15.3" y1="29.0" x2="8.2" y2="33.1" stroke="var(--bond)" stroke-width="2"/><circle cx="15.3" cy="29.0" r="3.3" fill="var(--tail)"/><circle cx="8.2" cy="33.1" r="4.8" fill="var(--head)"/><line x1="15.3" y1="19.0" x2="8.2" y2="14.8" stroke="var(--bond)" stroke-width="2"/><circle cx="15.3" cy="19.0" r="3.3" fill="var(--tail)"/><circle cx="8.2" cy="14.8" r="4.8" fill="var(--head)"/><line x1="24.0" y1="14.0" x2="24.0" y2="5.7" stroke="var(--bond)" stroke-width="2"/><circle cx="24.0" cy="14.0" r="3.3" fill="var(--tail)"/><circle cx="24.0" cy="5.7" r="4.8" fill="var(--head)"/><line x1="32.7" y1="19.0" x2="39.8" y2="14.8" stroke="var(--bond)" stroke-width="2"/><circle cx="32.7" cy="19.0" r="3.3" fill="var(--tail)"/><circle cx="39.8" cy="14.8" r="4.8" fill="var(--head)"/><g stroke="#4a3000" stroke-width="0.85" stroke-linecap="round"><circle cx="24" cy="24" r="6.3" fill="var(--cryst)"/><path d="M20.78 21.86 q1.07 -0.94 2.14 0 M25.07 21.86 q1.07 -0.94 2.14 0" fill="none"/><path d="M21.59 26.68 h4.83" fill="none"/><rect x="22.75" y="24.40" width="2.51" height="7.51" rx="1.25" fill="var(--cryst)"/></g></svg><h1>Shut Up and Get Structured</h1></div>
@@ -211,6 +240,15 @@ button { touch-action: manipulation }
       <p class="credit"><span>Vibe coded by</span> <a href="https://scholar.google.com/citations?user=OQtj-R4AAAAJ" target="_blank" rel="noopener">Dmitry Tolmachev</a> · <a href="https://scholar.google.com/citations?user=OQtj-R4AAAAJ" target="_blank" rel="noopener">Google Scholar</a></p>
     </div>
   </header>
+  <div class="tour" id="tour" hidden role="dialog" aria-modal="true" aria-labelledby="tTitle">
+    <div class="spot" id="tSpot"></div>
+    <div class="tcard" id="tCard"><button class="tx" id="tClose" aria-label="Close help">×</button>
+      <h3 id="tTitle"></h3>
+      <div class="tdemo" id="tDemo" hidden><canvas id="tCanvas" width="640" height="360"></canvas><small id="tDemoCap"></small></div>
+      <p id="tText"></p>
+      <div class="tnav"><span class="cnt" id="tCount"></span><button class="btn" id="tBack">Back</button><button class="btn primary" id="tNext">Next</button></div>
+    </div>
+  </div>
 
   <div class="bench">
     <div class="cellbox">
@@ -227,9 +265,10 @@ button { touch-action: manipulation }
         <p class="gres" id="gres" aria-live="polite"></p>
       </div>
       <canvas id="sim" aria-label="Simulation box"></canvas>
+      <div class="gfx" id="gfx" aria-live="assertive" hidden></div>
       <div class="mbar">
         <div class="mbar-t"><b id="tsetM">2.00</b><small>T* · kin <span id="tkinM">–</span></small></div>
-        <input type="range" id="tsliderM" min="0.30" max="2.50" step="0.01" value="2.00" aria-label="Temperature set point">
+        <div class="trange"><input type="range" id="tsliderM" min="0.30" max="2.50" step="0.01" value="2.00" aria-label="Temperature set point"><div class="ticks" id="ticks"></div></div>
         <button class="btn" id="micM" aria-pressed="false">Mic</button>
         <div class="meter" id="mmeter" hidden aria-hidden="true"><i id="micbarM"></i></div>
       </div>
@@ -272,8 +311,8 @@ button { touch-action: manipulation }
 
     <div class="rack">
       <div class="seg modeseg" role="group" aria-label="Mode">
-        <button data-appmode="explore" aria-pressed="true">Explore</button>
-        <button data-appmode="game" aria-pressed="false">Game</button>
+        <button data-appmode="game" aria-pressed="true">Game</button>
+        <button data-appmode="explore" aria-pressed="false">Explore</button>
         <button data-appmode="scan" aria-pressed="false">Energy scan</button>
       </div>
       <div class="panel" id="gamePanel" data-mode="game">
@@ -295,7 +334,7 @@ button { touch-action: manipulation }
         </div>
       </div>
 
-      <div class="panel" data-mode="explore scan">
+      <div class="panel" id="sysPanel" data-mode="explore scan">
         <h2>System</h2>
         <div class="syspick" role="group" aria-label="System">
           <button data-pick="ice" aria-pressed="true"><b>Ice</b><small>Melts on heating</small></button>
@@ -320,7 +359,6 @@ button { touch-action: manipulation }
         </div>
         <div class="trange tfull">
           <input type="range" id="tslider" min="0.30" max="2.50" step="0.01" value="2.00" aria-label="Temperature set point">
-          <div class="ticks" id="ticks"></div>
         </div>
         <div class="btns">
           <button class="btn cold" id="quench">Cool to 0.5</button>
@@ -2326,7 +2364,30 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Target pressure P*": "Tavoitepaine P*",
   "The barostat runs in Explore only; games and energy scans keep the box size fixed.": "Barostaatti toimii vain Tutki-tilassa; peleissä ja energiaskannauksissa laatikon koko pysyy vakiona.",
   "Measuring the pressure of the current state…": "Mitataan nykyisen tilan painetta…",
-  "Pressure {p} (target {t}) · density {d} / σ² · box {l} σ ({r}% of the start)": "Paine {p} (tavoite {t}) · tiheys {d} / σ² · laatikko {l} σ ({r} % alkuperäisestä)"
+  "Pressure {p} (target {t}) · density {d} / σ² · box {l} σ ({r}% of the start)": "Paine {p} (tavoite {t}) · tiheys {d} / σ² · laatikko {l} σ ({r} % alkuperäisestä)",
+  "Go!": "Nyt!",
+  "Back": "Takaisin",
+  "Next": "Seuraava",
+  "Done": "Valmis",
+  "{i} of {n}": "{i}/{n}",
+  "Close help": "Sulje ohje",
+  "How this works": "Näin tämä toimii",
+  "Every dot is a molecule. Cold molecules stick together and build structures; heat shakes them apart. Here a small piece of ice melts as it warms and freezes again as it cools.": "Jokainen piste on molekyyli. Kylmät molekyylit tarttuvat toisiinsa ja muodostavat rakenteita; lämpö ravistelee ne irti. Tässä pieni pala jäätä sulaa lämmetessään ja jäätyy uudelleen jäähtyessään.",
+  "Modes": "Tilat",
+  "Game: reach a goal in 30 seconds. Explore: try any system freely. Energy scan: measure where a structure melts.": "Peli: saavuta tavoite 30 sekunnissa. Tutki: kokeile mitä tahansa järjestelmää vapaasti. Energiaskannaus: mittaa, missä rakenne sulaa.",
+  "Simulation box": "Simulaatiolaatikko",
+  "The molecules move here in real time. The legend under the box names the colours.": "Molekyylit liikkuvat täällä reaaliajassa. Laatikon alla oleva selite kertoo värien merkityksen.",
+  "Drag the slider to cool or heat the box. Press Mic to use room noise instead: quiet cools the box, sound heats it.": "Vedä liukusäädintä jäähdyttääksesi tai lämmittääksesi laatikkoa. Paina Mic käyttääksesi huoneen ääntä: hiljaisuus jäähdyttää, ääni lämmittää.",
+  "Games": "Pelit",
+  "Pick a game, read the goal and press Start. Reach the marked levels to earn up to three stars.": "Valitse peli, lue tavoite ja paina Aloita. Saavuta merkityt tasot ja ansaitse jopa kolme tähteä.",
+  "Systems": "Järjestelmät",
+  "Pick a system. Each card says what happens to it on cooling or heating.": "Valitse järjestelmä. Jokainen kortti kertoo, mitä sille tapahtuu jäähdytettäessä tai lämmitettäessä.",
+  "Language and help": "Kieli ja ohje",
+  "Switch the language here. Press ? to see this tour again.": "Vaihda kieltä tästä. Paina ? nähdäksesi tämän esittelyn uudelleen.",
+  "Heating: the honeycomb breaks and the ice melts": "Lämmitys: hunajakenno hajoaa ja jää sulaa",
+  "Cooling: the molecules lock into a honeycomb again": "Jäähdytys: molekyylit lukittuvat taas hunajakennoksi",
+  "Hot: liquid water": "Kuuma: nestemäistä vettä",
+  "Cold: ice": "Kylmä: jäätä"
  },
  "sv": {
   "Amphiphile Assembly Lab": "Självorganiseringslabbet",
@@ -2827,7 +2888,30 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Target pressure P*": "Måltryck P*",
   "The barostat runs in Explore only; games and energy scans keep the box size fixed.": "Barostaten körs bara i Utforska; spel och energiskanningar behåller lådans storlek.",
   "Measuring the pressure of the current state…": "Mäter trycket i det aktuella tillståndet…",
-  "Pressure {p} (target {t}) · density {d} / σ² · box {l} σ ({r}% of the start)": "Tryck {p} (mål {t}) · densitet {d} / σ² · låda {l} σ ({r} % av starten)"
+  "Pressure {p} (target {t}) · density {d} / σ² · box {l} σ ({r}% of the start)": "Tryck {p} (mål {t}) · densitet {d} / σ² · låda {l} σ ({r} % av starten)",
+  "Go!": "Kör!",
+  "Back": "Tillbaka",
+  "Next": "Nästa",
+  "Done": "Klar",
+  "{i} of {n}": "{i} av {n}",
+  "Close help": "Stäng hjälpen",
+  "How this works": "Så fungerar det",
+  "Every dot is a molecule. Cold molecules stick together and build structures; heat shakes them apart. Here a small piece of ice melts as it warms and freezes again as it cools.": "Varje prick är en molekyl. Kalla molekyler fastnar i varandra och bygger strukturer; värme skakar isär dem. Här smälter en liten bit is när den värms och fryser igen när den kyls.",
+  "Modes": "Lägen",
+  "Game: reach a goal in 30 seconds. Explore: try any system freely. Energy scan: measure where a structure melts.": "Spel: nå ett mål på 30 sekunder. Utforska: prova vilket system som helst fritt. Energiskanning: mät var en struktur smälter.",
+  "Simulation box": "Simuleringslåda",
+  "The molecules move here in real time. The legend under the box names the colours.": "Molekylerna rör sig här i realtid. Förklaringen under lådan anger vad färgerna betyder.",
+  "Drag the slider to cool or heat the box. Press Mic to use room noise instead: quiet cools the box, sound heats it.": "Dra reglaget för att kyla eller värma lådan. Tryck på Mic för att använda ljud i rummet i stället: tystnad kyler, ljud värmer.",
+  "Games": "Spel",
+  "Pick a game, read the goal and press Start. Reach the marked levels to earn up to three stars.": "Välj ett spel, läs målet och tryck på Starta. Nå de markerade nivåerna för att få upp till tre stjärnor.",
+  "Systems": "System",
+  "Pick a system. Each card says what happens to it on cooling or heating.": "Välj ett system. Varje kort berättar vad som händer med det vid kylning eller uppvärmning.",
+  "Language and help": "Språk och hjälp",
+  "Switch the language here. Press ? to see this tour again.": "Byt språk här. Tryck på ? för att se den här genomgången igen.",
+  "Heating: the honeycomb breaks and the ice melts": "Uppvärmning: bikakan bryts och isen smälter",
+  "Cooling: the molecules lock into a honeycomb again": "Kylning: molekylerna låser sig i en bikaka igen",
+  "Hot: liquid water": "Varmt: flytande vatten",
+  "Cold: ice": "Kallt: is"
  },
  "ru": {
   "Amphiphile Assembly Lab": "Лаборатория самосборки",
@@ -3328,7 +3412,30 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Target pressure P*": "Целевое давление P*",
   "The barostat runs in Explore only; games and energy scans keep the box size fixed.": "Баростат работает только в режиме «Исследование»; в играх и энергетическом сканировании размер ячейки постоянен.",
   "Measuring the pressure of the current state…": "Измеряю давление текущего состояния…",
-  "Pressure {p} (target {t}) · density {d} / σ² · box {l} σ ({r}% of the start)": "Давление {p} (цель {t}) · плотность {d} / σ² · ячейка {l} σ ({r}% от начальной)"
+  "Pressure {p} (target {t}) · density {d} / σ² · box {l} σ ({r}% of the start)": "Давление {p} (цель {t}) · плотность {d} / σ² · ячейка {l} σ ({r}% от начальной)",
+  "Go!": "Старт!",
+  "Back": "Назад",
+  "Next": "Далее",
+  "Done": "Готово",
+  "{i} of {n}": "{i} из {n}",
+  "Close help": "Закрыть справку",
+  "How this works": "Как это работает",
+  "Every dot is a molecule. Cold molecules stick together and build structures; heat shakes them apart. Here a small piece of ice melts as it warms and freezes again as it cools.": "Каждая точка — молекула. Холодные молекулы слипаются и строят структуры; нагрев их растряхивает. Здесь маленький кусочек льда тает при нагреве и снова замерзает при охлаждении.",
+  "Modes": "Режимы",
+  "Game: reach a goal in 30 seconds. Explore: try any system freely. Energy scan: measure where a structure melts.": "Игра: достигните цели за 30 секунд. Исследование: свободно пробуйте любую систему. Энергетическое сканирование: измерьте, где структура плавится.",
+  "Simulation box": "Ячейка моделирования",
+  "The molecules move here in real time. The legend under the box names the colours.": "Здесь молекулы движутся в реальном времени. Легенда под ячейкой объясняет цвета.",
+  "Drag the slider to cool or heat the box. Press Mic to use room noise instead: quiet cools the box, sound heats it.": "Двигайте ползунок, чтобы охладить или нагреть ячейку. Нажмите Mic, чтобы управлять шумом в комнате: тишина охлаждает, звук нагревает.",
+  "Games": "Игры",
+  "Pick a game, read the goal and press Start. Reach the marked levels to earn up to three stars.": "Выберите игру, прочитайте цель и нажмите «Старт». Достигайте отмеченных уровней и получайте до трёх звёзд.",
+  "Systems": "Системы",
+  "Pick a system. Each card says what happens to it on cooling or heating.": "Выберите систему. На каждой карточке написано, что с ней происходит при охлаждении или нагреве.",
+  "Language and help": "Язык и справка",
+  "Switch the language here. Press ? to see this tour again.": "Здесь можно сменить язык. Нажмите ?, чтобы снова посмотреть эту экскурсию.",
+  "Heating: the honeycomb breaks and the ice melts": "Нагрев: соты разрушаются, и лёд тает",
+  "Cooling: the molecules lock into a honeycomb again": "Охлаждение: молекулы снова выстраиваются в соты",
+  "Hot: liquid water": "Горячо: жидкая вода",
+  "Cold: ice": "Холодно: лёд"
  }
 };
   let LANG = 'en';
@@ -3838,9 +3945,27 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     $('hudTitle').textContent = T(g.title) + ':'; $('hudGoal').textContent = T(g.goal); $('hudTip').textContent = '';
     $('ghud').hidden = false; document.querySelector('.wrap').classList.add('ingame'); $('gquit').textContent = T('Give up'); $('gagain').hidden = true;
     $('gstart').disabled = true; resize();
+    countdown(game);
     if ($('guseMic').checked) setMode('mic').then(() => { if (!analyser && game) { setMode('slider'); $('gres').textContent = T('No microphone here: use the temperature slider.'); } });
     else setMode('slider');
     const hud = $('ghud'); if (hud.scrollIntoView) hud.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+  }
+  let cdTimer = null;
+  function gfxShow() { const o = $('gfx'); o.style.left = cv.offsetLeft + 'px'; o.style.top = cv.offsetTop + 'px'; o.style.width = cv.offsetWidth + 'px'; o.style.height = cv.offsetHeight + 'px'; o.hidden = false; return o; }
+  function countdown(G) { // 3, 2, 1, Go! over the box; the clock and the molecules wait until it ends
+    clearTimeout(cdTimer); running = false; G.cd = true; let k = 3; const o = gfxShow();
+    const tick = () => { if (game !== G) { o.hidden = true; o.innerHTML = ''; return; }
+      if (k > 0) { o.innerHTML = `<span class="cd">${k}</span>`; k--; cdTimer = setTimeout(tick, 800); return; }
+      o.innerHTML = `<span class="cd go">${T('Go!')}</span>`; G.cd = false; G.t0 = G.last = eng.time; running = true; $('pause').textContent = T('Pause');
+      cdTimer = setTimeout(() => { if (o.querySelector('.go')) { o.hidden = true; o.innerHTML = ''; } }, 800); };
+    tick();
+  }
+  function starBurst(st) { // a new star level reached during a run
+    const o = gfxShow(); clearTimeout(cdTimer);
+    let h = `<span class="sp">${'★'.repeat(st)}</span>`;
+    for (let i = 0; i < 10; i++) h += `<span class="bit" style="--a:${i * 36 + 8 * Math.random()}deg;--d:${32 + 8 * Math.random()}%">★</span>`;
+    o.innerHTML = h; const gs = $('gstars'); gs.classList.remove('bump'); void gs.offsetWidth; gs.classList.add('bump');
+    cdTimer = setTimeout(() => { o.hidden = true; o.innerHTML = ''; }, 1400);
   }
   function gameSteps(dtSec) { // steps this frame so that D time units take 30 s; limited by what the device can do
     const want = game.rate * dtSec / eng.p.dt + gameCarry, cap = msPerStep ? Math.max(1, Math.floor(2 * BUDGET_MS / msPerStep)) : 30;
@@ -3856,7 +3981,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     eng.computeForces(); setT(s.T);
   }
   function endGame(result) {
-    const G = game; game = null;
+    const G = game; game = null; clearTimeout(cdTimer); $('gfx').hidden = true; $('gfx').innerHTML = '';
     $('gstart').disabled = false; $('gstart').textContent = T('Play again'); $('gquit').textContent = T('Close');
     if (!G || !result) { closeHud(); return; }
     const g = G.g, v = G.peak, st = starsFor(g, v), b = getBest(g), rec = b === null || v > b; if (rec) setBest(g, v);
@@ -3866,7 +3991,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       if (g.value) g.value(); const rv = G.peak; $('gval').textContent = g.fmt(rv); $('gval').className = ''; $('gnow').style.left = (100 * Math.max(0, Math.min(1, rv / (g.scale || 1)))) + '%'; }
     $('gres').innerHTML = `<span class="big">${starStr(st)}</span> <b>${T('Score {s}', { s: g.fmt(v) })}</b> ${rec ? T('(new best ever!)') : T('(best ever {b})', { b: g.fmt(Math.max(b, v)) })}. ` +
       (G.snap ? T('The box now shows your best moment, reached at {s} s; press Resume to let it run on.', { s: G.peakSec.toFixed(0) }) + ' ' : '') +
-      (st <= 1 ? '<b>' + T('Tip:') + '</b> ' + T(g.hint) + ' ' : '') + '<b>' + T('Did you know?') + '</b> ' + T(g.facts[Math.floor(Math.random() * g.facts.length)]) + ' ' + (st < 3 ? T('Next star at {v}.', { v: g.fmt(g.stars[st]) }) : T('Top score!')) + ' ' + T('Your average so far: {a} (games played: {n}).', { n: S.n, a: g.fmt(S.sum / S.n) });
+      (st <= 1 ? '<b>' + T('Tip:') + '</b> ' + T(g.hint) + ' ' : '') + '<b>' + T('Did you know?') + '</b> ' + T(g.facts[Math.floor(Math.random() * g.facts.length)]) + ' ' + (st === 3 ? T('Top score!') + ' ' : '') + T('Your average so far: {a} (games played: {n}).', { n: S.n, a: g.fmt(S.sum / S.n) });
     renderPick();
   }
   function gameUpdate(v) {
@@ -3876,7 +4001,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (G.ema > G.peak) { G.peak = G.ema; G.peakSec = GAME_SEC * frac; if (!g.noSnap) G.snap = takeSnap(); if (!g.side) $('gpeak').textContent = g.fmt(G.peak);
       $('gbest').style.display = 'block'; $('gbest').style.left = (100 * Math.max(0, Math.min(1, G.peak / (g.scale || 1)))) + '%'; }
     if (g.side) $('gpeak').textContent = g.fmt(eng.nDrug ? 100 * (G.lost || 0) / eng.nDrug : 0);
-    const st = starsFor(g, G.peak);
+    const st = starsFor(g, G.peak); if (st > (G.stShown || 0)) { G.stShown = st; if (frac < 1) starBurst(st); }
     $('gval').textContent = g.fmt(G.ema); $('gstars').textContent = starStr(st);
     $('gtime').textContent = Math.ceil(GAME_SEC * (1 - frac)) + ' s';
     $('gnow').style.left = (100 * Math.max(0, Math.min(1, G.ema / (g.scale || 1)))) + '%';
@@ -3891,6 +4016,77 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   function closeHud() { $('ghud').hidden = true; document.querySelector('.wrap').classList.remove('ingame'); resize(); }
   $('gquit').addEventListener('click', () => { const was = !!game; endGame(null); if (was) { gameRange = null; applySysUI(); setT(tset); } closeHud(); });
   renderPick();
+
+  // ---------- help: quick tour of the main controls, opened with the ? button ----------
+  const TOUR = [
+    { t: 'How this works', d: 'Every dot is a molecule. Cold molecules stick together and build structures; heat shakes them apart. Here a small piece of ice melts as it warms and freezes again as it cools.', demo: true },
+    { sel: '.modeseg', t: 'Modes', d: 'Game: reach a goal in 30 seconds. Explore: try any system freely. Energy scan: measure where a structure melts.' },
+    { sel: '#sim', t: 'Simulation box', d: 'The molecules move here in real time. The legend under the box names the colours.' },
+    { sel: '.mbar', t: 'Temperature', d: 'Drag the slider to cool or heat the box. Press Mic to use room noise instead: quiet cools the box, sound heats it.' },
+    { sel: () => appMode === 'game' ? '#gamePanel' : '#sysPanel', t: () => appMode === 'game' ? 'Games' : 'Systems',
+      d: () => appMode === 'game' ? 'Pick a game, read the goal and press Start. Reach the marked levels to earn up to three stars.' : 'Pick a system. Each card says what happens to it on cooling or heating.' },
+    { sel: '.langbox', t: 'Language and help', d: 'Switch the language here. Press ? to see this tour again.' },
+  ];
+  let tourI = -1, tourRaf = 0, tourT0 = 0;
+  const tv = (v) => typeof v === 'function' ? v() : v;
+  function tourPlace() {
+    if (tourI < 0) return; const st = TOUR[tourI], spot = $('tSpot'), card = $('tCard'), vw = innerWidth, vh = innerHeight;
+    const el = st.sel ? document.querySelector(tv(st.sel)) : null, cw = card.offsetWidth, ch = card.offsetHeight;
+    if (!el) { spot.className = 'spot none'; spot.removeAttribute('style'); card.style.left = Math.max(16, (vw - cw) / 2) + 'px'; card.style.top = Math.max(16, (vh - ch) / 2) + 'px'; return; }
+    const r = el.getBoundingClientRect(), pad = 6; spot.className = 'spot';
+    Object.assign(spot.style, { left: (r.left - pad) + 'px', top: (r.top - pad) + 'px', width: (r.width + 2 * pad) + 'px', height: (r.height + 2 * pad) + 'px' });
+    let top = r.bottom + 14; if (top + ch > vh - 12) top = r.top - ch - 14; if (top < 12) top = Math.max(12, vh - ch - 12);
+    const left = Math.min(Math.max(16, r.left + r.width / 2 - cw / 2), vw - cw - 16);
+    card.style.top = top + 'px'; card.style.left = left + 'px';
+  }
+  function tourShow(i) {
+    tourI = i; const st = TOUR[i], n = TOUR.length;
+    $('tTitle').textContent = T(tv(st.t)); $('tText').textContent = T(tv(st.d)); $('tCount').textContent = T('{i} of {n}', { i: i + 1, n });
+    $('tBack').disabled = i === 0; $('tNext').textContent = T(i === n - 1 ? 'Done' : 'Next');
+    $('tDemo').hidden = !st.demo; cancelAnimationFrame(tourRaf); if (st.demo) { tourT0 = performance.now(); tourRaf = requestAnimationFrame(iceDemo); }
+    const el = st.sel ? document.querySelector(tv(st.sel)) : null;
+    if (el && el.scrollIntoView) { const r = el.getBoundingClientRect(); if (r.top < 0 || r.bottom > innerHeight) el.scrollIntoView({ block: 'center', behavior: 'auto' }); }
+    requestAnimationFrame(tourPlace);
+  }
+  function tourOpen() { $('tour').hidden = false; tourShow(0); $('tNext').focus(); }
+  function tourClose() { $('tour').hidden = true; tourI = -1; cancelAnimationFrame(tourRaf); $('helpBtn').focus(); }
+  $('helpBtn').addEventListener('click', tourOpen);
+  $('tClose').addEventListener('click', tourClose);
+  $('tBack').addEventListener('click', () => { if (tourI > 0) tourShow(tourI - 1); });
+  $('tNext').addEventListener('click', () => { if (tourI < TOUR.length - 1) tourShow(tourI + 1); else tourClose(); });
+  $('tour').addEventListener('click', (e) => { if (e.target === $('tour')) tourClose(); });
+  document.addEventListener('keydown', (e) => { if (tourI < 0) return;
+    if (e.key === 'Escape') tourClose(); else if (e.key === 'ArrowRight') $('tNext').click(); else if (e.key === 'ArrowLeft') $('tBack').click(); });
+  addEventListener('resize', tourPlace); addEventListener('scroll', tourPlace, { passive: true });
+  // ice demo: a honeycomb of water molecules; the bonds (lines) break and the molecules wander off as T rises, then it refreezes
+  const ICE = (() => { const pts = [], a = 1.15, W = 18, H = 10.1; // honeycomb: a triangular lattice with every third site left empty
+    for (let j = -2; j < 12; j++) for (let i = -8; i < 20; i++) { if (((i - j) % 3 + 3) % 3 === 0) continue;
+      const x = 0.9 + (i + 0.5 * j) * a, y = 0.8 + j * a * Math.sqrt(3) / 2; if (x < 0.6 || x > W - 2.2 || y < 0.6 || y > H - 0.6) continue;
+      pts.push({ x0: x, y0: y, dx: 0, dy: 0, vx: 0, vy: 0, s: Math.random() * 6.28 }); }
+    const nb = []; for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) if (Math.hypot(pts[i].x0 - pts[j].x0, pts[i].y0 - pts[j].y0) < 1.05 * a) nb.push([i, j]);
+    return { pts, nb, W, H, a }; })();
+  function iceDemo(now) {
+    const c = $('tCanvas'), g = c.getContext('2d'), t = ((now - tourT0) / 1000) % 10, red = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // temperature cycle: cold 0-2 s, heat 2-5 s, hot 5-6 s, cool 6-9 s, cold 9-10 s
+    let T01 = t < 2 ? 0 : t < 5 ? (t - 2) / 3 : t < 6 ? 1 : t < 9 ? 1 - (t - 6) / 3 : 0; if (red) T01 = t < 5 ? 0 : 1;
+    const melt = Math.max(0, Math.min(1, (T01 - 0.35) / 0.4)), W = c.width, H = c.height, sc = W / ICE.W;
+    for (const p of ICE.pts) { if (melt > 0) { p.vx += (Math.random() - 0.5) * 0.06 * melt; p.vy += (Math.random() - 0.5) * 0.06 * melt; p.vx *= 0.93; p.vy *= 0.93; p.dx += p.vx; p.dy += p.vy; }
+      else { p.dx *= 0.9; p.dy *= 0.9; p.vx = p.vy = 0; }
+      if (T01 < 0.5 && t > 6) { p.dx *= 0.965; p.dy *= 0.965; } // cooling: back into the honeycomb
+      const x = p.x0 + p.dx, y = p.y0 + p.dy; if (x < 0.4 || x > ICE.W - 2.0) p.vx *= -1; if (y < 0.4 || y > ICE.H - 0.4) p.vy *= -1;
+      p.dx = Math.max(0.4 - p.x0, Math.min(ICE.W - 2.0 - p.x0, p.dx)); p.dy = Math.max(0.4 - p.y0, Math.min(ICE.H - 0.4 - p.y0, p.dy)); }
+    g.clearRect(0, 0, W, H); const jit = 0.05 + 0.12 * T01, ph = now / 160;
+    const P = ICE.pts.map((p) => [(p.x0 + p.dx + jit * Math.sin(ph + p.s)) * sc, (p.y0 + p.dy + jit * Math.cos(1.3 * ph + p.s)) * sc]);
+    g.strokeStyle = colors.cold; g.lineWidth = 3; g.globalAlpha = 0.75; g.beginPath();
+    for (const [i, j] of ICE.nb) { const d = Math.hypot(P[i][0] - P[j][0], P[i][1] - P[j][1]) / sc; if (d < 1.25 * ICE.a) { g.moveTo(P[i][0], P[i][1]); g.lineTo(P[j][0], P[j][1]); } }
+    g.stroke(); g.globalAlpha = 1; g.fillStyle = colors.head; g.beginPath();
+    for (const [x, y] of P) { g.moveTo(x + 0.34 * sc, y); g.arc(x, y, 0.34 * sc, 0, 6.2832); } g.fill();
+    // thermometer on the right
+    const bx = W - 26, by = 18, bh = H - 36; g.fillStyle = colors.line; g.fillRect(bx, by, 10, bh);
+    g.fillStyle = T01 > 0.5 ? colors.hot : colors.cold; g.fillRect(bx, by + bh * (1 - (0.12 + 0.88 * T01)), 10, bh * (0.12 + 0.88 * T01));
+    $('tDemoCap').textContent = T(t >= 2 && t < 6 ? 'Heating: the honeycomb breaks and the ice melts' : t >= 6 && t < 9 ? 'Cooling: the molecules lock into a honeycomb again' : T01 > 0.5 ? 'Hot: liquid water' : 'Cold: ice');
+    if (tourI >= 0 && TOUR[tourI].demo) tourRaf = requestAnimationFrame(iceDemo);
+  }
 
   // ---------- app modes: explore / game / energy scan ----------
   let appMode = 'explore';
@@ -4268,7 +4464,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     return out; };
   setT(startT()); build(); resize(); drawThermo();
   setLang('en'); // every visit starts in English; the menu in the corner switches language
-  setAppMode('explore'); /* every visit opens on Explore with ice at its coldest temperature */ requestAnimationFrame((t) => { last = t; perfT = t; loop(t); });
+  setAppMode('game'); /* every visit opens on the games */ requestAnimationFrame((t) => { last = t; perfT = t; loop(t); });
 })();
 </script>
 </html>
