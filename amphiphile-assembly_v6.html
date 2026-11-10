@@ -103,7 +103,6 @@ table.eps th { font-weight: 500; color: var(--muted) }
 .ghead b { font-weight: 650 } .ghead .btn { padding: 4px 10px }
 .htip { color: var(--muted) }
 .ghud .gstat div { padding: 4px 8px; background: var(--panel); justify-content: space-between } .ghud .gres:empty { display: none }
-.ingame #sim { width: min(100%, calc(100vh - 360px)); width: min(100%, calc(100svh - 360px)); margin: 0 auto }
 .ggoal { font-size: 14px; margin: 0; font-weight: 500 } .ghint { margin: 0; color: var(--muted); font-size: 13.5px; max-width: 80ch }
 .gstat { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px }
 .gband .best { position: absolute; top: 0; bottom: 0; width: 3px; margin-left: -1px; background: var(--cryst); display: none }
@@ -125,8 +124,10 @@ table.eps th { font-weight: 500; color: var(--muted) }
 .gres { margin: 0; font-size: 15px; max-width: 80ch } .gres .big { font-size: 22px; color: var(--cryst); letter-spacing: 2px }
 @media (prefers-reduced-motion: reduce) { .gbar i { transition: none } }
 @media (max-width: 700px) { .ghud .gstat div { align-items: center; text-align: center; padding: 4px 2px } .ghud .gstat span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; font-size: 10px } .ghead { text-align: center; flex-direction: column; align-items: center; gap: 6px } .gres { text-align: center } .gstat b { font-size: 14px } .ghud { padding: 6px 8px; gap: 5px } .ghead { font-size: 12px } .ghud .gstat { gap: 6px } .gstat span { font-size: 10.5px }
-  .ingame #sim { width: min(100%, 34svh) } .ingame .legend { display: none } .gband { height: 16px } .gband .tick { line-height: 16px } .gbar { height: 7px } .ghud .gres { font-size: 12.5px } .htip { display: none } }
+  .ingame .legend { display: none } .gband { height: 16px } .gband .tick { line-height: 16px } .gbar { height: 7px } .ghud .gres { font-size: 12.5px } .htip { display: none } }
 .offmode { display: none !important }
+.boxstart { position: absolute; z-index: 7; font-size: 18px; font-weight: 700; padding: 10px 26px; border-radius: 999px; box-shadow: 0 8px 22px -8px rgba(0,0,0,.45); transform: translate(-50%, -50%) }
+.boxstart::before { content: "▶ " }
 .classmode header, .classmode .rack, .classmode > .panel, .classmode .ghud, .classmode .thermo, .classmode .mbar, .classmode .zhint { display: none !important }
 .classmode .bench { display: block } .classmode .wrap, .wrap.classmode { max-width: none }
 .classmode .cellbox { position: fixed; inset: 0; z-index: 20; border: 0; border-radius: 0; display: grid; grid-template-columns: auto minmax(300px, 1fr); grid-template-rows: 1fr auto; gap: 14px 28px;
@@ -283,6 +284,7 @@ button { touch-action: manipulation }
       </div>
       <canvas id="sim" aria-label="Simulation box"></canvas>
       <div class="gfx" id="gfx" aria-live="assertive" hidden></div>
+      <button class="btn primary boxstart" id="gstartBox" hidden>Start</button>
       <div class="clspanel" id="clsPanel" hidden>
         <div class="clshead"><select id="clsSys" aria-label="System">
           <option value="ice">Ice</option><option value="demix">Binary liquid</option><option value="dumbbell">Amphiphiles</option><option value="polymer">Stiff polymer</option>
@@ -3917,6 +3919,13 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   }
   $('gpick').addEventListener('click', (e) => { const b = e.target.closest('[data-game]'); if (b) selectGame(b.dataset.game); });
   $('gstart').addEventListener('click', startGame); $('gagain').addEventListener('click', startGame);
+  $('gstartBox').addEventListener('click', startGame);
+  function syncBoxStart() { // a Start button on the box whenever a game is picked but not running, so it is always next to the molecules
+    const b = $('gstartBox'), show = appMode === 'game' && !!gameSel && !game && !classOn && tourI < 0;
+    if (b.hidden !== !show) b.hidden = !show;
+    if (!show) return;
+    const t = $('gstart').textContent; if (b.textContent !== t) b.textContent = t;
+    b.style.left = (cv.offsetLeft + cv.offsetWidth / 2) + 'px'; b.style.top = (cv.offsetTop + cv.offsetHeight * (gameSel && $('gres').textContent ? 0.88 : 0.5)) + 'px'; }
   // resuming after a game keeps the best structure as the starting point
   renderPick();
 
@@ -4411,7 +4420,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       frame++;
     }
     if (now - perfT > 1000) { sps = stepCount * 1000 / (now - perfT); stepCount = 0; perfT = now; $('perf').textContent = `${Math.round(sps)} ${T('steps/s')} · ${(sps * eng.p.dt).toFixed(1)} τ/s`; }
-    followTick(); draw();
+    followTick(); draw(); syncBoxStart();
     requestAnimationFrame(loop);
   }
 
