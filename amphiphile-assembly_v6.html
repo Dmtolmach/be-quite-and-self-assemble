@@ -127,6 +127,23 @@ table.eps th { font-weight: 500; color: var(--muted) }
 @media (max-width: 700px) { .ghud .gstat div { align-items: center; text-align: center; padding: 4px 2px } .ghud .gstat span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; font-size: 10px } .ghead { text-align: center; flex-direction: column; align-items: center; gap: 6px } .gres { text-align: center } .gstat b { font-size: 14px } .ghud { padding: 6px 8px; gap: 5px } .ghead { font-size: 12px } .ghud .gstat { gap: 6px } .gstat span { font-size: 10.5px }
   .ingame #sim { width: min(100%, 34svh) } .ingame .legend { display: none } .gband { height: 16px } .gband .tick { line-height: 16px } .gbar { height: 7px } .ghud .gres { font-size: 12.5px } .htip { display: none } }
 .offmode { display: none !important }
+.classmode header, .classmode .rack, .classmode > .panel, .classmode .ghud, .classmode .thermo, .classmode .mbar, .classmode .zhint { display: none !important }
+.classmode .bench { display: block } .classmode .wrap, .wrap.classmode { max-width: none }
+.classmode .cellbox { position: fixed; inset: 0; z-index: 20; border: 0; border-radius: 0; display: grid; grid-template-columns: auto minmax(300px, 1fr); grid-template-rows: 1fr auto; gap: 14px 28px;
+  padding-block: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-bottom, 0px)); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); background: var(--bg) }
+.classmode #sim { grid-row: 1; grid-column: 1; width: min(calc(100vh - 80px), calc(100vw - 420px)); width: min(calc(100svh - 80px), calc(100vw - 420px)); align-self: center; margin: 0 }
+.classmode .legend { grid-row: 2; grid-column: 1; font-size: 15px }
+.clspanel { display: flex; flex-direction: column; gap: 18px; grid-row: 1 / span 2; grid-column: 2; align-self: center; min-width: 0 }
+.clshead { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between } .clshead select { font-size: 16px; padding: 8px 10px }
+.clsgoal { margin: 0; font-size: clamp(18px, 2.2vw, 28px); line-height: 1.3; font-weight: 600; text-wrap: balance }
+.clsbig { display: flex; flex-direction: column; gap: 2px } .clsbig span { color: var(--muted); font-size: clamp(14px, 1.4vw, 18px); text-transform: uppercase; letter-spacing: 0.06em }
+.clsbig b { font-family: var(--f-mono); font-weight: 500; font-size: clamp(40px, 6vw, 88px); line-height: 1; font-variant-numeric: tabular-nums; color: var(--accent) }
+.clsnoise { display: flex; flex-direction: column; gap: 6px } .clsnoise span { color: var(--muted); font-size: clamp(14px, 1.4vw, 18px); text-transform: uppercase; letter-spacing: 0.06em }
+.clsnoise .meter { height: clamp(18px, 2.4vw, 32px); border-radius: 999px } .clsnoise .meter i { background: var(--hot) }
+.clspanel .btn { font-size: 15px; padding: 8px 14px }
+@media (max-width: 800px) { .classmode .cellbox { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto; overflow-y: auto; align-content: start }
+  .classmode #sim { width: min(100%, 52svh); justify-self: center } .clspanel { grid-row: 3; grid-column: 1 } .classmode .legend { grid-row: 2 } }
+#sim { cursor: crosshair } .legend .zhint { margin-left: auto; font-style: italic }
 .gfx { position: absolute; pointer-events: none; display: grid; place-items: center; z-index: 6; overflow: hidden; border-radius: 6px }
 .gfx .cd { grid-area: 1 / 1; font-family: var(--f-display); font-weight: 700; font-size: clamp(64px, 22vmin, 170px); line-height: 1; color: var(--accent);
   -webkit-text-stroke: 3px var(--panel); paint-order: stroke fill; text-shadow: 0 4px 18px color-mix(in srgb, var(--ink) 25%, transparent); animation: cdpop 0.8s ease-out both }
@@ -232,7 +249,7 @@ button { touch-action: manipulation }
 
 <div class="wrap" data-sys="dumbbell">
   <header>
-    <div class="langbox"><button class="btn helpbtn" id="helpBtn" aria-label="Help: quick tour" title="Help: quick tour">?</button><label for="lang" class="sr">Language</label>
+    <div class="langbox"><button class="btn" id="classBtn" title="Class mode: the whole room controls one box with its noise">Class mode</button><button class="btn helpbtn" id="helpBtn" aria-label="Help: quick tour" title="Help: quick tour">?</button><label for="lang" class="sr">Language</label>
       <select id="lang" aria-label="Language"><option value="en">English</option><option value="fi">Suomi</option><option value="sv">Svenska</option><option value="ru">Русский</option></select></div>
     <div>
       <div class="brand"><svg class="logo" viewBox="0 0 48 48" width="44" height="44" aria-hidden="true"><line x1="32.7" y1="29.0" x2="39.8" y2="33.1" stroke="var(--bond)" stroke-width="2"/><circle cx="32.7" cy="29.0" r="3.3" fill="var(--tail)"/><circle cx="39.8" cy="33.1" r="4.8" fill="var(--head)"/><line x1="24.0" y1="34.0" x2="24.0" y2="42.3" stroke="var(--bond)" stroke-width="2"/><circle cx="24.0" cy="34.0" r="3.3" fill="var(--tail)"/><circle cx="24.0" cy="42.3" r="4.8" fill="var(--head)"/><line x1="15.3" y1="29.0" x2="8.2" y2="33.1" stroke="var(--bond)" stroke-width="2"/><circle cx="15.3" cy="29.0" r="3.3" fill="var(--tail)"/><circle cx="8.2" cy="33.1" r="4.8" fill="var(--head)"/><line x1="15.3" y1="19.0" x2="8.2" y2="14.8" stroke="var(--bond)" stroke-width="2"/><circle cx="15.3" cy="19.0" r="3.3" fill="var(--tail)"/><circle cx="8.2" cy="14.8" r="4.8" fill="var(--head)"/><line x1="24.0" y1="14.0" x2="24.0" y2="5.7" stroke="var(--bond)" stroke-width="2"/><circle cx="24.0" cy="14.0" r="3.3" fill="var(--tail)"/><circle cx="24.0" cy="5.7" r="4.8" fill="var(--head)"/><line x1="32.7" y1="19.0" x2="39.8" y2="14.8" stroke="var(--bond)" stroke-width="2"/><circle cx="32.7" cy="19.0" r="3.3" fill="var(--tail)"/><circle cx="39.8" cy="14.8" r="4.8" fill="var(--head)"/><g stroke="#4a3000" stroke-width="0.85" stroke-linecap="round"><circle cx="24" cy="24" r="6.3" fill="var(--cryst)"/><path d="M20.78 21.86 q1.07 -0.94 2.14 0 M25.07 21.86 q1.07 -0.94 2.14 0" fill="none"/><path d="M21.59 26.68 h4.83" fill="none"/><rect x="22.75" y="24.40" width="2.51" height="7.51" rx="1.25" fill="var(--cryst)"/></g></svg><h1>Shut Up and Get Structured</h1></div>
@@ -266,13 +283,25 @@ button { touch-action: manipulation }
       </div>
       <canvas id="sim" aria-label="Simulation box"></canvas>
       <div class="gfx" id="gfx" aria-live="assertive" hidden></div>
+      <div class="clspanel" id="clsPanel" hidden>
+        <div class="clshead"><select id="clsSys" aria-label="System">
+          <option value="ice">Ice</option><option value="demix">Binary liquid</option><option value="dumbbell">Amphiphiles</option><option value="polymer">Stiff polymer</option>
+          <option value="diblock">Diblock copolymer</option><option value="lcst">UCST polymer</option><option value="crypt">Protein unfolding</option></select>
+          <button class="btn" id="clsExit">Exit class mode</button></div>
+        <p class="clsgoal">Everyone quiet: the box cools and structures grow. Noise heats it and breaks them.</p>
+        <div class="clsbig"><span id="clsLab">–</span><b id="clsVal">–</b></div>
+        <div class="clsbig"><span>Temperature</span><b id="clsT">–</b></div>
+        <div class="clsnoise"><span>Room noise</span><div class="meter"><i id="micbarC"></i></div></div>
+        <div class="btns"><button class="btn" id="clsCalib">Set quiet level</button><button class="btn" id="clsPause">Pause</button></div>
+        <p class="note" id="clsNote"></p>
+      </div>
       <div class="mbar">
         <div class="mbar-t"><b id="tsetM">2.00</b><small>T* · kin <span id="tkinM">–</span></small></div>
         <div class="trange"><input type="range" id="tsliderM" min="0.30" max="2.50" step="0.01" value="2.00" aria-label="Temperature set point"><div class="ticks" id="ticks"></div></div>
         <button class="btn" id="micM" aria-pressed="false">Mic</button>
         <div class="meter" id="mmeter" hidden aria-hidden="true"><i id="micbarM"></i></div>
       </div>
-      <div class="legend"><span id="legendItems" style="display:contents"></span><span id="boxinfo" style="font-family:var(--f-mono)"></span></div>
+      <div class="legend"><span id="legendItems" style="display:contents"></span><span id="boxinfo" style="font-family:var(--f-mono)"></span><span class="zhint">Click a molecule to follow it</span></div>
       <div class="thermo" id="thermoPanel" data-mode="scan">
         <div class="thhead">
           <h2>Energy scan: find the melting point</h2>
@@ -411,6 +440,8 @@ button { touch-action: manipulation }
 
         <div class="row" data-show="polymer lcst mbpoly"><label for="epsPP">Polymer–polymer attraction ε<sub>PP</sub></label><output id="epsPPO">1.75</output>
           <input type="range" id="epsPP" min="0" max="3" step="0.05" value="1.75"></div>
+        <div class="row" data-show="mbpoly plates"><label for="epsH">Hydrophobic attraction ε<sub>h</sub> (added by hand, grows with T)</label><output id="epsHO">1.00</output>
+          <input type="range" id="epsH" min="0" max="2" step="0.05" value="1"></div>
         <div class="row" data-show="polymer brush"><label for="kBend">Chain stiffness k<sub>bend</sub></label><output id="kBendO">6.4</output>
           <input type="range" id="kBend" min="0" max="15" step="0.1" value="6.4"></div>
 
@@ -642,7 +673,8 @@ U_LJ: ε = 0.1, σ = 0.7 (water)     solutes: σ = 1.5, purely repulsive (WCA) w
       </section>
       <section data-show="mbpoly">
         <h3>What to look for</h3>
-        <p>Starts with 60% of the solutes in small clusters of 7 at T* = 0.22, where clustering stays around 50–58%. Heat to 0.34: it falls to about a third over 50 τ.</p>
+        <p><b>Hydrophobic attraction added by hand.</b> In 2D MB water the water's own push on the solutes is real but weak (about 1 kT) and hard to see. So an extra attraction ε<sub>h</sub> is added between nonpolar beads. Like the real hydrophobic attraction it is entropic, so it grows with temperature: from zero near freezing (T* = 0.14) to ε<sub>h</sub> at T* = 0.34. Set ε<sub>h</sub> to 0 and use the hydrogen-bond switch to see the water's own, smaller effect.</p>
+        <p>Cold (T* = 0.16), the solutes stay loose: single solutes, short strings and small groups, about half of them counted in clusters, the largest about 5. Warm the box to 0.22 or above and they gather into compact blobs: 80–90% in clusters within about 100 τ, the largest holding 10–13 solutes. That is the hydrophobic signature: the attraction gets stronger when heated.</p>
         <p>The water network: about 2.5 hydrogen bonds per water at T* = 0.14 (close to the ice-like maximum of 3), 1.7 at 0.20, 1.1 at 0.26 and 0.8 at 0.34. Watch the arms line up into hexagonal patches when cold.</p>
         <p>60 nonpolar solutes with almost no attraction for each other and none for water. Any clustering beyond chance comes from the water: joining up lets it rebuild the hydrogen bonds the solutes break. At T* = 0.22 about 48% of solutes sit in clusters of 3 or more; switch hydrogen bonds off (plain LJ water) and it drops to about 23%. Clustered solutes are highlighted.</p>
         <p>The effect peaks at intermediate temperature: about 41% clustered at T* = 0.16, 48% at 0.22 and 33% at 0.32. When cold, the hydrophobic effect is entropic and weakens on cooling; when hot, the network that drives it melts. Expect doubled association, not a sharp collapse: all-or-nothing hydrophobic collapse needs nonpolar objects much larger than water's structure. A chain of the same beads (chain length above 1) has not been calibrated.</p>
@@ -678,6 +710,7 @@ U_LJ: ε = 0.1, σ = 0.7 (water)     solutes: σ = 1.5, purely repulsive (WCA) w
       </section>
       <section data-show="plates">
         <h3>What to look for</h3>
+        <p><b>Hydrophobic attraction added by hand.</b> Water-fearing plates also attract each other with an extra ε<sub>h</sub> that grows with temperature (zero at T* = 0.14, ε<sub>h</sub> at 0.34), because the water's own pull is too weak to see in 2D. Released at T* = 0.30, they snap to contact and stay there; with ε<sub>h</sub> = 0 they only wander. The other surfaces get no extra attraction.</p>
         <p><b>Water avoids a water-fearing surface.</b> A thin dry zone forms around the left-hand plates: only about 4–13 water molecules touch them, against about 16–25 for hydrogen-bonding and 35–40 for water-attracting plates. Water next to a surface it cannot bond to loses hydrogen bonds (about 1–1.5 per molecule instead of 2), so it moves away. Hydrogen-bonding plates give most of the bonds back: water touching them keeps about 1.6–2.</p>
         <p><b>The gap dries out.</b> Held one layer apart, the water-fearing gap empties within about 10 time units, before the plates move (dewetting). Water stays in the gap of water-attracting plates (3–6 molecules).</p>
         <p><b>Released, water-fearing plates press into direct contact</b> (about 1.1–1.5 σ apart), with no water between them. This dry contact is the hydrophobic interaction: the water pushes the plates together because it is better off away from them.</p>
@@ -1021,10 +1054,10 @@ MDEngine.prototype.initOrdered = function () {
       E.placeMolecules(mols, 0.5 * (p.sigP + 0.7) + 0.05, 0.72); E.siteFilter = null;
       if (p.plateFix) { E.fixed = new Uint8Array(E.N); E.fixed.fill(1, 0, nP * Lc); E.nFixed = nP * Lc; }
       break; }
-    case 'mbpoly': { // hydrophobic solutes in small clusters (60%) and free (40%); chains as globules
+    case 'mbpoly': { // free solutes start spread out (cold: they stay apart; warm: the hydrophobic attraction gathers them); chains as globules
       const objs = [], d = 1.12 * p.sigP;
       if (Lc === 1) {
-        const nCl = Math.floor(0.6 * want / 7);
+        const nCl = 0;
         for (let q = 0; q < nCl; q++) { const o = [[0, 0]]; for (let k = 0; k < 6; k++) o.push([d * Math.cos(k * Math.PI / 3), d * Math.sin(k * Math.PI / 3)]); objs.push(o); }
         for (let q = 7 * nCl; q < want; q++) objs.push([[0, 0]]);
         const placed = E.spreadObjects(objs); for (const o of placed) for (const b of o) mols.push([b]);
@@ -1067,8 +1100,9 @@ MDEngine.prototype.finishInit = function () {
   E.setupTable(); E.setupCells(); E.computeForces(); E.L0 = E.L; E.Pema = undefined;
 };
 
+MDEngine.prototype.hydroEps = function () { const p = this.p; return (p.epsH || 0) * Math.max(0, (p.T - 0.14) / 0.20); };
 MDEngine.prototype.setupTable = function () {
-  const E = this, p = E.p;
+  const E = this, p = E.p; E._tabT = p.T;
   const sig = [1, 1, 1, 1, 1, 1, 1, 1];
   // attractive well depth per pair; 0 => purely repulsive WCA (eps = 1)
   const att = []; for (let i = 0; i < 8; i++) att.push(new Array(8).fill(0));
@@ -1083,8 +1117,10 @@ MDEngine.prototype.setupTable = function () {
     case 'crypt': set(5, 5, p.epsXX); break; // only sticky X beads attract (any chain); the fold itself is held by native contacts
     case 'lcst': set(3, 3, p.epsPP); break; // P-S: WCA core plus the narrow binding well below
     case 'ice': sig[7] = 0.7; set(7, 7, 0.1); break;
-    case 'plates': sig[7] = 0.7; sig[3] = p.sigP; set(7, 7, 0.1); set(3, 7, p.epsPW); break;
-    case 'mbpoly': sig[7] = 0.7; sig[3] = p.sigP; set(7, 7, 0.1); set(3, 7, p.epsPW); set(3, 3, p.epsPP); break;
+    // hydrophobic attraction added by hand between nonpolar beads: entropic, so it grows with temperature,
+    // from zero near freezing (T* = 0.14) to epsH at T* = 0.34; the MB water adds its own (weaker) contribution on top
+    case 'plates': sig[7] = 0.7; sig[3] = p.sigP; set(7, 7, 0.1); set(3, 7, p.epsPW); set(3, 3, !p.epsPW && !p.plateHB ? E.hydroEps() : 0); break; // only water-fearing plates
+    case 'mbpoly': sig[7] = 0.7; sig[3] = p.sigP; set(7, 7, 0.1); set(3, 7, p.epsPW); set(3, 3, p.epsPP + E.hydroEps()); break;
     case 'brush': set(4, 4, p.epsLL); set(6, 4, p.epsQL); set(5, 4, p.epsHL); set(5, 5, p.epsCC); set(6, 6, p.epsCC); set(5, 6, p.epsCC); break;
   }
   E.sig = sig;
@@ -1418,6 +1454,7 @@ MDEngine.prototype.step = function () {
   }
   E.time += dt; E.steps++;
   if (E.steps % 10 === 0) E.baroStep(10);
+  if (p.epsH && Math.abs(p.T - E._tabT) > 0.002) E.setupTable(); // temperature-dependent hydrophobic attraction
 };
 
 // Dumbbells: tail-tail clusters (union-find over B beads, contact r < rcut).
@@ -2046,7 +2083,6 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Temperature-switchable brushes are used in labs to grow cells on a dish and release them by cooling, and anti-fog and self-cleaning coatings work by controlling how water wets a surface.": "Lämpötilan mukaan kytkeytyviä harjoja käytetään laboratorioissa solujen kasvattamiseen maljalla ja niiden irrottamiseen jäähdyttämällä, ja huurtumattomat sekä itsepuhdistuvat pinnoitteet perustuvat siihen, miten vesi kostuttaa pinnan.",
   "Mercedes-Benz (MB) water (Ben-Naim 1971; Silverstein, Haymet and Dill 1998): each water is a disk with three hydrogen-bonding arms 120° apart. Two waters form a hydrogen bond when they are about one unit apart and an arm of each points at the other.": "Mercedes-Benz (MB) -vesi (Ben-Naim 1971; Silverstein, Haymet ja Dill 1998): jokainen vesimolekyyli on kiekko, jossa on kolme vetysidosvartta 120°:n välein. Kaksi vesimolekyyliä muodostaa vetysidoksen, kun ne ovat noin yhden yksikön päässä toisistaan ja kummankin yksi varsi osoittaa toista kohti.",
   "Units here are those of the MB model: lengths in units of the hydrogen-bond distance and temperature as k<sub>B</sub>T/ε<sub>HB</sub>, so the useful range is T* ≈ 0.12–0.40. Waters rotate as well as translate; the thermostat acts on both. Number density is 0.85 and the time step 0.01.": "Yksiköt ovat MB-mallin yksiköitä: pituudet vetysidoksen pituuden yksiköissä ja lämpötila muodossa k<sub>B</sub>T/ε<sub>HB</sub>, joten käyttökelpoinen alue on T* ≈ 0,12–0,40. Vesimolekyylit pyörivät sekä liikkuvat; termostaatti vaikuttaa molempiin. Lukumäärätiheys on 0,85 ja aika-askel 0,01.",
-  "Starts with 60% of the solutes in small clusters of 7 at T* = 0.22, where clustering stays around 50–58%. Heat to 0.34: it falls to about a third over 50 τ.": "Alkaa niin, että 60 % liuenneista hiukkasista on pienissä 7 hiukkasen ryppäissä lämpötilassa T* = 0,22, jossa ryppäytyminen pysyy noin 50–58 %:ssa. Lämmitä 0,34:ään: se putoaa noin kolmannekseen 50 τ:ssa.",
   "The water network: about 2.5 hydrogen bonds per water at T* = 0.14 (close to the ice-like maximum of 3), 1.7 at 0.20, 1.1 at 0.26 and 0.8 at 0.34. Watch the arms line up into hexagonal patches when cold.": "Vesiverkosto: noin 2,5 vetysidosta vesimolekyyliä kohden lämpötilassa T* = 0,14 (lähellä jään kaltaista maksimia 3), 1,7 lämpötilassa 0,20, 1,1 lämpötilassa 0,26 ja 0,8 lämpötilassa 0,34. Seuraa, miten varret asettuvat kylmässä kuusikulmaisiksi laikuiksi.",
   "60 nonpolar solutes with almost no attraction for each other and none for water. Any clustering beyond chance comes from the water: joining up lets it rebuild the hydrogen bonds the solutes break. At T* = 0.22 about 48% of solutes sit in clusters of 3 or more; switch hydrogen bonds off (plain LJ water) and it drops to about 23%. Clustered solutes are highlighted.": "60 poolitonta liuennutta hiukkasta, jotka tuskin vetävät toisiaan puoleensa eivätkä vedä vettä lainkaan. Kaikki sattumaa suurempi ryppäytyminen johtuu vedestä: kun hiukkaset liittyvät yhteen, vesi voi rakentaa uudelleen vetysidokset, jotka hiukkaset katkaisevat. Lämpötilassa T* = 0,22 noin 48 % hiukkasista on vähintään 3 hiukkasen ryppäissä; kytke vetysidokset pois (tavallinen LJ-vesi), niin osuus putoaa noin 23 %:iin. Ryppäissä olevat hiukkaset on korostettu.",
   "The effect peaks at intermediate temperature: about 41% clustered at T* = 0.16, 48% at 0.22 and 33% at 0.32. When cold, the hydrophobic effect is entropic and weakens on cooling; when hot, the network that drives it melts. Expect doubled association, not a sharp collapse: all-or-nothing hydrophobic collapse needs nonpolar objects much larger than water's structure. A chain of the same beads (chain length above 1) has not been calibrated.": "Ilmiö on voimakkaimmillaan keskilämpötilassa: noin 41 % ryppäissä lämpötilassa T* = 0,16, 48 % lämpötilassa 0,22 ja 33 % lämpötilassa 0,32. Kylmässä hydrofobinen vaikutus on entrooppinen ja heikkenee jäähtyessä; kuumassa sitä ylläpitävä verkosto sulaa. Odota kaksinkertaistunutta yhteenliittymistä, ei terävää luhistumista: kaikki-tai-ei-mitään-tyyppinen hydrofobinen luhistuminen vaatii poolittomia kappaleita, jotka ovat paljon suurempia kuin veden rakenne. Samoista helmistä tehtyä ketjua (ketjun pituus yli 1) ei ole kalibroitu.",
@@ -2387,7 +2423,18 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Heating: the honeycomb breaks and the ice melts": "Lämmitys: hunajakenno hajoaa ja jää sulaa",
   "Cooling: the molecules lock into a honeycomb again": "Jäähdytys: molekyylit lukittuvat taas hunajakennoksi",
   "Hot: liquid water": "Kuuma: nestemäistä vettä",
-  "Cold: ice": "Kylmä: jäätä"
+  "Cold: ice": "Kylmä: jäätä",
+  "Class mode": "Luokkatila",
+  "Exit class mode": "Poistu luokkatilasta",
+  "Everyone quiet: the box cools and structures grow. Noise heats it and breaks them.": "Kaikki hiljaa: laatikko jäähtyy ja rakenteet kasvavat. Melu lämmittää sitä ja rikkoo ne.",
+  "Room noise": "Huoneen melu",
+  "No microphone here: allow microphone access in the browser, or use another device.": "Mikrofonia ei ole: salli mikrofonin käyttö selaimessa tai käytä toista laitetta.",
+  "Click a molecule to follow it": "Napsauta molekyyliä seurataksesi sitä",
+  "Class mode: the whole room controls one box with its noise": "Luokkatila: koko huone ohjaa yhtä laatikkoa äänellään",
+  "Cold (T* = 0.16), the solutes stay loose: single solutes, short strings and small groups, about half of them counted in clusters, the largest about 5. Warm the box to 0.22 or above and they gather into compact blobs: 80–90% in clusters within about 100 τ, the largest holding 10–13 solutes. That is the hydrophobic signature: the attraction gets stronger when heated.": "Kylmässä (T* = 0,16) liuenneet hiukkaset pysyvät löyhinä: yksittäisiä hiukkasia, lyhyitä jonoja ja pieniä ryhmiä, noin puolet laskettuna ryppäisiin, suurimmassa noin 5. Lämmitä laatikko 0,22:een tai yli, niin ne kerääntyvät tiiviiksi möykyiksi: 80–90 % ryppäissä noin 100 τ:ssa, ja suurimmassa on 10–13 hiukkasta. Se on hydrofobisen vaikutuksen tunnusmerkki: vetovoima voimistuu lämmitettäessä.",
+  "<b>Hydrophobic attraction added by hand.</b> In 2D MB water the water's own push on the solutes is real but weak (about 1 kT) and hard to see. So an extra attraction ε<sub>h</sub> is added between nonpolar beads. Like the real hydrophobic attraction it is entropic, so it grows with temperature: from zero near freezing (T* = 0.14) to ε<sub>h</sub> at T* = 0.34. Set ε<sub>h</sub> to 0 and use the hydrogen-bond switch to see the water's own, smaller effect.": "<b>Hydrofobinen vetovoima lisätty käsin.</b> 2D MB-vedessä veden oma työntö liuenneisiin hiukkasiin on todellinen mutta heikko (noin 1 kT) ja vaikea nähdä. Siksi poolittomien helmien välille lisätään ylimääräinen vetovoima ε<sub>h</sub>. Todellisen hydrofobisen vetovoiman tavoin se on entrooppinen, joten se kasvaa lämpötilan mukana: nollasta lähellä jäätymistä (T* = 0,14) arvoon ε<sub>h</sub> lämpötilassa T* = 0,34. Aseta ε<sub>h</sub> nollaan ja käytä vetysidoskytkintä nähdäksesi veden oman, pienemmän vaikutuksen.",
+  "<b>Hydrophobic attraction added by hand.</b> Water-fearing plates also attract each other with an extra ε<sub>h</sub> that grows with temperature (zero at T* = 0.14, ε<sub>h</sub> at 0.34), because the water's own pull is too weak to see in 2D. Released at T* = 0.30, they snap to contact and stay there; with ε<sub>h</sub> = 0 they only wander. The other surfaces get no extra attraction.": "<b>Hydrofobinen vetovoima lisätty käsin.</b> Vettä hylkivät levyt vetävät myös toisiaan puoleensa ylimääräisellä vetovoimalla ε<sub>h</sub>, joka kasvaa lämpötilan mukana (nolla, kun T* = 0,14, ja ε<sub>h</sub>, kun T* = 0,34), koska veden oma veto on 2D:ssä liian heikko nähtäväksi. Vapautettuina lämpötilassa T* = 0,30 ne napsahtavat kosketukseen ja pysyvät siinä; kun ε<sub>h</sub> = 0, ne vain vaeltelevat. Muut pinnat eivät saa ylimääräistä vetovoimaa.",
+  "Hydrophobic attraction ε<sub>h</sub> (added by hand, grows with T)": "Hydrofobinen vetovoima ε<sub>h</sub> (lisätty käsin, kasvaa T:n mukana)"
  },
  "sv": {
   "Amphiphile Assembly Lab": "Självorganiseringslabbet",
@@ -2570,7 +2617,6 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Temperature-switchable brushes are used in labs to grow cells on a dish and release them by cooling, and anti-fog and self-cleaning coatings work by controlling how water wets a surface.": "Temperaturstyrda borstar används i laboratorier för att odla celler på en skål och släppa dem genom kylning, och imfria och självrengörande beläggningar fungerar genom att styra hur vatten väter en yta.",
   "Mercedes-Benz (MB) water (Ben-Naim 1971; Silverstein, Haymet and Dill 1998): each water is a disk with three hydrogen-bonding arms 120° apart. Two waters form a hydrogen bond when they are about one unit apart and an arm of each points at the other.": "Mercedes-Benz-vatten (MB) (Ben-Naim 1971; Silverstein, Haymet och Dill 1998): varje vattenmolekyl är en skiva med tre vätebindande armar med 120° mellanrum. Två vattenmolekyler bildar en vätebindning när de är ungefär en enhet ifrån varandra och en arm hos var och en pekar mot den andra.",
   "Units here are those of the MB model: lengths in units of the hydrogen-bond distance and temperature as k<sub>B</sub>T/ε<sub>HB</sub>, so the useful range is T* ≈ 0.12–0.40. Waters rotate as well as translate; the thermostat acts on both. Number density is 0.85 and the time step 0.01.": "Enheterna är MB-modellens: längder i enheter av vätebindningsavståndet och temperatur som k<sub>B</sub>T/ε<sub>HB</sub>, så det användbara intervallet är T* ≈ 0,12–0,40. Vattenmolekylerna roterar och förflyttar sig; termostaten verkar på båda. Antalstätheten är 0,85 och tidssteget 0,01.",
-  "Starts with 60% of the solutes in small clusters of 7 at T* = 0.22, where clustering stays around 50–58%. Heat to 0.34: it falls to about a third over 50 τ.": "Börjar med 60 % av de lösta partiklarna i små kluster om 7 vid T* = 0,22, där klustringen ligger kring 50–58 %. Värm till 0,34: den sjunker till ungefär en tredjedel under 50 τ.",
   "The water network: about 2.5 hydrogen bonds per water at T* = 0.14 (close to the ice-like maximum of 3), 1.7 at 0.20, 1.1 at 0.26 and 0.8 at 0.34. Watch the arms line up into hexagonal patches when cold.": "Vattennätverket: cirka 2,5 vätebindningar per vattenmolekyl vid T* = 0,14 (nära det isliknande maximumet 3), 1,7 vid 0,20, 1,1 vid 0,26 och 0,8 vid 0,34. Se hur armarna ordnar sig i hexagonala fläckar när det är kallt.",
   "60 nonpolar solutes with almost no attraction for each other and none for water. Any clustering beyond chance comes from the water: joining up lets it rebuild the hydrogen bonds the solutes break. At T* = 0.22 about 48% of solutes sit in clusters of 3 or more; switch hydrogen bonds off (plain LJ water) and it drops to about 23%. Clustered solutes are highlighted.": "60 opolära lösta partiklar som nästan inte attraherar varandra och inte alls vatten. All klustring utöver slumpen kommer från vattnet: när partiklarna går ihop kan vattnet återbygga de vätebindningar som partiklarna bryter. Vid T* = 0,22 sitter cirka 48 % av partiklarna i kluster om 3 eller fler; stäng av vätebindningarna (vanligt LJ-vatten) så sjunker det till cirka 23 %. Klustrade partiklar är markerade.",
   "The effect peaks at intermediate temperature: about 41% clustered at T* = 0.16, 48% at 0.22 and 33% at 0.32. When cold, the hydrophobic effect is entropic and weakens on cooling; when hot, the network that drives it melts. Expect doubled association, not a sharp collapse: all-or-nothing hydrophobic collapse needs nonpolar objects much larger than water's structure. A chain of the same beads (chain length above 1) has not been calibrated.": "Effekten är störst vid mellantemperatur: cirka 41 % i kluster vid T* = 0,16, 48 % vid 0,22 och 33 % vid 0,32. Kallt är den hydrofoba effekten entropisk och försvagas vid kylning; varmt smälter nätverket som driver den. Räkna med fördubblad associering, inte en skarp kollaps: en allt-eller-inget-hydrofob kollaps kräver opolära föremål som är mycket större än vattnets struktur. En kedja av samma kulor (kedjelängd över 1) har inte kalibrerats.",
@@ -2911,7 +2957,18 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Heating: the honeycomb breaks and the ice melts": "Uppvärmning: bikakan bryts och isen smälter",
   "Cooling: the molecules lock into a honeycomb again": "Kylning: molekylerna låser sig i en bikaka igen",
   "Hot: liquid water": "Varmt: flytande vatten",
-  "Cold: ice": "Kallt: is"
+  "Cold: ice": "Kallt: is",
+  "Class mode": "Klassläge",
+  "Exit class mode": "Lämna klassläget",
+  "Everyone quiet: the box cools and structures grow. Noise heats it and breaks them.": "Alla tysta: lådan kyls och strukturer växer. Ljud värmer den och bryter dem.",
+  "Room noise": "Ljud i rummet",
+  "No microphone here: allow microphone access in the browser, or use another device.": "Ingen mikrofon här: tillåt mikrofonåtkomst i webbläsaren eller använd en annan enhet.",
+  "Click a molecule to follow it": "Klicka på en molekyl för att följa den",
+  "Class mode: the whole room controls one box with its noise": "Klassläge: hela rummet styr en låda med sitt ljud",
+  "Cold (T* = 0.16), the solutes stay loose: single solutes, short strings and small groups, about half of them counted in clusters, the largest about 5. Warm the box to 0.22 or above and they gather into compact blobs: 80–90% in clusters within about 100 τ, the largest holding 10–13 solutes. That is the hydrophobic signature: the attraction gets stronger when heated.": "I kyla (T* = 0,16) förblir de lösta partiklarna lösa: enstaka partiklar, korta strängar och små grupper, ungefär hälften räknade som kluster, det största cirka 5. Värm lådan till 0,22 eller mer så samlas de i kompakta klumpar: 80–90 % i kluster inom cirka 100 τ, och det största rymmer 10–13 partiklar. Det är kännetecknet för den hydrofoba effekten: attraktionen blir starkare vid uppvärmning.",
+  "<b>Hydrophobic attraction added by hand.</b> In 2D MB water the water's own push on the solutes is real but weak (about 1 kT) and hard to see. So an extra attraction ε<sub>h</sub> is added between nonpolar beads. Like the real hydrophobic attraction it is entropic, so it grows with temperature: from zero near freezing (T* = 0.14) to ε<sub>h</sub> at T* = 0.34. Set ε<sub>h</sub> to 0 and use the hydrogen-bond switch to see the water's own, smaller effect.": "<b>Hydrofob attraktion tillagd för hand.</b> I 2D MB-vatten är vattnets egen knuff på de lösta partiklarna verklig men svag (ungefär 1 kT) och svår att se. Därför läggs en extra attraktion ε<sub>h</sub> till mellan opolära kulor. Liksom den verkliga hydrofoba attraktionen är den entropisk, så den växer med temperaturen: från noll nära fryspunkten (T* = 0,14) till ε<sub>h</sub> vid T* = 0,34. Sätt ε<sub>h</sub> till 0 och använd vätebindningsbrytaren för att se vattnets egen, mindre effekt.",
+  "<b>Hydrophobic attraction added by hand.</b> Water-fearing plates also attract each other with an extra ε<sub>h</sub> that grows with temperature (zero at T* = 0.14, ε<sub>h</sub> at 0.34), because the water's own pull is too weak to see in 2D. Released at T* = 0.30, they snap to contact and stay there; with ε<sub>h</sub> = 0 they only wander. The other surfaces get no extra attraction.": "<b>Hydrofob attraktion tillagd för hand.</b> Vattenskyende plattor attraherar också varandra med en extra ε<sub>h</sub> som växer med temperaturen (noll vid T* = 0,14, ε<sub>h</sub> vid 0,34), eftersom vattnets eget drag är för svagt för att synas i 2D. Släppta vid T* = 0,30 knäpper de ihop till kontakt och stannar där; med ε<sub>h</sub> = 0 vandrar de bara omkring. De andra ytorna får ingen extra attraktion.",
+  "Hydrophobic attraction ε<sub>h</sub> (added by hand, grows with T)": "Hydrofob attraktion ε<sub>h</sub> (tillagd för hand, växer med T)"
  },
  "ru": {
   "Amphiphile Assembly Lab": "Лаборатория самосборки",
@@ -3094,7 +3151,6 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Temperature-switchable brushes are used in labs to grow cells on a dish and release them by cooling, and anti-fog and self-cleaning coatings work by controlling how water wets a surface.": "Щётки, переключаемые температурой, используют в лабораториях, чтобы выращивать клетки на чашке и отделять их охлаждением, а покрытия против запотевания и самоочищающиеся покрытия работают за счёт управления тем, как вода смачивает поверхность.",
   "Mercedes-Benz (MB) water (Ben-Naim 1971; Silverstein, Haymet and Dill 1998): each water is a disk with three hydrogen-bonding arms 120° apart. Two waters form a hydrogen bond when they are about one unit apart and an arm of each points at the other.": "Вода Мерседес-Бенц (MB) (Бен-Наим 1971; Сильверстайн, Хеймет и Дилл 1998): каждая молекула воды — диск с тремя «плечами» для водородных связей под углом 120°. Две молекулы образуют водородную связь, когда находятся примерно на расстоянии одной единицы и у каждой одно плечо направлено на другую.",
   "Units here are those of the MB model: lengths in units of the hydrogen-bond distance and temperature as k<sub>B</sub>T/ε<sub>HB</sub>, so the useful range is T* ≈ 0.12–0.40. Waters rotate as well as translate; the thermostat acts on both. Number density is 0.85 and the time step 0.01.": "Единицы — единицы модели MB: длины в единицах длины водородной связи, температура как k<sub>B</sub>T/ε<sub>HB</sub>, поэтому полезный диапазон T* ≈ 0,12–0,40. Молекулы воды и вращаются, и перемещаются; термостат действует на оба движения. Плотность частиц 0,85, шаг по времени 0,01.",
-  "Starts with 60% of the solutes in small clusters of 7 at T* = 0.22, where clustering stays around 50–58%. Heat to 0.34: it falls to about a third over 50 τ.": "Начинается с того, что 60 % растворённых частиц собраны в маленькие кластеры по 7 при T* = 0,22, где кластеризация держится около 50–58 %. Нагрейте до 0,34: за 50 τ она падает примерно до трети.",
   "The water network: about 2.5 hydrogen bonds per water at T* = 0.14 (close to the ice-like maximum of 3), 1.7 at 0.20, 1.1 at 0.26 and 0.8 at 0.34. Watch the arms line up into hexagonal patches when cold.": "Сетка воды: около 2,5 водородных связей на молекулу при T* = 0,14 (близко к «ледяному» максимуму 3), 1,7 при 0,20, 1,1 при 0,26 и 0,8 при 0,34. На холоде плечи выстраиваются в шестиугольные участки.",
   "60 nonpolar solutes with almost no attraction for each other and none for water. Any clustering beyond chance comes from the water: joining up lets it rebuild the hydrogen bonds the solutes break. At T* = 0.22 about 48% of solutes sit in clusters of 3 or more; switch hydrogen bonds off (plain LJ water) and it drops to about 23%. Clustered solutes are highlighted.": "60 неполярных частиц, которые почти не притягиваются друг к другу и совсем не притягиваются к воде. Любая кластеризация сверх случайной идёт от воды: когда частицы собираются вместе, вода может восстановить водородные связи, которые они разрывают. При T* = 0,22 около 48 % частиц находятся в кластерах из 3 и более; выключите водородные связи (простая LJ-вода), и доля падает примерно до 23 %. Частицы в кластерах выделены.",
   "The effect peaks at intermediate temperature: about 41% clustered at T* = 0.16, 48% at 0.22 and 33% at 0.32. When cold, the hydrophobic effect is entropic and weakens on cooling; when hot, the network that drives it melts. Expect doubled association, not a sharp collapse: all-or-nothing hydrophobic collapse needs nonpolar objects much larger than water's structure. A chain of the same beads (chain length above 1) has not been calibrated.": "Эффект максимален при промежуточной температуре: около 41 % в кластерах при T* = 0,16, 48 % при 0,22 и 33 % при 0,32. На холоде гидрофобный эффект энтропийный и ослабевает при охлаждении; при нагреве плавится сама сетка, которая его создаёт. Ожидайте удвоения ассоциации, а не резкого коллапса: гидрофобное коллапс «всё или ничего» требует неполярных объектов, гораздо крупнее структуры воды. Цепь из таких же бусин (длина цепи больше 1) не калибровалась.",
@@ -3435,7 +3491,18 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Heating: the honeycomb breaks and the ice melts": "Нагрев: соты разрушаются, и лёд тает",
   "Cooling: the molecules lock into a honeycomb again": "Охлаждение: молекулы снова выстраиваются в соты",
   "Hot: liquid water": "Горячо: жидкая вода",
-  "Cold: ice": "Холодно: лёд"
+  "Cold: ice": "Холодно: лёд",
+  "Class mode": "Режим класса",
+  "Exit class mode": "Выйти из режима класса",
+  "Everyone quiet: the box cools and structures grow. Noise heats it and breaks them.": "Все тихо: ячейка охлаждается, и структуры растут. Шум нагревает её и разрушает их.",
+  "Room noise": "Шум в комнате",
+  "No microphone here: allow microphone access in the browser, or use another device.": "Микрофон недоступен: разрешите доступ к микрофону в браузере или используйте другое устройство.",
+  "Click a molecule to follow it": "Нажмите на молекулу, чтобы следить за ней",
+  "Class mode: the whole room controls one box with its noise": "Режим класса: весь класс управляет одной ячейкой своим шумом",
+  "Cold (T* = 0.16), the solutes stay loose: single solutes, short strings and small groups, about half of them counted in clusters, the largest about 5. Warm the box to 0.22 or above and they gather into compact blobs: 80–90% in clusters within about 100 τ, the largest holding 10–13 solutes. That is the hydrophobic signature: the attraction gets stronger when heated.": "В холоде (T* = 0,16) растворённые частицы остаются рыхлыми: одиночные частицы, короткие цепочки и маленькие группы, примерно половина учитывается как кластеры, самый крупный около 5. Нагрейте ячейку до 0,22 или выше, и они собираются в плотные комки: 80–90 % в кластерах примерно за 100 τ, в самом крупном 10–13 частиц. Это признак гидрофобного эффекта: притяжение усиливается при нагреве.",
+  "<b>Hydrophobic attraction added by hand.</b> In 2D MB water the water's own push on the solutes is real but weak (about 1 kT) and hard to see. So an extra attraction ε<sub>h</sub> is added between nonpolar beads. Like the real hydrophobic attraction it is entropic, so it grows with temperature: from zero near freezing (T* = 0.14) to ε<sub>h</sub> at T* = 0.34. Set ε<sub>h</sub> to 0 and use the hydrogen-bond switch to see the water's own, smaller effect.": "<b>Гидрофобное притяжение добавлено вручную.</b> В 2D MB-воде собственное выталкивание растворённых частиц водой реально, но слабо (около 1 kT) и плохо заметно. Поэтому между неполярными бусинами добавлено дополнительное притяжение ε<sub>h</sub>. Как и настоящее гидрофобное притяжение, оно энтропийное и растёт с температурой: от нуля около замерзания (T* = 0,14) до ε<sub>h</sub> при T* = 0,34. Поставьте ε<sub>h</sub> = 0 и используйте переключатель водородных связей, чтобы увидеть собственный, более слабый эффект воды.",
+  "<b>Hydrophobic attraction added by hand.</b> Water-fearing plates also attract each other with an extra ε<sub>h</sub> that grows with temperature (zero at T* = 0.14, ε<sub>h</sub> at 0.34), because the water's own pull is too weak to see in 2D. Released at T* = 0.30, they snap to contact and stay there; with ε<sub>h</sub> = 0 they only wander. The other surfaces get no extra attraction.": "<b>Гидрофобное притяжение добавлено вручную.</b> Водоотталкивающие пластины также притягиваются друг к другу с дополнительным ε<sub>h</sub>, которое растёт с температурой (ноль при T* = 0,14, ε<sub>h</sub> при 0,34), потому что собственное притяжение через воду в 2D слишком слабое, чтобы его увидеть. Отпущенные при T* = 0,30, они схлопываются до контакта и остаются так; при ε<sub>h</sub> = 0 они только блуждают. Другие поверхности дополнительного притяжения не получают.",
+  "Hydrophobic attraction ε<sub>h</sub> (added by hand, grows with T)": "Гидрофобное притяжение ε<sub>h</sub> (добавлено вручную, растёт с T)"
  }
 };
   let LANG = 'en';
@@ -3468,7 +3535,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   scanStatic(document.body);
   window.__i18nKeys = () => [...new Set([...SKEYS, ...TKEYS])];
   const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-  const CNAMES = ['head', 'tail', 'solv', 'bond', 'poly', 'cryst', 'mixS', 'mixC', 'cell', 'muted', 'hot', 'line', 'accent', 'cold', 'ink'];
+  const CNAMES = ['head', 'tail', 'solv', 'bond', 'poly', 'cryst', 'mixS', 'mixC', 'cell', 'muted', 'hot', 'line', 'accent', 'cold', 'ink', 'panel'];
   let colors = {};
   const readColors = () => { colors = {}; for (const c of CNAMES) colors[c] = css('--' + c); };
   readColors();
@@ -3487,11 +3554,11 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       trange: [0.4, 1.0], tstep: 0.01, dt: 0.005, preT: 'set', concLab: 'Droplet size, liquid beads (rebuilds on release)',
       plotLab: 'Liquid contacts with teal (water-loving) beads', plotMax: 100,
       legend: [['tail', 'Orange beads (repel the liquid)'], ['head', 'Teal beads (attract the liquid)'], ['mixS', 'Blue: liquid droplet (4-bead oligomers)']] },
-    mbpoly: { scan: [0.14, 0.40], conc: 60, min: 1, max: 150, count: true, cold: 0.16, hot: 0.34, start: 0.34, ordT: 0.22, box: 36, chainLen: 1, lenMin: 1, epsPP: 0.1,
+    mbpoly: { scan: [0.14, 0.40], conc: 60, min: 1, max: 150, count: true, cold: 0.16, hot: 0.34, start: 0.34, ordT: 0.22, box: 36, chainLen: 1, lenMin: 1, epsPP: 0.1, epsH: 1.0, gamma: 0.1,
       trange: [0.12, 0.40], tstep: 0.005, rho: 0.85, dt: 0.01, preT: 0.35, concLab: 'Number of nonpolar solutes',
       plotLab: 'Fraction of solutes in clusters of 3 or more', hl: 'Highlight clustered solutes',
       legend: [['poly', 'P nonpolar solute, free'], ['cryst', 'P in a cluster'], ['solv', 'W water (lines: hydrogen-bond arms)']] },
-    plates: { scan: [0.14, 0.40], conc: 0, min: 0, max: 1, count: true, cold: 0.16, hot: 0.34, start: 0.18, ordT: 0.18, box: 36,
+    plates: { scan: [0.14, 0.40], conc: 0, min: 0, max: 1, count: true, cold: 0.16, hot: 0.34, start: 0.18, ordT: 0.18, box: 36, epsH: 0.6, gamma: 0.1,
       trange: [0.12, 0.40], tstep: 0.005, rho: 0.85, dt: 0.01, concLab: '', plotMax: 12,
       plotLab: 'Water molecules in the gap between the plates', hl: '',
       legend: [['poly', 'Plate beads (nonpolar)'], ['cold', 'Hydration-shell water'], ['solv', 'Bulk water (lines: hydrogen-bond arms)']] },
@@ -3606,21 +3673,22 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       boxL: n, gravity: +$('grav').value, graftSpacing: +$('graft').value, epsCC: +$('epsCC').value, epsQL: +$('epsQL').value, epsHL: +$('epsHL').value, invert: $('bInvert').checked, nEnd: +$('nEnd').value, nWater: v,
       thermostat: $('thermo').value, gamma: +$('gamma').value, tau: +$('tau').value, seed: (Math.random() * 1e9) | 0,
       epsSS: 0, epsAS: +$('epsAS').value, epsBB: +$('epsBB').value, sigA: +$('sigA').value, sigB: 1,
-      epsPP: +$('epsPP').value, kBend: sys === 'plates' ? 150 : +$('kBend').value, chainLen: +$('chainLen').value,
+      epsPP: +$('epsPP').value, epsH: (sys === 'mbpoly' || sys === 'plates') ? +$('epsH').value : 0, kBend: sys === 'plates' ? 150 : +$('kBend').value, chainLen: +$('chainLen').value,
       fA: +$('fA').value, epsAB: +$('epsAB').value, epsSC: +$('epsSC').value, xC: v / 100,
       epsHH: +$('epsHH').value, sequence: cleanSeq(), cryptSeq: 'PPPPPXXXPPXXXXPPXXXXXPPXXXXPPXXXPPPPP', epsGo: 2.5, goCut: 1.6, epsXX: +$('epsXX').value, epsB: 0 };
     if (opts.game && gameSel && gameSel.prm) Object.assign(prm, gameSel.prm); else prm.nDrug = 0;
     prm.baro = baroOn(opts); prm.P0 = null; // target set from the pressure the box has after it settles
-    eng = new MDEngine(prm); baroShown = null;
+    eng = new MDEngine(prm); baroShown = null; follow = null;
     eng2 = sys === 'plates' && $('plateCompare').checked ? new MDEngine(Object.assign({}, prm, { epsPW: 0, plateHB: 0 })) : null;
     const ord = eng.p.ordered;
     if (ord || (sys !== 'dumbbell' && sys !== 'demix')) { // ordered: relax the built structure; disordered: melt the lattice
       eng.p.T = ord || S.preT === 'set' ? tset : S.preT !== undefined ? S.preT : 3.0; eng.setupTable();
       const pre = ord ? (prm.preSteps || 200) : 300;
       for (const E of eng2 ? [eng, eng2] : [eng]) {
+        const h = E.p.epsH; E.p.epsH = 0; // no added hydrophobic attraction while the start is prepared, so solutes start apart
         E.p.T = eng.p.T; E.setupTable();
         for (let k = 0; k < pre; k++) E.step();
-        E.p.T = tset; E.setupTable(); E.time = 0;
+        E.p.epsH = h; E.p.T = tset; E.setupTable(); E.time = 0;
         const sc = Math.sqrt(tset / Math.max(1e-6, E.tempKin())); // start at the set temperature
         for (let i = 0; i < E.N; i++) { E.vx[i] *= sc; E.vy[i] *= sc; E.om[i] *= sc; }
       }
@@ -3690,7 +3758,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   function micUpdate(dtSec) {
     const d = levelDb(); if (d === null) return;
     const span = Math.max(0.5, +$('micrange').value), x = Math.max(0, Math.min(1, (d - quietDb) / span));
-    $('micbar').style.width = $('micbarM').style.width = (x * 100).toFixed(0) + '%';
+    $('micbar').style.width = $('micbarM').style.width = $('micbarC').style.width = (x * 100).toFixed(0) + '%';
     const [lo, hi] = curRange(), target = lo + (0.05 + 0.9 * x) * (hi - lo);
     const tauUp = 0.4, tauDown = 2.5;   // heats quickly, cools slowly
     const a = 1 - Math.exp(-dtSec / (target > micT ? tauUp : tauDown));
@@ -3705,6 +3773,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   bindRange('sigA', (v) => v.toFixed(2), live('sigA'));
   bindRange('epsAS', (v) => v.toFixed(2), live('epsAS'));
   bindRange('epsPP', (v) => v.toFixed(2), live('epsPP'));
+  bindRange('epsH', (v) => v.toFixed(2), (v) => { if (eng && (sys === 'mbpoly' || sys === 'plates')) { eng.p.epsH = v; eng.setupTable(); if (eng2) { eng2.p.epsH = v; eng2.setupTable(); } } });
   bindRange('kBend', (v) => v.toFixed(1), (v) => { if (eng) eng.p.kBend = v; });
   bindRange('epsAB', (v) => v.toFixed(2), live('epsAB'));
   bindRange('epsSC', (v) => v.toFixed(2), live('epsSC'));
@@ -3834,6 +3903,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     $('ticks').innerHTML = [0, 1, 2, 3, 4].map((q) => `<span>${(lo + q * (hi - lo) / 4).toFixed(2).replace(/0$/, '')}</span>`).join('');
     const dg = st < 0.01 ? 3 : 2; $('quench').textContent = T('Cool to {t}', { t: S.cold.toFixed(dg - 1) }); $('melt').textContent = T('Heat to {t}', { t: S.hot.toFixed(dg - 1) });
     if (S.epsPP !== undefined) { $('epsPP').value = S.epsPP; $('epsPPO').textContent = S.epsPP.toFixed(2); }
+    if (S.epsH !== undefined) { $('epsH').value = S.epsH; $('epsHO').textContent = S.epsH.toFixed(2); }
+    $('gamma').value = S.gamma || 1; $('gammaO').textContent = (+$('gamma').value).toFixed(2); // MB systems: low friction so solutes move fast enough to meet
     const kb = S.kBend !== undefined ? S.kBend : 6.4; $('kBend').value = kb; $('kBendO').textContent = kb.toFixed(1);
     $('byCluster').checked = sys === 'polymer' || sys === 'mbpoly' || sys === 'ice';
     $('compPanel').hidden = $('sizeRow').hidden = sys === 'ice';
@@ -4016,6 +4087,36 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   function closeHud() { $('ghud').hidden = true; document.querySelector('.wrap').classList.remove('ingame'); resize(); }
   $('gquit').addEventListener('click', () => { const was = !!game; endGame(null); if (was) { gameRange = null; applySysUI(); setT(tset); } closeHud(); });
   renderPick();
+
+  // ---------- class mode: one big box on the projector, the whole room's noise sets the temperature ----------
+  let classOn = false;
+  async function classEnter() {
+    if (classOn) return; classOn = true;
+    if (appMode !== 'explore') setAppMode('explore');
+    const ok = BARO_SYS.includes(sys) && $('clsSys').querySelector(`option[value="${sys}"]`); if (!ok) pickSys('ice');
+    $('clsSys').value = sys;
+    document.querySelector('.wrap').classList.add('classmode'); $('clsPanel').hidden = false; $('clsNote').textContent = '';
+    try { if (document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen(); } catch (e) {}
+    resize(); classUpdate();
+    await setMode('mic'); if (!analyser) $('clsNote').textContent = T('No microphone here: allow microphone access in the browser, or use another device.');
+  }
+  function classExit() {
+    if (!classOn) return; classOn = false;
+    document.querySelector('.wrap').classList.remove('classmode'); $('clsPanel').hidden = true;
+    try { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen(); } catch (e) {}
+    setMode('slider'); resize();
+  }
+  function classUpdate() { if (!classOn || !eng) return; const r = report(), [lab, val] = r.cells[0];
+    $('clsLab').innerHTML = T(lab); $('clsVal').textContent = val; $('clsT').textContent = tset.toFixed((SYS[sys].tstep || 0.01) < 0.01 ? 3 : 2);
+    $('clsPause').textContent = T(running ? 'Pause' : 'Resume'); }
+  function pickSys(id) { const b = document.querySelector(`[data-pick="${id}"]`); if (b) b.click(); }
+  $('classBtn').addEventListener('click', classEnter);
+  $('clsExit').addEventListener('click', classExit);
+  $('clsSys').addEventListener('change', () => { pickSys($('clsSys').value); if (mode !== 'mic') setMode('mic'); resize(); classUpdate(); });
+  $('clsCalib').addEventListener('click', () => { $('calib').click(); });
+  $('clsPause').addEventListener('click', () => { $('pause').click(); classUpdate(); });
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && classOn && tourI < 0) classExit(); });
+  document.addEventListener('fullscreenchange', () => { if (classOn) resize(); });
 
   // ---------- help: quick tour of the main controls, opened with the ? button ----------
   const TOUR = [
@@ -4262,8 +4363,43 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     } else drawScene();
     if (sys === 'dumbbell' && eng.nDrug) drawDrug();
     if (sys === 'crypt' && gelShow && gelShow.path.length > 1 && appMode === 'game' && ((game && game.g.id === 'gel') || (!game && gameSel && gameSel.id === 'gel'))) drawGel(gelShow);
+    if (follow) drawFollow(false);
     ctx.restore();
   }
+  // ---------- follow one molecule: click or tap it to ring it and draw its recent path ----------
+  let follow = null; // { a, b: bead range, cx, cy: unwrapped centre, trail: [[x, y]...], v: smoothed speed }
+  const canFollow = () => eng && !eng.walls && !eng2;
+  const molRange = (i) => { const n = eng.Lc * eng.nMol; if (eng.Lc > 1 && i < n) { const m = Math.floor(i / eng.Lc); return [m * eng.Lc, (m + 1) * eng.Lc]; } return [i, i + 1]; };
+  function molCentre(a, b) { const L = eng.L, x0 = eng.x[a], y0 = eng.y[a]; let sx = 0, sy = 0;
+    for (let i = a; i < b; i++) { let dx = eng.x[i] - x0, dy = eng.y[i] - y0; dx -= L * Math.round(dx / L); dy -= L * Math.round(dy / L); sx += dx; sy += dy; }
+    return [x0 + sx / (b - a), y0 + sy / (b - a)]; }
+  function followTick() { // once per frame: extend the path with the centre's real (unwrapped) motion
+    if (!follow) return; if (!canFollow() || follow.b > eng.N) { follow = null; return; }
+    const [x, y] = molCentre(follow.a, follow.b), L = eng.L, px = ((follow.cx % L) + L) % L, py = ((follow.cy % L) + L) % L;
+    let dx = x - px, dy = y - py; dx -= L * Math.round(dx / L); dy -= L * Math.round(dy / L); follow.cx += dx; follow.cy += dy;
+    follow.trail.push([follow.cx, follow.cy]); if (follow.trail.length > 240) follow.trail.shift();
+    let vx = 0, vy = 0; for (let i = follow.a; i < follow.b; i++) { vx += eng.vx[i]; vy += eng.vy[i]; } const n = follow.b - follow.a, v = Math.hypot(vx / n, vy / n);
+    follow.v = follow.v === null ? v : 0.92 * follow.v + 0.08 * v; }
+  function drawFollow(inLens) { // ring around the molecule and its path; in box coordinates of the current transform
+    const s = cv.width / eng.L, L = eng.L, tr = follow.trail; if (!tr.length) return;
+    const ox = Math.floor(follow.cx / L) * L, oy = Math.floor(follow.cy / L) * L; // shift the path so its end sits inside the box
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = colors.hot; ctx.lineWidth = Math.max(1.5, (inLens ? 0.09 : 0.14) * s);
+    ctx.globalAlpha = 0.8; ctx.beginPath(); tr.forEach(([x, y], k) => { const X = (x - ox) * s, Y = (y - oy) * s; k ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); }); ctx.stroke(); ctx.globalAlpha = 1;
+    ctx.lineWidth = Math.max(2, (inLens ? 0.08 : 0.16) * s); ctx.beginPath();
+    for (let i = follow.a; i < follow.b; i++) { const X = eng.x[i] * s, Y = eng.y[i] * s; ctx.moveTo(X + 0.85 * s, Y); ctx.arc(X, Y, 0.85 * s, 0, 6.2832); } ctx.stroke();
+  }
+  function pickAt(ev) {
+    if (!canFollow()) return; const r = cv.getBoundingClientRect(), Wc = cv.width, s = Wc / eng.L, L = eng.L;
+    let px = (ev.clientX - r.left) * Wc / r.width, py = (ev.clientY - r.top) * cv.height / r.height;
+    if (eng.L0 && (eng.p.baro || eng.L !== eng.L0)) { const k = eng.L / eng.L0; px = (px - Wc / 2) / k + Wc / 2; py = (py - cv.height / 2) / k + cv.height / 2; }
+    const X = (((px / s) % L) + L) % L, Y = (((py / s) % L) + L) % L; let best = -1, bd = 1.44;
+    for (let i = 0; i < eng.N; i++) { let dx = eng.x[i] - X, dy = eng.y[i] - Y; dx -= L * Math.round(dx / L); dy -= L * Math.round(dy / L); const d = dx * dx + dy * dy; if (d < bd) { bd = d; best = i; } }
+    if (best < 0) { follow = null; return; }
+    const [a, b] = molRange(best); if (follow && follow.a === a) { follow = null; return; }
+    const [cx, cy] = molCentre(a, b); follow = { a, b, cx, cy, trail: [], v: null };
+  }
+  cv.addEventListener('click', pickAt);
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && follow && tourI < 0) follow = null; });
   function drawDrug() {
     const s = cv.width / eng.L, type = eng.type;
     // drug as stars (drawn over everything, in all periodic copies near the edges) so it stands out from the beads
@@ -4415,7 +4551,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       const tk = eng.tempKin();
       tkinAvg = tkinAvg === null ? tk : 0.9 * tkinAvg + 0.1 * tk;
       if (frame % 6 === 0) {
-        const rep = report(); showReport(rep); if (game) gameUpdate(game.g.value ? game.g.value() : rep.v);
+        const rep = report(); showReport(rep); if (game) gameUpdate(game.g.value ? game.g.value() : rep.v); if (classOn) classUpdate();
         push(hist.tset, tset); push(hist.tkin, tkinAvg); push(hist.frac, rep.v);
         $('tkin').textContent = $('tkinM').textContent = tkinAvg.toFixed(2);
         $('rU').textContent = (eng.U / eng.N).toFixed(3);
@@ -4430,7 +4566,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       frame++;
     }
     if (now - perfT > 1000) { sps = stepCount * 1000 / (now - perfT); stepCount = 0; perfT = now; $('perf').textContent = `${Math.round(sps)} ${T('steps/s')} · ${(sps * eng.p.dt).toFixed(1)} τ/s`; }
-    draw();
+    followTick(); draw();
     requestAnimationFrame(loop);
   }
 
