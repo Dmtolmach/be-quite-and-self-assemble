@@ -130,8 +130,10 @@ table.eps th { font-weight: 500; color: var(--muted) }
 .meter .zone { top: 0; bottom: 0 } .trange .zone { top: 3px; height: 20px; border-radius: 4px; z-index: 0 } .trange input { position: relative; z-index: 1 }
 .gamemode .mnoise .mlab { display: block } .gamemode .mbar .mnoise .meter { height: 16px; border-radius: 8px } .gamemode .meter .zone.on, .gamemode .trange .zone.on { display: block }
 .gamemode .mnoise .meter i { background: var(--hot) }
-.gamemode .mbar-t small, .gamemode .mbar .ticks { display: none } .mbar-t b.tw { font-family: var(--f-display); font-weight: 700; font-size: 1.35rem; letter-spacing: 0 }
-@media (max-width: 700px) { .mbar-t b.tw { font-size: 1.05rem } }
+.gamemode .mbar-t small, .gamemode .mbar .ticks { display: none } .mbar-t b.tw { font-family: var(--f-display); font-weight: 400; font-size: 1.5rem; letter-spacing: 0; width: 2.6em; text-align: center; white-space: nowrap; border-radius: 8px; line-height: 1.5 }
+.mbar-t b.tw0 { background: color-mix(in srgb, var(--cold) 22%, transparent) } .mbar-t b.tw1 { background: color-mix(in srgb, var(--cold) 10%, transparent) }
+.mbar-t b.tw2 { background: color-mix(in srgb, var(--cryst) 18%, transparent) } .mbar-t b.tw3 { background: color-mix(in srgb, var(--hot) 22%, transparent) }
+@media (max-width: 700px) { .mbar-t b.tw { font-size: 1.1rem; width: 2.4em } .gamemode .mbar-t { min-width: 0 } }
 .tw0 { color: var(--cold) } .tw1 { color: var(--accent) } .tw2 { color: var(--cryst) } .tw3 { color: var(--hot) }
 .coach { position: absolute; z-index: 8; transform: translateX(-50%); width: max-content; max-width: min(92%, 34em); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center;
   padding: 7px 14px; border-radius: 14px; background: rgba(12,18,24,.78); color: #fff; font-weight: 600; font-size: clamp(13px, 2.1vmin, 16.5px); line-height: 1.3; text-align: center; pointer-events: none; transition: background .3s }
@@ -4584,13 +4586,15 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   document.querySelectorAll('[data-appmode]').forEach((b) => b.addEventListener('click', () => setAppMode(b.dataset.appmode)));
 
   // ---------- help for first-time players: temperature in words, the good zone, a live coach line, a replay with a diagnosis, a guided first game, unlocking ----------
-  const T_WORDS = ['cold', 'cool', 'warm', 'hot'];
+  const T_WORDS = ['cold', 'cool', 'warm', 'hot'], T_SIGNS = ['❄️❄️', '❄️', '☀️', '🔥'];
   const tWord = (g, Tv) => { const [lo, hi] = g.range, w = g.words || [0.25, 0.5, 0.75].map((q) => lo + q * (hi - lo)); return w.filter((b) => Tv >= b).length; };
   const zoneOf = (g, s) => (g.path ? g.path(s) : g.zone);
   const gameNow = () => (appMode === 'game' && gameRange ? (game ? game.g : gameSel) : null);
   function tWordShow() { // during games the box shows cold / cool / warm / hot instead of a number
     const g = gameNow(), b = $('tsetM');
-    if (g) { const k = tWord(g, tset); b.textContent = T(T_WORDS[k]); b.className = 'tw tw' + k; } else if (b.className) b.className = '';
+    // symbols instead of words, so the bar keeps its width in every language; the word stays as the tooltip and for screen readers
+    if (g) { const k = tWord(g, tset); b.textContent = T_SIGNS[k]; b.title = T(T_WORDS[k]); b.setAttribute('aria-label', T(T_WORDS[k])); b.className = 'tw tw' + k; }
+    else if (b.className) { b.className = ''; b.removeAttribute('title'); b.removeAttribute('aria-label'); }
   }
   function zoneMarks(sNow) { // the green band on the noise bar and on the slider: temperatures that build the structure (for ice it moves down during the game)
     const g = gameNow(), z = g && (g.zone || g.path) ? zoneOf(g, sNow || 0) : null, nz = $('nzone'), sz = $('szone');
