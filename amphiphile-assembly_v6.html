@@ -13,7 +13,7 @@
 :root {
   --bg: #eef1f3; --panel: #ffffff; --ink: #15202b; --muted: #5b6875; --line: #d4dbe1;
   --cell: #f8fafb; --head: #1f8a8a; --tail: #d0761f; --solv: #9aa9b6; --bond: #44525e;
-  --accent: #1f8a8a; --accent-ink: #ffffff; --hot: #c4472b; --cold: #2c6fb0; --poly: #6b6fd6; --cryst: #d99a00; --mixS: #3567b5; --mixC: #d1603d;
+  --accent: #1f8a8a; --accent-ink: #ffffff; --hot: #c4472b; --cold: #2c6fb0; --poly: #6b6fd6; --cryst: #d99a00; --good: #2f9e57; --mixS: #3567b5; --mixC: #d1603d;
   --f-display: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
   --f-body: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
   --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
@@ -21,11 +21,11 @@
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --bg: #0f151b; --panel: #161e26; --ink: #e3e9ee; --muted: #8b99a6; --line: #26323d;
   --cell: #0b1116; --head: #3bbdb6; --tail: #f0953d; --solv: #3d4b58; --bond: #9fb0bf;
-  --accent: #3bbdb6; --accent-ink: #06201f; --hot: #ee6c4d; --cold: #5c9ee0; --poly: #8a8ef0; --cryst: #ffc233; --mixS: #6aa2ee; --mixC: #f08060; color-scheme: dark } }
+  --accent: #3bbdb6; --accent-ink: #06201f; --hot: #ee6c4d; --cold: #5c9ee0; --poly: #8a8ef0; --cryst: #ffc233; --good: #4cc47a; --mixS: #6aa2ee; --mixC: #f08060; color-scheme: dark } }
 :root[data-theme="dark"] {
   --bg: #0f151b; --panel: #161e26; --ink: #e3e9ee; --muted: #8b99a6; --line: #26323d;
   --cell: #0b1116; --head: #3bbdb6; --tail: #f0953d; --solv: #3d4b58; --bond: #9fb0bf;
-  --accent: #3bbdb6; --accent-ink: #06201f; --hot: #ee6c4d; --cold: #5c9ee0; --poly: #8a8ef0; --cryst: #ffc233; --mixS: #6aa2ee; --mixC: #f08060; color-scheme: dark }
+  --accent: #3bbdb6; --accent-ink: #06201f; --hot: #ee6c4d; --cold: #5c9ee0; --poly: #8a8ef0; --cryst: #ffc233; --good: #4cc47a; --mixS: #6aa2ee; --mixC: #f08060; color-scheme: dark }
 * { box-sizing: border-box }
 body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 14px; line-height: 1.5;
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px }
@@ -124,6 +124,22 @@ table.eps th { font-weight: 500; color: var(--muted) }
 .gstats .btns { margin-top: 8px } .gstats .btn { font-size: 12px; padding: 4px 10px }
 .gres { margin: 0; font-size: 15px; max-width: 80ch } .gres .big { font-size: 22px; color: var(--cryst); letter-spacing: 2px }
 @media (prefers-reduced-motion: reduce) { .gbar i { transition: none } }
+.mbar .mnoise { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px } .mnoise .meter { flex: 1; position: relative }
+.mnoise .mlab { display: none; font-weight: 700; font-size: 13px; white-space: nowrap }
+.meter .zone, .trange .zone { position: absolute; display: none; pointer-events: none; z-index: 2; background: color-mix(in srgb, var(--good) 22%, transparent); border-left: 2px solid var(--good); border-right: 2px solid var(--good) }
+.meter .zone { top: 0; bottom: 0 } .trange .zone { top: 3px; height: 20px; border-radius: 4px; z-index: 0 } .trange input { position: relative; z-index: 1 }
+.gamemode .mnoise .mlab { display: block } .gamemode .mbar .mnoise .meter { height: 16px; border-radius: 8px } .gamemode .meter .zone.on, .gamemode .trange .zone.on { display: block }
+.gamemode .mnoise .meter i { background: var(--hot) }
+.gamemode .mbar-t small, .gamemode .mbar .ticks { display: none } .mbar-t b.tw { font-family: var(--f-display); font-weight: 700; font-size: 1.35rem; letter-spacing: 0 }
+@media (max-width: 700px) { .mbar-t b.tw { font-size: 1.05rem } }
+.tw0 { color: var(--cold) } .tw1 { color: var(--accent) } .tw2 { color: var(--cryst) } .tw3 { color: var(--hot) }
+.coach { position: absolute; z-index: 8; transform: translateX(-50%); width: max-content; max-width: min(92%, 34em); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center;
+  padding: 7px 14px; border-radius: 14px; background: rgba(12,18,24,.78); color: #fff; font-weight: 600; font-size: clamp(13px, 2.1vmin, 16.5px); line-height: 1.3; text-align: center; pointer-events: none; transition: background .3s }
+.coach.good { background: color-mix(in srgb, var(--good) 82%, black) } .coach.bad { background: color-mix(in srgb, var(--hot) 88%, black) } .coach.warn { background: color-mix(in srgb, var(--cold) 85%, black) }
+.coach .btn { pointer-events: auto; font-size: 14px; padding: 5px 14px } .coach.guide { font-size: clamp(15px, 2.6vmin, 20px); padding: 10px 16px; max-width: min(94%, 30em) }
+.greplay { width: 100%; height: 150px; display: block } @media (max-width: 700px) { .greplay { height: 120px } .coach { font-size: 13px; padding: 5px 10px } }
+.gpick button.locked { opacity: .55; cursor: not-allowed } .gpick button.locked .stars { white-space: normal }
+
 @media (max-width: 700px) { .ghud .gstat div { align-items: center; text-align: center; padding: 4px 2px } .ghud .gstat span { white-space: normal; overflow-wrap: anywhere; line-height: 1.15; min-height: 2.3em; display: flex; align-items: center; justify-content: center; max-width: 100%; font-size: 10px } .ghead { text-align: center; flex-direction: column; align-items: center; gap: 6px } .gres { text-align: center } .gstat b { font-size: 14px } .ghud { padding: 6px 8px; gap: 5px } .ghead { font-size: 12px } .ghud .gstat { gap: 6px } .gstat span { font-size: 10.5px }
   .ingame .legend { display: none } .gband { height: 16px } .gband .tick { line-height: 16px } .gbar { height: 7px } .ghud .gres { font-size: 12.5px } .htip { display: none } }
 .offmode { display: none !important }
@@ -253,7 +269,7 @@ header { position: relative } .langbox { position: absolute; top: 0; right: 0; d
 .mbar-t b { font-size: 1.7rem; font-weight: 500; letter-spacing: -0.02em }
 .mbar-t small { font-size: 11.5px; color: var(--muted) }
 .mbar .btn[aria-pressed=true] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent) }
-.mbar .meter { grid-column: 1 / -1; height: 6px }
+.mbar .meter { height: 6px }
 .mbar .trange { min-width: 0 } .mbar input[type=range] { height: 26px }
 .tfull { display: none !important }
 button { touch-action: manipulation }
@@ -316,9 +332,11 @@ button { touch-action: manipulation }
         <div class="gband" id="gband" aria-hidden="true" title="Line: your score now. Marks: star levels"><div class="best" id="gbest"></div><div class="now" id="gnow"></div></div>
         <div class="gbar" aria-hidden="true"><i id="gbar"></i></div>
         <p class="gres" id="gres" aria-live="polite"></p>
+        <canvas class="greplay" id="greplay" hidden aria-label="Your run: temperature and score over time"></canvas>
       </div>
       <canvas id="sim" aria-label="Simulation box"></canvas>
       <div class="gfx" id="gfx" aria-live="assertive" hidden></div>
+      <div class="coach" id="coach" hidden aria-live="polite"><span id="coachTxt"></span><button class="btn primary" id="coachBtn" hidden></button><button class="btn" id="coachSkip" hidden>Skip</button></div>
       <button class="btn primary boxstart" id="gstartBox" hidden>Start</button>
       <div class="clspanel" id="clsPanel" hidden>
         <div class="clshead"><select id="clsSys" aria-label="System">
@@ -334,9 +352,9 @@ button { touch-action: manipulation }
       </div>
       <div class="mbar">
         <div class="mbar-t"><b id="tsetM">2.00</b><small><span class="tlab">T*</span><span class="kinlab"> · kin <span id="tkinM">–</span></span></small></div>
-        <div class="trange"><input type="range" id="tsliderM" min="0.30" max="2.50" step="0.01" value="2.00" aria-label="Temperature set point"><div class="ticks" id="ticks"></div></div>
+        <div class="trange"><s class="zone" id="szone"></s><input type="range" id="tsliderM" min="0.30" max="2.50" step="0.01" value="2.00" aria-label="Temperature set point"><div class="ticks" id="ticks"></div></div>
         <button class="btn" id="micM" aria-pressed="false">Mic</button>
-        <div class="meter" id="mmeter" hidden aria-hidden="true"><i id="micbarM"></i></div>
+        <div class="mnoise" id="mmeter" hidden><span class="mlab">Your noise</span><div class="meter"><s class="zone" id="nzone"></s><i id="micbarM"></i></div></div>
       </div>
       <div class="legend"><span id="legendItems" style="display:contents"></span><span id="boxinfo" style="font-family:var(--f-mono)"></span><span class="zhint">Click a molecule to follow it</span></div>
       <div class="thermo" id="thermoPanel" data-mode="scan">
@@ -399,7 +417,7 @@ button { touch-action: manipulation }
         <div class="gstats">
           <h3>Statistics on this device</h3>
           <table><thead><tr><th>Game</th><th>Played</th><th>Average</th><th>Best</th></tr></thead><tbody id="gstatsBody"></tbody></table>
-          <div class="btns"><button class="btn" id="gstatsReset">Reset statistics</button></div>
+          <div class="btns"><button class="btn" id="gstatsReset">Reset statistics</button><button class="btn" id="gunlock">Unlock all games (for teachers)</button></div>
         </div>
       </div>
 
@@ -1783,6 +1801,67 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // text written by the script goes through T(), with {name} placeholders for numbers.
   const I18N = {
  "fi": {
+  "Not now! Heat outside the red windows wastes the drug.": "Ei nyt! Lämpö punaisten ikkunoiden ulkopuolella haaskaa lääkettä.",
+  "Your noise": "Sinun äänesi",
+  "Skip": "Ohita",
+  "Play": "Pelaa",
+  "Unlock all games (for teachers)": "Avaa kaikki pelit (opettajille)",
+  "Lock the games again": "Lukitse pelit uudelleen",
+  "Get a star in “{g}” to open this game.": "Ansaitse tähti pelissä ”{g}”, niin tämä peli aukeaa.",
+  "New game unlocked: {g}!": "Uusi peli auki: {g}!",
+  "cold": "kylmä",
+  "cool": "viileä",
+  "warm": "lämmin",
+  "hot": "kuuma",
+  "your temperature": "sinun lämpötilasi",
+  "score": "pisteet",
+  "green zone": "vihreä alue",
+  "red windows": "punaiset ikkunat",
+  "Too warm: the ice cannot grow. Get quieter!": "Liian lämmin: jää ei voi kasvaa. Hiljemmin!",
+  "Very cold already: the water will freeze as a jumble. A little noise!": "Jo hyvin kylmä: vesi jäätyy sekasotkuksi. Vähän ääntä!",
+  "Cold: the ice you grew is setting.": "Kylmä: kasvattamasi jää jähmettyy.",
+  "Good: the ice is growing. Keep it like this.": "Hyvä: jää kasvaa. Pidä näin.",
+  "In the green zone. Get a little quieter, slowly.": "Vihreällä alueella. Hiljennä vähitellen.",
+  "You were too warm for {p}% of the game, so the ice could not grow.": "Lämpötila oli liian korkea {p} % pelistä, joten jää ei voinut kasvaa.",
+  "You went quiet right away: the water froze into a jumble before crystals could grow.": "Hiljenit heti: vesi jäätyi sekasotkuksi ennen kuin kiteet ehtivät kasvaa.",
+  "You were very cold for {p}% of the game: the water froze as a jumble instead of growing crystals.": "Oli hyvin kylmä {p} % pelistä: vesi jäätyi sekasotkuksi eikä kasvattanut kiteitä.",
+  "Too warm: the liquids mix again. Get quieter!": "Liian lämmin: nesteet sekoittuvat taas. Hiljemmin!",
+  "Too cold: the molecules are stuck in place. A little noise!": "Liian kylmä: molekyylit ovat jumissa. Vähän ääntä!",
+  "Good: the blobs are growing. Keep it like this.": "Hyvä: läiskät kasvavat. Pidä näin.",
+  "In the green zone. Hold it there.": "Vihreällä alueella. Pysy siinä.",
+  "You were too warm for {p}% of the game, so the liquids kept mixing.": "Lämpötila oli liian korkea {p} % pelistä, joten nesteet sekoittuivat jatkuvasti.",
+  "You were too cold for {p}% of the game, so the molecules could not move to their own kind.": "Oli liian kylmä {p} % pelistä, joten molekyylit eivät päässeet omiensa luo.",
+  "Yes! The drug is being delivered.": "Jes! Lääke vapautuu kohteeseen.",
+  "Keep the noise up: the micelles are opening.": "Jatka ääntä: misellit aukeavat.",
+  "Red window: make noise now!": "Punainen ikkuna: pidä ääntä nyt!",
+  "Drug is escaping! Be quiet until the next red window.": "Lääkettä karkaa! Ole hiljaa seuraavaan punaiseen ikkunaan asti.",
+  "Get ready: a red window starts in a moment.": "Valmiina: punainen ikkuna alkaa pian.",
+  "Good: quiet keeps the drug inside.": "Hyvä: hiljaisuus pitää lääkkeen sisällä.",
+  "Most of the drug escaped between the windows ({l}% lost). Stay quiet when there is no red window.": "Suurin osa lääkkeestä karkasi ikkunoiden välissä ({l} % hukkaan). Ole hiljaa, kun punaista ikkunaa ei ole.",
+  "You heated in {h} of {n} red windows. Make noise as soon as a window starts.": "Lämmitit {h}/{n} punaisessa ikkunassa. Pidä ääntä heti kun ikkuna alkaa.",
+  "Great timing: you heated in {h} of {n} windows and lost only {l}% of the drug.": "Loistava ajoitus: lämmitit {h}/{n} ikkunassa ja menetit vain {l} % lääkkeestä.",
+  "You heated in {h} of {n} windows and lost {l}% of the drug. Start the noise a little before each window.": "Lämmitit {h}/{n} ikkunassa ja menetit {l} % lääkkeestä. Aloita ääni vähän ennen jokaista ikkunaa.",
+  "The proteins are folded. Make noise to open them!": "Proteiinit ovat laskostuneet. Pidä ääntä, niin ne aukeavat!",
+  "Good: the proteins are opening up. Stay loud a little longer.": "Hyvä: proteiinit aukeavat. Pidä ääntä vielä hetki.",
+  "Too hot: the links break. Quieter!": "Liian kuuma: sidokset katkeavat. Hiljemmin!",
+  "Good! The gel strand is growing.": "Hyvä! Geelisäie kasvaa.",
+  "Now get quieter so the links hold.": "Hiljennä nyt, jotta sidokset pitävät.",
+  "Hold it cool: let the clumps join up.": "Pidä viileänä: anna möhkäleiden yhdistyä.",
+  "You never got warm enough to open the proteins, so they could not link.": "Lämpötila ei koskaan noussut tarpeeksi proteiinien avaamiseen, joten ne eivät voineet liittyä toisiinsa.",
+  "Heat first, then cool: that is the recipe, and you used it.": "Ensin lämpöä, sitten viileää: se on resepti, ja käytit sitä.",
+  "You were warm for {p}% of the game. Links keep breaking while it is warm: cool down sooner.": "Oli lämmin {p} % pelistä. Sidokset katkeilevat lämpimässä: viilennä aiemmin.",
+  "You were warm for {p}% of the game. Try heating for about a third of the game, then go quiet.": "Oli lämmin {p} % pelistä. Kokeile lämmittää noin kolmannes pelistä ja sitten hiljentyä.",
+  "You kept the box in the green zone for {p}% of the game. Excellent!": "Pidit laatikon vihreällä alueella {p} % pelistä. Erinomaista!",
+  "Your best was at {s} s. After that it got too warm and you lost some of it.": "Paras hetkesi oli {s} s kohdalla. Sen jälkeen tuli liian lämmin ja osa menetettiin.",
+  "You were in the green zone for {p}% of the game. Nice! Now try to stay there a little longer.": "Olit vihreällä alueella {p} % pelistä. Hienoa! Yritä nyt pysyä siellä vähän pidempään.",
+  "You were in the green zone for only {p}% of the game. Try to keep the temperature in the green band.": "Olit vihreällä alueella vain {p} % pelistä. Yritä pitää lämpötila vihreällä kaistalla.",
+  "Make noise! Clap, sing or shout: noise heats the ice and it melts.": "Pidä ääntä! Taputa, laula tai huuda: ääni lämmittää jäätä ja se sulaa.",
+  "Drag the temperature slider to the right: the ice heats up and melts.": "Vedä lämpötilan liukusäädintä oikealle: jää lämpenee ja sulaa.",
+  "Now be quiet. The water cools and freezes into ice again (blue).": "Ole nyt hiljaa. Vesi viilenee ja jäätyy taas (sininen).",
+  "Now drag the slider to the left. The water cools and freezes into ice again (blue).": "Vedä nyt liukusäädin vasemmalle. Vesi viilenee ja jäätyy taas (sininen).",
+  "That is it: quiet makes ice, noise melts it. Ice frozen slowly grows the biggest crystals. Now grow as much ice as you can!": "Juuri näin: hiljaisuus tekee jäätä, ääni sulattaa sen. Hitaasti jäätyvä jää kasvattaa suurimmat kiteet. Kasvata nyt niin paljon jäätä kuin voit!",
+  "That is it: cold makes ice, heat melts it. Ice frozen slowly grows the biggest crystals. Now grow as much ice as you can!": "Juuri näin: kylmä tekee jäätä, lämpö sulattaa sen. Hitaasti jäätyvä jää kasvattaa suurimmat kiteet. Kasvata nyt niin paljon jäätä kuin voit!",
+  "Your run: temperature and score over time": "Pelisi: lämpötila ja pisteet ajan mukaan",
   "Amphiphile Assembly Lab": "Itsejärjestymislaboratorio",
   "Language": "Kieli",
   "Live 2D molecular dynamics in explicit solvent at constant N, V, T. Pick a system and change temperature, composition and interaction strengths while it runs: micelles form, polymers crystallize, block copolymers and liquids demix, HP copolymers fold, a poor-solvent polymer collapses on cooling, and nonpolar solutes cluster in hydrogen-bonded water.": "Reaaliaikaista 2D-molekyylidynamiikkaa eksplisiittisessä liuottimessa vakiolla N, V, T. Valitse systeemi ja muuta lämpötilaa, koostumusta ja vuorovaikutusten voimakkuutta simulaation aikana: misellit muodostuvat, polymeerit kiteytyvät, lohkokopolymeerit ja nesteet faasierottuvat, HP-kopolymeerit laskostuvat, huonossa liuottimessa oleva polymeeri luhistuu jäähtyessään ja poolittomat liuenneet hiukkaset aggregoituvat vetysidosten muodostamassa vedessä.",
@@ -2369,6 +2448,67 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Microphone": "Mikrofoni"
  },
  "sv": {
+  "Not now! Heat outside the red windows wastes the drug.": "Inte nu! Värme utanför de röda fönstren slösar bort läkemedlet.",
+  "Your noise": "Ditt ljud",
+  "Skip": "Hoppa över",
+  "Play": "Spela",
+  "Unlock all games (for teachers)": "Lås upp alla spel (för lärare)",
+  "Lock the games again": "Lås spelen igen",
+  "Get a star in “{g}” to open this game.": "Ta en stjärna i ”{g}” för att låsa upp det här spelet.",
+  "New game unlocked: {g}!": "Nytt spel upplåst: {g}!",
+  "cold": "kallt",
+  "cool": "svalt",
+  "warm": "varmt",
+  "hot": "hett",
+  "your temperature": "din temperatur",
+  "score": "poäng",
+  "green zone": "grön zon",
+  "red windows": "röda fönster",
+  "Too warm: the ice cannot grow. Get quieter!": "För varmt: isen kan inte växa. Tystare!",
+  "Very cold already: the water will freeze as a jumble. A little noise!": "Redan mycket kallt: vattnet fryser till ett virrvarr. Lite ljud!",
+  "Cold: the ice you grew is setting.": "Kallt: isen du har odlat stelnar.",
+  "Good: the ice is growing. Keep it like this.": "Bra: isen växer. Fortsätt så.",
+  "In the green zone. Get a little quieter, slowly.": "I den gröna zonen. Bli lite tystare, långsamt.",
+  "You were too warm for {p}% of the game, so the ice could not grow.": "Det var för varmt under {p} % av spelet, så isen kunde inte växa.",
+  "You went quiet right away: the water froze into a jumble before crystals could grow.": "Du blev tyst direkt: vattnet frös till ett virrvarr innan kristallerna hann växa.",
+  "You were very cold for {p}% of the game: the water froze as a jumble instead of growing crystals.": "Det var mycket kallt under {p} % av spelet: vattnet frös till ett virrvarr i stället för att bilda kristaller.",
+  "Too warm: the liquids mix again. Get quieter!": "För varmt: vätskorna blandas igen. Tystare!",
+  "Too cold: the molecules are stuck in place. A little noise!": "För kallt: molekylerna sitter fast. Lite ljud!",
+  "Good: the blobs are growing. Keep it like this.": "Bra: fläckarna växer. Fortsätt så.",
+  "In the green zone. Hold it there.": "I den gröna zonen. Håll dig där.",
+  "You were too warm for {p}% of the game, so the liquids kept mixing.": "Det var för varmt under {p} % av spelet, så vätskorna fortsatte att blandas.",
+  "You were too cold for {p}% of the game, so the molecules could not move to their own kind.": "Det var för kallt under {p} % av spelet, så molekylerna kunde inte ta sig till sina egna.",
+  "Yes! The drug is being delivered.": "Ja! Läkemedlet levereras.",
+  "Keep the noise up: the micelles are opening.": "Fortsätt låta: micellerna öppnas.",
+  "Red window: make noise now!": "Rött fönster: låt nu!",
+  "Drug is escaping! Be quiet until the next red window.": "Läkemedlet läcker ut! Var tyst till nästa röda fönster.",
+  "Get ready: a red window starts in a moment.": "Gör dig redo: ett rött fönster börjar snart.",
+  "Good: quiet keeps the drug inside.": "Bra: tystnad håller kvar läkemedlet.",
+  "Most of the drug escaped between the windows ({l}% lost). Stay quiet when there is no red window.": "Det mesta av läkemedlet läckte ut mellan fönstren ({l} % förlorat). Var tyst när det inte finns något rött fönster.",
+  "You heated in {h} of {n} red windows. Make noise as soon as a window starts.": "Du värmde i {h} av {n} röda fönster. Låt så fort ett fönster börjar.",
+  "Great timing: you heated in {h} of {n} windows and lost only {l}% of the drug.": "Perfekt tajming: du värmde i {h} av {n} fönster och förlorade bara {l} % av läkemedlet.",
+  "You heated in {h} of {n} windows and lost {l}% of the drug. Start the noise a little before each window.": "Du värmde i {h} av {n} fönster och förlorade {l} % av läkemedlet. Börja låta lite före varje fönster.",
+  "The proteins are folded. Make noise to open them!": "Proteinerna är veckade. Låt för att öppna dem!",
+  "Good: the proteins are opening up. Stay loud a little longer.": "Bra: proteinerna öppnas. Fortsätt låta en stund till.",
+  "Too hot: the links break. Quieter!": "För hett: bindningarna bryts. Tystare!",
+  "Good! The gel strand is growing.": "Bra! Gelsträngen växer.",
+  "Now get quieter so the links hold.": "Bli tystare nu så att bindningarna håller.",
+  "Hold it cool: let the clumps join up.": "Håll det svalt: låt klumparna förenas.",
+  "You never got warm enough to open the proteins, so they could not link.": "Det blev aldrig tillräckligt varmt för att öppna proteinerna, så de kunde inte binda till varandra.",
+  "Heat first, then cool: that is the recipe, and you used it.": "Först värme, sedan svalt: det är receptet, och du använde det.",
+  "You were warm for {p}% of the game. Links keep breaking while it is warm: cool down sooner.": "Det var varmt under {p} % av spelet. Bindningarna bryts när det är varmt: kyl ner tidigare.",
+  "You were warm for {p}% of the game. Try heating for about a third of the game, then go quiet.": "Det var varmt under {p} % av spelet. Prova att värma ungefär en tredjedel av spelet och sedan vara tyst.",
+  "You kept the box in the green zone for {p}% of the game. Excellent!": "Du höll lådan i den gröna zonen under {p} % av spelet. Utmärkt!",
+  "Your best was at {s} s. After that it got too warm and you lost some of it.": "Ditt bästa var vid {s} s. Efter det blev det för varmt och du förlorade en del.",
+  "You were in the green zone for {p}% of the game. Nice! Now try to stay there a little longer.": "Du var i den gröna zonen under {p} % av spelet. Snyggt! Försök nu stanna där lite längre.",
+  "You were in the green zone for only {p}% of the game. Try to keep the temperature in the green band.": "Du var i den gröna zonen bara {p} % av spelet. Försök hålla temperaturen i det gröna bandet.",
+  "Make noise! Clap, sing or shout: noise heats the ice and it melts.": "För oväsen! Klappa, sjung eller ropa: ljudet värmer isen och den smälter.",
+  "Drag the temperature slider to the right: the ice heats up and melts.": "Dra temperaturreglaget åt höger: isen värms upp och smälter.",
+  "Now be quiet. The water cools and freezes into ice again (blue).": "Var tyst nu. Vattnet svalnar och fryser till is igen (blått).",
+  "Now drag the slider to the left. The water cools and freezes into ice again (blue).": "Dra nu reglaget åt vänster. Vattnet svalnar och fryser till is igen (blått).",
+  "That is it: quiet makes ice, noise melts it. Ice frozen slowly grows the biggest crystals. Now grow as much ice as you can!": "Så är det: tystnad gör is, ljud smälter den. Is som fryser långsamt bildar de största kristallerna. Odla nu så mycket is du kan!",
+  "That is it: cold makes ice, heat melts it. Ice frozen slowly grows the biggest crystals. Now grow as much ice as you can!": "Så är det: kyla gör is, värme smälter den. Is som fryser långsamt bildar de största kristallerna. Odla nu så mycket is du kan!",
+  "Your run: temperature and score over time": "Din omgång: temperatur och poäng över tid",
   "Amphiphile Assembly Lab": "Självorganiseringslabbet",
   "Language": "Språk",
   "Live 2D molecular dynamics in explicit solvent at constant N, V, T. Pick a system and change temperature, composition and interaction strengths while it runs: micelles form, polymers crystallize, block copolymers and liquids demix, HP copolymers fold, a poor-solvent polymer collapses on cooling, and nonpolar solutes cluster in hydrogen-bonded water.": "Molekyldynamik i 2D i realtid med explicit lösningsmedel vid konstant N, V, T. Välj ett system och ändra temperatur, sammansättning och växelverkningarnas styrka medan simuleringen kör: miceller bildas, polymerer kristalliserar, blocksampolymerer och vätskor fasseparerar, HP-sampolymerer veckas, en polymer i dåligt lösningsmedel kollapsar vid kylning och opolära lösta partiklar aggregerar i vätebundet vatten.",
@@ -2955,6 +3095,67 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Microphone": "Mikrofon"
  },
  "ru": {
+  "Not now! Heat outside the red windows wastes the drug.": "Не сейчас! Нагрев вне красных окон тратит лекарство впустую.",
+  "Your noise": "Ваш шум",
+  "Skip": "Пропустить",
+  "Play": "Играть",
+  "Unlock all games (for teachers)": "Открыть все игры (для учителей)",
+  "Lock the games again": "Снова закрыть игры",
+  "Get a star in “{g}” to open this game.": "Получите звезду в игре «{g}», чтобы открыть эту игру.",
+  "New game unlocked: {g}!": "Открыта новая игра: {g}!",
+  "cold": "холодно",
+  "cool": "прохладно",
+  "warm": "тепло",
+  "hot": "жарко",
+  "your temperature": "ваша температура",
+  "score": "счёт",
+  "green zone": "зелёная зона",
+  "red windows": "красные окна",
+  "Too warm: the ice cannot grow. Get quieter!": "Слишком тепло: лёд не может расти. Тише!",
+  "Very cold already: the water will freeze as a jumble. A little noise!": "Уже очень холодно: вода замёрзнет беспорядочно. Немного пошумите!",
+  "Cold: the ice you grew is setting.": "Холодно: выращенный лёд застывает.",
+  "Good: the ice is growing. Keep it like this.": "Хорошо: лёд растёт. Так и держите.",
+  "In the green zone. Get a little quieter, slowly.": "Вы в зелёной зоне. Понемногу становитесь тише.",
+  "You were too warm for {p}% of the game, so the ice could not grow.": "{p}% игры было слишком тепло, поэтому лёд не мог расти.",
+  "You went quiet right away: the water froze into a jumble before crystals could grow.": "Вы сразу замолчали: вода замёрзла беспорядочно, и кристаллы не успели вырасти.",
+  "You were very cold for {p}% of the game: the water froze as a jumble instead of growing crystals.": "{p}% игры было очень холодно: вода замерзала беспорядочно вместо того, чтобы растить кристаллы.",
+  "Too warm: the liquids mix again. Get quieter!": "Слишком тепло: жидкости снова смешиваются. Тише!",
+  "Too cold: the molecules are stuck in place. A little noise!": "Слишком холодно: молекулы застыли на месте. Немного пошумите!",
+  "Good: the blobs are growing. Keep it like this.": "Хорошо: пятна растут. Так и держите.",
+  "In the green zone. Hold it there.": "Вы в зелёной зоне. Оставайтесь там.",
+  "You were too warm for {p}% of the game, so the liquids kept mixing.": "{p}% игры было слишком тепло, и жидкости продолжали смешиваться.",
+  "You were too cold for {p}% of the game, so the molecules could not move to their own kind.": "{p}% игры было слишком холодно, и молекулы не могли добраться до своих.",
+  "Yes! The drug is being delivered.": "Да! Лекарство доставляется.",
+  "Keep the noise up: the micelles are opening.": "Продолжайте шуметь: мицеллы открываются.",
+  "Red window: make noise now!": "Красное окно: шумите сейчас!",
+  "Drug is escaping! Be quiet until the next red window.": "Лекарство утекает! Тише до следующего красного окна.",
+  "Get ready: a red window starts in a moment.": "Приготовьтесь: скоро красное окно.",
+  "Good: quiet keeps the drug inside.": "Хорошо: тишина удерживает лекарство внутри.",
+  "Most of the drug escaped between the windows ({l}% lost). Stay quiet when there is no red window.": "Большая часть лекарства утекла между окнами (потеряно {l}%). Молчите, когда красного окна нет.",
+  "You heated in {h} of {n} red windows. Make noise as soon as a window starts.": "Вы нагрели в {h} из {n} красных окон. Шумите, как только окно начинается.",
+  "Great timing: you heated in {h} of {n} windows and lost only {l}% of the drug.": "Отличный тайминг: вы нагрели в {h} из {n} окон и потеряли всего {l}% лекарства.",
+  "You heated in {h} of {n} windows and lost {l}% of the drug. Start the noise a little before each window.": "Вы нагрели в {h} из {n} окон и потеряли {l}% лекарства. Начинайте шуметь чуть раньше каждого окна.",
+  "The proteins are folded. Make noise to open them!": "Белки свёрнуты. Пошумите, чтобы их раскрыть!",
+  "Good: the proteins are opening up. Stay loud a little longer.": "Хорошо: белки раскрываются. Пошумите ещё немного.",
+  "Too hot: the links break. Quieter!": "Слишком жарко: связи рвутся. Тише!",
+  "Good! The gel strand is growing.": "Отлично! Нить геля растёт.",
+  "Now get quieter so the links hold.": "Теперь тише, чтобы связи держались.",
+  "Hold it cool: let the clumps join up.": "Держите прохладу: пусть комки соединятся.",
+  "You never got warm enough to open the proteins, so they could not link.": "Ни разу не стало достаточно тепло, чтобы раскрыть белки, поэтому они не смогли сцепиться.",
+  "Heat first, then cool: that is the recipe, and you used it.": "Сначала нагреть, потом охладить: это рецепт, и вы им воспользовались.",
+  "You were warm for {p}% of the game. Links keep breaking while it is warm: cool down sooner.": "{p}% игры было тепло. В тепле связи рвутся: охлаждайте раньше.",
+  "You were warm for {p}% of the game. Try heating for about a third of the game, then go quiet.": "{p}% игры было тепло. Попробуйте греть примерно треть игры, а потом замолчать.",
+  "You kept the box in the green zone for {p}% of the game. Excellent!": "Вы держали ящик в зелёной зоне {p}% игры. Превосходно!",
+  "Your best was at {s} s. After that it got too warm and you lost some of it.": "Лучший момент был на {s} с. Потом стало слишком тепло, и часть результата пропала.",
+  "You were in the green zone for {p}% of the game. Nice! Now try to stay there a little longer.": "Вы были в зелёной зоне {p}% игры. Неплохо! Теперь постарайтесь задержаться там подольше.",
+  "You were in the green zone for only {p}% of the game. Try to keep the temperature in the green band.": "Вы были в зелёной зоне всего {p}% игры. Старайтесь держать температуру в зелёной полосе.",
+  "Make noise! Clap, sing or shout: noise heats the ice and it melts.": "Пошумите! Хлопайте, пойте или кричите: шум нагревает лёд, и он тает.",
+  "Drag the temperature slider to the right: the ice heats up and melts.": "Сдвиньте ползунок температуры вправо: лёд нагреется и растает.",
+  "Now be quiet. The water cools and freezes into ice again (blue).": "Теперь тихо. Вода остывает и снова замерзает (синий цвет).",
+  "Now drag the slider to the left. The water cools and freezes into ice again (blue).": "Теперь сдвиньте ползунок влево. Вода остывает и снова замерзает (синий цвет).",
+  "That is it: quiet makes ice, noise melts it. Ice frozen slowly grows the biggest crystals. Now grow as much ice as you can!": "Вот и всё: тишина делает лёд, шум его плавит. Медленно замерзающий лёд растит самые большие кристаллы. Теперь вырастите как можно больше льда!",
+  "That is it: cold makes ice, heat melts it. Ice frozen slowly grows the biggest crystals. Now grow as much ice as you can!": "Вот и всё: холод делает лёд, тепло его плавит. Медленно замерзающий лёд растит самые большие кристаллы. Теперь вырастите как можно больше льда!",
+  "Your run: temperature and score over time": "Ваша игра: температура и счёт по времени",
   "Amphiphile Assembly Lab": "Лаборатория самосборки",
   "Language": "Язык",
   "Live 2D molecular dynamics in explicit solvent at constant N, V, T. Pick a system and change temperature, composition and interaction strengths while it runs: micelles form, polymers crystallize, block copolymers and liquids demix, HP copolymers fold, a poor-solvent polymer collapses on cooling, and nonpolar solutes cluster in hydrogen-bonded water.": "Молекулярная динамика в 2D в реальном времени с явным растворителем при постоянных N, V, T. Выберите систему и меняйте температуру, состав и силу взаимодействий прямо во время расчёта: образуются мицеллы, кристаллизуются полимеры, расслаиваются блок-сополимеры и жидкости, сворачиваются HP-сополимеры, полимер в плохом растворителе коллапсирует при охлаждении, а неполярные частицы собираются в кластеры в воде с водородными связями.",
@@ -3745,7 +3946,9 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     tset = Math.max(lo, Math.min(hi, v));
     if (eng) eng.p.T = tset;
     $('tset').textContent = $('tsetM').textContent = tset.toFixed((SYS[sys].tstep || 0.01) < 0.01 ? 3 : 2); $('tslider').value = $('tsliderM').value = tset;
+    if (coachReady) tWordShow();
   }
+  var coachReady = false; // set once the game helpers below exist
   $('tslider').addEventListener('input', (e) => { if (scan) stopScan(false); if (mode === 'slider') setT(+e.target.value); });
   $('tsliderM').addEventListener('input', (e) => { if (scan) stopScan(false); if (mode === 'slider') setT(+e.target.value); });
   $('micM').addEventListener('click', () => setMode(mode === 'mic' ? 'slider' : 'mic'));
@@ -3970,20 +4173,29 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     for (const [a, b] of G.win) { if (t >= a && t < b) return { on: true, left: (b - t) / G.rate }; if (t < a) return { on: false, left: (a - t) / G.rate }; } return { on: false, left: null }; }
   const GAMES = [
     { id: 'ice', title: 'Grow the biggest ice crystal', sub: 'Ice · slow cooling wins', sys: 'ice', ordered: false, range: [0.02, 0.30], D: 150,
-      lab: 'Ice', fmt: (v) => pct(v), stars: [0.40, 0.48, 0.55],
+      lab: 'Ice', fmt: (v) => pct(v), stars: [0.35, 0.47, 0.56],
+      zone: [0.07, 0.16], words: [0.07, 0.16, 0.21], earlyS: 12, rise: 0.01, // ice grows between about 0.07 and 0.16; colder freezes a jumble, warmer melts
+      cz: { hot: 'Too warm: the ice cannot grow. Get quieter!', coldEarly: 'Very cold already: the water will freeze as a jumble. A little noise!', cold: 'Cold: the ice you grew is setting.', coldCls: '',
+        good: 'Good: the ice is growing. Keep it like this.', flat: 'In the green zone. Get a little quieter, slowly.' },
+      dz: { hot: 'You were too warm for {p}% of the game, so the ice could not grow.', coldEarly: 'You went quiet right away: the water froze into a jumble before crystals could grow.',
+        cold: 'You were very cold for {p}% of the game: the water froze as a jumble instead of growing crystals.' },
       short: "Turn as much of the water into ice as you can within 30 seconds.", goal: 'Turn as much water into ice as you can. Quiet cools the box, noise warms it. Your score is the most ice you reach. The water starts liquid; when it cools, its molecules can lock into a neat honeycomb pattern: ice.', facts: ["Almost every snowflake has six arms. The six-fold shape comes from the honeycomb arrangement of water molecules in ice.", "Ice is lighter than liquid water, so it floats. That is why lakes freeze from the top down and fish survive the winter below.", "Very pure water can stay liquid well below 0 °C. Cloud droplets can stay liquid down to about −40 °C before they freeze."],
       hint: 'Going silent at once freezes the water into a jumble: no star. Ice needs time to grow in order. Start with some noise, then get quieter little by little.',
       lesson: { good: 'Cooling slowly gave the molecules time to find their places in the honeycomb, so the crystals grew large. This is annealing: how glassmakers and metal workers make strong, clear materials.',
         bad: 'Cooled too fast, the molecules lock in wherever they happen to be; kept at one temperature, the crystals grow too slowly or melt again. Try starting a bit warm and cooling step by step.' } },
     { id: 'demix', title: 'Separate the liquids', sub: 'Two liquids · not too cold', sys: 'demix', ordered: false, range: [0.02, 1.0], D: 90, box: '36',
-      lab: 'Separation', fmt: (v) => v.toFixed(2), stars: [0.60, 0.72, 0.79],
+      lab: 'Separation', fmt: (v) => v.toFixed(2), stars: [0.40, 0.48, 0.54],
+      zone: [0.27, 0.42], words: [0.27, 0.42, 0.65], rise: 0.01, // separates fastest around 0.3-0.36; colder the molecules hardly move, warmer they mix
+      cz: { hot: 'Too warm: the liquids mix again. Get quieter!', cold: 'Too cold: the molecules are stuck in place. A little noise!',
+        good: 'Good: the blobs are growing. Keep it like this.', flat: 'In the green zone. Hold it there.' },
+      dz: { hot: 'You were too warm for {p}% of the game, so the liquids kept mixing.', cold: 'You were too cold for {p}% of the game, so the molecules could not move to their own kind.' },
       short: "Separate the two mixed liquids as much as you can within 30 seconds.", goal: 'Separate the two liquids as much as you can. Your score is the best separation: 0 is fully mixed, 1 is fully separated. Each kind of molecule prefers its own kind, like oil and water.', facts: ["Mayonnaise is oil and water that stay mixed: molecules from egg yolk coat the oil droplets and stop them from joining up.", "Inside living cells, some proteins separate from the surrounding liquid into droplets, like oil in water. These droplets work as tiny rooms without walls.", "Shaking an oil-and-vinegar dressing mixes it only for a while: the droplets slowly merge and the two liquids separate again."],
       hint: 'Total silence freezes the molecules before they can sort themselves: no star. Find a level that is cold enough to separate but warm enough to move.',
       lesson: { good: 'Cool enough that the molecules prefer their own kind, warm enough that they can still move: the blobs grow quickly. Too cold, and everything freezes in place.',
         bad: 'Very cold molecules hardly move, so they stay stuck next to the wrong neighbours. Try a little noise to keep them moving.' } },
     { id: 'drug', title: 'Deliver the drug', sub: 'Soap molecules · hit the target windows', sys: 'dumbbell', ordered: true, range: [0.4, 2.5], D: 60, box: '48', conc: 34,
       prm: { nDrug: 90, drugPerMic: 3, extraTails: 3, preSteps: 1000, epsDB: 2.5, epsBB: 2.5, epsAS: 0, sigA: 1.0 }, raw: true, noSnap: true, side: 'Lost',
-      lab: 'Delivered', fmt: (v) => v.toFixed(0) + '%', stars: [40, 65, 85], scale: 100,
+      lab: 'Delivered', fmt: (v) => v.toFixed(0) + '%', stars: [35, 65, 85], scale: 100, hotT: 1.35,
       setup: (G) => { const w = []; let a = 6 + 4 * Math.random(); const W = 4 / 1.5; while (a + W <= 58) { w.push([a, a + W]); a += W + 5 + 4 * Math.random(); } G.win = w; G.del = 0; G.lost = 0; },
       value: () => drugTick(),
       short: "Heat only in the red windows to deliver the drug (stars).", goal: 'Deliver as much drug (stars) as you can at the right moment. Heat only during the red target windows. Drug released at any other time is lost and turns grey; delivered drug turns yellow. The micelles carry the drug in their oily cores, and heat breaks them open.', facts: ["The first nanoparticle cancer medicine, Doxil, was approved in 1995. It carries the drug inside tiny bubbles made of lipids, the molecules of cell membranes.", "Heat-triggered carriers are being tested in medicine: some release their drug when a tumour is warmed just above body temperature, to about 40–42 °C.", "Soap works like these micelles: grease hides in the oily cores of soap micelles and is rinsed away with the water."],
@@ -3991,7 +4203,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       lesson: { good: 'Short, well-timed bursts of heat opened the micelles exactly when the drug was needed, and the cold kept it locked inside the rest of the time. Temperature-sensitive carriers are designed to do just this at a warmed tumour.',
         bad: 'Heat frees the drug a little after it starts and keeps freeing it for a moment after it stops, so late or long bursts waste it. Watch the windows on the time bar and start a little early.' } },
     { id: 'gel', title: 'Grow the longest gel strand', sub: '35 proteins', sys: 'crypt', ordered: true, range: [0.6, 7.0], D: 90, box: '48', conc: 35, epsXX: 5,
-      lab: 'Gel path', fmt: (v) => v.toFixed(0) + ' σ', stars: [80, 130, 170], scale: 200, value: () => { gelShow = eng.gelPath(1.5, 2); return gelShow.len; },
+      lab: 'Gel path', fmt: (v) => v.toFixed(0) + ' σ', stars: [80, 130, 170], scale: 200, openT: 2.2, tooHot: 4.5, openSec: 4, rise: 3, words: [1.4, 2.2, 4.5], value: () => { gelShow = eng.gelPath(1.5, 2); return gelShow.len; },
       short: "Link the proteins into the longest gel strand you can within 30 seconds.", goal: 'Link the proteins into the longest gel strand you can. Your score is the longest path through the gel, from protein to protein (red line); the box is 62 σ wide. The proteins start folded, with their sticky beads hidden inside. Two proteins are linked when they share at least two sticky contacts.', facts: ["Boiling an egg turns the clear egg white solid: heat unfolds its proteins, and they stick together into a gel.", "Gelatin jelly melts at about 30–35 °C, a little below body temperature. That is why it melts in your mouth.", "Tofu is a protein gel: soy milk is heated, then salts such as magnesium chloride make the soy proteins clump together."],
       hint: 'Folded proteins cannot link, and boiling breaks the links. Heat to open the folds, then cool well down so the links hold and the network grows.',
       lesson: { good: 'Heating opened the folds and exposed the sticky beads, cooling let the links hold, and the clumps joined into a long network. This is how heated egg white or gelatin-like protein solutions set into a gel.',
@@ -4016,12 +4228,15 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   const starStr = (n) => '★'.repeat(n) + '☆'.repeat(3 - n);
   function renderPick() {
     if ($('gstatsBody')) renderStats();
-    $('gpick').innerHTML = GAMES.map((g) => { const b = getBest(g);
+    $('gpick').innerHTML = GAMES.map((g, i) => { const b = getBest(g);
+      if (coachReady && !isOpen(i)) return `<button data-game="${g.id}" class="locked" aria-disabled="true"><b>🔒 ${T(g.title)}</b><small>${T('Get a star in “{g}” to open this game.', { g: T(GAMES[i - 1].title) })}</small><span class="stars"></span></button>`;
       return `<button data-game="${g.id}" aria-pressed="${gameSel === g}"><b>${T(g.title)}</b><small>${T(g.sub)}</small><span class="stars">${b !== null ? starStr(starsFor(g, b)) + ' ' + T('best') + ' ' + g.fmt(b) : ''}</span></button>`; }).join('');
   }
   function selectGame(id) {
+    const gi = GAMES.findIndex((g) => g.id === id); if (gi < 0 || (coachReady && !isOpen(gi))) return;
     if (game) endGame(null);
-    gameSel = GAMES.find((g) => g.id === id); renderPick();
+    if (coachReady && guide) { guide = null; coachHide(); }
+    gameSel = GAMES[gi]; renderPick(); if (coachReady) $('greplay').hidden = true;
     $('gsel').hidden = false; $('ggoal').textContent = T(gameSel.goal);
     $('ghint').innerHTML = `${T('Stars:')} ${gameSel.stars.map((s, k) => '★'.repeat(k + 1) + ' ' + gameSel.fmt(s)).join(' · ')}`;
     gstartKey = 'Start'; $('gstart').textContent = T('Start');
@@ -4037,12 +4252,15 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     $('initState').value = g.ordered ? 'ordered' : 'disordered';
     for (const id of ['tslider', 'tsliderM']) { const el = $(id); el.min = g.range[0]; el.max = g.range[1]; }
     setT(g.range[0]); build({ game: true }); // every game starts at its coldest setting
+    if (coachReady) zoneMarks();
     running = true; $('pause').textContent = T('Pause');
   }
   function startGame() {
     const g = gameSel; if (!g) return;
-    prepGame(g);
-    game = { g, t0: eng.time, last: eng.time, ema: null, rate: g.D / GAME_SEC, peak: -Infinity, peakSec: 0, snap: null };
+    if (guide) { guide = null; coachHide(); }
+    if (needGuide(g)) { guideStart(g); return; }
+    prepGame(g); coachHide(); $('greplay').hidden = true;
+    game = { g, t0: eng.time, last: eng.time, ema: null, rate: g.D / GAME_SEC, peak: -Infinity, peakSec: 0, snap: null, rec: [] };
     if (g.setup) g.setup(game);
     const gb = document.querySelector('.gbar'); gb.querySelectorAll('.win').forEach((x) => x.remove());
     for (const [w0, w1] of game.win || []) { const d = document.createElement('div'); d.className = 'win'; d.style.left = (100 * w0 / g.D) + '%'; d.style.width = (100 * (w1 - w0) / g.D) + '%'; gb.appendChild(d); }
@@ -4092,17 +4310,19 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     eng.computeForces(); setT(s.T);
   }
   function endGame(result) {
-    const G = game; game = null; clearTimeout(cdTimer); $('gfx').hidden = true; $('gfx').innerHTML = '';
+    const G = game; game = null; clearTimeout(cdTimer); $('gfx').hidden = true; $('gfx').innerHTML = ''; coachHide();
     $('gstart').disabled = false; gstartKey = 'Play again'; $('gstart').textContent = T(gstartKey); $('gquit').textContent = T('Close');
     if (!G || !result) { closeHud(); return; }
-    const g = G.g, v = G.peak, st = starsFor(g, v), b = getBest(g), rec = b === null || v > b; if (rec) setBest(g, v);
+    const g = G.g, v = G.peak, st = starsFor(g, v), b = getBest(g), rec = b === null || v > b, gi = GAMES.indexOf(g), wasOpen = gi + 1 < GAMES.length && isOpen(gi + 1); if (rec) setBest(g, v);
+    const opened = gi + 1 < GAMES.length && !wasOpen && isOpen(gi + 1), dg = diagnose(G, st);
     const S = addStat(g, v);
     $('hudGoal').textContent = $('hudTip').textContent = ''; $('gagain').hidden = false;
     if (G.snap) { restoreSnap(G.snap); running = false; $('pause').textContent = T('Resume'); const r = report(); showReport(r);
       if (g.value) g.value(); const rv = G.peak; $('gval').textContent = g.fmt(rv); $('gval').className = ''; $('gnow').style.left = (100 * Math.max(0, Math.min(1, rv / (g.scale || 1)))) + '%'; }
-    $('gres').innerHTML = `<span class="big">${starStr(st)}</span> <b>${T('Score {s}', { s: g.fmt(v) })}</b> ${rec ? T('(new best ever!)') : T('(best ever {b})', { b: g.fmt(Math.max(b, v)) })}. ` +
+    $('gres').innerHTML = `<span class="big">${starStr(st)}</span> <b>${T('Score {s}', { s: g.fmt(v) })}</b> ${rec ? T('(new best ever!)') : T('(best ever {b})', { b: g.fmt(Math.max(b, v)) })}. ` + (dg ? dg + ' ' : '') +
+      (opened ? '<b>' + T('New game unlocked: {g}!', { g: T(GAMES[gi + 1].title) }) + '</b> ' : '') +
       (st <= 1 ? '<b>' + T('Tip:') + '</b> ' + T(g.hint) + ' ' : '') + '<b>' + T('Did you know?') + '</b> ' + T(g.facts[Math.floor(Math.random() * g.facts.length)]) + ' ' + (st === 3 ? T('Top score!') + ' ' : '') + T('Your average so far: {a} (games played: {n}).', { n: S.n, a: g.fmt(S.sum / S.n) });
-    renderPick();
+    renderPick(); drawReplay(G);
   }
   function gameUpdate(v) {
     const G = game, g = G.g, now = eng.time, dt = now - G.last; G.last = now;
@@ -4116,13 +4336,16 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     $('gtime').textContent = T('{n} s', { n: Math.ceil(GAME_SEC * (1 - frac)) });
     $('gnow').style.left = (100 * Math.max(0, Math.min(1, G.ema / (g.scale || 1)))) + '%';
     $('gbar').style.width = (100 * frac) + '%';
+    const sNow = GAME_SEC * frac; // the run, kept for the replay and the diagnosis after the game
+    if (!G.rec.length || sNow - G.rec[G.rec.length - 1].s >= 0.25) G.rec.push({ s: sNow, T: tset, v: G.ema, d: G.del || 0, l: G.lost || 0 });
+    if (frac < 1) coachTick(G, sNow);
     if (frac >= 1) endGame('done');
   }
   $('gpick').addEventListener('click', (e) => { const b = e.target.closest('[data-game]'); if (b) selectGame(b.dataset.game); });
   $('gstart').addEventListener('click', startGame); $('gagain').addEventListener('click', startGame);
   $('gstartBox').addEventListener('click', startGame);
   function syncBoxStart() { // a Start button on the box whenever a game is picked but not running, so it is always next to the molecules
-    const b = $('gstartBox'), show = appMode === 'game' && !!gameSel && !game && !classOn && tourI < 0;
+    if (coachReady) placeCoach(); const b = $('gstartBox'), show = appMode === 'game' && !!gameSel && !game && !(coachReady && guide) && !classOn && tourI < 0;
     if (b.hidden !== !show) b.hidden = !show;
     if (!show) return;
     const t = $('gstart').textContent; if (b.textContent !== t) b.textContent = t;
@@ -4130,7 +4353,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // resuming after a game keeps the best structure as the starting point
   renderPick();
 
-  function closeHud() { $('ghud').hidden = true; document.querySelector('.wrap').classList.remove('ingame'); resize(); }
+  function closeHud() { $('ghud').hidden = true; if (coachReady) { coachHide(); $('greplay').hidden = true; } document.querySelector('.wrap').classList.remove('ingame'); resize(); }
   $('gquit').addEventListener('click', () => { const was = !!game; endGame(null); if (was) { gameRange = null; applySysUI(); setT(tset); } closeHud(); });
   renderPick();
 
@@ -4278,7 +4501,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   function setAppMode(m) {
     const fromGame = appMode === 'game' && m !== 'game'; if (m === 'game') follow = null;
     document.querySelector('.wrap').classList.toggle('gamemode', m === 'game');
-    if (m !== 'game') { if (game) endGame(null); else if (!$('ghud').hidden) closeHud(); }
+    if (m !== 'game') { if (game) endGame(null); else if (!$('ghud').hidden) closeHud(); if (coachReady && guide) { guide = null; coachHide(); } }
     if (m !== 'game' && gameRange) { gameRange = null; applySysUI(); setT(tset); }
     if (m !== 'scan' && scan) stopScan(false);
     appMode = m;
@@ -4296,9 +4519,161 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       if (mode !== 'mic') setT(startT()); build();
     }
     resize(); if (m === 'scan') drawThermo();
+    if (coachReady) { tWordShow(); zoneMarks(); }
     try { localStorage.setItem('mdlab-mode', m); } catch (e) {}
   }
   document.querySelectorAll('[data-appmode]').forEach((b) => b.addEventListener('click', () => setAppMode(b.dataset.appmode)));
+
+  // ---------- help for first-time players: temperature in words, the good zone, a live coach line, a replay with a diagnosis, a guided first game, unlocking ----------
+  const T_WORDS = ['cold', 'cool', 'warm', 'hot'];
+  const tWord = (g, Tv) => { const [lo, hi] = g.range, w = g.words || [0.25, 0.5, 0.75].map((q) => lo + q * (hi - lo)); return w.filter((b) => Tv >= b).length; };
+  const gameNow = () => (appMode === 'game' && gameRange ? (game ? game.g : gameSel) : null);
+  function tWordShow() { // during games the box shows cold / cool / warm / hot instead of a number
+    const g = gameNow(), b = $('tsetM');
+    if (g) { const k = tWord(g, tset); b.textContent = T(T_WORDS[k]); b.className = 'tw tw' + k; } else if (b.className) b.className = '';
+  }
+  function zoneMarks() { // the green band on the noise bar and on the slider: temperatures that build the structure
+    const g = gameNow(), z = g && g.zone, nz = $('nzone'), sz = $('szone');
+    nz.classList.toggle('on', !!z); sz.classList.toggle('on', !!z); if (!z) return;
+    const [lo, hi] = g.range, f = (Tv) => (Tv - lo) / (hi - lo), xn = (Tv) => Math.max(0, Math.min(1, (f(Tv) - 0.05) / 0.9));
+    nz.style.left = 100 * xn(z[0]) + '%'; nz.style.width = 100 * (xn(z[1]) - xn(z[0])) + '%';
+    const a = f(z[0]), b = f(z[1]); // the slider thumb (about 22 px) travels a little less than the full width
+    sz.style.left = `calc(${100 * a}% + ${(11 - 22 * a).toFixed(1)}px)`; sz.style.width = `calc(${100 * (b - a)}% - ${(22 * (b - a)).toFixed(1)}px)`;
+  }
+  // coach line on the box
+  function placeCoach() { const o = $('coach'); if (o.hidden) return;
+    const l = (cv.offsetLeft + cv.offsetWidth / 2) + 'px', t = (cv.offsetTop + 8) + 'px'; if (o.style.left !== l) o.style.left = l; if (o.style.top !== t) o.style.top = t; }
+  let coachMsg = null; // [key, params, class], kept so a language switch can redraw it
+  function coachSay(key, cls, params) { coachMsg = [key, params, cls]; const o = $('coach'); $('coachTxt').textContent = T(key, params); o.className = 'coach ' + (cls || ''); o.hidden = false; placeCoach(); }
+  function coachHide() { coachMsg = null; $('coach').hidden = true; $('coachBtn').hidden = $('coachSkip').hidden = true; }
+  function coachTick(G, s) {
+    const g = G.g; if (!g.coach) return;
+    const r = G.rec, back = r.find((q) => q.s >= s - 2) || r[0], tr = back ? G.ema - back.v : 0;
+    const [key, cls] = g.coach(G, s, tset, tr);
+    if (key !== G.cKey) { G.cKey = key; G.cCls = cls; G.cSince = s; }
+    // a new line only after it has held for a moment, and not more often than every 1.5 s, so it does not flicker
+    if (G.cKey !== G.cShown && (G.cShown === undefined || (s - G.cSince >= 0.6 && s - G.cAt >= 1.5))) { G.cShown = G.cKey; G.cAt = s; coachSay(G.cKey, G.cCls); }
+  }
+  function zoneCoach(G, s, Tv, tr) { // ice and demixing: a band of good temperatures
+    const g = G.g, [a, b] = g.zone, c = g.cz;
+    if (Tv > b) return [c.hot, 'bad'];
+    if (Tv < a) return s < (g.earlyS || 0) && c.coldEarly ? [c.coldEarly, 'warn'] : [c.cold, c.coldCls || 'warn'];
+    return tr > g.rise ? [c.good, 'good'] : [c.flat, ''];
+  }
+  function drugCoach(G, s, Tv) {
+    const w = drugWindow(), r = G.rec, p = r.find((q) => q.s >= s - 1) || r[0] || { d: 0, l: 0 }, g = G.g;
+    if (w && w.on) return (G.del || 0) > p.d ? ['Yes! The drug is being delivered.', 'good']
+      : Tv > g.hotT ? ['Keep the noise up: the micelles are opening.', ''] : ['Red window: make noise now!', 'bad'];
+    if (Tv > g.hotT) return ['Not now! Heat outside the red windows wastes the drug.', 'bad'];
+    if ((G.lost || 0) > p.l) return ['Drug is escaping! Be quiet until the next red window.', 'bad'];
+    if (w && w.left !== null && w.left < 1.5) return ['Get ready: a red window starts in a moment.', 'warn'];
+    return ['Good: quiet keeps the drug inside.', 'good'];
+  }
+  function gelCoach(G, s, Tv, tr) {
+    const g = G.g, hotSec = G.rec.filter((q) => q.T > g.openT).length * 0.25;
+    if (hotSec < g.openSec) return Tv < g.openT ? ['The proteins are folded. Make noise to open them!', 'warn'] : ['Good: the proteins are opening up. Stay loud a little longer.', 'good'];
+    if (Tv > g.tooHot) return ['Too hot: the links break. Quieter!', 'bad'];
+    if (tr > g.rise) return ['Good! The gel strand is growing.', 'good'];
+    if (Tv > g.openT) return ['Now get quieter so the links hold.', ''];
+    return ['Hold it cool: let the clumps join up.', ''];
+  }
+  for (const g of GAMES) g.coach = g.id === 'drug' ? drugCoach : g.id === 'gel' ? gelCoach : zoneCoach;
+  // one sentence about this player's run
+  function diagnose(G, st) {
+    const g = G.g, r = G.rec || [], n = r.length; if (n < 8) return '';
+    const pc = (f) => Math.round(100 * r.filter(f).length / n);
+    if (g.id === 'drug') {
+      const W = G.win || []; let hit = 0;
+      for (const [a, b] of W) { const q = r.filter((x) => x.s >= a / G.rate && x.s < b / G.rate); if (q.length && q.filter((x) => x.T > g.hotT).length >= 0.4 * q.length) hit++; }
+      const lost = Math.round(100 * (G.lost || 0) / (eng.nDrug || 1));
+      if ((G.lost || 0) > (G.del || 0)) return T('Most of the drug escaped between the windows ({l}% lost). Stay quiet when there is no red window.', { l: lost });
+      if (hit < W.length / 2) return T('You heated in {h} of {n} red windows. Make noise as soon as a window starts.', { h: hit, n: W.length });
+      return T(st === 3 ? 'Great timing: you heated in {h} of {n} windows and lost only {l}% of the drug.' : 'You heated in {h} of {n} windows and lost {l}% of the drug. Start the noise a little before each window.', { h: hit, n: W.length, l: lost });
+    }
+    if (g.id === 'gel') {
+      const hot = pc((x) => x.T > g.openT), maxT = Math.max(...r.map((x) => x.T)), late = r.filter((x) => x.s > 20), lateHot = late.length && late.filter((x) => x.T > g.openT).length > 0.6 * late.length;
+      if (maxT < g.openT) return T('You never got warm enough to open the proteins, so they could not link.');
+      if (st >= 2) return T('Heat first, then cool: that is the recipe, and you used it.');
+      if (hot > 60 || lateHot) return T('You were warm for {p}% of the game. Links keep breaking while it is warm: cool down sooner.', { p: hot });
+      return T('You were warm for {p}% of the game. Try heating for about a third of the game, then go quiet.', { p: hot });
+    }
+    const [a, b] = g.zone, hot = pc((x) => x.T > b), cold = pc((x) => x.T < a), inz = 100 - hot - cold;
+    const early = r.filter((x) => x.s < 8), earlyCold = early.length > 0 && early.filter((x) => x.T < a).length > 0.7 * early.length;
+    const after = r.filter((x) => x.s > G.peakSec), lostIt = G.peakSec < 25 && after.length > 4 && G.peak - r[n - 1].v > 0.08 * g.stars[2] && after.filter((x) => x.T > b).length > 0.3 * after.length;
+    if (st === 3) return T('You kept the box in the green zone for {p}% of the game. Excellent!', { p: inz });
+    if (g.dz.coldEarly && earlyCold) return T(g.dz.coldEarly);
+    if (hot >= 50) return T(g.dz.hot, { p: hot });
+    if (lostIt) return T('Your best was at {s} s. After that it got too warm and you lost some of it.', { s: Math.round(G.peakSec) });
+    if (hot >= 25 && hot >= cold) return T(g.dz.hot, { p: hot });
+    if (cold >= 35) return T(g.dz.cold, { p: cold });
+    return T(inz >= 50 ? 'You were in the green zone for {p}% of the game. Nice! Now try to stay there a little longer.' : 'You were in the green zone for only {p}% of the game. Try to keep the temperature in the green band.', { p: inz });
+  }
+  // after the game: the player's temperature over the 30 s, the good zone shaded, and the score
+  function drawReplay(G) {
+    const c = $('greplay'), r = G && G.rec, g = G && G.g; if (!r || r.length < 4) { c.hidden = true; return; }
+    c.hidden = false; c._run = G;
+    const dpr = Math.min(2, window.devicePixelRatio || 1), W = c.clientWidth, H = c.clientHeight; if (!W || !H) return;
+    c.width = Math.round(W * dpr); c.height = Math.round(H * dpr);
+    const x = c.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, W, H);
+    const col = (k) => css('--' + k), fs = W < 420 ? 10.5 : 11.5;
+    const padL = 4, padR = 42, padT = 20, padB = 15, pw = W - padL - padR, ph = H - padT - padB;
+    const X = (s) => padL + pw * s / GAME_SEC, [lo, hi] = g.range, YT = (Tv) => padT + ph * (1 - (Tv - lo) / (hi - lo));
+    const top = Math.max(g.stars[2] * 1.12, G.peak * 1.05) || 1, YV = (v) => padT + ph * (1 - Math.max(0, Math.min(top, v)) / top);
+    x.fillStyle = col('cell'); x.fillRect(padL, padT, pw, ph);
+    if (g.zone) { x.fillStyle = col('good') + '33'; const y1 = YT(Math.min(hi, g.zone[1])), y0 = YT(Math.max(lo, g.zone[0])); x.fillRect(padL, y1, pw, y0 - y1); }
+    for (const [a, b] of G.win || []) { x.fillStyle = col('hot') + '33'; x.fillRect(X(a / G.rate), padT, X(b / G.rate) - X(a / G.rate), ph); }
+    x.font = `${fs}px ${css('--f-body')}`; x.textBaseline = 'middle';
+    g.stars.forEach((sv, k) => { const y = YV(sv); x.strokeStyle = col('cryst') + 'aa'; x.lineWidth = 1; x.setLineDash([3, 3]); x.beginPath(); x.moveTo(padL, y); x.lineTo(padL + pw, y); x.stroke();
+      x.setLineDash([]); x.fillStyle = col('cryst'); x.textAlign = 'left'; x.fillText('★'.repeat(k + 1), padL + pw + 2, y); });
+    const line = (key, Y, color, w) => { x.strokeStyle = color; x.lineWidth = w; x.lineJoin = 'round'; x.beginPath(); r.forEach((q, i) => (i ? x.lineTo : x.moveTo).call(x, X(q.s), Y(q[key]))); x.stroke(); };
+    line('T', YT, col('hot'), 2); line('v', YV, col('accent'), 2.5);
+    x.fillStyle = col('accent'); x.beginPath(); x.arc(X(G.peakSec), YV(G.peak), 4, 0, 7); x.fill();
+    x.fillStyle = col('muted'); x.textAlign = 'center'; for (const s of [0, 10, 20, 30]) x.fillText(s === 30 ? T('{n} s', { n: 30 }) : String(s), s === 30 ? padL + pw - 10 : Math.max(padL + 4, X(s)), H - padB / 2 + 1);
+    // legend along the top
+    let lx = padL; const item = (color, label, box) => { x.fillStyle = color; if (box) x.fillRect(lx, 5, 12, 10); else x.fillRect(lx, 9, 14, 3); lx += 18; x.fillStyle = col('ink'); x.textAlign = 'left'; x.fillText(label, lx, 10); lx += x.measureText(label).width + 12; };
+    item(col('hot'), T('your temperature')); item(col('accent'), T('score'));
+    if (g.zone) item(col('good') + '66', T('green zone'), true); else if (G.win) item(col('hot') + '55', T('red windows'), true);
+  }
+  // games open one after another: a star in a game opens the next; teachers can open all
+  const unlockAll = () => { try { return localStorage.getItem('mdlab-unlock') === '1'; } catch (e) { return false; } };
+  function isOpen(i) { if (i <= 0 || unlockAll()) return true; const p = GAMES[i - 1], b = getBest(p); return b !== null && starsFor(p, b) >= 1; }
+  function unlockLabel() { $('gunlock').textContent = T(unlockAll() ? 'Lock the games again' : 'Unlock all games (for teachers)'); }
+  $('gunlock').addEventListener('click', () => { try { localStorage.setItem('mdlab-unlock', unlockAll() ? '0' : '1'); } catch (e) {} unlockLabel(); renderPick(); });
+  unlockLabel();
+  // guided first game: melt the ice with noise, freeze it with quiet, then play
+  let guide = null;
+  const guidedDone = () => { try { return localStorage.getItem('mdlab-guided') === '1'; } catch (e) { return true; } };
+  const needGuide = (g) => g.id === 'ice' && !guidedDone() && getStats(g).n === 0;
+  const GUIDE = [
+    { mic: 'Make noise! Clap, sing or shout: noise heats the ice and it melts.', sl: 'Drag the temperature slider to the right: the ice heats up and melts.' },
+    { mic: 'Now be quiet. The water cools and freezes into ice again (blue).', sl: 'Now drag the slider to the left. The water cools and freezes into ice again (blue).' },
+    { mic: 'That is it: quiet makes ice, noise melts it. Ice frozen slowly grows the biggest crystals. Now grow as much ice as you can!', sl: 'That is it: cold makes ice, heat melts it. Ice frozen slowly grows the biggest crystals. Now grow as much ice as you can!' },
+  ];
+  function guideShow() {
+    if (!guide) return; const k = guide.k, txt = GUIDE[k][guide.mic ? 'mic' : 'sl'];
+    coachSay(txt, 'guide'); const b = $('coachBtn'); b.hidden = k < 2; b.textContent = T('Play'); $('coachSkip').hidden = k >= 2; $('coachSkip').textContent = T('Skip');
+  }
+  function guideStart(g) {
+    prepGame(g); $('initState').value = 'ordered'; build({ game: true }); // the lesson starts from a crystal, so the first thing seen is melting
+    running = true; $('pause').textContent = T('Pause'); syncBoxStart();
+    guide = { k: 0, t: performance.now(), mic: false, lo: 1 };
+    if (typeof sheet === 'function') sheet(false);
+    guideShow();
+    if ($('guseMic').checked) setMode('mic').then(() => { if (!guide) return; guide.mic = !!analyser; if (!analyser) setMode('slider'); guideShow(); });
+    else setMode('slider');
+  }
+  function guideTick(v) {
+    const G = guide, el = (performance.now() - G.t) / 1000;
+    if (G.k === 0 && v < 0.3 && el > 1.5) { G.k = 1; G.t = performance.now(); G.lo = v; guideShow(); }
+    else if (G.k === 1) { G.lo = Math.min(G.lo, v); if ((v > G.lo + 0.12 && el > 2) || (el > 12 && v > G.lo + 0.04)) { G.k = 2; guideShow(); } }
+  }
+  function guideEnd(play) {
+    if (!guide) return; guide = null; coachHide(); try { localStorage.setItem('mdlab-guided', '1'); } catch (e) {}
+    if (play) startGame();
+  }
+  $('coachBtn').addEventListener('click', () => guideEnd(true));
+  $('coachSkip').addEventListener('click', () => guideEnd(true));
+  coachReady = true; tWordShow(); zoneMarks(); renderPick();
 
   // ---------- thermodynamics: temperature scans ----------
   const NB = 30; let scan = null, thermo = null;
@@ -4460,7 +4835,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   if (!isPhone) $('quality').value = '0';
   $('quality').addEventListener('change', (e) => { const v = e.target.value; qAuto = v === 'auto'; setQuality(qAuto ? 0 : +v); });
   function resize() { dpr = Math.min(qLevel >= 1 ? 1 : 2, window.devicePixelRatio || 1); W = cv.clientWidth; cv.width = Math.round(W * dpr); cv.height = Math.round(W * dpr); sizePlots(); }
-  window.addEventListener('resize', resize);
+  window.addEventListener('resize', () => { resize(); if (coachReady) { const rp = $('greplay'); if (!rp.hidden && rp._run) drawReplay(rp._run); } });
   const CPAL = ['#e0704a', '#3a9bd6', '#9b6bd1', '#d4a72c', '#4cae6b', '#d65a9a', '#2fb5b0', '#8f8f3a'];
   const TYPECOL = { 0: 'head', 1: 'tail', 3: 'poly', 5: 'tail', 6: 'head' };
 
@@ -4688,7 +5063,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       tkinAvg = tkinAvg === null ? tk : 0.9 * tkinAvg + 0.1 * tk;
       if (frame % ANEVERY[qLevel] === 0) {
         const a0 = dbg ? performance.now() : 0;
-        const rep = report(); showReport(rep); if (game) gameUpdate(game.g.value ? game.g.value() : rep.v); if (classOn) classUpdate();
+        const rep = report(); showReport(rep); if (game) gameUpdate(game.g.value ? game.g.value() : rep.v); else if (guide) guideTick(rep.v); if (classOn) classUpdate();
         push(hist.tset, tset); push(hist.tkin, tkinAvg); push(hist.frac, rep.v);
         $('tkin').textContent = $('tkinM').textContent = tkinAvg.toFixed(2);
         $('rU').textContent = (eng.U / eng.N).toFixed(3);
@@ -4733,6 +5108,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     LANG = I18N[l] || l === 'en' ? l : 'en'; $('lang').value = LANG;
     applyStatic(); refreshTexts(); document.title = T('Shut Up and Get Structured'); barLabels();
     if (typeof tourI !== 'undefined' && tourI >= 0) tourShow(tourI); // an open help tour follows the language
+    if (coachReady) { tWordShow(); unlockLabel(); renderPick(); if (guide) guideShow(); else if (coachMsg) coachSay(coachMsg[0], coachMsg[2], coachMsg[1]); const rp = $('greplay'); if (!rp.hidden && rp._run) drawReplay(rp._run); }
   }
   // short labels for the phone's bottom bar: a quarter of a narrow screen fits about 10 letters
   const BAR = { en: { game: 'Game', explore: 'Explore', scan: 'Energy scan', opt: 'Options' },
