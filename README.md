@@ -30,12 +30,12 @@ Made by [Dmitry Tolmachev](https://scholar.google.com/citations?user=OQtj-R4AAAA
 - **Microphone:** the browser asks for permission the first time the microphone is used. Browsers allow the microphone only on `https://` pages or on a file opened from your own computer. Nothing is recorded or sent anywhere: the page only measures the loudness.
 - **Speed:** a recent laptop runs every system smoothly. On slow phones the page automatically switches to simpler drawing (see *Drawing quality* under Box and view). Phones and old tablets run the smaller boxes well. The water systems (Ice, Oily particles) are the slowest, because each water molecule also rotates.
 - **Language:** the menu in the top-right corner. The page starts in the browser's language if it is one of the four.
-- **Help:** the **?** button opens a short tour of the screen.
+- **Help:** the **?** button opens a short tour of the screen. It also opens by itself on the first visit.
 
 ## A first lesson in 10 minutes
 
 1. Open the page. It starts in **Game** mode with *Grow the biggest ice crystal* selected.
-2. Press **?** and go through the six-step tour together (1 minute).
+2. Press **?** and go through the seven-step tour together (1 minute). On the first screen, switch on the microphone and let the class melt the small piece of ice by making noise, then watch it freeze again when everyone is quiet.
 3. Play one game with the microphone, with the whole class quiet. Discuss: why did going silent at once not give the best ice? (Slow cooling lets molecules find their places.)
 4. Switch to **Explore**, pick **Soap molecules**, and drag the temperature slider under the box from cold to hot and back. Click one molecule to follow its path, and compare how far it travels when cold and when hot.
 5. Finish with **Class mode** on the projector: the whole room has to stay quiet to build structures.
@@ -45,7 +45,7 @@ Made by [Dmitry Tolmachev](https://scholar.google.com/citations?user=OQtj-R4AAAA
 | Element | What it does |
 |---|---|
 | **Class mode** (top right) | Full-screen projector view; the room's noise controls the temperature. See [Class mode](#class-mode). |
-| **?** (top right) | Quick tour of the main controls, with an animation of ice melting. Arrow keys move through it, Esc closes it. |
+| **?** (top right) | Quick tour: how it works, modes, the box, temperature, games or systems, class mode and language. The first screen has a small piece of ice to melt with your voice (**Microphone** button) or with a slider; until you use either, it melts and refreezes by itself. Arrow keys move through the tour, Esc closes it. |
 | **Language** (top right) | English, Suomi, Svenska, Русский. |
 | **Simulation box** | The molecules, moving in real time. The box is periodic: a molecule that leaves on one side comes back on the other. |
 | **Temperature bar** (under the box) | Shows the set temperature T* and the measured kinetic temperature. Drag the slider to set the temperature. **Mic** switches to room-noise control; the bar under it shows the noise level. |
