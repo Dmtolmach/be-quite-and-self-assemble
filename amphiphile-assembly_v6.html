@@ -13,7 +13,7 @@
 :root {
   --bg: #eef1f3; --panel: #ffffff; --ink: #15202b; --muted: #5b6875; --line: #d4dbe1;
   --cell: #f8fafb; --head: #1f8a8a; --tail: #d0761f; --solv: #9aa9b6; --bond: #44525e;
-  --accent: #1f8a8a; --accent-ink: #ffffff; --hot: #c4472b; --cold: #2c6fb0; --poly: #6b6fd6; --cryst: #d99a00; --good: #2f9e57; --mixS: #3567b5; --mixC: #d1603d;
+  --accent: #1f8a8a; --accent-ink: #ffffff; --hot: #c4472b; --cold: #2c6fb0; --poly: #6b6fd6; --cryst: #d99a00; --good: #2f9e57; --icef: #cfe3f5; --water: #e2eff8; --oil: #f3c56e; --soft: #eaeef1; --mixS: #3567b5; --mixC: #d1603d;
   --f-display: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
   --f-body: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
   --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
@@ -21,11 +21,11 @@
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --bg: #0f151b; --panel: #161e26; --ink: #e3e9ee; --muted: #8b99a6; --line: #26323d;
   --cell: #0b1116; --head: #3bbdb6; --tail: #f0953d; --solv: #3d4b58; --bond: #9fb0bf;
-  --accent: #3bbdb6; --accent-ink: #06201f; --hot: #ee6c4d; --cold: #5c9ee0; --poly: #8a8ef0; --cryst: #ffc233; --good: #4cc47a; --mixS: #6aa2ee; --mixC: #f08060; color-scheme: dark } }
+  --accent: #3bbdb6; --accent-ink: #06201f; --hot: #ee6c4d; --cold: #5c9ee0; --poly: #8a8ef0; --cryst: #ffc233; --good: #4cc47a; --icef: #1d3a57; --water: #12283a; --oil: #8a6420; --soft: #1e2833; --mixS: #6aa2ee; --mixC: #f08060; color-scheme: dark } }
 :root[data-theme="dark"] {
   --bg: #0f151b; --panel: #161e26; --ink: #e3e9ee; --muted: #8b99a6; --line: #26323d;
   --cell: #0b1116; --head: #3bbdb6; --tail: #f0953d; --solv: #3d4b58; --bond: #9fb0bf;
-  --accent: #3bbdb6; --accent-ink: #06201f; --hot: #ee6c4d; --cold: #5c9ee0; --poly: #8a8ef0; --cryst: #ffc233; --good: #4cc47a; --mixS: #6aa2ee; --mixC: #f08060; color-scheme: dark }
+  --accent: #3bbdb6; --accent-ink: #06201f; --hot: #ee6c4d; --cold: #5c9ee0; --poly: #8a8ef0; --cryst: #ffc233; --good: #4cc47a; --icef: #1d3a57; --water: #12283a; --oil: #8a6420; --soft: #1e2833; --mixS: #6aa2ee; --mixC: #f08060; color-scheme: dark }
 * { box-sizing: border-box }
 body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 14px; line-height: 1.5;
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px }
@@ -124,6 +124,35 @@ table.eps th { font-weight: 500; color: var(--muted) }
 .gstats .btns { margin-top: 8px } .gstats .btn { font-size: 12px; padding: 4px 10px }
 .gres { margin: 0; font-size: 15px; max-width: 80ch } .gres .big { font-size: 22px; color: var(--cryst); letter-spacing: 2px }
 @media (prefers-reduced-motion: reduce) { .gbar i { transition: none } }
+/* fact cards */
+.albumhead { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap } .albumhead h2 { margin: 0 } .albumcount { font-family: var(--f-mono); color: var(--muted); font-size: 13px } .albumhead .btn { margin-left: auto; font-size: 12px; padding: 4px 10px }
+#album { display: grid; gap: 18px; margin-top: 10px }
+.fcdeck h3 { margin: 0; font-family: var(--f-display); font-size: 15px; color: var(--dk) } .fcdeck h3 span { font-family: var(--f-mono); font-weight: 400; font-size: 12.5px; color: var(--muted); margin-left: 6px } .fcdeck .note { margin: 2px 0 8px }
+.fcrow { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px } @media (max-width: 700px) { .fcrow { grid-template-columns: repeat(3, minmax(0, 1fr)) } }
+.fcmini { all: unset; box-sizing: border-box; cursor: pointer; display: flex; flex-direction: column; border: 1px solid var(--line); border-top: 3px solid var(--dk); border-radius: 10px; overflow: hidden; background: var(--panel); min-width: 0 }
+.fcmini b { font-size: 12px; line-height: 1.25; padding: 6px 7px 8px; font-weight: 600; color: var(--ink) } .fcmini:focus-visible { outline: 3px solid var(--cryst); outline-offset: 2px } .fcmini:hover { border-color: var(--dk) }
+.fcmini.locked { cursor: default; border: 1px dashed var(--line); background: color-mix(in srgb, var(--accent) 12%, var(--panel)); aspect-ratio: 240 / 175; display: grid; place-items: center } .fcmini.locked svg { width: 42%; opacity: .55 } .fcmini.locked svg circle, .fcmini.locked svg line { fill: var(--accent); stroke: var(--accent) } .fcmini.locked svg text { fill: var(--accent) }
+.d-ice { --dk: var(--cold) } .d-liq { --dk: var(--mixC) } .d-soap { --dk: var(--head) } .d-prot { --dk: var(--poly) } .d-exp { --dk: var(--cryst) }
+.fccard { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; height: 100% }
+.fctop { display: flex; justify-content: space-between; align-items: center; padding: 9px 13px; background: color-mix(in srgb, var(--dk) 14%, var(--panel)); border-bottom: 2px solid var(--dk); font-size: 11.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--dk) }
+.fctop i { font-style: normal; font-family: var(--f-mono); letter-spacing: 0; color: var(--muted); font-weight: 400 }
+.fcbody { padding: 12px 15px 16px; display: grid; gap: 6px } .fcbody h3 { margin: 0; font-family: var(--f-display); font-size: 18px; line-height: 1.25 } .fcbody p { margin: 0; font-size: 14px; color: var(--muted); line-height: 1.45 }
+svg.fcsk { display: block; width: 100%; height: auto; background: var(--cell); aspect-ratio: 240 / 140 }
+.fcsk .ln { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round }
+.fcsk .ln.th { stroke-width: 1.4 } .fcsk .ln.mu { stroke: var(--muted) } .fcsk .ln.ho { stroke: var(--hot) } .fcsk .ln.co { stroke: var(--cold) } .fcsk .ln.ta, .fcsk .ln.tail { stroke: var(--tail) } .fcsk .ln.hd { stroke: var(--head) } .fcsk .ln.po { stroke: var(--poly) } .fcsk .ln.cr { stroke: var(--cryst) } .fcsk .ln.c { stroke: var(--mixC) } .fcsk .ln.panel { stroke: var(--panel) }
+.fcsk .f-ice { fill: var(--icef) } .fcsk .f-w { fill: var(--water) } .fcsk .f-oil { fill: var(--oil) } .fcsk .f-head { fill: var(--head) } .fcsk .f-tail { fill: var(--tail) } .fcsk .f-hot { fill: var(--hot) } .fcsk .f-cold { fill: var(--cold) }
+.fcsk .f-mut { fill: var(--muted) } .fcsk .f-soft { fill: var(--soft) } .fcsk .f-panel { fill: var(--panel) } .fcsk .f-cr { fill: var(--cryst) } .fcsk .f-s { fill: var(--mixS) } .fcsk .f-c { fill: var(--mixC) } .fcsk .f-po { fill: var(--poly) } .fcsk .f-ink { fill: var(--ink) } .fcsk .f-none { fill: none }
+.fcsk .tx { font-family: var(--f-display); font-size: 11px; fill: var(--ink) } .fcsk .tx.mu { fill: var(--muted) } .fcsk .tx.b { font-weight: 500 }
+.fcmodal { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: rgba(8,14,20,.72); padding: max(16px, env(safe-area-inset-top, 0px)) 16px max(16px, env(safe-area-inset-bottom, 0px)) }
+.fcnew { margin: 0; color: #fff; font-family: var(--f-display); font-weight: 700; font-size: 22px; min-height: 1.3em }
+.fcstage { position: relative; width: min(300px, 84vw); height: min(415px, 72vh); perspective: 1000px }
+.fcflip { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform .9s cubic-bezier(.2,.8,.2,1.15) } .fcflip.on { transform: rotateY(180deg) }
+.fcflip > div { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden } .fcfront { transform: rotateY(180deg); overflow: auto; border-radius: 16px }
+.fcback { height: 100%; border-radius: 16px; background: radial-gradient(circle at 50% 40%, var(--accent) 0 55%, color-mix(in srgb, var(--accent) 60%, black) 100%); display: grid; place-items: center } .fcback svg { width: 60% }
+.fcburst { position: absolute; left: 50%; top: 45%; pointer-events: none } .fcburst span { position: absolute; color: var(--cryst); font-size: 22px; animation: fcfly 1.1s ease-out forwards; transform: translate(-50%,-50%) }
+@keyframes fcfly { to { transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(.4); opacity: 0 } }
+@media (prefers-reduced-motion: reduce) { .fcflip { transition: none } .fcburst span { display: none } }
+
 .mbar .mnoise { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px } .mnoise .meter { flex: 1; position: relative }
 .mnoise .mlab { display: none; font-weight: 700; font-size: 13px; white-space: nowrap }
 .meter .zone, .trange .zone { position: absolute; display: none; pointer-events: none; z-index: 2; background: color-mix(in srgb, var(--good) 22%, transparent); border-left: 2px solid var(--good); border-right: 2px solid var(--good) }
@@ -609,40 +638,14 @@ button { touch-action: manipulation }
     <button data-mbmode="scan" aria-pressed="false"><span data-bar="scan">Energy scan</span></button>
     <button id="mbOpt" aria-expanded="false"><span data-bar="opt">Options</span></button>
   </nav>
-  <div class="panel">
-    <h2>In everyday life</h2>
-    <div class="notes">
-      <section data-show="dumbbell">
-        <p>Bile from your liver is full of amphiphiles. They break the fat in your food into tiny droplets, so that it can be digested.</p>
-        <p>Every cell in your body is wrapped in a bilayer of amphiphiles (lipids), just like the starting structure here. Bacteria and fish change the make-up of their lipids with the seasons so that their membranes neither melt in warm water nor freeze stiff in cold water.</p>
-        <p>Milk is tiny droplets of fat in water, each wrapped in a thin skin of amphiphilic molecules that stops the droplets from merging.</p>
-      </section>
-      <section data-show="polymer">
-        <p>Most plastics are partly crystalline polymers, like the gold patches here. A milk bottle (polyethylene) looks milky because light scatters off its tiny crystallites; heat it and it turns clear and soft as the crystals melt.</p>
-        <p>Candle wax is made of short chains that crystallize the same way: liquid when hot, cloudy and solid when it cools.</p>
-      </section>
-      <section data-show="demix">
-        <p>Ouzo and pastis turn cloudy when water is added: the anise oil they contain no longer mixes and separates into countless tiny droplets.</p>
-        <p>Some liquids mix only when warm: water and phenol become one liquid above about 66 °C and split into two layers again when cooled. Metal alloys and glasses can also separate into two phases while they cool, which chemists use to make porous glass.</p>
-      </section>
-      <section data-show="lcst">
-        <p>Rubber gloves swell in some solvents because the solvent is good for the polymer, and a polymer dissolved in a poor solvent comes out of solution when cooled, just as the chains here collapse on cooling.</p>
-        <p>The opposite behaviour exists in water: PNIPAM, a polymer used in smart gels, is dissolved below 32 °C and collapses above it. That needs the special structure of water, which this model does not have.</p>
-      </section>
-      <section data-show="mbpoly">
-        <p>Drops of oil floating on soup join into bigger drops: the water pushes oily molecules together so that it can keep its own hydrogen bonds. The same push folds proteins and holds cell membranes together.</p>
-        <p>Some proteins unfold not only when heated but also when cooled far enough (cold denaturation), a sign that the hydrophobic effect weakens in the cold, as it does here.</p>
-      </section>
-      <section data-show="crypt">
-        <p>Frying meat and heating milk: heat unfolds the proteins, their hidden sticky parts stick to each other, the meat turns firm and a skin forms on the milk.</p>
-        <p>In the body, proteins that unfold and clump cause diseases such as Alzheimer's and Parkinson's. Cells guard against it with chaperone proteins that cover exposed sticky parts until the protein can fold again.</p>
-      </section>
-      <section data-show="ice">
-        <p>Frost on a window starts from scratches and specks of dust: freezing needs a starting point (a nucleus), and the crystals grow out from there.</p>
-        <p>Salt on icy roads melts the ice even below 0 °C: the salt dissolved in the water gets in the way of the molecules locking into ice.</p>
-        <p>Slow freezing makes large, clear ice crystals (as in clear ice cubes); fast freezing makes many small ones, which is why ice cream is churned while it freezes quickly: small crystals feel smooth.</p>
-      </section>
-    </div>
+  <div class="panel albumpanel">
+    <div class="albumhead"><h2>My cards</h2><span class="albumcount" id="albumCount"></span><button class="btn" id="fcReset">Reset cards</button></div>
+    <div id="album"></div>
+  </div>
+  <div class="fcmodal" id="fcModal" role="dialog" aria-modal="true" aria-label="Card" hidden>
+    <p class="fcnew" id="fcNew"></p>
+    <div class="fcstage"><div class="fcflip" id="fcFlip"><div class="fcbackface"><div class="fcback" id="fcBack"></div></div><div class="fcfront" id="fcFront"></div></div><div class="fcburst" id="fcBurst"></div></div>
+    <button class="btn primary" id="fcClose">Close</button>
   </div>
 </div>
 
@@ -1804,6 +1807,97 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // text written by the script goes through T(), with {name} placeholders for numbers.
   const I18N = {
  "fi": {
+  "My cards": "Korttini",
+  "Reset cards": "Nollaa kortit",
+  "Click again to remove all cards": "Napsauta uudelleen poistaaksesi kaikki kortit",
+  "New card!": "Uusi kortti!",
+  "Add to my cards": "Lisää kortteihini",
+  "Not won yet": "Ei vielä voitettu",
+  "New card: {c}!": "Uusi kortti: {c}!",
+  "You have all the cards of this game.": "Sinulla on jo kaikki tämän pelin kortit.",
+  "Three stars in “{g}” win a card.": "Kolme tähteä pelissä ”{g}” voittaa kortin.",
+  "In Explore, each minute with Plastic, Polymer chains or Oily particles wins a card of that system.": "Tutki-tilassa jokainen minuutti Muovin, Polymeeriketjujen tai Öljymäisten hiukkasten parissa voittaa kortin siitä järjestelmästä.",
+  "frost grows from a scratch": "huurre kasvaa naarmusta",
+  "slow: clear": "hidas: kirkas",
+  "fast: smooth": "nopea: pehmeä",
+  "droplets with no membrane": "pisaroita ilman kalvoa",
+  "minutes": "minuutteja",
+  "two phases, then pores": "kaksi faasia, sitten huokoset",
+  "grease": "rasva",
+  "oily middle": "öljymäinen keskusta",
+  "water outside": "vettä ulkona",
+  "water inside": "vettä sisällä",
+  "raw": "raaka",
+  "boiled": "keitetty",
+  "chaperone": "kaperoni",
+  "clump": "möhkäle",
+  "heated: clear": "lämmitetty: kirkas",
+  "liquid, clear": "nestettä, kirkas",
+  "solid, cloudy": "kiinteää, samea",
+  "good solvent": "hyvä liuotin",
+  "poor solvent": "huono liuotin",
+  "below 32 °C": "alle 32 °C",
+  "above 32 °C": "yli 32 °C",
+  "folded": "laskostunut",
+  "Six arms": "Kuusi sakaraa",
+  "Almost every snowflake has six arms. The six-fold shape comes from the honeycomb that water molecules build in ice.": "Lähes jokaisessa lumihiutaleessa on kuusi sakaraa. Kuusikulmainen muoto tulee hunajakennosta, jonka vesimolekyylit rakentavat jäässä.",
+  "Ice floats": "Jää kelluu",
+  "Ice is lighter than liquid water, so it floats. Lakes freeze from the top down, and fish spend the winter in the water below.": "Jää on kevyempää kuin nestemäinen vesi, joten se kelluu. Järvet jäätyvät pinnasta alaspäin, ja kalat viettävät talven veden alla.",
+  "Liquid below zero": "Nestettä pakkasella",
+  "Very pure water can stay liquid far below 0 °C. Droplets in clouds can stay liquid down to about −40 °C before they freeze.": "Hyvin puhdas vesi voi pysyä nestemäisenä paljon alle 0 °C:n. Pilvien pisarat voivat pysyä nestemäisinä noin −40 °C:een asti ennen jäätymistä.",
+  "Frost needs a start": "Huurre tarvitsee alun",
+  "Frost on a window begins at scratches and specks of dust. Freezing needs a starting point, a nucleus, and the crystals grow out from it.": "Ikkunan huurre alkaa naarmuista ja pölyhiukkasista. Jäätyminen tarvitsee aloituskohdan, ytimen, josta kiteet kasvavat.",
+  "Salt on the road": "Suolaa tiellä",
+  "Salt melts ice on roads even below 0 °C. The dissolved salt gets in the way of water molecules locking into ice.": "Suola sulattaa teiden jään myös alle 0 °C:ssa. Liuennut suola estää vesimolekyylejä lukittumasta jääksi.",
+  "Slow ice, big crystals": "Hidas jää, isot kiteet",
+  "Slow freezing grows a few large crystals, as in clear ice cubes. Ice cream is churned while it freezes fast, so its crystals stay small and feel smooth.": "Hidas jäätyminen kasvattaa muutamia suuria kiteitä, kuten kirkkaissa jääpaloissa. Jäätelöä sekoitetaan sen jäätyessä nopeasti, joten kiteet jäävät pieniksi ja tuntuvat pehmeiltä.",
+  "Mayonnaise": "Majoneesi",
+  "Mayonnaise is oil and water that stay mixed. Molecules from egg yolk coat the oil droplets and stop them from joining.": "Majoneesi on öljyä ja vettä, jotka pysyvät sekoittuneina. Keltuaisen molekyylit peittävät öljypisarat ja estävät niitä yhdistymästä.",
+  "Rooms without walls": "Huoneita ilman seiniä",
+  "Inside living cells, some proteins separate from the surrounding liquid into droplets. These droplets work as tiny rooms without walls.": "Elävien solujen sisällä jotkin proteiinit erottuvat ympäröivästä nesteestä pisaroiksi. Pisarat toimivat pieninä huoneina ilman seiniä.",
+  "Salad dressing": "Salaattikastike",
+  "Shake an oil-and-vinegar dressing and it mixes, but only for a while. The droplets merge and the two liquids separate again.": "Ravista öljy-etikkakastiketta, niin se sekoittuu, mutta vain hetkeksi. Pisarat yhdistyvät ja nesteet erottuvat taas.",
+  "Cloudy ouzo": "Samea ouzo",
+  "Ouzo turns cloudy when water is added. Its anise oil can no longer stay dissolved and comes out as countless tiny droplets.": "Ouzo samenee, kun siihen lisätään vettä. Sen anisöljy ei enää pysy liuenneena vaan erottuu lukemattomiksi pikkupisaroiksi.",
+  "Mixes only when warm": "Sekoittuu vain lämpimänä",
+  "Water and phenol mix into one liquid only above about 66 °C. Cool them and they split into two layers again.": "Vesi ja fenoli sekoittuvat yhdeksi nesteeksi vasta noin 66 °C:n yläpuolella. Jäähdytettyinä ne jakautuvat taas kahteen kerrokseen.",
+  "Glass full of pores": "Huokoista lasia",
+  "Some glasses split into two intertwined phases while they cool. Dissolve one phase away and you get a glass full of tiny pores.": "Jotkin lasit jakautuvat jäähtyessään kahdeksi toisiinsa kietoutuneeksi faasiksi. Liuota toinen pois, niin saat lasia täynnä pikkuruisia huokosia.",
+  "The first nano-medicine": "Ensimmäinen nanolääke",
+  "Doxil, approved in 1995, was the first nanoparticle cancer medicine. It carries the drug inside tiny bubbles made of lipids, the molecules of cell membranes.": "Vuonna 1995 hyväksytty Doxil oli ensimmäinen nanohiukkasiin perustuva syöpälääke. Se kuljettaa lääkettä pienissä lipideistä, solukalvojen molekyyleistä, tehdyissä kuplissa.",
+  "Release on heat": "Vapautus lämmöllä",
+  "Heat-triggered carriers are being tested in medicine. Some release their drug when a tumour is warmed to about 40–42 °C.": "Lämmöllä laukeavia kantajia testataan lääketieteessä. Jotkin vapauttavat lääkkeensä, kun kasvain lämmitetään noin 40–42 °C:een.",
+  "How soap cleans": "Miten saippua puhdistaa",
+  "Soap molecules gather into micelles. Grease hides in their oily cores and is rinsed away with the water.": "Saippuamolekyylit kokoontuvat miselleiksi. Rasva piiloutuu niiden öljymäisiin ytimiin ja huuhtoutuu pois veden mukana.",
+  "Bile digests fat": "Sappi sulattaa rasvaa",
+  "Bile from your liver is full of soap-like molecules. They break the fat in your food into tiny droplets, so it can be digested.": "Maksan tuottama sappi on täynnä saippuan kaltaisia molekyylejä. Ne pilkkovat ruoan rasvan pikkupisaroiksi, jotta se voidaan sulattaa.",
+  "Every cell’s skin": "Jokaisen solun iho",
+  "Every cell is wrapped in a double layer of soap-like lipids. Bacteria and fish change their lipids with the seasons, so the layer stays just soft enough.": "Jokaista solua ympäröi kaksinkertainen kerros saippuan kaltaisia lipidejä. Bakteerit ja kalat vaihtavat lipidejään vuodenaikojen mukaan, jotta kerros pysyy sopivan pehmeänä.",
+  "Milk": "Maito",
+  "Milk is tiny droplets of fat in water. Each one is wrapped in a thin skin of soap-like molecules that stops the droplets from merging.": "Maito on pieniä rasvapisaroita vedessä. Jokaista ympäröi ohut saippuan kaltaisten molekyylien kalvo, joka estää pisaroita yhdistymästä.",
+  "Boiled egg": "Keitetty muna",
+  "Boiling turns clear egg white solid. Heat unfolds its proteins, and they stick together into a gel.": "Keittäminen tekee kirkkaasta munanvalkuaisesta kiinteää. Lämpö avaa sen proteiinit, ja ne tarttuvat toisiinsa geeliksi.",
+  "Jelly melts in your mouth": "Hyytelö sulaa suussa",
+  "Tofu": "Tofu",
+  "Tofu is a protein gel. Soy milk is heated, then salts such as magnesium chloride make the soy proteins clump together.": "Tofu on proteiinigeeli. Soijamaito kuumennetaan, minkä jälkeen suolat, kuten magnesiumkloridi, saavat soijaproteiinit paakkuuntumaan.",
+  "Skin on hot milk": "Kalvo kuumassa maidossa",
+  "Heat unfolds proteins and their sticky parts join up. That is why fried meat turns firm and a skin forms on hot milk.": "Lämpö avaa proteiinit, ja niiden tahmeat osat liittyvät yhteen. Siksi paistettu liha kiinteytyy ja kuuman maidon pinnalle muodostuu kalvo.",
+  "Clumps that make us ill": "Möhkäleet, jotka sairastuttavat",
+  "When proteins unfold and clump in the brain, they can cause diseases such as Alzheimer’s. Helper proteins called chaperones cover the sticky parts until the protein folds again.": "Kun proteiinit avautuvat ja paakkuuntuvat aivoissa, ne voivat aiheuttaa sairauksia, kuten Alzheimerin taudin. Kaperoneiksi kutsutut apuproteiinit peittävät tahmeat osat, kunnes proteiini laskostuu uudelleen.",
+  "Ricotta": "Ricotta",
+  "Ricotta is made by heating whey, the liquid left over from cheese, with a little acid. Its proteins unfold and clump into soft curds.": "Ricotta tehdään kuumentamalla heraa, juustosta jäävää nestettä, pienen happomäärän kanssa. Sen proteiinit avautuvat ja paakkuuntuvat pehmeäksi juustomassaksi.",
+  "Why milk bottles look milky": "Miksi maitopullot ovat maitomaisia",
+  "A polyethylene milk bottle looks milky because light scatters off tiny crystals in the plastic. Heat it and it turns clear and soft as they melt.": "Polyeteeninen maitopullo näyttää maitomaiselta, koska valo siroaa muovin pienistä kiteistä. Kuumenna sitä, niin se muuttuu kirkkaaksi ja pehmeäksi kiteiden sulaessa.",
+  "Candle wax": "Kynttilävaha",
+  "Candle wax is made of short chains that crystallize like plastic: clear and liquid when hot, cloudy and solid when cool.": "Kynttilävaha koostuu lyhyistä ketjuista, jotka kiteytyvät kuin muovi: kuumana kirkasta ja nestemäistä, viileänä sameaa ja kiinteää.",
+  "Swelling gloves": "Turpoavat hanskat",
+  "Rubber gloves swell in some solvents, because a good solvent pulls the polymer chains apart. In a poor solvent, the chains curl up into balls.": "Kumihanskat turpoavat joissakin liuottimissa, koska hyvä liuotin vetää polymeeriketjuja erilleen. Huonossa liuottimessa ketjut kiertyvät kerälle.",
+  "Smart gel": "Älykäs geeli",
+  "PNIPAM, a polymer used in smart gels, dissolves in water below 32 °C and collapses above it. Most polymers do the opposite.": "Älykkäissä geeleissä käytetty polymeeri PNIPAM liukenee veteen alle 32 °C:ssa ja luhistuu sen yläpuolella. Useimmat polymeerit käyttäytyvät päinvastoin.",
+  "Oil on soup": "Öljy keiton pinnalla",
+  "Oil drops on soup join into bigger drops. Water pushes oily molecules together so it can keep its own hydrogen bonds.": "Keiton pinnan öljypisarat yhdistyvät isommiksi. Vesi työntää öljymäisiä molekyylejä yhteen säilyttääkseen omat vetysidoksensa.",
+  "Unfolded by cold": "Kylmän avaama",
+  "Some proteins unfold not only when heated but also when cooled far enough. In the cold, the push of water on their oily parts gets weaker.": "Jotkin proteiinit avautuvat paitsi kuumennettaessa myös riittävästi jäähdytettäessä. Kylmässä veden työntö niiden öljymäisiin osiin heikkenee.",
   "Show tips": "Näytä vinkit",
   "green path": "vihreä polku",
   "Too warm: the ice melts. Get quieter, slowly.": "Liian lämmin: jää sulaa. Hiljennä vähitellen.",
@@ -2469,6 +2563,97 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Microphone": "Mikrofoni"
  },
  "sv": {
+  "My cards": "Mina kort",
+  "Reset cards": "Nollställ korten",
+  "Click again to remove all cards": "Klicka igen för att ta bort alla kort",
+  "New card!": "Nytt kort!",
+  "Add to my cards": "Lägg till i mina kort",
+  "Not won yet": "Inte vunnet än",
+  "New card: {c}!": "Nytt kort: {c}!",
+  "You have all the cards of this game.": "Du har redan alla kort i det här spelet.",
+  "Three stars in “{g}” win a card.": "Tre stjärnor i ”{g}” vinner ett kort.",
+  "In Explore, each minute with Plastic, Polymer chains or Oily particles wins a card of that system.": "I Utforska vinner varje minut med Plast, Polymerkedjor eller Oljiga partiklar ett kort för det systemet.",
+  "frost grows from a scratch": "frosten växer från en repa",
+  "slow: clear": "långsam: klar",
+  "fast: smooth": "snabb: len",
+  "droplets with no membrane": "droppar utan membran",
+  "minutes": "minuter",
+  "two phases, then pores": "två faser, sedan porer",
+  "grease": "fett",
+  "oily middle": "oljig mitt",
+  "water outside": "vatten utanför",
+  "water inside": "vatten inuti",
+  "raw": "rå",
+  "boiled": "kokt",
+  "chaperone": "chaperon",
+  "clump": "klump",
+  "heated: clear": "uppvärmd: klar",
+  "liquid, clear": "flytande, klar",
+  "solid, cloudy": "fast, grumlig",
+  "good solvent": "bra lösningsmedel",
+  "poor solvent": "dåligt lösningsmedel",
+  "below 32 °C": "under 32 °C",
+  "above 32 °C": "över 32 °C",
+  "folded": "veckat",
+  "Six arms": "Sex armar",
+  "Almost every snowflake has six arms. The six-fold shape comes from the honeycomb that water molecules build in ice.": "Nästan varje snöflinga har sex armar. Den sexkantiga formen kommer från bikakan som vattenmolekylerna bygger i is.",
+  "Ice floats": "Is flyter",
+  "Ice is lighter than liquid water, so it floats. Lakes freeze from the top down, and fish spend the winter in the water below.": "Is är lättare än flytande vatten, så den flyter. Sjöar fryser uppifrån och ner, och fiskarna övervintrar i vattnet under.",
+  "Liquid below zero": "Flytande under noll",
+  "Very pure water can stay liquid far below 0 °C. Droplets in clouds can stay liquid down to about −40 °C before they freeze.": "Mycket rent vatten kan förbli flytande långt under 0 °C. Droppar i moln kan vara flytande ner till ungefär −40 °C innan de fryser.",
+  "Frost needs a start": "Frost behöver en start",
+  "Frost on a window begins at scratches and specks of dust. Freezing needs a starting point, a nucleus, and the crystals grow out from it.": "Frost på ett fönster börjar vid repor och dammkorn. Frysning behöver en startpunkt, en kärna, och kristallerna växer ut från den.",
+  "Salt on the road": "Salt på vägen",
+  "Salt melts ice on roads even below 0 °C. The dissolved salt gets in the way of water molecules locking into ice.": "Salt smälter isen på vägar även under 0 °C. Det lösta saltet hindrar vattenmolekylerna från att låsa sig till is.",
+  "Slow ice, big crystals": "Långsam is, stora kristaller",
+  "Slow freezing grows a few large crystals, as in clear ice cubes. Ice cream is churned while it freezes fast, so its crystals stay small and feel smooth.": "Långsam frysning ger några få stora kristaller, som i klara isbitar. Glass rörs medan den fryser snabbt, så kristallerna blir små och känns lena.",
+  "Mayonnaise": "Majonnäs",
+  "Mayonnaise is oil and water that stay mixed. Molecules from egg yolk coat the oil droplets and stop them from joining.": "Majonnäs är olja och vatten som håller sig blandade. Molekyler från äggulan täcker oljedropparna och hindrar dem från att slå sig samman.",
+  "Rooms without walls": "Rum utan väggar",
+  "Inside living cells, some proteins separate from the surrounding liquid into droplets. These droplets work as tiny rooms without walls.": "Inuti levande celler skiljer sig vissa proteiner från den omgivande vätskan till droppar. Dropparna fungerar som små rum utan väggar.",
+  "Salad dressing": "Salladsdressing",
+  "Shake an oil-and-vinegar dressing and it mixes, but only for a while. The droplets merge and the two liquids separate again.": "Skaka en dressing av olja och vinäger så blandas den, men bara en stund. Dropparna slås ihop och vätskorna skiljs åt igen.",
+  "Cloudy ouzo": "Grumlig ouzo",
+  "Ouzo turns cloudy when water is added. Its anise oil can no longer stay dissolved and comes out as countless tiny droplets.": "Ouzo blir grumlig när man tillsätter vatten. Anisoljan kan inte längre hålla sig löst och kommer ut som otaliga små droppar.",
+  "Mixes only when warm": "Blandas bara när det är varmt",
+  "Water and phenol mix into one liquid only above about 66 °C. Cool them and they split into two layers again.": "Vatten och fenol blandas till en vätska först över ungefär 66 °C. Kyl dem så delar de sig i två lager igen.",
+  "Glass full of pores": "Glas fullt av porer",
+  "Some glasses split into two intertwined phases while they cool. Dissolve one phase away and you get a glass full of tiny pores.": "Vissa glas delar sig i två sammanflätade faser när de svalnar. Lös bort den ena fasen så får du ett glas fullt av små porer.",
+  "The first nano-medicine": "Den första nanomedicinen",
+  "Doxil, approved in 1995, was the first nanoparticle cancer medicine. It carries the drug inside tiny bubbles made of lipids, the molecules of cell membranes.": "Doxil, godkänt 1995, var den första nanopartikelmedicinen mot cancer. Den bär läkemedlet i små bubblor av lipider, cellmembranens molekyler.",
+  "Release on heat": "Frisläpp med värme",
+  "Heat-triggered carriers are being tested in medicine. Some release their drug when a tumour is warmed to about 40–42 °C.": "Värmeutlösta bärare testas inom medicinen. Vissa släpper sitt läkemedel när en tumör värms till ungefär 40–42 °C.",
+  "How soap cleans": "Så rengör tvål",
+  "Soap molecules gather into micelles. Grease hides in their oily cores and is rinsed away with the water.": "Tvålmolekyler samlas i miceller. Fett gömmer sig i deras oljiga kärnor och sköljs bort med vattnet.",
+  "Bile digests fat": "Galla bryter ner fett",
+  "Bile from your liver is full of soap-like molecules. They break the fat in your food into tiny droplets, so it can be digested.": "Gallan från levern är full av tvålliknande molekyler. De delar fettet i maten i små droppar så att det kan brytas ner.",
+  "Every cell’s skin": "Varje cells hud",
+  "Every cell is wrapped in a double layer of soap-like lipids. Bacteria and fish change their lipids with the seasons, so the layer stays just soft enough.": "Varje cell är omsluten av ett dubbelt lager tvålliknande lipider. Bakterier och fiskar byter lipider med årstiderna så att lagret förblir lagom mjukt.",
+  "Milk": "Mjölk",
+  "Milk is tiny droplets of fat in water. Each one is wrapped in a thin skin of soap-like molecules that stops the droplets from merging.": "Mjölk är små fettdroppar i vatten. Var och en är omsluten av en tunn hinna av tvålliknande molekyler som hindrar dropparna från att slå sig samman.",
+  "Boiled egg": "Kokt ägg",
+  "Boiling turns clear egg white solid. Heat unfolds its proteins, and they stick together into a gel.": "Kokning gör den klara äggvitan fast. Värmen vecklar ut dess proteiner, och de fastnar i varandra till en gel.",
+  "Jelly melts in your mouth": "Gelé smälter i munnen",
+  "Tofu": "Tofu",
+  "Tofu is a protein gel. Soy milk is heated, then salts such as magnesium chloride make the soy proteins clump together.": "Tofu är en proteingel. Sojamjölk värms, sedan får salter som magnesiumklorid sojaproteinerna att klumpa ihop sig.",
+  "Skin on hot milk": "Skinn på varm mjölk",
+  "Heat unfolds proteins and their sticky parts join up. That is why fried meat turns firm and a skin forms on hot milk.": "Värme vecklar ut proteiner och deras klibbiga delar fäster vid varandra. Därför blir stekt kött fast och det bildas skinn på varm mjölk.",
+  "Clumps that make us ill": "Klumpar som gör oss sjuka",
+  "When proteins unfold and clump in the brain, they can cause diseases such as Alzheimer’s. Helper proteins called chaperones cover the sticky parts until the protein folds again.": "När proteiner vecklas ut och klumpar sig i hjärnan kan de orsaka sjukdomar som Alzheimers. Hjälpproteiner som kallas chaperoner täcker de klibbiga delarna tills proteinet veckas igen.",
+  "Ricotta": "Ricotta",
+  "Ricotta is made by heating whey, the liquid left over from cheese, with a little acid. Its proteins unfold and clump into soft curds.": "Ricotta görs genom att värma vassle, vätskan som blir över från ost, med lite syra. Proteinerna vecklas ut och klumpar ihop sig till mjuk ostmassa.",
+  "Why milk bottles look milky": "Varför mjölkflaskor ser mjölkiga ut",
+  "A polyethylene milk bottle looks milky because light scatters off tiny crystals in the plastic. Heat it and it turns clear and soft as they melt.": "En mjölkflaska av polyeten ser mjölkig ut eftersom ljuset sprids av små kristaller i plasten. Värm den så blir den klar och mjuk när de smälter.",
+  "Candle wax": "Stearin",
+  "Candle wax is made of short chains that crystallize like plastic: clear and liquid when hot, cloudy and solid when cool.": "Stearin består av korta kedjor som kristalliserar som plast: klar och flytande när den är varm, grumlig och fast när den är sval.",
+  "Swelling gloves": "Svällande handskar",
+  "Rubber gloves swell in some solvents, because a good solvent pulls the polymer chains apart. In a poor solvent, the chains curl up into balls.": "Gummihandskar sväller i vissa lösningsmedel, eftersom ett bra lösningsmedel drar isär polymerkedjorna. I ett dåligt lösningsmedel rullar kedjorna ihop sig till nystan.",
+  "Smart gel": "Smart gel",
+  "PNIPAM, a polymer used in smart gels, dissolves in water below 32 °C and collapses above it. Most polymers do the opposite.": "PNIPAM, en polymer i smarta geler, löser sig i vatten under 32 °C och kollapsar över det. De flesta polymerer gör tvärtom.",
+  "Oil on soup": "Olja på soppan",
+  "Oil drops on soup join into bigger drops. Water pushes oily molecules together so it can keep its own hydrogen bonds.": "Oljedroppar på soppa slås ihop till större droppar. Vattnet trycker ihop de oljiga molekylerna för att behålla sina egna vätebindningar.",
+  "Unfolded by cold": "Utvecklad av kyla",
+  "Some proteins unfold not only when heated but also when cooled far enough. In the cold, the push of water on their oily parts gets weaker.": "Vissa proteiner vecklas ut inte bara när de värms utan också när de kyls tillräckligt. I kylan blir vattnets tryck på deras oljiga delar svagare.",
   "Show tips": "Visa tips",
   "green path": "grön stig",
   "Too warm: the ice melts. Get quieter, slowly.": "För varmt: isen smälter. Bli tystare, långsamt.",
@@ -3134,6 +3319,97 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Microphone": "Mikrofon"
  },
  "ru": {
+  "My cards": "Мои карточки",
+  "Reset cards": "Сбросить карточки",
+  "Click again to remove all cards": "Нажмите ещё раз, чтобы удалить все карточки",
+  "New card!": "Новая карточка!",
+  "Add to my cards": "Добавить в мои карточки",
+  "Not won yet": "Ещё не получена",
+  "New card: {c}!": "Новая карточка: {c}!",
+  "You have all the cards of this game.": "У вас уже есть все карточки этой игры.",
+  "Three stars in “{g}” win a card.": "Три звезды в игре «{g}» приносят карточку.",
+  "In Explore, each minute with Plastic, Polymer chains or Oily particles wins a card of that system.": "В режиме «Изучение» каждая минута с пластиком, полимерными цепями или маслянистыми частицами приносит карточку этой системы.",
+  "frost grows from a scratch": "иней растёт от царапины",
+  "slow: clear": "медленно: прозрачный",
+  "fast: smooth": "быстро: нежное",
+  "droplets with no membrane": "капли без мембраны",
+  "minutes": "минуты",
+  "two phases, then pores": "две фазы, потом поры",
+  "grease": "жир",
+  "oily middle": "маслянистая середина",
+  "water outside": "вода снаружи",
+  "water inside": "вода внутри",
+  "raw": "сырое",
+  "boiled": "варёное",
+  "chaperone": "шаперон",
+  "clump": "комок",
+  "heated: clear": "нагрета: прозрачная",
+  "liquid, clear": "жидкий, прозрачный",
+  "solid, cloudy": "твёрдый, мутный",
+  "good solvent": "хороший растворитель",
+  "poor solvent": "плохой растворитель",
+  "below 32 °C": "ниже 32 °C",
+  "above 32 °C": "выше 32 °C",
+  "folded": "свёрнут",
+  "Six arms": "Шесть лучей",
+  "Almost every snowflake has six arms. The six-fold shape comes from the honeycomb that water molecules build in ice.": "Почти у каждой снежинки шесть лучей. Шестиугольная форма идёт от сот, которые молекулы воды строят во льду.",
+  "Ice floats": "Лёд плавает",
+  "Ice is lighter than liquid water, so it floats. Lakes freeze from the top down, and fish spend the winter in the water below.": "Лёд легче жидкой воды, поэтому он плавает. Озёра замерзают сверху вниз, а рыбы зимуют в воде подо льдом.",
+  "Liquid below zero": "Жидкая ниже нуля",
+  "Very pure water can stay liquid far below 0 °C. Droplets in clouds can stay liquid down to about −40 °C before they freeze.": "Очень чистая вода может оставаться жидкой намного ниже 0 °C. Капли в облаках не замерзают примерно до −40 °C.",
+  "Frost needs a start": "Инею нужен старт",
+  "Frost on a window begins at scratches and specks of dust. Freezing needs a starting point, a nucleus, and the crystals grow out from it.": "Иней на окне начинается с царапин и пылинок. Замерзанию нужна точка старта, зародыш, и кристаллы растут от него.",
+  "Salt on the road": "Соль на дороге",
+  "Salt melts ice on roads even below 0 °C. The dissolved salt gets in the way of water molecules locking into ice.": "Соль растапливает лёд на дорогах даже ниже 0 °C. Растворённая соль мешает молекулам воды сцепиться в лёд.",
+  "Slow ice, big crystals": "Медленный лёд — крупные кристаллы",
+  "Slow freezing grows a few large crystals, as in clear ice cubes. Ice cream is churned while it freezes fast, so its crystals stay small and feel smooth.": "Медленное замерзание даёт немного крупных кристаллов, как в прозрачных кубиках льда. Мороженое перемешивают, пока оно быстро замерзает, поэтому кристаллы остаются мелкими и оно кажется нежным.",
+  "Mayonnaise": "Майонез",
+  "Mayonnaise is oil and water that stay mixed. Molecules from egg yolk coat the oil droplets and stop them from joining.": "Майонез — это масло и вода, которые не расслаиваются. Молекулы из желтка покрывают капли масла и не дают им слиться.",
+  "Rooms without walls": "Комнаты без стен",
+  "Inside living cells, some proteins separate from the surrounding liquid into droplets. These droplets work as tiny rooms without walls.": "Внутри живых клеток некоторые белки отделяются от окружающей жидкости в капли. Эти капли работают как крошечные комнаты без стен.",
+  "Salad dressing": "Заправка для салата",
+  "Shake an oil-and-vinegar dressing and it mixes, but only for a while. The droplets merge and the two liquids separate again.": "Встряхните заправку из масла и уксуса — она перемешается, но ненадолго. Капли сливаются, и жидкости снова расслаиваются.",
+  "Cloudy ouzo": "Мутное узо",
+  "Ouzo turns cloudy when water is added. Its anise oil can no longer stay dissolved and comes out as countless tiny droplets.": "Узо мутнеет, если добавить воду. Анисовое масло больше не может оставаться растворённым и выделяется бесчисленными крошечными каплями.",
+  "Mixes only when warm": "Смешиваются только в тепле",
+  "Water and phenol mix into one liquid only above about 66 °C. Cool them and they split into two layers again.": "Вода и фенол смешиваются в одну жидкость только выше примерно 66 °C. При охлаждении они снова разделяются на два слоя.",
+  "Glass full of pores": "Стекло, полное пор",
+  "Some glasses split into two intertwined phases while they cool. Dissolve one phase away and you get a glass full of tiny pores.": "Некоторые стёкла при остывании разделяются на две переплетённые фазы. Растворите одну из них — и получится стекло, полное крошечных пор.",
+  "The first nano-medicine": "Первое наносредство",
+  "Doxil, approved in 1995, was the first nanoparticle cancer medicine. It carries the drug inside tiny bubbles made of lipids, the molecules of cell membranes.": "Доксил, одобренный в 1995 году, стал первым противораковым наносредством. Он переносит лекарство внутри крошечных пузырьков из липидов — молекул клеточных мембран.",
+  "Release on heat": "Выпуск при нагреве",
+  "Heat-triggered carriers are being tested in medicine. Some release their drug when a tumour is warmed to about 40–42 °C.": "В медицине испытывают носители, срабатывающие от тепла. Некоторые выпускают лекарство, когда опухоль нагревают примерно до 40–42 °C.",
+  "How soap cleans": "Как мыло отмывает",
+  "Soap molecules gather into micelles. Grease hides in their oily cores and is rinsed away with the water.": "Молекулы мыла собираются в мицеллы. Жир прячется в их маслянистых ядрах и смывается водой.",
+  "Bile digests fat": "Желчь переваривает жир",
+  "Bile from your liver is full of soap-like molecules. They break the fat in your food into tiny droplets, so it can be digested.": "Желчь из печени полна мылоподобных молекул. Они разбивают жир из пищи на крошечные капли, чтобы его можно было переварить.",
+  "Every cell’s skin": "Кожа каждой клетки",
+  "Every cell is wrapped in a double layer of soap-like lipids. Bacteria and fish change their lipids with the seasons, so the layer stays just soft enough.": "Каждая клетка окружена двойным слоем мылоподобных липидов. Бактерии и рыбы меняют свои липиды по сезонам, чтобы слой оставался в меру мягким.",
+  "Milk": "Молоко",
+  "Milk is tiny droplets of fat in water. Each one is wrapped in a thin skin of soap-like molecules that stops the droplets from merging.": "Молоко — это крошечные капли жира в воде. Каждая обёрнута тонкой плёнкой мылоподобных молекул, которая не даёт каплям слиться.",
+  "Boiled egg": "Варёное яйцо",
+  "Boiling turns clear egg white solid. Heat unfolds its proteins, and they stick together into a gel.": "Варка делает прозрачный белок яйца твёрдым. Тепло разворачивает его белки, и они склеиваются в гель.",
+  "Jelly melts in your mouth": "Желе тает во рту",
+  "Tofu": "Тофу",
+  "Tofu is a protein gel. Soy milk is heated, then salts such as magnesium chloride make the soy proteins clump together.": "Тофу — это белковый гель. Соевое молоко нагревают, а затем соли, например хлорид магния, заставляют соевые белки слипнуться.",
+  "Skin on hot milk": "Пенка на горячем молоке",
+  "Heat unfolds proteins and their sticky parts join up. That is why fried meat turns firm and a skin forms on hot milk.": "Тепло разворачивает белки, и их липкие участки соединяются. Поэтому жареное мясо становится упругим, а на горячем молоке образуется пенка.",
+  "Clumps that make us ill": "Комки, от которых болеют",
+  "When proteins unfold and clump in the brain, they can cause diseases such as Alzheimer’s. Helper proteins called chaperones cover the sticky parts until the protein folds again.": "Когда белки разворачиваются и слипаются в мозге, они могут вызывать болезни, например болезнь Альцгеймера. Белки-помощники, шапероны, прикрывают липкие участки, пока белок снова не свернётся.",
+  "Ricotta": "Рикотта",
+  "Ricotta is made by heating whey, the liquid left over from cheese, with a little acid. Its proteins unfold and clump into soft curds.": "Рикотту делают, нагревая сыворотку — жидкость, оставшуюся от сыра, — с небольшим количеством кислоты. Её белки разворачиваются и слипаются в мягкие хлопья.",
+  "Why milk bottles look milky": "Почему бутылки для молока мутные",
+  "A polyethylene milk bottle looks milky because light scatters off tiny crystals in the plastic. Heat it and it turns clear and soft as they melt.": "Полиэтиленовая бутылка для молока мутная, потому что свет рассеивается на крошечных кристаллах в пластике. Нагрейте её — она станет прозрачной и мягкой, когда они расплавятся.",
+  "Candle wax": "Свечной воск",
+  "Candle wax is made of short chains that crystallize like plastic: clear and liquid when hot, cloudy and solid when cool.": "Свечной воск состоит из коротких цепей, которые кристаллизуются как пластик: горячий воск прозрачный и жидкий, остывший — мутный и твёрдый.",
+  "Swelling gloves": "Разбухающие перчатки",
+  "Rubber gloves swell in some solvents, because a good solvent pulls the polymer chains apart. In a poor solvent, the chains curl up into balls.": "Резиновые перчатки разбухают в некоторых растворителях: хороший растворитель растаскивает полимерные цепи. В плохом растворителе цепи сворачиваются в клубки.",
+  "Smart gel": "Умный гель",
+  "PNIPAM, a polymer used in smart gels, dissolves in water below 32 °C and collapses above it. Most polymers do the opposite.": "ПНИПАМ — полимер для умных гелей — растворяется в воде ниже 32 °C и сжимается выше. Большинство полимеров ведут себя наоборот.",
+  "Oil on soup": "Жир на супе",
+  "Oil drops on soup join into bigger drops. Water pushes oily molecules together so it can keep its own hydrogen bonds.": "Капли жира на супе сливаются в более крупные. Вода сталкивает маслянистые молекулы вместе, чтобы сохранить свои водородные связи.",
+  "Unfolded by cold": "Развёрнут холодом",
+  "Some proteins unfold not only when heated but also when cooled far enough. In the cold, the push of water on their oily parts gets weaker.": "Некоторые белки разворачиваются не только при нагреве, но и при сильном охлаждении. На холоде вода слабее давит на их маслянистые участки.",
   "Show tips": "Показывать подсказки",
   "green path": "зелёная дорожка",
   "Too warm: the ice melts. Get quieter, slowly.": "Слишком тепло: лёд тает. Постепенно становитесь тише.",
@@ -4005,7 +4281,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     $('tset').textContent = $('tsetM').textContent = tset.toFixed((SYS[sys].tstep || 0.01) < 0.01 ? 3 : 2); $('tslider').value = $('tsliderM').value = tset;
     if (coachReady) tWordShow();
   }
-  var coachReady = false; // set once the game helpers below exist
+  var coachReady = false, fcReady = false; // set once the game helpers and the cards below exist
   $('tslider').addEventListener('input', (e) => { if (scan) stopScan(false); if (mode === 'slider') setT(+e.target.value); });
   $('tsliderM').addEventListener('input', (e) => { if (scan) stopScan(false); if (mode === 'slider') setT(+e.target.value); });
   $('micM').addEventListener('click', () => setMode(mode === 'mic' ? 'slider' : 'mic'));
@@ -4191,6 +4467,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     document.querySelector('.wrap').dataset.sys = sys;
     for (const b of pickers) b.setAttribute('aria-pressed', b.dataset.pick === sys);
     for (const el of document.querySelectorAll('[data-show]')) el.hidden = !el.dataset.show.split(' ').includes(sys);
+    if (fcReady) renderAlbum();
     $('legendItems').innerHTML = S.legend.map(([c, t]) => `<span><i class="dot" style="background:var(--${c})"></i>${T(t)}</span>`).join('');
     $('concLab').textContent = T(S.concLab); $('plotFlab').innerHTML = T(S.plotLab); $('byClusterLab').textContent = T(S.hl || '');
     $('quench').textContent = T('Cool to {t}', { t: S.cold.toFixed(1) }); $('melt').textContent = T('Heat to {t}', { t: S.hot.toFixed(1) });
@@ -4376,13 +4653,15 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (!G || !result) { closeHud(); return; }
     const g = G.g, v = G.peak, st = starsFor(g, v), b = getBest(g), rec = b === null || v > b, gi = GAMES.indexOf(g), wasOpen = gi + 1 < GAMES.length && isOpen(gi + 1); if (rec) setBest(g, v);
     const opened = gi + 1 < GAMES.length && !wasOpen && isOpen(gi + 1), dg = tipsOn() ? diagnose(G, st) : '';
+    const card = st === 3 ? fcGive(FC_ALL.filter((c) => c.deck.game === g.id)) : null; // three stars: a new fact card, until the deck is complete
+    if (card) setTimeout(() => fcOpen(card, true), 700);
     const S = addStat(g, v);
     $('hudGoal').textContent = $('hudTip').textContent = ''; $('gagain').hidden = false;
     if (G.snap) { restoreSnap(G.snap); running = false; $('pause').textContent = T('Resume'); const r = report(); showReport(r);
       if (g.value) g.value(); const rv = G.peak; $('gval').textContent = g.fmt(rv); $('gval').className = ''; $('gnow').style.left = (100 * Math.max(0, Math.min(1, rv / (g.scale || 1)))) + '%'; }
     $('gres').innerHTML = `<span class="big">${starStr(st)}</span> <b>${T('Score {s}', { s: g.fmt(v) })}</b> ${rec ? T('(new best ever!)') : T('(best ever {b})', { b: g.fmt(Math.max(b, v)) })}. ` + (dg ? dg + ' ' : '') +
       (opened ? '<b>' + T('New game unlocked: {g}!', { g: T(GAMES[gi + 1].title) }) + '</b> ' : '') +
-      (st <= 1 && tipsOn() ? '<b>' + T('Tip:') + '</b> ' + T(g.hint) + ' ' : '') + '<b>' + T('Did you know?') + '</b> ' + T(g.facts[Math.floor(Math.random() * g.facts.length)]) + ' ' + (st === 3 ? T('Top score!') + ' ' : '') + T('Your average so far: {a} (games played: {n}).', { n: S.n, a: g.fmt(S.sum / S.n) });
+      (st <= 1 && tipsOn() ? '<b>' + T('Tip:') + '</b> ' + T(g.hint) + ' ' : '') + (st === 3 ? T('Top score!') + ' ' + (card ? '<b>' + T('New card: {c}!', { c: T(card.t) }) + '</b> ' : T('You have all the cards of this game.') + ' ') : '') + T('Your average so far: {a} (games played: {n}).', { n: S.n, a: g.fmt(S.sum / S.n) });
     renderPick(); drawReplay(G);
   }
   function gameUpdate(v) {
@@ -4754,6 +5033,208 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   $('coachBtn').addEventListener('click', () => guideEnd(true));
   $('coachSkip').addEventListener('click', () => guideEnd(true));
   coachReady = true; tWordShow(); zoneMarks(); renderPick();
+
+  // ---------- fact cards: one fact per card, won with three stars (games) or a minute with a system (Explore), kept in an album ----------
+  const FC = (() => {
+    // ---------- sketch helpers (viewBox 240 x 140) ----------
+    const P = (d, c = '') => `<path class="ln ${c}" d="${d}"/>`;
+    const C = (x, y, r, f, ln = '') => `<circle cx="${x}" cy="${y}" r="${r}" class="${f}${ln ? ' ln ' + ln : ''}"/>`;
+    const R = (x, y, w, h, rx, f, ln = '') => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" class="${f}${ln ? ' ln ' + ln : ''}"/>`;
+    const TX = (x, y, s, c = '', anchor = 'middle') => `<text x="${x}" y="${y}" class="tx ${c}" text-anchor="${anchor}">${/[a-z]{3}/.test(s) ? T(s) : s}</text>`;
+    const rad = (a) => a * Math.PI / 180;
+    const pt = (cx, cy, r, a) => [cx + r * Math.cos(rad(a)), cy + r * Math.sin(rad(a))].map((v) => +v.toFixed(1));
+    function flake(cx, cy, R0, c = 'co') { let d = '';
+      for (let k = 0; k < 6; k++) { const a = k * 60 - 90, [x, y] = pt(cx, cy, R0, a); d += `M${cx} ${cy}L${x} ${y}`;
+        for (const f of [0.45, 0.72]) { const [bx, by] = pt(cx, cy, R0 * f, a), L = R0 * 0.28 * (f > 0.6 ? 0.8 : 1);
+          for (const s of [-45, 45]) { const [ex, ey] = pt(bx, by, L, a + s); d += `M${bx} ${by}L${ex} ${ey}`; } } }
+      return P(d, c); }
+    function thermo(x, y, h, frac, hot, label) { // tube with bulb at the bottom
+      const fill = hot ? 'f-hot' : 'f-cold', lv = y + h - (h - 6) * frac;
+      return R(x - 5, y, 10, h, 5, 'f-panel', '') + `<rect x="${x - 2.5}" y="${lv}" width="5" height="${y + h - lv}" class="${fill}"/>` + C(x, y + h + 5, 8, fill) +
+        `<rect x="${x - 5}" y="${y}" width="10" height="${h}" rx="5" class="ln f-none"/>` + C(x, y + h + 5, 8, 'f-none', 'ln') + (label ? TX(x + 12, y + 10, label, 'b', 'start') : ''); }
+    function amph(x, y, a, len = 12, hr = 3.2) { const [tx, ty] = pt(x, y, len, a); return P(`M${x} ${y}L${tx} ${ty}`, 'ta') + C(x, y, hr, 'f-head'); }
+    function micelle(cx, cy, r, n, core = '') { let s = core ? C(cx, cy, r - 6, core) : '';
+      for (let k = 0; k < n; k++) { const a = k * 360 / n, [x, y] = pt(cx, cy, r, a); s += amph(x, y, a + 180, r - 5 > 13 ? 13 : r - 5, 3); } return s; }
+    function vesicle(cx, cy, r, n) { let s = C(cx, cy, r - 13, 'f-w');
+      for (let k = 0; k < n; k++) { const a = k * 360 / n, [x, y] = pt(cx, cy, r, a), [x2, y2] = pt(cx, cy, r - 13, a); s += amph(x, y, a + 180, 5.5, 2.6) + amph(x2, y2, a, 5.5, 2.6); } return s; }
+    const star = (x, y, r = 5, c = 'f-cr') => { let d = ''; for (let k = 0; k < 10; k++) { const [px, py] = pt(x, y, k % 2 ? r * 0.45 : r, k * 36 - 90); d += (k ? 'L' : 'M') + px + ' ' + py; } return `<path d="${d}Z" class="${c}"/>`; };
+    const arrow = (x1, y1, x2, y2, c = 'mu') => { const a = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI, [ax, ay] = pt(x2, y2, 7, a + 150), [bx, by] = pt(x2, y2, 7, a - 150);
+      return P(`M${x1} ${y1}L${x2} ${y2}M${ax} ${ay}L${x2} ${y2}L${bx} ${by}`, c); };
+    const heat = (x, y, n = 3, c = 'ho') => { let d = ''; for (let k = 0; k < n; k++) { const X = x + k * 10; d += `M${X} ${y}c-4 -5 4 -8 0 -13c-4 -5 4 -8 0 -13`; } return P(d, c); };
+    const blob = (cx, cy, r, f, seed = 1, ln = '') => { let d = ''; const n = 9;
+      for (let k = 0; k <= n; k++) { const a = k * 360 / n, rr = r * (1 + 0.13 * Math.sin(seed * 7 + k * 2.3)), [x, y] = pt(cx, cy, rr, a); d += (k ? 'L' : 'M') + x + ' ' + y; }
+      return `<path d="${d}Z" class="${f}${ln ? ' ln ' + ln : ''}" style="stroke-linejoin:round"/>`; };
+    const chain = (pts, c = 'po', beads = true, bc = 'f-po') => P('M' + pts.map((p) => p.join(' ')).join('L'), c) + (beads ? pts.map(([x, y]) => C(x, y, 3, bc)).join('') : '');
+    const coil = (cx, cy, r, n, seed) => { const p = []; for (let k = 0; k < n; k++) { const a = k * 137.5 + seed * 40, rr = r * Math.sqrt((k + 1) / n); p.push(pt(cx, cy, rr, a)); } return p; };
+    const svg = (inner, label) => `<svg class="fcsk" viewBox="0 0 240 140" role="img" aria-label="${label}">${inner}</svg>`;
+    const hexIce = (x0, y0, cols, rows, s, keep = () => true) => { let d = '';
+      for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) { if (!keep(c, r)) continue; const cx = x0 + c * s * 1.5, cy = y0 + r * s * 1.732 + (c % 2 ? s * 0.866 : 0); let h = '';
+        for (let k = 0; k <= 6; k++) { const [x, y] = pt(cx, cy, s, k * 60); h += (k ? 'L' : 'M') + x + ' ' + y; } d += h; } return P(d, 'co th'); };
+    const dots = (n, x0, y0, w, h, f, r = 3, seed = 3) => { let s = ''; for (let k = 0; k < n; k++) { const x = x0 + ((k * 73.13 + seed * 17) % w), y = y0 + ((k * 41.7 + seed * 29) % h); s += C(+x.toFixed(1), +y.toFixed(1), r, f); } return s; };
+
+    // ---------- the cards ----------
+    const DECKS = [
+     { id: 'ice', cls: 'd-ice', name: 'Ice', game: 'ice', cards: [
+      { t: 'Six arms', d: 'Almost every snowflake has six arms. The six-fold shape comes from the honeycomb that water molecules build in ice.',
+        s: () => flake(78, 70, 50) + hexIce(160, 34, 4, 3, 13) + arrow(132, 70, 148, 70) },
+      { t: 'Ice floats', d: 'Ice is lighter than liquid water, so it floats. Lakes freeze from the top down, and fish spend the winter in the water below.',
+        s: () => R(20, 40, 200, 86, 4, 'f-w') + R(20, 30, 200, 16, 2, 'f-ice', 'co') + P('M20 46H220', 'co') +
+          P('M110 92c14 -12 34 -12 46 0c-12 12 -32 12 -46 0zM110 92l-12 -8v16z', '') + C(146, 89, 1.8, 'f-ink') + P('M40 120q20 -8 40 0q20 8 40 0', 'mu th') + TX(200, 24, '0 °C', 'mu') + TX(196, 118, '4 °C', 'mu') },
+      { t: 'Liquid below zero', d: 'Very pure water can stay liquid far below 0 °C. Droplets in clouds can stay liquid down to about −40 °C before they freeze.',
+        s: () => P('M48 76c-16 0 -22 -22 -6 -28c2 -16 26 -22 36 -8c10 -12 34 -8 36 10c16 2 16 26 0 26z', '') + [[60,94],[78,104],[96,92],[70,116],[90,120]].map(([x,y]) => P(`M${x} ${y-7}q6 8 0 11q-6 -3 0 -11z`, 'co')).join('') +
+          thermo(176, 26, 74, 0.1, false, '−40 °C') },
+      { t: 'Frost needs a start', d: 'Frost on a window begins at scratches and specks of dust. Freezing needs a starting point, a nucleus, and the crystals grow out from it.',
+        s: () => R(30, 14, 180, 112, 6, 'f-w', '') + P('M120 14V126M30 70H210', 'mu th') + P('M60 100l40 -50', 'mu') +
+          [[70,88,0],[86,68,1]].map(([x,y]) => [0,60,120,180,240,300].map((a) => { const [ex,ey] = pt(x,y,16,a), [mx,my] = pt(x,y,9,a), [l1x,l1y] = pt(mx,my,6,a+40), [l2x,l2y] = pt(mx,my,6,a-40); return P(`M${x} ${y}L${ex} ${ey}M${mx} ${my}L${l1x} ${l1y}M${mx} ${my}L${l2x} ${l2y}`, 'co th'); }).join('')).join('') +
+          TX(120, 137, 'frost grows from a scratch', 'mu') },
+      { t: 'Salt on the road', d: 'Salt melts ice on roads even below 0 °C. The dissolved salt gets in the way of water molecules locking into ice.',
+        s: () => R(0, 92, 240, 48, 0, 'f-soft') + P('M0 92H240', 'mu') + P('M20 116H50M90 116H120M160 116H190', 'cr') +
+          R(20, 74, 70, 18, 6, 'f-ice', 'co') + `<ellipse cx="150" cy="90" rx="38" ry="6" class="f-w"/>` + P('M112 90q38 -10 76 0', 'co th') + [[124,70],[140,62],[158,72],[172,60],[150,50]].map(([x,y]) => R(x, y, 6, 6, 1, 'f-panel', 'th')).join('') +
+          thermo(212, 16, 46, 0.35, false, '') + TX(212, 90, '−5 °C', 'b') + arrow(94, 82, 108, 82) },
+      { t: 'Slow ice, big crystals', d: 'Slow freezing grows a few large crystals, as in clear ice cubes. Ice cream is churned while it freezes fast, so its crystals stay small and feel smooth.',
+        s: () => R(26, 40, 70, 70, 8, 'f-ice', 'co') + P('M44 52l12 10M70 86l10 8', 'panel') + P('M40 60L60 54M72 92L84 86', 'co th') + TX(61, 128, 'slow: clear', 'mu') +
+          P('M156 70l22 52l22 -52z', 'tail') + C(178, 58, 24, 'f-panel', '') + dots(26, 158, 40, 40, 34, 'f-ice', 3.2, 5) + C(178, 58, 24, 'f-none', 'ln') + TX(178, 134, 'fast: smooth', 'mu') },
+     ]},
+     { id: 'liq', cls: 'd-liq', name: 'Two liquids', game: 'demix', cards: [
+      { t: 'Mayonnaise', d: 'Mayonnaise is oil and water that stay mixed. Molecules from egg yolk coat the oil droplets and stop them from joining.',
+        s: () => R(0, 0, 240, 140, 0, 'f-w') + [[60,50,22],[130,86,28],[190,42,18],[80,108,14]].map(([x,y,r]) => C(x, y, r, 'f-oil') + Array.from({ length: Math.round(r / 2.2) }, (_, k) => { const a = k * 360 / Math.round(r / 2.2), [px, py] = pt(x, y, r + 1, a); return amph(px, py, a + 180, 6, 2.6); }).join('')).join('') },
+      { t: 'Rooms without walls', d: 'Inside living cells, some proteins separate from the surrounding liquid into droplets. These droplets work as tiny rooms without walls.',
+        s: () => `<ellipse cx="120" cy="62" rx="96" ry="52" class="f-w ln hd"/>` + C(120, 62, 18, 'f-soft', 'mu') + [[62,48,12],[160,92,10],[178,46,14],[86,88,8],[132,30,6]].map(([x,y,r]) => C(x, y, r, 'f-c')).join('') + TX(120, 134, 'droplets with no membrane', 'mu') },
+      { t: 'Salad dressing', d: 'Shake an oil-and-vinegar dressing and it mixes, but only for a while. The droplets merge and the two liquids separate again.',
+        s: () => { const bottle = (x, inner) => P(`M${x} 30h24v12q12 8 12 22v56q0 8 -8 8h-32q-8 0 -8 -8v-56q0 -14 12 -22z`, '') + inner;
+          return bottle(40, `<rect x="31" y="66" width="42" height="56" class="f-w"/>` + dots(16, 34, 68, 36, 52, 'f-oil', 4, 2)) + arrow(96, 90, 144, 90) + TX(120, 80, 'minutes', 'mu') +
+            bottle(166, `<rect x="157" y="66" width="42" height="22" class="f-oil"/><rect x="157" y="88" width="42" height="34" class="f-w"/>`) + P('M166 30h24v12q12 8 12 22v56q0 8 -8 8h-32q-8 0 -8 -8v-56q0 -14 12 -22z', ''); } },
+      { t: 'Cloudy ouzo', d: 'Ouzo turns cloudy when water is added. Its anise oil can no longer stay dissolved and comes out as countless tiny droplets.',
+        s: () => { const glass = (x) => P(`M${x} 40l6 80h36l6 -80`, ''); return `<path d="M50 60l4.5 60h36l4.5 -60z" class="f-panel"/>` + glass(46) + P('M50 60h40', 'mu th') +
+          P('M120 34q8 10 0 14q-8 -4 0 -14z', 'co') + arrow(104, 84, 136, 84) + `<path d="M154 60l4.5 60h36l4.5 -60z" class="f-soft"/>` + dots(40, 158, 62, 38, 56, 'f-oil', 2.2, 9) + glass(150) + P('M154 60h40', 'mu th'); } },
+      { t: 'Mixes only when warm', d: 'Water and phenol mix into one liquid only above about 66 °C. Cool them and they split into two layers again.',
+        s: () => { const bk = (x) => P(`M${x} 40v76q0 6 6 6h48q6 0 6 -6v-76`, ''); return `<rect x="30" y="56" width="60" height="30" class="f-s" opacity=".55"/><rect x="30" y="86" width="60" height="36" class="f-c" opacity=".55"/>` + bk(30) + TX(60, 34, '20 °C', 'b') +
+          `<rect x="150" y="56" width="60" height="66" class="f-po" opacity=".35"/>` + bk(150) + TX(180, 34, '70 °C', 'b') + arrow(98, 90, 142, 90, 'ho') + heat(110, 128, 3); } },
+      { t: 'Glass full of pores', d: 'Some glasses split into two intertwined phases while they cool. Dissolve one phase away and you get a glass full of tiny pores.',
+        s: () => { let px = ''; for (let x = 34; x < 206; x += 5) for (let y = 24; y < 116; y += 5) { const v = Math.sin(x / 9) + Math.sin(y / 8 + 1) + Math.sin((x + y) / 13) + 0.6 * Math.sin((x - 2 * y) / 7);
+            if (v > 0.2) px += `<rect x="${x}" y="${y}" width="5.2" height="5.2" class="f-c" opacity=".75"/>`; }
+          return R(30, 20, 180, 100, 10, 'f-soft', '') + px + R(30, 20, 180, 100, 10, 'f-none', 'ln') + TX(120, 136, 'two phases, then pores', 'mu'); } },
+     ]},
+     { id: 'soap', cls: 'd-soap', name: 'Soap molecules', game: 'drug', cards: [
+      { t: 'The first nano-medicine', d: 'Doxil, approved in 1995, was the first nanoparticle cancer medicine. It carries the drug inside tiny bubbles made of lipids, the molecules of cell membranes.',
+        s: () => R(0, 0, 240, 140, 0, 'f-w') + vesicle(120, 70, 54, 30) + star(110, 62, 7) + star(132, 76, 7) + star(118, 86, 6) },
+      { t: 'Release on heat', d: 'Heat-triggered carriers are being tested in medicine. Some release their drug when a tumour is warmed to about 40–42 °C.',
+        s: () => blob(110, 82, 40, 'f-soft', 5, 'ho') + vesicle(70, 40, 22, 14) + star(70, 40, 4) + vesicle(124, 70, 22, 14) +
+          star(150, 50, 5) + star(160, 68, 4) + star(144, 34, 4) + heat(190, 108, 3) + thermo(210, 20, 50, 0.7, true, '') + TX(212, 134, '41 °C', 'b') },
+      { t: 'How soap cleans', d: 'Soap molecules gather into micelles. Grease hides in their oily cores and is rinsed away with the water.',
+        s: () => R(0, 0, 240, 140, 0, 'f-w') + micelle(80, 70, 40, 22, 'f-oil') + micelle(176, 52, 24, 13) + micelle(178, 108, 18, 10) + TX(80, 74, 'grease', 'b') },
+      { t: 'Bile digests fat', d: 'Bile from your liver is full of soap-like molecules. They break the fat in your food into tiny droplets, so it can be digested.',
+        s: () => R(0, 0, 240, 140, 0, 'f-w') + C(56, 70, 38, 'f-oil') + arrow(104, 70, 136, 70) +
+          [[166,40,13],[198,56,11],[168,82,12],[204,96,10],[176,114,9]].map(([x,y,r]) => C(x, y, r, 'f-oil') + Array.from({ length: 7 }, (_, k) => { const a = k * 360 / 7, [px, py] = pt(x, y, r + 1, a); return amph(px, py, a + 180, 4.5, 2.2); }).join('')).join('') },
+      { t: 'Every cell’s skin', d: 'Every cell is wrapped in a double layer of soap-like lipids. Bacteria and fish change their lipids with the seasons, so the layer stays just soft enough.',
+        s: () => R(0, 0, 240, 140, 0, 'f-w') + Array.from({ length: 15 }, (_, k) => { const x = 16 + k * 15; return amph(x, 46, 90, 18, 4.2) + amph(x, 94, -90, 18, 4.2); }).join('') + TX(120, 74, 'oily middle', 'mu') + TX(120, 24, 'water outside', 'mu') + TX(120, 128, 'water inside', 'mu') },
+      { t: 'Milk', d: 'Milk is tiny droplets of fat in water. Each one is wrapped in a thin skin of soap-like molecules that stops the droplets from merging.',
+        s: () => P('M30 30h40l-4 90h-32z', '') + `<path d="M33 50h34l-3 69h-28z" class="f-panel"/>` + P('M30 30h40l-4 90h-32z', '') + C(120, 70, 2, 'f-ink') + P('M70 62L118 30M70 96L118 112', 'mu th') +
+          C(170, 70, 50, 'f-w', 'mu') + [[150,50,12],[186,58,14],[164,92,11],[196,96,8],[142,80,7]].map(([x,y,r]) => C(x, y, r, 'f-oil') + Array.from({ length: Math.round(r / 2) }, (_, k) => { const a = k * 360 / Math.round(r / 2), [px, py] = pt(x, y, r + 1, a); return amph(px, py, a + 180, 4, 2); }).join('')).join('') },
+     ]},
+     { id: 'prot', cls: 'd-prot', name: 'Proteins', game: 'gel', cards: [
+      { t: 'Boiled egg', d: 'Boiling turns clear egg white solid. Heat unfolds its proteins, and they stick together into a gel.',
+        s: () => blob(64, 72, 38, 'f-w', 2, 'mu') + C(64, 74, 15, 'f-cr') + TX(64, 132, 'raw', 'mu') + TX(180, 136, 'boiled', 'mu') + arrow(110, 72, 132, 72) + heat(112, 104, 2) +
+          P('M180 32c26 0 34 40 34 54c0 22 -16 34 -34 34s-34 -12 -34 -34c0 -14 8 -54 34 -54z', '') + `<path d="M180 33c25 0 33 40 33 53c0 22 -15 33 -33 33s-33 -11 -33 -33c0 -13 8 -53 33 -53z" class="f-panel"/>` + C(180, 86, 15, 'f-cr') + P('M180 32c26 0 34 40 34 54c0 22 -16 34 -34 34s-34 -12 -34 -34c0 -14 8 -54 34 -54z', '') },
+      { t: 'Jelly melts in your mouth', d: 'Gelatin jelly melts at about 30–35 °C, a little below body temperature. That is why it melts in your mouth.',
+        s: () => P('M40 100q60 20 120 0', 'mu') + P('M60 96l8 -50h48l8 50z', 'c') + `<path d="M60 96l8 -50h48l8 50z" class="f-c" opacity=".55"/>` + P('M76 58l-2 26M104 58l2 22', 'panel th') +
+          thermo(196, 22, 70, 0.62, true, '') + TX(204, 128, '35 °C', 'b') },
+      { t: 'Tofu', d: 'Tofu is a protein gel. Soy milk is heated, then salts such as magnesium chloride make the soy proteins clump together.',
+        s: () => P('M24 60h70v50q0 10 -10 10h-50q-10 0 -10 -10z', '') + `<rect x="27" y="66" width="64" height="50" class="f-soft"/>` + P('M24 60h70v50q0 10 -10 10h-50q-10 0 -10 -10z', '') + heat(44, 138, 3) +
+          [[110,40],[118,30],[126,44]].map(([x,y]) => R(x, y, 6, 6, 1, 'f-panel', 'th')).join('') + arrow(120, 76, 146, 76) +
+          R(156, 52, 64, 52, 6, 'f-panel', '') + P('M156 70h64M178 52v52M200 52v52', 'mu th') },
+      { t: 'Skin on hot milk', d: 'Heat unfolds proteins and their sticky parts join up. That is why fried meat turns firm and a skin forms on hot milk.',
+        s: () => P('M66 50h108l-10 70h-88z', '') + `<path d="M68 52h104l-9 66h-86z" class="f-panel"/>` + P('M68 54q10 -6 20 0t20 0t20 0t20 0t20 0', 'cr') + P('M66 50h108l-10 70h-88z', '') + P('M174 66q20 4 14 26q-4 10 -18 8', '') +
+          heat(98, 38, 4, 'mu') },
+      { t: 'Clumps that make us ill', d: 'When proteins unfold and clump in the brain, they can cause diseases such as Alzheimer’s. Helper proteins called chaperones cover the sticky parts until the protein folds again.',
+        s: () => chain(coil(64, 70, 26, 14, 1)) + chain(coil(84, 86, 20, 10, 2), 'tail', true, 'f-tail') + chain(coil(56, 98, 16, 8, 3), 'tail', true, 'f-tail') +
+          R(146, 40, 68, 62, 18, 'f-soft', 'hd') + P('M146 46l-8 -14M214 46l8 -14', 'hd') + chain(coil(180, 72, 16, 10, 4)) + TX(180, 124, 'chaperone', 'mu') + TX(70, 130, 'clump', 'mu') },
+      { t: 'Ricotta', d: 'Ricotta is made by heating whey, the liquid left over from cheese, with a little acid. Its proteins unfold and clump into soft curds.',
+        s: () => P('M40 50h160v56q0 14 -14 14h-132q-14 0 -14 -14z', '') + `<rect x="43" y="64" width="154" height="52" class="f-w"/>` + [[70,70],[96,66],[128,72],[160,68],[180,74],[84,82],[146,84]].map(([x,y], k) => blob(x, y, 9, 'f-panel', k, 'mu')).join('') +
+          P('M40 50h160v56q0 14 -14 14h-132q-14 0 -14 -14z', '') + heat(100, 138, 4) },
+     ]},
+     { id: 'exp', cls: 'd-exp', name: 'Explore', cards: [
+      { t: 'Why milk bottles look milky', sys: 'polymer', d: 'A polyethylene milk bottle looks milky because light scatters off tiny crystals in the plastic. Heat it and it turns clear and soft as they melt.',
+        s: () => P('M50 26h24v14q18 10 18 30v46q0 8 -8 8h-44q-8 0 -8 -8v-46q0 -20 18 -30z', '') + `<path d="M35 72h54v42q0 6 -6 6h-42q-6 0 -6 -6z" class="f-soft"/>` +
+          [[46,82],[70,92],[54,104],[78,110],[62,80]].map(([x,y]) => P(`M${x} ${y}h10M${x} ${y+3}h10M${x} ${y+6}h10`, 'cr th')).join('') + P('M50 26h24v14q18 10 18 30v46q0 8 -8 8h-44q-8 0 -8 -8v-46q0 -20 18 -30z', '') +
+          P('M110 76l20 -12M110 86l24 0M110 96l20 12', 'cr') + arrow(140, 86, 162, 86, 'ho') + P('M184 26h24v14q18 10 18 30v46q0 8 -8 8h-44q-8 0 -8 -8v-46q0 -20 18 -30z', 'mu') + TX(196, 138, 'heated: clear', 'mu') },
+      { t: 'Candle wax', sys: 'polymer', d: 'Candle wax is made of short chains that crystallize like plastic: clear and liquid when hot, cloudy and solid when cool.',
+        s: () => R(52, 52, 56, 74, 4, 'f-soft', '') + `<path d="M54 54h52v8q-26 6 -52 0z" class="f-w"/>` + P('M80 52v-12', '') + P('M80 40c-10 -10 0 -22 0 -30c8 10 10 20 0 30z', 'ho') + `<path d="M80 40c-10 -10 0 -22 0 -30c8 10 10 20 0 30z" class="f-cr" opacity=".6"/>` +
+          TX(136, 62, 'liquid, clear', 'mu', 'start') + TX(136, 100, 'solid, cloudy', 'mu', 'start') + P('M112 58h20M112 96h20', 'mu th') },
+      { t: 'Swelling gloves', sys: 'lcst', d: 'Rubber gloves swell in some solvents, because a good solvent pulls the polymer chains apart. In a poor solvent, the chains curl up into balls.',
+        s: () => chain(coil(70, 70, 36, 18, 2)) + P('M70 70m-46 0a46 46 0 1 0 92 0a46 46 0 1 0 -92 0', 'mu th') + TX(70, 134, 'good solvent', 'mu') +
+          chain(coil(180, 74, 14, 14, 5)) + TX(180, 134, 'poor solvent', 'mu') },
+      { t: 'Smart gel', sys: 'lcst', d: 'PNIPAM, a polymer used in smart gels, dissolves in water below 32 °C and collapses above it. Most polymers do the opposite.',
+        s: () => R(0, 0, 240, 140, 0, 'f-w') + chain(coil(66, 66, 36, 18, 1)) + TX(66, 128, 'below 32 °C', 'co') + arrow(112, 70, 136, 70, 'ho') +
+          chain(coil(180, 68, 13, 14, 3)) + TX(180, 128, 'above 32 °C', 'ho') },
+      { t: 'Oil on soup', sys: 'mbpoly', d: 'Oil drops on soup join into bigger drops. Water pushes oily molecules together so it can keep its own hydrogen bonds.',
+        s: () => P('M30 60h180q-10 62 -90 62t-90 -62z', '') + `<path d="M33 62h174q-12 56 -87 56t-87 -56z" class="f-w"/>` + P('M30 60h180q-10 62 -90 62t-90 -62z', '') +
+          [[64,74,6],[86,72,8],[146,76,5],[170,72,7]].map(([x,y,r]) => `<ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r * 0.55}" class="f-oil"/>`).join('') + `<ellipse cx="120" cy="88" rx="20" ry="10" class="f-oil"/>` + arrow(92, 80, 104, 86) + arrow(148, 80, 138, 86) + heat(100, 44, 3, 'mu') },
+      { t: 'Unfolded by cold', sys: 'mbpoly', d: 'Some proteins unfold not only when heated but also when cooled far enough. In the cold, the push of water on their oily parts gets weaker.',
+        s: () => chain([[20,60],[34,50],[46,62],[58,50],[70,64]], 'po') + flake(46, 104, 14) + arrow(86, 64, 100, 64) +
+          chain(coil(120, 62, 14, 10, 2)) + TX(120, 104, 'folded', 'mu') + arrow(140, 64, 154, 64) +
+          chain([[170,60],[184,50],[196,62],[208,50],[220,64]], 'po') + P('M196 112c-10 -10 0 -22 0 -30c8 10 10 20 0 30z', 'ho') },
+     ]},
+    ];
+
+    DECKS.forEach((dk) => dk.cards.forEach((c, i) => { c.id = dk.id + (i + 1); c.deck = dk; c.i = i; }));
+    return { DECKS, svg, pt };
+  })();
+  const FC_ALL = FC.DECKS.flatMap((dk) => dk.cards);
+  const fcOwned = () => { try { const a = JSON.parse(localStorage.getItem('mdlab-cards') || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
+  const fcSave = (a) => { try { localStorage.setItem('mdlab-cards', JSON.stringify(a)); } catch (e) {} };
+  const fcFace = (c) => `<article class="fccard ${c.deck.cls}"><div class="fctop"><span>${T(c.deck.name)}</span><i>${c.i + 1} / ${c.deck.cards.length}</i></div>${FC.svg(c.s(), T(c.t))}<div class="fcbody"><h3>${T(c.t)}</h3><p>${T(c.d)}</p></div></article>`;
+  const fcBackArt = '<svg viewBox="0 0 100 100" aria-hidden="true">' + Array.from({ length: 10 }, (_, k) => { const [x, y] = FC.pt(50, 50, 30, k * 36), [tx, ty] = FC.pt(50, 50, 16, k * 36);
+    return `<line x1="${x}" y1="${y}" x2="${tx}" y2="${ty}" stroke="white" stroke-width="3" stroke-linecap="round" opacity=".8"/><circle cx="${x}" cy="${y}" r="6" fill="white"/>`; }).join('') +
+    '<text x="50" y="59" text-anchor="middle" font-size="26" font-weight="700" fill="white" font-family="Instrument Sans, sans-serif">?</text></svg>';
+  function fcHow(dk) {
+    if (dk.game) return T('Three stars in “{g}” win a card.', { g: T(GAMES.find((g) => g.id === dk.game).title) });
+    return T('In Explore, each minute with Plastic, Polymer chains or Oily particles wins a card of that system.');
+  }
+  function fcGive(pool) { // a random card from the pool that this browser does not have yet; null when the pool is complete
+    const own = fcOwned(), left = pool.filter((c) => !own.includes(c.id)); if (!left.length) return null;
+    const c = left[Math.floor(Math.random() * left.length)]; own.push(c.id); fcSave(own); renderAlbum(); return c;
+  }
+  // the big card over the page: a new card flips over with stars; an album card just opens
+  let fcShown = null;
+  function fcOpen(c, isNew) {
+    fcShown = [c, isNew]; const m = $('fcModal'), f = $('fcFlip'), b = $('fcBurst');
+    $('fcFront').innerHTML = fcFace(c); $('fcNew').textContent = isNew ? T('New card!') : ''; $('fcClose').textContent = T(isNew ? 'Add to my cards' : 'Close');
+    m.hidden = false; f.classList.toggle('on', !isNew); b.innerHTML = '';
+    if (isNew) setTimeout(() => { f.classList.add('on');
+      b.innerHTML = Array.from({ length: 12 }, (_, k) => { const a = (k * 30 + 8 * Math.random()) * Math.PI / 180, d = 130 + 50 * Math.random();
+        return `<span style="--x:${(Math.cos(a) * d).toFixed(0)}px;--y:${(Math.sin(a) * d).toFixed(0)}px;animation-delay:${(0.35 + 0.05 * Math.random()).toFixed(2)}s">★</span>`; }).join(''); }, 350);
+    $('fcClose').focus();
+  }
+  function fcCloseModal() { $('fcModal').hidden = true; fcShown = null; }
+  $('fcClose').addEventListener('click', fcCloseModal);
+  $('fcModal').addEventListener('click', (e) => { if (e.target === $('fcModal')) fcCloseModal(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('fcModal').hidden) fcCloseModal(); });
+  // the album, in place of the old "In everyday life" texts: the current system's deck first
+  function renderAlbum() {
+    const own = fcOwned(), deckOf = (dk) => (dk.game ? GAMES.find((g) => g.id === dk.game).sys === sys : dk.cards.some((c) => c.sys === sys));
+    const decks = FC.DECKS.slice().sort((a, b) => deckOf(b) - deckOf(a));
+    $('albumCount').textContent = `${own.filter((id) => FC_ALL.some((c) => c.id === id)).length} / ${FC_ALL.length}`;
+    $('album').innerHTML = decks.map((dk) => { const n = dk.cards.filter((c) => own.includes(c.id)).length;
+      return `<section class="fcdeck ${dk.cls}"><h3>${T(dk.name)} <span>${n} / ${dk.cards.length}</span></h3><p class="note">${fcHow(dk)}</p><div class="fcrow">` +
+        dk.cards.map((c) => own.includes(c.id) ? `<button class="fcmini ${dk.cls}" data-card="${c.id}">${FC.svg(c.s(), T(c.t))}<b>${T(c.t)}</b></button>`
+          : `<div class="fcmini locked" aria-label="${T('Not won yet')}">${fcBackArt}</div>`).join('') + '</div></section>'; }).join('');
+    $('fcReset').textContent = T('Reset cards'); fcArm = false;
+  }
+  $('album').addEventListener('click', (e) => { const b = e.target.closest('[data-card]'); if (b) fcOpen(FC_ALL.find((c) => c.id === b.dataset.card), false); });
+  let fcArm = false, fcArmT = 0; // resetting takes two clicks, since the page cannot show a confirm dialog
+  $('fcReset').addEventListener('click', () => { if (!fcArm) { fcArm = true; $('fcReset').textContent = T('Click again to remove all cards'); clearTimeout(fcArmT); fcArmT = setTimeout(() => { fcArm = false; $('fcReset').textContent = T('Reset cards'); }, 4000); return; }
+    fcSave([]); renderAlbum(); });
+  // Explore: every minute of running with a system that has no game wins its next card
+  const fcExpAcc = {};
+  function cardTick(dtSec) {
+    if (appMode !== 'explore' || !running || classOn || !$('fcModal').hidden) return;
+    const pool = FC_ALL.filter((c) => c.sys === sys); if (!pool.length) return;
+    fcExpAcc[sys] = (fcExpAcc[sys] || 0) + dtSec;
+    if (fcExpAcc[sys] >= 60) { fcExpAcc[sys] = 0; const c = fcGive(pool); if (c) fcOpen(c, true); }
+  }
+  renderAlbum();
+  $('fcBack').innerHTML = fcBackArt; fcReady = true;
 
   // ---------- thermodynamics: temperature scans ----------
   const NB = 30; let scan = null, thermo = null;
@@ -5130,6 +5611,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const frameMs = now - last, dtSec = Math.min(0.1, frameMs / 1000); last = now;
     if (scan && running) scanStep();
     else if (mode === 'mic') micUpdate(dtSec);
+    if (fcReady) cardTick(dtSec);
     if (running) {
       const n = game ? gameSteps(dtSec) : +$('spf').value, t0 = performance.now();
       for (let k = 0; k < n; k++) eng.step();
@@ -5188,6 +5670,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     LANG = I18N[l] || l === 'en' ? l : 'en'; $('lang').value = LANG;
     applyStatic(); refreshTexts(); document.title = T('Shut Up and Get Structured'); barLabels();
     if (typeof tourI !== 'undefined' && tourI >= 0) tourShow(tourI); // an open help tour follows the language
+    if (fcReady) { renderAlbum(); $('fcBack').innerHTML = fcBackArt; if (fcShown) { $('fcFront').innerHTML = fcFace(fcShown[0]); $('fcClose').textContent = T(fcShown[1] ? 'Add to my cards' : 'Close'); } }
     if (coachReady) { tWordShow(); unlockLabel(); renderPick(); if (guide) guideShow(); else if (coachMsg) coachSay(coachMsg[0], coachMsg[2], coachMsg[1]); const rp = $('greplay'); if (!rp.hidden && rp._run) drawReplay(rp._run); }
   }
   // short labels for the phone's bottom bar: a quarter of a narrow screen fits about 10 letters
