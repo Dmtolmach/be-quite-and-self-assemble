@@ -123,9 +123,37 @@ table.eps th { font-weight: 500; color: var(--muted) }
 .gstats .btns { margin-top: 8px } .gstats .btn { font-size: 12px; padding: 4px 10px }
 .gres { margin: 0; font-size: 15px; max-width: 80ch } .gres .big { font-size: 22px; color: var(--cryst); letter-spacing: 2px }
 @media (prefers-reduced-motion: reduce) { .gbar i { transition: none } }
-@media (max-width: 700px) { .ghud .gstat div { align-items: center; text-align: center; padding: 4px 2px } .ghud .gstat span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; font-size: 10px } .ghead { text-align: center; flex-direction: column; align-items: center; gap: 6px } .gres { text-align: center } .gstat b { font-size: 14px } .ghud { padding: 6px 8px; gap: 5px } .ghead { font-size: 12px } .ghud .gstat { gap: 6px } .gstat span { font-size: 10.5px }
+@media (max-width: 700px) { .ghud .gstat div { align-items: center; text-align: center; padding: 4px 2px } .ghud .gstat span { white-space: normal; overflow-wrap: anywhere; line-height: 1.15; min-height: 2.3em; display: flex; align-items: center; justify-content: center; max-width: 100%; font-size: 10px } .ghead { text-align: center; flex-direction: column; align-items: center; gap: 6px } .gres { text-align: center } .gstat b { font-size: 14px } .ghud { padding: 6px 8px; gap: 5px } .ghead { font-size: 12px } .ghud .gstat { gap: 6px } .gstat span { font-size: 10.5px }
   .ingame .legend { display: none } .gband { height: 16px } .gband .tick { line-height: 16px } .gbar { height: 7px } .ghud .gres { font-size: 12.5px } .htip { display: none } }
 .offmode { display: none !important }
+/* games show only what the game needs: temperature, score, time; no physics readouts under the box */
+.ingame .kinlab, .ingame .legend { display: none !important }
+@media (max-width: 360px) { .ingame .ghead > div:first-child { font-size: 12.5px } }
+@media (max-width: 340px) { .ghud .gstat span { font-size: 9px !important; letter-spacing: -0.01em } .ghud .gstat div { padding: 4px 1px !important } .ghud .gstat { gap: 4px !important } }
+@media (max-width: 700px) { .ingame #hudTitle { display: none } .ingame .ghead > div:first-child { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 13px; line-height: 1.35 } }
+.mbnav, .sheethead, .sheetback { display: none }
+@media (max-width: 700px) {
+  body { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) }
+  .mbnav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 32;
+    padding: 8px max(10px, env(safe-area-inset-right, 0px)) calc(8px + env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px));
+    background: var(--panel); border-top: 1px solid var(--line); box-shadow: 0 -6px 18px -12px rgba(0,0,0,.4) }
+  .mbnav button { font: inherit; font-size: 13px; font-weight: 600; min-height: 44px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); padding: 4px 2px; line-height: 1.15 }
+  .mbnav button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent) }
+  .mbnav #mbOpt { border-color: var(--accent); color: var(--accent) } .mbnav #mbOpt[aria-expanded="true"] { background: color-mix(in srgb, var(--accent) 14%, var(--panel)) }
+  .rack { position: fixed; left: 0; right: 0; bottom: 0; z-index: 31; max-height: 78svh; overflow-y: auto; overscroll-behavior: contain;
+    background: var(--bg); border-radius: 18px 18px 0 0; box-shadow: 0 -12px 30px -10px rgba(0,0,0,.45);
+    padding: 0 max(14px, env(safe-area-inset-right, 0px)) calc(84px + env(safe-area-inset-bottom, 0px)) max(14px, env(safe-area-inset-left, 0px));
+    transform: translateY(110%); visibility: hidden; transition: transform .25s ease, visibility 0s linear .25s }
+  .sheet-open .rack { transform: none; visibility: visible; transition: transform .25s ease }
+  .sheethead { display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 2; background: var(--bg); padding: 12px 0 8px; margin-bottom: -4px }
+  .sheethead::before { content: ""; position: absolute; top: 5px; left: 50%; width: 40px; height: 4px; margin-left: -20px; border-radius: 2px; background: var(--line) }
+  .sheethead b { font-family: var(--f-display); font-size: 16px } .sheethead .btn { min-height: 36px; padding: 4px 12px }
+  .rack .modeseg { display: none }
+  .sheetback:not([hidden]) { display: block; position: fixed; inset: 0; z-index: 30; background: color-mix(in srgb, #0b1116 45%, transparent) }
+  .classmode .mbnav, .classmode .sheetback { display: none !important }
+}
+@media (max-width: 700px) and (prefers-reduced-motion: reduce) { .rack, .sheet-open .rack { transition: none } }
+@media (max-width: 360px) { .mbnav { gap: 4px; padding-left: max(6px, env(safe-area-inset-left, 0px)); padding-right: max(6px, env(safe-area-inset-right, 0px)) } .mbnav button { font-size: 12px; padding: 4px 1px } }
 .boxstart { position: absolute; z-index: 7; font-size: 18px; font-weight: 700; padding: 10px 26px; border-radius: 999px; box-shadow: 0 8px 22px -8px rgba(0,0,0,.45); transform: translate(-50%, -50%) }
 .boxstart::before { content: "▶ " }
 .classmode header, .classmode .rack, .classmode > .panel, .classmode .ghud, .classmode .thermo, .classmode .mbar, .classmode .zhint { display: none !important }
@@ -287,8 +315,8 @@ button { touch-action: manipulation }
       <button class="btn primary boxstart" id="gstartBox" hidden>Start</button>
       <div class="clspanel" id="clsPanel" hidden>
         <div class="clshead"><select id="clsSys" aria-label="System">
-          <option value="ice">Ice</option><option value="demix">Binary liquid</option><option value="dumbbell">Amphiphiles</option><option value="polymer">Stiff polymer</option>
-          <option value="lcst">Polymer</option><option value="crypt">Protein unfolding</option><option value="mbpoly">Hydrophobic particles</option></select>
+          <option value="ice">Ice</option><option value="demix">Two liquids</option><option value="dumbbell">Soap molecules</option><option value="polymer">Plastic</option>
+          <option value="lcst">Polymer chains</option><option value="crypt">Proteins</option><option value="mbpoly">Oily particles</option></select>
           <button class="btn" id="clsExit">Exit class mode</button></div>
         <p class="clsgoal">Everyone quiet: the box cools and structures grow. Noise heats it and breaks them.</p>
         <div class="clsbig"><span id="clsLab">–</span><b id="clsVal">–</b></div>
@@ -298,7 +326,7 @@ button { touch-action: manipulation }
         <p class="note" id="clsNote"></p>
       </div>
       <div class="mbar">
-        <div class="mbar-t"><b id="tsetM">2.00</b><small>T* · kin <span id="tkinM">–</span></small></div>
+        <div class="mbar-t"><b id="tsetM">2.00</b><small><span class="tlab">T*</span><span class="kinlab"> · kin <span id="tkinM">–</span></span></small></div>
         <div class="trange"><input type="range" id="tsliderM" min="0.30" max="2.50" step="0.01" value="2.00" aria-label="Temperature set point"><div class="ticks" id="ticks"></div></div>
         <button class="btn" id="micM" aria-pressed="false">Mic</button>
         <div class="meter" id="mmeter" hidden aria-hidden="true"><i id="micbarM"></i></div>
@@ -340,7 +368,8 @@ button { touch-action: manipulation }
       </div>
     </div>
 
-    <div class="rack">
+    <div class="rack" id="rack">
+      <div class="sheethead"><b id="sheetTitle">Options</b><button class="btn" id="sheetClose" aria-label="Close">✕</button></div>
       <div class="seg modeseg" role="group" aria-label="Mode">
         <button data-appmode="game" aria-pressed="true">Game</button>
         <button data-appmode="explore" aria-pressed="false">Explore</button>
@@ -368,14 +397,14 @@ button { touch-action: manipulation }
       <div class="panel" id="sysPanel" data-mode="explore scan">
         <h2>System</h2>
         <div class="syspick" role="group" aria-label="System">
-          <button data-pick="ice" aria-pressed="true"><b>Ice</b><small>Melts on heating</small></button>
-          <button data-pick="demix" aria-pressed="false"><b>Binary liquid</b><small>Demixes on cooling</small></button>
-          <button data-pick="dumbbell" aria-pressed="false"><b>Amphiphiles</b><small>Micelles form on cooling</small></button>
-          <button data-pick="polymer" aria-pressed="false"><b>Stiff polymer</b><small>Crystallizes below T* ≈ 1.5</small></button>
+          <button data-pick="ice" aria-pressed="true"><b>Ice</b><small>Melts when heated</small></button>
+          <button data-pick="demix" aria-pressed="false"><b>Two liquids</b><small>Separate when cooled</small></button>
+          <button data-pick="dumbbell" aria-pressed="false"><b>Soap molecules</b><small>Form micelles when cooled</small></button>
+          <button data-pick="polymer" aria-pressed="false"><b>Plastic</b><small>Crystallizes when cooled</small></button>
           <button data-pick="diblock" aria-pressed="false" hidden><b>Diblock copolymer</b><small>Blocks segregate on cooling</small></button>
-          <button data-pick="lcst" aria-pressed="false"><b>Polymer</b><small>Collapses on cooling</small></button>
-          <button data-pick="crypt" aria-pressed="false"><b>Protein unfolding</b><small>Hidden sticky sites · clumps on heating</small></button>
-          <button data-pick="mbpoly" aria-pressed="false"><b>Hydrophobic particles</b><small>Demix at high temperature</small></button>
+          <button data-pick="lcst" aria-pressed="false"><b>Polymer chains</b><small>Curl up when cooled</small></button>
+          <button data-pick="crypt" aria-pressed="false"><b>Proteins</b><small>Unfold and stick when heated</small></button>
+          <button data-pick="mbpoly" aria-pressed="false"><b>Oily particles</b><small>Clump when heated</small></button>
           <button data-pick="brush" aria-pressed="false" hidden><b>Brush + droplet</b><small>Wetting switches with temperature</small><em class="devtag">In development</em></button>
           <button data-pick="plates" aria-pressed="false" hidden><b>Plates in water</b><small>Water-fearing surfaces stick</small><em class="devtag">In development</em></button>
         </div>
@@ -527,6 +556,8 @@ button { touch-action: manipulation }
         <summary><h2>Box and view</h2></summary>
         <div class="row" id="sizeRow"><label for="size">Box size</label>
           <select id="size"><option value="36">36×36 sites · 1296 beads</option><option value="48" selected>48×48 sites · 2304 beads</option><option value="64">64×64 sites · 4096 beads</option></select></div>
+        <div class="row"><label for="quality">Drawing quality</label>
+          <select id="quality"><option value="auto" selected>Automatic (lighter on slow devices)</option><option value="0">Full</option><option value="1">Lighter</option><option value="2">Light</option><option value="3">Lightest</option></select></div>
         <div class="row"><label for="initState">Initial state</label>
           <select id="initState"><option value="ordered" selected>Ordered (cold equilibrium)</option><option value="disordered">Disordered (hot)</option></select></div>
         <div class="btns"><button class="btn primary" id="reset">Rebuild system</button></div>
@@ -540,6 +571,13 @@ button { touch-action: manipulation }
     </div>
   </div>
 
+  <div class="sheetback" id="sheetBack" hidden></div>
+  <nav class="mbnav" id="mbnav" aria-label="Mode">
+    <button data-mbmode="game" aria-pressed="true"><span data-bar="game">Game</span></button>
+    <button data-mbmode="explore" aria-pressed="false"><span data-bar="explore">Explore</span></button>
+    <button data-mbmode="scan" aria-pressed="false"><span data-bar="scan">Energy scan</span></button>
+    <button id="mbOpt" aria-expanded="false"><span data-bar="opt">Options</span></button>
+  </nav>
   <div class="panel">
     <h2>In everyday life</h2>
     <div class="notes">
@@ -711,6 +749,9 @@ MDEngine.prototype.initIce = function () {
   for (let cy = 0; cy < ny; cy++) for (let cx = 0; cx < nx; cx++) for (const [u, v, s] of sites) {
     E.x[i] = cx * w + u + 0.25 * w; E.y[i] = cy * 3 * d + v + 0.25 * d; E.th[i] = s === 'A' ? Math.PI / 2 : -Math.PI / 2; i++; }
   if (!p.ordered) for (let k = 0; k < N; k++) E.th[k] = 2 * Math.PI * E.rand();
+  // antifreeze solute: particles that attract water but have no hydrogen-bond arms, put on random lattice sites (type 3)
+  const nS = Math.max(0, Math.min(N - 10, p.nSalt | 0)); if (nS) { const idx = [...Array(N).keys()];
+    for (let k = 0; k < nS; k++) { const j = k + Math.floor(E.rand() * (N - k)); [idx[k], idx[j]] = [idx[j], idx[k]]; E.type[idx[k]] = 3; } }
   E.keepTh = true;
 };
 // Brush: chains grafted upright on a substrate wall at the bottom, an MB water droplet resting on top,
@@ -943,7 +984,7 @@ MDEngine.prototype.setupTable = function () {
     case 'hp': set(5, 5, p.epsHH); break;
     case 'crypt': set(5, 5, p.epsXX); break; // only sticky X beads attract (any chain); the fold itself is held by native contacts
     case 'lcst': set(3, 3, p.epsPP); break; // P-S: WCA core plus the narrow binding well below
-    case 'ice': sig[7] = 0.7; set(7, 7, 0.1); break;
+    case 'ice': sig[7] = 0.7; sig[3] = 0.8; set(7, 7, 0.1); set(3, 7, p.epsSalt !== undefined ? p.epsSalt : 0.5); break; // 3: antifreeze solute, binds water, no hydrogen bonds
     // hydrophobic interactions added by hand, switched by temperature: cold, the solutes are attracted to water (epsW) and dissolve;
     // warm, that attraction fades and an attraction between nonpolar beads (epsH) grows, so they aggregate. MB water adds its own weaker effect.
     case 'plates': sig[7] = 0.7; sig[3] = p.sigP; set(7, 7, 0.1); set(3, 7, p.epsPW); set(3, 3, !p.epsPW && !p.plateHB ? E.hydroEps() : 0); break; // only water-fearing plates
@@ -1547,9 +1588,9 @@ MDEngine.prototype.iceStats = function () {
   const ok = new Uint8Array(N); for (let i = 0; i < N; i++) ok[i] = h[i] >= 3 ? 1 : 0;
   const bad = new Uint8Array(N);
   E.forPairs(1.25, (i, j) => { if (!ok[j]) bad[i] = 1; if (!ok[i]) bad[j] = 1; });
-  let nIce = 0, nFull = 0; for (let i = 0; i < N; i++) { if (ok[i]) { nFull++; if (!bad[i]) nIce++; } }
-  const isIce = new Uint8Array(N); for (let i = 0; i < N; i++) isIce[i] = ok[i] && !bad[i] ? 1 : 0;
-  return { ice: nIce / N, full: nFull / N, hbPerWater: 2 * E.nHB / N, isIce };
+  let nIce = 0, nFull = 0, nW = 0; for (let i = 0; i < N; i++) { if (E.type[i] !== 7) continue; nW++; if (ok[i]) { nFull++; if (!bad[i]) nIce++; } }
+  const isIce = new Uint8Array(N); for (let i = 0; i < N; i++) isIce[i] = E.type[i] === 7 && ok[i] && !bad[i] ? 1 : 0;
+  nW = nW || 1; return { ice: nIce / nW, full: nFull / nW, hbPerWater: 2 * E.nHB / nW, isIce, nWater: nW, nSalt: N - nW };
 };
 // MB system: hydrogen bonds per water; polymer self-contact fraction and water contacts per polymer bead.
 MDEngine.prototype.mbStats = function (rcut) {
@@ -1736,8 +1777,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Play again": "Pelaa uudelleen",
   "Give up": "Luovuta",
   "Score": "Pisteet",
-  "Time left": "Aikaa jäljellä",
-  "Best this run": "Paras tällä kierroksella",
+  "Time left": "Aikaa",
+  "Best this run": "Paras",
   "Stars": "Tähdet",
   "T* · kin": "T* · kin",
   "Mic": "Mikrofoni",
@@ -2264,7 +2305,55 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Bile from your liver is full of amphiphiles. They break the fat in your food into tiny droplets, so that it can be digested.": "Maksan tuottama sappi on täynnä amfifiilejä. Ne pilkkovat ruoan rasvan pieniksi pisaroiksi, jotta se voidaan sulattaa.",
   "Milk is tiny droplets of fat in water, each wrapped in a thin skin of amphiphilic molecules that stops the droplets from merging.": "Maito on pieniä rasvapisaroita vedessä, ja jokaista ympäröi ohut amfifiilisten molekyylien kalvo, joka estää pisaroita yhdistymästä.",
   "Frying meat and heating milk: heat unfolds the proteins, their hidden sticky parts stick to each other, the meat turns firm and a skin forms on the milk.": "Lihan paistaminen ja maidon lämmittäminen: lämpö avaa proteiinit, niiden piilossa olleet tahmeat osat tarttuvat toisiinsa, liha kiinteytyy ja maidon pinnalle muodostuu kalvo.",
-  "Build structures from molecules with your voice: stay quiet and they form, make noise and they break.": "Rakenna molekyyleistä rakenteita äänelläsi: ole hiljaa, niin ne muodostuvat, pidä ääntä, niin ne hajoavat."
+  "Build structures from molecules with your voice: stay quiet and they form, make noise and they break.": "Rakenna molekyyleistä rakenteita äänelläsi: ole hiljaa, niin ne muodostuvat, pidä ääntä, niin ne hajoavat.",
+  "Drawing quality": "Piirtotarkkuus",
+  "Automatic (lighter on slow devices)": "Automaattinen (kevyempi hitailla laitteilla)",
+  "Full": "Täysi",
+  "Lighter": "Kevyempi",
+  "Light": "Kevyt",
+  "Lightest": "Kevyin",
+  "lighter drawing ({q})": "kevennetty piirto ({q})",
+  "Options": "Asetukset",
+  "Tap Options to pick a game or a system and to change the settings. Then press Start on the box.": "Napauta Asetukset valitaksesi pelin tai järjestelmän ja muuttaaksesi asetuksia. Paina sitten laatikon Aloita-painiketta.",
+  "Turn as much of the water into ice as you can within 30 seconds.": "Muuta mahdollisimman paljon vedestä jääksi 30 sekunnissa.",
+  "Heat only in the red windows to deliver the drug (stars).": "Lämmitä vain punaisissa ikkunoissa ja toimita lääke (tähdet).",
+  "Separate the two mixed liquids as much as you can within 30 seconds.": "Erota kaksi sekoittunutta nestettä mahdollisimman hyvin 30 sekunnissa.",
+  "Link the proteins into the longest gel strand you can within 30 seconds.": "Yhdistä proteiinit mahdollisimman pitkäksi geelisäikeeksi 30 sekunnissa.",
+  "Separation": "Erottuminen",
+  "Water-fearing bead": "Vettä hylkivä helmi",
+  "Water-loving bead": "Vettä rakastava helmi",
+  "Liquid": "Neste",
+  "Particle": "Hiukkanen",
+  "Particle in cluster": "Hiukkanen ryppäässä",
+  "Water": "Vesi",
+  "Plate": "Levy",
+  "Water at plate": "Vesi levyn vieressä",
+  "H-bond arms": "Vetysidosvarret",
+  "Head": "Pää",
+  "Tail": "Häntä",
+  "Solvent": "Liuotin",
+  "Crystal": "Kide",
+  "Sticky bead": "Tahmea helmi",
+  "Hydrophobic": "Hydrofobinen",
+  "Polar": "Polaarinen",
+  "Two liquids": "Kaksi nestettä",
+  "Soap molecules": "Saippuamolekyylit",
+  "Plastic": "Muovi",
+  "Polymer chains": "Polymeeriketjut",
+  "Oily particles": "Öljymäiset hiukkaset",
+  "Melts when heated": "Sulaa lämmitettäessä",
+  "Separate when cooled": "Erottuvat jäähdytettäessä",
+  "Form micelles when cooled": "Muodostavat misellejä jäähdytettäessä",
+  "Crystallizes when cooled": "Kiteytyy jäähdytettäessä",
+  "Curl up when cooled": "Kerääntyvät kerälle jäähdytettäessä",
+  "Unfold and stick when heated": "Avautuvat ja tarttuvat lämmitettäessä",
+  "Clump when heated": "Paakkuuntuvat lämmitettäessä",
+  "Two liquids · not too cold": "Kaksi nestettä · ei liian kylmä",
+  "Soap molecules · hit the target windows": "Saippuamolekyylit · osu kohdeikkunoihin",
+  "35 proteins": "35 proteiinia",
+  "Antifreeze particles": "Pakkasenestohiukkaset",
+  "Antifreeze particle": "Pakkasenestohiukkanen",
+  "Particles that attract water but cannot join the ice. They lower the melting point; about 120 keep most of the water liquid even when cold. The box rebuilds when you change the number.": "Hiukkaset vetävät vettä puoleensa mutta eivät voi liittyä jäähän. Ne alentavat sulamispistettä; noin 120 hiukkasta pitää suurimman osan vedestä nesteenä kylmässäkin. Laatikko rakennetaan uudelleen, kun muutat määrää."
  },
  "sv": {
   "Amphiphile Assembly Lab": "Självorganiseringslabbet",
@@ -2274,7 +2363,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Give up": "Ge upp",
   "Score": "Poäng",
   "Time left": "Tid kvar",
-  "Best this run": "Bäst denna omgång",
+  "Best this run": "Bäst hittills",
   "Stars": "Stjärnor",
   "T* · kin": "T* · kin",
   "Mic": "Mikr.",
@@ -2801,7 +2890,55 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Bile from your liver is full of amphiphiles. They break the fat in your food into tiny droplets, so that it can be digested.": "Gallan från levern är full av amfifiler. De bryter ner fettet i maten till små droppar så att det kan smältas.",
   "Milk is tiny droplets of fat in water, each wrapped in a thin skin of amphiphilic molecules that stops the droplets from merging.": "Mjölk är små fettdroppar i vatten, var och en omsluten av en tunn hinna av amfifila molekyler som hindrar dropparna från att slå sig samman.",
   "Frying meat and heating milk: heat unfolds the proteins, their hidden sticky parts stick to each other, the meat turns firm and a skin forms on the milk.": "Att steka kött och värma mjölk: värmen vecklar ut proteinerna, deras gömda klibbiga delar fastnar i varandra, köttet blir fast och det bildas en hinna på mjölken.",
-  "Build structures from molecules with your voice: stay quiet and they form, make noise and they break.": "Bygg strukturer av molekyler med rösten: var tyst så bildas de, för oväsen så går de sönder."
+  "Build structures from molecules with your voice: stay quiet and they form, make noise and they break.": "Bygg strukturer av molekyler med rösten: var tyst så bildas de, för oväsen så går de sönder.",
+  "Drawing quality": "Ritkvalitet",
+  "Automatic (lighter on slow devices)": "Automatisk (lättare på långsamma enheter)",
+  "Full": "Full",
+  "Lighter": "Lättare",
+  "Light": "Lätt",
+  "Lightest": "Lättast",
+  "lighter drawing ({q})": "förenklad ritning ({q})",
+  "Options": "Alternativ",
+  "Tap Options to pick a game or a system and to change the settings. Then press Start on the box.": "Tryck på Alternativ för att välja ett spel eller ett system och ändra inställningarna. Tryck sedan på Starta på lådan.",
+  "Turn as much of the water into ice as you can within 30 seconds.": "Gör så mycket av vattnet som möjligt till is inom 30 sekunder.",
+  "Heat only in the red windows to deliver the drug (stars).": "Värm bara i de röda fönstren och leverera läkemedlet (stjärnor).",
+  "Separate the two mixed liquids as much as you can within 30 seconds.": "Separera de två blandade vätskorna så mycket du kan inom 30 sekunder.",
+  "Link the proteins into the longest gel strand you can within 30 seconds.": "Länka proteinerna till längsta möjliga gelsträng på 30 sekunder.",
+  "Separation": "Separation",
+  "Water-fearing bead": "Vattenskyende kula",
+  "Water-loving bead": "Vattenälskande kula",
+  "Liquid": "Vätska",
+  "Particle": "Partikel",
+  "Particle in cluster": "Partikel i kluster",
+  "Water": "Vatten",
+  "Plate": "Platta",
+  "Water at plate": "Vatten vid plattan",
+  "H-bond arms": "Vätebindningsarmar",
+  "Head": "Huvud",
+  "Tail": "Svans",
+  "Solvent": "Lösningsmedel",
+  "Crystal": "Kristall",
+  "Sticky bead": "Klibbig kula",
+  "Hydrophobic": "Hydrofob",
+  "Polar": "Polär",
+  "Two liquids": "Två vätskor",
+  "Soap molecules": "Tvålmolekyler",
+  "Plastic": "Plast",
+  "Polymer chains": "Polymerkedjor",
+  "Oily particles": "Oljiga partiklar",
+  "Melts when heated": "Smälter vid uppvärmning",
+  "Separate when cooled": "Separerar vid kylning",
+  "Form micelles when cooled": "Bildar miceller vid kylning",
+  "Crystallizes when cooled": "Kristalliserar vid kylning",
+  "Curl up when cooled": "Rullar ihop sig vid kylning",
+  "Unfold and stick when heated": "Vecklas ut och klibbar vid uppvärmning",
+  "Clump when heated": "Klumpar ihop sig vid uppvärmning",
+  "Two liquids · not too cold": "Två vätskor · inte för kallt",
+  "Soap molecules · hit the target windows": "Tvålmolekyler · träffa målfönstren",
+  "35 proteins": "35 proteiner",
+  "Antifreeze particles": "Frostskyddspartiklar",
+  "Antifreeze particle": "Frostskyddspartikel",
+  "Particles that attract water but cannot join the ice. They lower the melting point; about 120 keep most of the water liquid even when cold. The box rebuilds when you change the number.": "Partiklar som attraherar vatten men inte kan ingå i isen. De sänker smältpunkten; ungefär 120 håller det mesta av vattnet flytande även när det är kallt. Lådan byggs om när du ändrar antalet."
  },
  "ru": {
   "Amphiphile Assembly Lab": "Лаборатория самосборки",
@@ -2811,7 +2948,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Give up": "Сдаться",
   "Score": "Счёт",
   "Time left": "Осталось",
-  "Best this run": "Лучшее за игру",
+  "Best this run": "Лучшее",
   "Stars": "Звёзды",
   "T* · kin": "T* · кин",
   "Mic": "Микр.",
@@ -3152,7 +3289,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Folded (native contacts)": "Доля нативных контактов",
   "Hidden beads exposed": "Скрытые бусины, доступные растворителю",
   "Sticky contacts between proteins": "Липкие контакты между белками",
-  "Proteins": "Белков",
+  "Proteins": "Белки",
   "Buried H": "Экранированные H",
   "H–H contacts / chain": "Контакты H–H / цепь",
   "Interchain H–H": "Межцепные H–H",
@@ -3262,7 +3399,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Deliver the drug": "Доставьте лекарство",
   "Amphiphiles · hit the target windows": "Амфифилы · попадите в окна мишени",
   "The micelles need a moment to open, so start the noise just before a window and stop just before it ends. Stay quiet between windows so the micelles hold on to the rest.": "Мицеллам нужно немного времени, чтобы раскрыться, поэтому начинайте шуметь чуть раньше окна и замолкайте чуть раньше его конца. Между окнами сохраняйте тишину, чтобы мицеллы удерживали остальное лекарство.",
-  "Delivered": "Доставлено",
+  "Delivered": "Доставка",
   "Short, well-timed bursts of heat opened the micelles exactly when the drug was needed, and the cold kept it locked inside the rest of the time. Temperature-sensitive carriers are designed to do just this at a warmed tumour.": "Короткие, точно рассчитанные импульсы нагрева раскрывали мицеллы именно тогда, когда было нужно лекарство, а в остальное время холод удерживал его внутри. Термочувствительные носители разрабатывают именно для этого: высвобождения в нагретой опухоли.",
   "Heat frees the drug a little after it starts and keeps freeing it for a moment after it stops, so late or long bursts waste it. Watch the windows on the time bar and start a little early.": "Нагрев высвобождает лекарство с небольшой задержкой и продолжает высвобождать его ещё некоторое время после прекращения, поэтому поздние или долгие импульсы тратят его впустую. Следите за окнами на шкале времени и начинайте чуть заранее.",
   "Lost": "Потеряно",
@@ -3338,7 +3475,55 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Bile from your liver is full of amphiphiles. They break the fat in your food into tiny droplets, so that it can be digested.": "Желчь из печени полна амфифилов. Они разбивают жир из пищи на крошечные капли, чтобы его можно было переварить.",
   "Milk is tiny droplets of fat in water, each wrapped in a thin skin of amphiphilic molecules that stops the droplets from merging.": "Молоко — это крошечные капли жира в воде, каждая в тонкой оболочке из амфифильных молекул, которая не даёт каплям слиться.",
   "Frying meat and heating milk: heat unfolds the proteins, their hidden sticky parts stick to each other, the meat turns firm and a skin forms on the milk.": "Жарка мяса и нагрев молока: тепло разворачивает белки, их спрятанные липкие участки слипаются, мясо становится твёрдым, а на молоке появляется пенка.",
-  "Build structures from molecules with your voice: stay quiet and they form, make noise and they break.": "Стройте структуры из молекул голосом: молчите — и они собираются, шумите — и они разрушаются."
+  "Build structures from molecules with your voice: stay quiet and they form, make noise and they break.": "Стройте структуры из молекул голосом: молчите — и они собираются, шумите — и они разрушаются.",
+  "Drawing quality": "Качество отрисовки",
+  "Automatic (lighter on slow devices)": "Автоматически (проще на медленных устройствах)",
+  "Full": "Полное",
+  "Lighter": "Облегчённое",
+  "Light": "Простое",
+  "Lightest": "Самое простое",
+  "lighter drawing ({q})": "упрощённая отрисовка ({q})",
+  "Options": "Настройки",
+  "Tap Options to pick a game or a system and to change the settings. Then press Start on the box.": "Нажмите «Настройки», чтобы выбрать игру или систему и изменить параметры. Затем нажмите «Старт» на ячейке.",
+  "Turn as much of the water into ice as you can within 30 seconds.": "Превратите как можно больше воды в лёд за 30 секунд.",
+  "Heat only in the red windows to deliver the drug (stars).": "Грейте только в красных окнах, чтобы доставить лекарство.",
+  "Separate the two mixed liquids as much as you can within 30 seconds.": "Разделите две жидкости как можно сильнее за 30 секунд.",
+  "Link the proteins into the longest gel strand you can within 30 seconds.": "Соедините белки в как можно более длинную нить геля за 30 секунд.",
+  "Separation": "Разделение",
+  "Water-fearing bead": "Водоотталкивающая бусина",
+  "Water-loving bead": "Гидрофильная бусина",
+  "Liquid": "Жидкость",
+  "Particle": "Частица",
+  "Particle in cluster": "Частица в кластере",
+  "Water": "Вода",
+  "Plate": "Пластина",
+  "Water at plate": "Вода у пластины",
+  "H-bond arms": "Водородные связи",
+  "Head": "Головка",
+  "Tail": "Хвост",
+  "Solvent": "Растворитель",
+  "Crystal": "Кристалл",
+  "Sticky bead": "Липкая бусина",
+  "Hydrophobic": "Гидрофобная",
+  "Polar": "Полярная",
+  "Two liquids": "Две жидкости",
+  "Soap molecules": "Молекулы мыла",
+  "Plastic": "Пластик",
+  "Polymer chains": "Полимерные цепи",
+  "Oily particles": "Маслянистые частицы",
+  "Melts when heated": "Тает при нагреве",
+  "Separate when cooled": "Расслаиваются при охлаждении",
+  "Form micelles when cooled": "Образуют мицеллы при охлаждении",
+  "Crystallizes when cooled": "Кристаллизуется при охлаждении",
+  "Curl up when cooled": "Сворачиваются при охлаждении",
+  "Unfold and stick when heated": "Разворачиваются и слипаются при нагреве",
+  "Clump when heated": "Слипаются при нагреве",
+  "Two liquids · not too cold": "Две жидкости · не слишком холодно",
+  "Soap molecules · hit the target windows": "Молекулы мыла · попадите в окна мишени",
+  "35 proteins": "35 белков",
+  "Antifreeze particles": "Частицы антифриза",
+  "Antifreeze particle": "Частица антифриза",
+  "Particles that attract water but cannot join the ice. They lower the melting point; about 120 keep most of the water liquid even when cold. The box rebuilds when you change the number.": "Частицы притягивают воду, но не могут войти в лёд. Они понижают температуру плавления; около 120 частиц удерживают большую часть воды жидкой даже в холоде. При изменении числа ячейка строится заново."
  }
 };
   let LANG = 'en';
@@ -3389,40 +3574,40 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     brush: { scan: [0.4, 1.0], conc: 480, min: 120, max: 900, count: true, rebuildConc: true, cold: 0.5, hot: 0.7, start: 0.5, chainLen: 10, kBend: 1.0,
       trange: [0.4, 1.0], tstep: 0.01, dt: 0.005, preT: 'set', concLab: 'Droplet size, liquid beads (rebuilds on release)',
       plotLab: 'Liquid contacts with teal (water-loving) beads', plotMax: 100,
-      legend: [['tail', 'Orange beads (repel the liquid)'], ['head', 'Teal beads (attract the liquid)'], ['mixS', 'Blue: liquid droplet (4-bead oligomers)']] },
+      legend: [['tail', 'Water-fearing bead'], ['head', 'Water-loving bead'], ['mixS', 'Liquid']] },
     mbpoly: { scan: [0.14, 0.40], conc: 60, min: 1, max: 150, count: true, cold: 0.16, hot: 0.34, start: 0.34, ordT: 0.22, box: 36, chainLen: 1, lenMin: 1, epsPP: 0.1, epsH: 1.0, epsW: 0.4, gamma: 0.1,
       trange: [0.12, 0.40], tstep: 0.005, rho: 0.85, dt: 0.01, preT: 0.35, concLab: 'Number of nonpolar solutes',
       plotLab: 'Fraction of solutes in clusters of 3 or more', hl: 'Highlight clustered solutes',
-      legend: [['poly', 'P nonpolar solute, free'], ['cryst', 'P in a cluster'], ['solv', 'W water (lines: hydrogen-bond arms)']] },
+      legend: [['poly', 'Particle'], ['cryst', 'Particle in cluster'], ['solv', 'Water']] },
     plates: { scan: [0.14, 0.40], conc: 0, min: 0, max: 1, count: true, cold: 0.16, hot: 0.34, start: 0.18, ordT: 0.18, box: 36, epsH: 0.6, gamma: 0.1,
       trange: [0.12, 0.40], tstep: 0.005, rho: 0.85, dt: 0.01, concLab: '', plotMax: 12,
       plotLab: 'Water molecules in the gap between the plates', hl: '',
-      legend: [['poly', 'Plate beads (nonpolar)'], ['cold', 'Hydration-shell water'], ['solv', 'Bulk water (lines: hydrogen-bond arms)']] },
-    ice: { scan: [0.10, 0.30], conc: 0, min: 0, max: 1, count: true, cold: 0.12, hot: 0.26, start: 0.26, ordT: 0.08, box: 36,
-      trange: [0.08, 0.36], tstep: 0.005, dt: 0.01, preT: 0.35, concLab: '',
+      legend: [['poly', 'Plate'], ['cold', 'Water at plate'], ['solv', 'Water']] },
+    ice: { scan: [0.10, 0.30], conc: 0, min: 0, max: 150, count: true, rebuildConc: true, cold: 0.12, hot: 0.26, start: 0.26, ordT: 0.08, box: 36,
+      trange: [0.08, 0.36], tstep: 0.005, dt: 0.01, preT: 0.35, concLab: 'Antifreeze particles',
       plotLab: 'Fraction of molecules in ice', hl: 'Highlight ice (blue)',
-      legend: [['cold', 'Water in ice (3 hydrogen bonds, neighbours too)'], ['solv', 'Liquid water'], ['bond', 'Lines: hydrogen-bond arms']] },
+      legend: [['cold', 'Ice'], ['solv', 'Liquid water'], ['tail', 'Antifreeze particle']] },
     dumbbell: { scan: [0.4, 2.0], conc: 50, min: 2, max: 60, cold: 0.5, hot: 2.0, start: 2.0, concLab: 'Dumbbell concentration (fraction of beads)',
       plotLab: 'Fraction of molecules in aggregates (bilayers, micelles)', hl: 'Color by aggregate',
-      legend: [['head', 'A head (solvophilic)'], ['tail', 'B tail (solvophobic)'], ['solv', 'S solvent']] },
+      legend: [['head', 'Head'], ['tail', 'Tail'], ['solv', 'Solvent']] },
     polymer: { scan: [1.0, 2.5], conc: 40, min: 2, max: 95, cold: 1.2, hot: 2.0, start: 2.2, chainLen: 12, epsPP: 1.75, concLab: 'Polymer concentration (fraction of beads)',
       plotLab: 'Crystalline fraction of polymer beads', hl: 'Highlight crystallites',
-      legend: [['poly', 'P polymer, amorphous'], ['cryst', 'P crystalline'], ['solv', 'S solvent']] },
+      legend: [['poly', 'Polymer'], ['cryst', 'Crystal'], ['solv', 'Solvent']] },
     diblock: { scan: [0.6, 2.4], conc: 70, min: 5, max: 95, cold: 0.8, hot: 2.2, start: 2.2, chainLen: 16, concLab: 'Copolymer concentration (fraction of beads)',
       plotLab: 'A–B segregation s (0 mixed, 1 separated)',
-      legend: [['head', 'A block'], ['tail', 'B block'], ['solv', 'S solvent (good for both)']] },
+      legend: [['head', 'A block'], ['tail', 'B block'], ['solv', 'Solvent']] },
     demix: { scan: [0.6, 2.2], conc: 50, min: 5, max: 95, cold: 0.8, hot: 2.0, start: 2.0, concLab: 'Fraction of liquid C',
       plotLab: 'Demixing s (0 mixed, 1 separated)',
       legend: [['mixS', 'Liquid S'], ['mixC', 'Liquid C']] },
     crypt: { scan: [0.8, 6.0], conc: 30, min: 2, max: 40, count: true, cold: 1.0, hot: 2.2, start: 1.0, ordT: 0.6, box: 48, trange: [0.6, 7.0], concLab: 'Number of proteins',
       plotLab: 'Proteins stuck in clumps (sticky beads touching another protein)', hl: 'Color proteins by clump',
-      legend: [['tail', 'Hidden sticky bead (cryptic site)'], ['head', 'Protein bead'], ['solv', 'S solvent']] },
+      legend: [['tail', 'Sticky bead'], ['head', 'Protein bead'], ['solv', 'Solvent']] },
     hp: { scan: [0.8, 2.5], conc: 1, min: 1, max: 8, count: true, cold: 1.0, hot: 2.3, start: 2.3, box: 36, concLab: 'Number of chains',
       plotLab: 'Buried hydrophobic beads (H with ≥ 2 H neighbours)',
-      legend: [['tail', 'H hydrophobic'], ['head', 'P polar'], ['solv', 'S solvent']] },
+      legend: [['tail', 'Hydrophobic'], ['head', 'Polar'], ['solv', 'Solvent']] },
     lcst: { scan: [0.5, 2.3], conc: 5, min: 1, max: 40, cold: 0.6, hot: 2.2, start: 2.2, chainLen: 20, epsPP: 1.0, preT: 3.0, concLab: 'Polymer concentration (fraction of beads)',
       plotLab: 'Polymer self-contact fraction (P–P share of polymer contacts)',
-      legend: [['poly', 'P polymer'], ['solv', 'S solvent (athermal)']] }
+      legend: [['poly', 'Polymer'], ['solv', 'Solvent']] }
   };
 
   // ---- analysis per system: returns plotted value and six readouts ----
@@ -3509,7 +3694,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       boxL: n, gravity: +$('grav').value, graftSpacing: +$('graft').value, epsCC: +$('epsCC').value, epsQL: +$('epsQL').value, epsHL: +$('epsHL').value, invert: $('bInvert').checked, nEnd: +$('nEnd').value, nWater: v,
       thermostat: $('thermo').value, gamma: +$('gamma').value, tau: +$('tau').value, seed: (Math.random() * 1e9) | 0,
       epsSS: 0, epsAS: +$('epsAS').value, epsBB: +$('epsBB').value, sigA: +$('sigA').value, sigB: 1,
-      epsPP: +$('epsPP').value, epsH: (sys === 'mbpoly' || sys === 'plates') ? +$('epsH').value : 0, epsW: sys === 'mbpoly' ? +$('epsW').value : 0, kBend: sys === 'plates' ? 150 : +$('kBend').value, chainLen: +$('chainLen').value,
+      nSalt: sys === 'ice' ? v : 0, epsPP: +$('epsPP').value, epsH: (sys === 'mbpoly' || sys === 'plates') ? +$('epsH').value : 0, epsW: sys === 'mbpoly' ? +$('epsW').value : 0, kBend: sys === 'plates' ? 150 : +$('kBend').value, chainLen: +$('chainLen').value,
       fA: +$('fA').value, epsAB: +$('epsAB').value, epsSC: +$('epsSC').value, xC: v / 100,
       epsHH: +$('epsHH').value, sequence: cleanSeq(), cryptSeq: 'PPPPPXXXPPXXXXPPXXXXXPPXXXXPPXXXPPPPP', epsGo: 2.5, goCut: 1.6, epsXX: +$('epsXX').value, epsB: 0 };
     if (opts.game && gameSel && gameSel.prm) Object.assign(prm, gameSel.prm); else prm.nDrug = 0;
@@ -3679,7 +3864,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // concentration: live where possible; rebuild when there is too little solvent left to insert chains
   function concNote() { if (!eng) return; const solv = eng.N - eng.Lc * eng.nMol, t = $('concNote');
     t.className = 'note';
-    if (sys === 'demix') t.textContent = T('Changes apply live: beads switch between S and C.');
+    if (sys === 'ice') t.textContent = T('Particles that attract water but cannot join the ice. They lower the melting point; about 120 keep most of the water liquid even when cold. The box rebuilds when you change the number.');
+    else if (sys === 'demix') t.textContent = T('Changes apply live: beads switch between S and C.');
     else if (sys === 'brush') t.textContent = T('{n} grafted chains of {l} beads; droplet of {w} liquid beads.', { n: eng.nMol, l: eng.Lc, w: eng.nWaterPlaced });
     else if (sys === 'dumbbell') t.textContent = T('{n} dumbbells, {s} solvent beads. Changes apply live.', { n: eng.nMol, s: solv });
     else t.textContent = T('{n} chains of {l} beads, {s} solvent beads. Changes apply live: chains are grown from solvent beads or turned back into solvent.', { n: eng.nMol, l: eng.Lc, s: solv }); }
@@ -3745,7 +3931,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     $('gamma').value = S.gamma || 1; $('gammaO').textContent = (+$('gamma').value).toFixed(2); // MB systems: low friction so solutes move fast enough to meet
     const kb = S.kBend !== undefined ? S.kBend : 6.4; $('kBend').value = kb; $('kBendO').textContent = kb.toFixed(1);
     $('byCluster').checked = sys === 'polymer' || sys === 'mbpoly' || sys === 'ice';
-    $('compPanel').hidden = $('sizeRow').hidden = sys === 'ice';
+    $('sizeRow').hidden = sys === 'ice'; $('compPanel').hidden = false;
     $('concRow').hidden = $('concNote').hidden = sys === 'plates';
     baroUI();
   }
@@ -3769,28 +3955,28 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   const GAMES = [
     { id: 'ice', title: 'Grow the biggest ice crystal', sub: 'Ice · slow cooling wins', sys: 'ice', ordered: false, range: [0.02, 0.30], D: 150,
       lab: 'Ice', fmt: (v) => pct(v), stars: [0.40, 0.48, 0.55],
-      goal: 'Turn as much water into ice as you can. Quiet cools the box, noise warms it. Your score is the most ice you reach. The water starts liquid; when it cools, its molecules can lock into a neat honeycomb pattern: ice.', facts: ["Almost every snowflake has six arms. The six-fold shape comes from the honeycomb arrangement of water molecules in ice.", "Ice is lighter than liquid water, so it floats. That is why lakes freeze from the top down and fish survive the winter below.", "Very pure water can stay liquid well below 0 °C. Cloud droplets can stay liquid down to about −40 °C before they freeze."],
+      short: "Turn as much of the water into ice as you can within 30 seconds.", goal: 'Turn as much water into ice as you can. Quiet cools the box, noise warms it. Your score is the most ice you reach. The water starts liquid; when it cools, its molecules can lock into a neat honeycomb pattern: ice.', facts: ["Almost every snowflake has six arms. The six-fold shape comes from the honeycomb arrangement of water molecules in ice.", "Ice is lighter than liquid water, so it floats. That is why lakes freeze from the top down and fish survive the winter below.", "Very pure water can stay liquid well below 0 °C. Cloud droplets can stay liquid down to about −40 °C before they freeze."],
       hint: 'Going silent at once freezes the water into a jumble: no star. Ice needs time to grow in order. Start with some noise, then get quieter little by little.',
       lesson: { good: 'Cooling slowly gave the molecules time to find their places in the honeycomb, so the crystals grew large. This is annealing: how glassmakers and metal workers make strong, clear materials.',
         bad: 'Cooled too fast, the molecules lock in wherever they happen to be; kept at one temperature, the crystals grow too slowly or melt again. Try starting a bit warm and cooling step by step.' } },
-    { id: 'demix', title: 'Separate the liquids', sub: 'Binary liquid · not too cold', sys: 'demix', ordered: false, range: [0.02, 1.0], D: 90, box: '36',
-      lab: 'Demixing s', fmt: (v) => v.toFixed(2), stars: [0.60, 0.72, 0.79],
-      goal: 'Separate the two liquids as much as you can. Your score is the best separation: 0 is fully mixed, 1 is fully separated. Each kind of molecule prefers its own kind, like oil and water.', facts: ["Mayonnaise is oil and water that stay mixed: molecules from egg yolk coat the oil droplets and stop them from joining up.", "Inside living cells, some proteins separate from the surrounding liquid into droplets, like oil in water. These droplets work as tiny rooms without walls.", "Shaking an oil-and-vinegar dressing mixes it only for a while: the droplets slowly merge and the two liquids separate again."],
+    { id: 'demix', title: 'Separate the liquids', sub: 'Two liquids · not too cold', sys: 'demix', ordered: false, range: [0.02, 1.0], D: 90, box: '36',
+      lab: 'Separation', fmt: (v) => v.toFixed(2), stars: [0.60, 0.72, 0.79],
+      short: "Separate the two mixed liquids as much as you can within 30 seconds.", goal: 'Separate the two liquids as much as you can. Your score is the best separation: 0 is fully mixed, 1 is fully separated. Each kind of molecule prefers its own kind, like oil and water.', facts: ["Mayonnaise is oil and water that stay mixed: molecules from egg yolk coat the oil droplets and stop them from joining up.", "Inside living cells, some proteins separate from the surrounding liquid into droplets, like oil in water. These droplets work as tiny rooms without walls.", "Shaking an oil-and-vinegar dressing mixes it only for a while: the droplets slowly merge and the two liquids separate again."],
       hint: 'Total silence freezes the molecules before they can sort themselves: no star. Find a level that is cold enough to separate but warm enough to move.',
       lesson: { good: 'Cool enough that the molecules prefer their own kind, warm enough that they can still move: the blobs grow quickly. Too cold, and everything freezes in place.',
         bad: 'Very cold molecules hardly move, so they stay stuck next to the wrong neighbours. Try a little noise to keep them moving.' } },
-    { id: 'drug', title: 'Deliver the drug', sub: 'Amphiphiles · hit the target windows', sys: 'dumbbell', ordered: true, range: [0.4, 2.5], D: 60, box: '48', conc: 34,
+    { id: 'drug', title: 'Deliver the drug', sub: 'Soap molecules · hit the target windows', sys: 'dumbbell', ordered: true, range: [0.4, 2.5], D: 60, box: '48', conc: 34,
       prm: { nDrug: 90, drugPerMic: 3, extraTails: 3, preSteps: 1000, epsDB: 2.5, epsBB: 2.5, epsAS: 0, sigA: 1.0 }, raw: true, noSnap: true, side: 'Lost',
       lab: 'Delivered', fmt: (v) => v.toFixed(0) + '%', stars: [40, 65, 85], scale: 100,
       setup: (G) => { const w = []; let a = 6 + 4 * Math.random(); const W = 4 / 1.5; while (a + W <= 58) { w.push([a, a + W]); a += W + 5 + 4 * Math.random(); } G.win = w; G.del = 0; G.lost = 0; },
       value: () => drugTick(),
-      goal: 'Deliver as much drug (stars) as you can at the right moment. Heat only during the red target windows. Drug released at any other time is lost and turns grey; delivered drug turns yellow. The micelles carry the drug in their oily cores, and heat breaks them open.', facts: ["The first nanoparticle cancer medicine, Doxil, was approved in 1995. It carries the drug inside tiny bubbles made of lipids, the molecules of cell membranes.", "Heat-triggered carriers are being tested in medicine: some release their drug when a tumour is warmed just above body temperature, to about 40–42 °C.", "Soap works like these micelles: grease hides in the oily cores of soap micelles and is rinsed away with the water."],
+      short: "Heat only in the red windows to deliver the drug (stars).", goal: 'Deliver as much drug (stars) as you can at the right moment. Heat only during the red target windows. Drug released at any other time is lost and turns grey; delivered drug turns yellow. The micelles carry the drug in their oily cores, and heat breaks them open.', facts: ["The first nanoparticle cancer medicine, Doxil, was approved in 1995. It carries the drug inside tiny bubbles made of lipids, the molecules of cell membranes.", "Heat-triggered carriers are being tested in medicine: some release their drug when a tumour is warmed just above body temperature, to about 40–42 °C.", "Soap works like these micelles: grease hides in the oily cores of soap micelles and is rinsed away with the water."],
       hint: 'The micelles need a moment to open, so start the noise just before a window and stop just before it ends. Stay quiet between windows so the micelles hold on to the rest.',
       lesson: { good: 'Short, well-timed bursts of heat opened the micelles exactly when the drug was needed, and the cold kept it locked inside the rest of the time. Temperature-sensitive carriers are designed to do just this at a warmed tumour.',
         bad: 'Heat frees the drug a little after it starts and keeps freeing it for a moment after it stops, so late or long bursts waste it. Watch the windows on the time bar and start a little early.' } },
-    { id: 'gel', title: 'Grow the longest gel strand', sub: 'Protein unfolding · 35 proteins', sys: 'crypt', ordered: true, range: [0.6, 7.0], D: 90, box: '48', conc: 35, epsXX: 5,
+    { id: 'gel', title: 'Grow the longest gel strand', sub: '35 proteins', sys: 'crypt', ordered: true, range: [0.6, 7.0], D: 90, box: '48', conc: 35, epsXX: 5,
       lab: 'Gel path', fmt: (v) => v.toFixed(0) + ' σ', stars: [80, 130, 170], scale: 200, value: () => { gelShow = eng.gelPath(1.5, 2); return gelShow.len; },
-      goal: 'Link the proteins into the longest gel strand you can. Your score is the longest path through the gel, from protein to protein (red line); the box is 62 σ wide. The proteins start folded, with their sticky beads hidden inside. Two proteins are linked when they share at least two sticky contacts.', facts: ["Boiling an egg turns the clear egg white solid: heat unfolds its proteins, and they stick together into a gel.", "Gelatin jelly melts at about 30–35 °C, a little below body temperature. That is why it melts in your mouth.", "Tofu is a protein gel: soy milk is heated, then salts such as magnesium chloride make the soy proteins clump together."],
+      short: "Link the proteins into the longest gel strand you can within 30 seconds.", goal: 'Link the proteins into the longest gel strand you can. Your score is the longest path through the gel, from protein to protein (red line); the box is 62 σ wide. The proteins start folded, with their sticky beads hidden inside. Two proteins are linked when they share at least two sticky contacts.', facts: ["Boiling an egg turns the clear egg white solid: heat unfolds its proteins, and they stick together into a gel.", "Gelatin jelly melts at about 30–35 °C, a little below body temperature. That is why it melts in your mouth.", "Tofu is a protein gel: soy milk is heated, then salts such as magnesium chloride make the soy proteins clump together."],
       hint: 'Folded proteins cannot link, and boiling breaks the links. Heat to open the folds, then cool well down so the links hold and the network grows.',
       lesson: { good: 'Heating opened the folds and exposed the sticky beads, cooling let the links hold, and the clumps joined into a long network. This is how heated egg white or gelatin-like protein solutions set into a gel.',
         bad: 'A gel needs both steps: heat to expose the sticky beads, then cooler conditions so the links last long enough for clumps to join. Try heating for a third of the time, then going quieter.' } },
@@ -3822,7 +4008,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     gameSel = GAMES.find((g) => g.id === id); renderPick();
     $('gsel').hidden = false; $('ggoal').textContent = T(gameSel.goal);
     $('ghint').innerHTML = `${T('Stars:')} ${gameSel.stars.map((s, k) => '★'.repeat(k + 1) + ' ' + gameSel.fmt(s)).join(' · ')}`;
-    $('gstart').textContent = T('Start');
+    gstartKey = 'Start'; $('gstart').textContent = T('Start');
     if (appMode === 'game') prepGame(gameSel);
   }
   function prepGame(g) { // the game's system, cold and ready: shown as soon as a game is picked, rebuilt fresh on Start
@@ -3851,15 +4037,15 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const band = $('gband'); band.querySelectorAll('.tick').forEach((x) => x.remove());
     g.stars.forEach((s, k) => { const d = document.createElement('div'); d.className = 'tick'; d.style.left = (100 * s / (g.scale || 1)) + '%'; d.textContent = '★'.repeat(k + 1); band.appendChild(d); });
     $('gnow').style.left = '0%'; $('gbar').style.width = '0%'; $('gres').textContent = '';
-    $('hudTitle').textContent = T(g.title) + ':'; $('hudGoal').textContent = T(g.goal); $('hudTip').textContent = '';
+    $('hudTitle').textContent = T(g.title) + ':'; $('hudGoal').textContent = T(phoneUI() ? g.short : g.goal); $('hudTip').textContent = '';
     $('ghud').hidden = false; document.querySelector('.wrap').classList.add('ingame'); $('gquit').textContent = T('Give up'); $('gagain').hidden = true;
     $('gstart').disabled = true; resize();
-    countdown(game);
+    countdown(game); if (typeof sheet === 'function') sheet(false);
     if ($('guseMic').checked) setMode('mic').then(() => { if (!analyser && game) { setMode('slider'); $('gres').textContent = T('No microphone here: use the temperature slider.'); } });
     else setMode('slider');
     const hud = $('ghud'); if (hud.scrollIntoView) hud.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
   }
-  let cdTimer = null;
+  let cdTimer = null, gstartKey = 'Start'; // label of the Start button, kept so a language switch can redraw it
   function gfxShow() { const o = $('gfx'); o.style.left = cv.offsetLeft + 'px'; o.style.top = cv.offsetTop + 'px'; o.style.width = cv.offsetWidth + 'px'; o.style.height = cv.offsetHeight + 'px'; o.hidden = false; return o; }
   function countdown(G) { // 3, 2, 1, Go! over the box; the clock and the molecules wait until it ends
     clearTimeout(cdTimer); running = false; G.cd = true; let k = 3; const o = gfxShow();
@@ -3891,7 +4077,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   }
   function endGame(result) {
     const G = game; game = null; clearTimeout(cdTimer); $('gfx').hidden = true; $('gfx').innerHTML = '';
-    $('gstart').disabled = false; $('gstart').textContent = T('Play again'); $('gquit').textContent = T('Close');
+    $('gstart').disabled = false; gstartKey = 'Play again'; $('gstart').textContent = T(gstartKey); $('gquit').textContent = T('Close');
     if (!G || !result) { closeHud(); return; }
     const g = G.g, v = G.peak, st = starsFor(g, v), b = getBest(g), rec = b === null || v > b; if (rec) setBest(g, v);
     const S = addStat(g, v);
@@ -3966,11 +4152,11 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // ---------- help: quick tour of the main controls, opened with the ? button ----------
   const TOUR = [
     { t: 'How this works', d: 'Every dot is a molecule. Cold molecules stick together and build structures; heat shakes them apart. Here a small piece of ice melts as it warms and freezes again as it cools.', demo: true },
-    { sel: '.modeseg', t: 'Modes', d: 'Game: reach a goal in 30 seconds. Explore: try any system freely. Energy scan: measure where a structure melts.' },
+    { sel: () => phoneUI() ? '.mbnav' : '.modeseg', t: 'Modes', d: 'Game: reach a goal in 30 seconds. Explore: try any system freely. Energy scan: measure where a structure melts.' },
     { sel: '#sim', t: 'Simulation box', d: 'The molecules move here in real time. The legend under the box names the colours.' },
     { sel: '.mbar', t: 'Temperature', d: 'Drag the slider to cool or heat the box. Press Mic to use room noise instead: quiet cools the box, sound heats it.' },
-    { sel: () => appMode === 'game' ? '#gamePanel' : '#sysPanel', t: () => appMode === 'game' ? 'Games' : 'Systems',
-      d: () => appMode === 'game' ? 'Pick a game, read the goal and press Start. Reach the marked levels to earn up to three stars.' : 'Pick a system. Each card says what happens to it on cooling or heating.' },
+    { sel: () => phoneUI() ? '#mbOpt' : appMode === 'game' ? '#gamePanel' : '#sysPanel', t: () => phoneUI() ? 'Options' : appMode === 'game' ? 'Games' : 'Systems',
+      d: () => phoneUI() ? 'Tap Options to pick a game or a system and to change the settings. Then press Start on the box.' : appMode === 'game' ? 'Pick a game, read the goal and press Start. Reach the marked levels to earn up to three stars.' : 'Pick a system. Each card says what happens to it on cooling or heating.' },
     { sel: '.langbox', t: 'Language and help', d: 'Switch the language here. Press ? to see this tour again.' },
   ];
   let tourI = -1, tourRaf = 0, tourT0 = 0;
@@ -4037,6 +4223,30 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (tourI >= 0 && TOUR[tourI].demo) tourRaf = requestAnimationFrame(iceDemo);
   }
 
+  // ---------- phones: the options live in a bottom sheet, the mode switch in a bar at the bottom ----------
+  const phoneUI = () => matchMedia('(max-width: 700px)').matches;
+  function sheet(open) { const w = document.querySelector('.wrap'); if (open && !phoneUI()) return;
+    w.classList.toggle('sheet-open', !!open); $('sheetBack').hidden = !open; $('mbOpt').setAttribute('aria-expanded', String(!!open));
+    $('sheetTitle').textContent = T(appMode === 'game' ? 'Game' : appMode === 'scan' ? 'Energy scan' : 'Explore');
+    if (open) $('rack').scrollTop = 0; }
+  document.querySelectorAll('[data-mbmode]').forEach((b) => b.addEventListener('click', () => { const m = b.dataset.mbmode; if (m !== appMode) setAppMode(m);
+    if (m === 'scan') { sheet(false); requestAnimationFrame(() => { const t = $('thermoPanel'); if (t && t.scrollIntoView) t.scrollIntoView({ block: 'start', behavior: 'smooth' }); }); return; } // scan: straight to its buttons and graphs
+    sheet(true); }));
+  function toSettings() { // Explore: show this system's own settings (Composition and interactions)
+    const r = $('rack'), c = [$('compPanel'), $('modelPanel')].find((el) => el && el.offsetParent !== null); if (!c) return; // systems without own settings (Ice): the model and box settings
+    const y = c.getBoundingClientRect().top - r.getBoundingClientRect().top + r.scrollTop - r.querySelector('.sheethead').offsetHeight - 8;
+    r.scrollTop = Math.max(0, y); }
+  $('mbOpt').addEventListener('click', () => {
+    const isOpen = document.querySelector('.wrap').classList.contains('sheet-open');
+    if (appMode === 'explore') { if (!isOpen) sheet(true); [0, 60, 320].forEach((t) => setTimeout(toSettings, t)); return; } // again after the slide-in, which some phones need
+    sheet(!isOpen); });
+  $('sheetClose').addEventListener('click', () => sheet(false)); $('sheetBack').addEventListener('click', () => sheet(false));
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && document.querySelector('.wrap').classList.contains('sheet-open')) sheet(false); });
+  matchMedia('(max-width: 700px)').addEventListener('change', (e) => { if (!e.matches) sheet(false); });
+  // picking a game or a system closes the sheet so the box is in view; Start on the box begins the game
+  $('gpick').addEventListener('click', (e) => { if (e.target.closest('[data-game]') && phoneUI()) setTimeout(() => sheet(false), 120); });
+  document.querySelectorAll('[data-pick]').forEach((b) => b.addEventListener('click', () => { if (phoneUI()) setTimeout(() => sheet(false), 120); }));
+
   // ---------- app modes: explore / game / energy scan ----------
   let appMode = 'explore';
   function setAppMode(m) {
@@ -4047,6 +4257,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     appMode = m;
     if (eng && m === 'explore' && !eng.p.baro && baroOn()) { eng.p.baro = true; eng.p.P0 = null; }
     document.querySelectorAll('[data-appmode]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.appmode === m)));
+    document.querySelectorAll('[data-mbmode]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mbmode === m)));
+    if ($('sheetTitle')) $('sheetTitle').textContent = T(m === 'game' ? 'Game' : m === 'scan' ? 'Energy scan' : 'Explore');
     document.querySelectorAll('[data-mode]').forEach((el) => el.classList.toggle('offmode', !el.dataset.mode.split(' ').includes(m)));
     const w = document.querySelector('.wrap'); w.classList.toggle('inscan', m === 'scan');
     if (m === 'game') { if (!gameSel) selectGame(GAMES[0].id); else prepGame(gameSel); }
@@ -4194,7 +4406,21 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // ---- rendering ----
   const cv = $('sim'), ctx = cv.getContext('2d');
   let dpr = 1, W = 0;
-  function resize() { dpr = Math.min(2, window.devicePixelRatio || 1); W = cv.clientWidth; cv.width = Math.round(W * dpr); cv.height = Math.round(W * dpr); sizePlots(); }
+  // ---- adaptive drawing quality: watch frame time and drawing time, step down when the device cannot keep up ----
+  // 0 full · 1 canvas at 1x pixel density · 2 also no water arms, readouts less often · 3 also every 2nd frame drawn, solvent hidden (not in Ice / Binary liquid)
+  let qLevel = 0, qAuto = true, qDraw = null, qFrame = null, qT = 0, loopN = 0;
+  const ANEVERY = [6, 9, 15, 20];
+  function setQuality(q) { q = Math.max(0, Math.min(3, q)); if (q === qLevel) return; const pix = (q >= 1) !== (qLevel >= 1); qLevel = q; if (pix) resize(); qDraw = qFrame = null; qT = performance.now(); }
+  function qualityTick(now, dMs, fMs) {
+    if (fMs > 200 || document.visibilityState !== 'visible') { qT = now; return; } // tab was hidden or the page was busy elsewhere
+    qDraw = qDraw === null ? dMs : 0.92 * qDraw + 0.08 * dMs; qFrame = qFrame === null ? fMs : 0.92 * qFrame + 0.08 * fMs;
+    if (!qAuto || qLevel >= 3 || !running) { if (!running) qT = now; return; }
+    if (now - qT < 2500) return; // let it settle after a change
+    if (qFrame > (qLevel >= 3 ? 40 : 24) || qDraw > 7) { setQuality(qLevel + 1); $('quality').value = 'auto'; }
+    else qT = now - 1500; // re-check about once a second
+  }
+  $('quality').addEventListener('change', (e) => { const v = e.target.value; qAuto = v === 'auto'; setQuality(qAuto ? 0 : +v); });
+  function resize() { dpr = Math.min(qLevel >= 1 ? 1 : 2, window.devicePixelRatio || 1); W = cv.clientWidth; cv.width = Math.round(W * dpr); cv.height = Math.round(W * dpr); sizePlots(); }
   window.addEventListener('resize', resize);
   const CPAL = ['#e0704a', '#3a9bd6', '#9b6bd1', '#d4a72c', '#4cae6b', '#d65a9a', '#2fb5b0', '#8f8f3a'];
   const TYPECOL = { 0: 'head', 1: 'tail', 3: 'poly', 5: 'tail', 6: 'head' };
@@ -4318,18 +4544,19 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (eng.mb) {
       if (sys === 'ice') {
         const ic = $('byCluster').checked && an && an.isIce ? an.isIce : null;
-        disks(colors.solv, 0.35 * s, ic ? (i) => !ic[i] : () => true, 0, N);
+        disks(colors.solv, 0.35 * s, ic ? (i) => type[i] === 7 && !ic[i] : (i) => type[i] === 7, 0, N);
         if (ic) disks(colors.cold, 0.35 * s, (i) => ic[i] === 1, 0, N);
+        disks(colors.tail, 0.4 * s, (i) => type[i] === 3, 0, N); // antifreeze particles
       }
-      if (sys === 'ice' || $('showSolv').checked) {
+      if (sys === 'ice' || ($('showSolv').checked && qLevel < 3)) {
         if (sys !== 'ice') { const sm = $('showShell').checked && shellMask && (sys === 'mbpoly' || sys === 'plates') ? shellMask : null;
           disks(colors.solv, 0.35 * s, sm ? (i) => !sm[i] : () => true, nCh, N); if (sm) disks(colors.cold, 0.35 * s, (i) => sm[i] === 1, nCh, N); }
-        ctx.strokeStyle = colors.bond; ctx.lineWidth = Math.max(1, 0.08 * s); ctx.beginPath(); const arm = eng.arm, al = 0.5 * s;
+        if (qLevel < 2) { ctx.strokeStyle = colors.bond; ctx.lineWidth = Math.max(1, 0.08 * s); ctx.beginPath(); const arm = eng.arm, al = 0.5 * s;
         for (let i = nCh; i < N; i++) { const X = x[i] * s, Y = y[i] * s, o = 6 * i;
           for (let a = 0; a < 6; a += 2) { ctx.moveTo(X, Y); ctx.lineTo(X + al * arm[o + a], Y + al * arm[o + a + 1]); } }
-        ctx.stroke();
+        ctx.stroke(); } // arms skipped on slow devices
       }
-    } else if ($('showSolv').checked && !eng.walls) disks(colors.solv, 0.42 * s, bnd ? (i) => !bnd[i] : eng.nDrug ? (i) => type[i] === 2 : () => true, nCh, N);
+    } else if ($('showSolv').checked && qLevel < 3 && !eng.walls) disks(colors.solv, 0.42 * s, bnd ? (i) => !bnd[i] : eng.nDrug ? (i) => type[i] === 2 : () => true, nCh, N);
     if (bnd) disks(colors.mixS, 0.42 * s, (i) => bnd[i] === 1, nCh, N);
     if ($('showBonds').checked && Lc > 1) {
       ctx.strokeStyle = colors.bond; ctx.lineWidth = Math.max(1, 0.18 * s); ctx.beginPath(); const hL = L / 2;
@@ -4392,7 +4619,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // ---- main loop ----
   let last = performance.now(), stepCount = 0, perfT = last, sps = 0, tkinAvg = null;
   function loop(now) {
-    const dtSec = Math.min(0.1, (now - last) / 1000); last = now;
+    const frameMs = now - last, dtSec = Math.min(0.1, frameMs / 1000); last = now;
     if (scan && running) scanStep();
     else if (mode === 'mic') micUpdate(dtSec);
     if (running) {
@@ -4404,7 +4631,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       stepCount += n;
       const tk = eng.tempKin();
       tkinAvg = tkinAvg === null ? tk : 0.9 * tkinAvg + 0.1 * tk;
-      if (frame % 6 === 0) {
+      if (frame % ANEVERY[qLevel] === 0) {
         const rep = report(); showReport(rep); if (game) gameUpdate(game.g.value ? game.g.value() : rep.v); if (classOn) classUpdate();
         push(hist.tset, tset); push(hist.tkin, tkinAvg); push(hist.frac, rep.v);
         $('tkin').textContent = $('tkinM').textContent = tkinAvg.toFixed(2);
@@ -4419,8 +4646,10 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       }
       frame++;
     }
-    if (now - perfT > 1000) { sps = stepCount * 1000 / (now - perfT); stepCount = 0; perfT = now; $('perf').textContent = `${Math.round(sps)} ${T('steps/s')} · ${(sps * eng.p.dt).toFixed(1)} τ/s`; }
-    followTick(); draw(); syncBoxStart();
+    if (now - perfT > 1000) { sps = stepCount * 1000 / (now - perfT); stepCount = 0; perfT = now; $('perf').textContent = `${Math.round(sps)} ${T('steps/s')} · ${(sps * eng.p.dt).toFixed(1)} τ/s` + (qLevel ? ' · ' + T('lighter drawing ({q})', { q: qLevel }) : ''); }
+    followTick();
+    if (qLevel < 3 || (loopN & 1) === 0) { const d0 = performance.now(); draw(); qualityTick(now, performance.now() - d0, frameMs); } loopN++;
+    syncBoxStart();
     requestAnimationFrame(loop);
   }
 
@@ -4437,14 +4666,21 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     renderPick();
     if (gameSel && !game) { $('ggoal').textContent = T(gameSel.goal);
       $('ghint').innerHTML = `${T('Stars:')} ${gameSel.stars.map((s, k) => '★'.repeat(k + 1) + ' ' + gameSel.fmt(s)).join(' · ')}`; }
-    if (game) { const g = game.g; $('gvalLab').textContent = T(g.lab); $('hudTitle').textContent = T(g.title) + ':'; $('hudGoal').textContent = T(g.goal); $('hudTip').textContent = ''; $('gquit').textContent = T('Give up'); }
+    $('gstart').textContent = T(gstartKey); $('gstartBox').textContent = T(gstartKey);
+    if (game) { const g = game.g; $('gvalLab').textContent = T(g.lab); $('hudTitle').textContent = T(g.title) + ':'; $('hudGoal').textContent = T(phoneUI() ? g.short : g.goal); $('hudTip').textContent = ''; $('gquit').textContent = T('Give up'); }
     else { $('gquit').textContent = T($('ghud').hidden ? 'Give up' : 'Close'); }
     drawThermo();
   }
   function setLang(l) {
     LANG = I18N[l] || l === 'en' ? l : 'en'; $('lang').value = LANG;
-    applyStatic(); refreshTexts(); document.title = T('Shut Up and Get Structured');
+    applyStatic(); refreshTexts(); document.title = T('Shut Up and Get Structured'); barLabels();
   }
+  // short labels for the phone's bottom bar: a quarter of a narrow screen fits about 10 letters
+  const BAR = { en: { game: 'Game', explore: 'Explore', scan: 'Energy scan', opt: 'Options' },
+    fi: { game: 'Peli', explore: 'Tutki', scan: 'Skannaus', opt: 'Asetukset' },
+    sv: { game: 'Spel', explore: 'Utforska', scan: 'Skanning', opt: 'Alternativ' },
+    ru: { game: 'Игра', explore: 'Изучение', scan: 'Скан', opt: 'Настройки' } };
+  function barLabels() { const t = BAR[LANG] || BAR.en; document.querySelectorAll('[data-bar]').forEach((el) => { el.textContent = t[el.dataset.bar]; }); }
   $('lang').addEventListener('change', (e) => setLang(e.target.value));
   window.__eng = () => eng; window.__game = () => game; // for tests
   window.__i18nData = () => { const out = [];
