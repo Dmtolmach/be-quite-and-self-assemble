@@ -1,7 +1,8 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" translate="no">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google" content="notranslate">
 <title>Shut Up and Get Structured</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2048%2048%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cline%20x1%3D%2232.7%22%20y1%3D%2229.0%22%20x2%3D%2239.8%22%20y2%3D%2233.1%22%20stroke%3D%22%2344525e%22%20stroke-width%3D%222.2%22/%3E%3Ccircle%20cx%3D%2239.8%22%20cy%3D%2233.1%22%20r%3D%224.8%22%20fill%3D%22%231f8a8a%22/%3E%3Cline%20x1%3D%2224.0%22%20y1%3D%2234.1%22%20x2%3D%2224.0%22%20y2%3D%2242.3%22%20stroke%3D%22%2344525e%22%20stroke-width%3D%222.2%22/%3E%3Ccircle%20cx%3D%2224.0%22%20cy%3D%2242.3%22%20r%3D%224.8%22%20fill%3D%22%231f8a8a%22/%3E%3Cline%20x1%3D%2215.3%22%20y1%3D%2229.0%22%20x2%3D%228.2%22%20y2%3D%2233.1%22%20stroke%3D%22%2344525e%22%20stroke-width%3D%222.2%22/%3E%3Ccircle%20cx%3D%228.2%22%20cy%3D%2233.1%22%20r%3D%224.8%22%20fill%3D%22%231f8a8a%22/%3E%3Cline%20x1%3D%2215.3%22%20y1%3D%2218.9%22%20x2%3D%228.2%22%20y2%3D%2214.8%22%20stroke%3D%22%2344525e%22%20stroke-width%3D%222.2%22/%3E%3Ccircle%20cx%3D%228.2%22%20cy%3D%2214.8%22%20r%3D%224.8%22%20fill%3D%22%231f8a8a%22/%3E%3Cline%20x1%3D%2224.0%22%20y1%3D%2213.9%22%20x2%3D%2224.0%22%20y2%3D%225.7%22%20stroke%3D%22%2344525e%22%20stroke-width%3D%222.2%22/%3E%3Ccircle%20cx%3D%2224.0%22%20cy%3D%225.7%22%20r%3D%224.8%22%20fill%3D%22%231f8a8a%22/%3E%3Cline%20x1%3D%2232.7%22%20y1%3D%2218.9%22%20x2%3D%2239.8%22%20y2%3D%2214.8%22%20stroke%3D%22%2344525e%22%20stroke-width%3D%222.2%22/%3E%3Ccircle%20cx%3D%2239.8%22%20cy%3D%2214.8%22%20r%3D%224.8%22%20fill%3D%22%231f8a8a%22/%3E%3Cg%20stroke%3D%22%234a3000%22%20stroke-width%3D%221.1%22%20stroke-linecap%3D%22round%22%3E%3Ccircle%20cx%3D%2224%22%20cy%3D%2224%22%20r%3D%2210.6%22%20fill%3D%22%23d99a00%22/%3E%3Cpath%20d%3D%22M18.59%2020.39%20q1.80%20-1.58%203.61%200%20M25.80%2020.39%20q1.80%20-1.58%203.61%200%22%20fill%3D%22none%22/%3E%3Cpath%20d%3D%22M19.94%2028.51%20h8.12%22%20fill%3D%22none%22/%3E%3Crect%20x%3D%2221.89%22%20y%3D%2224.68%22%20width%3D%224.22%22%20height%3D%2212.63%22%20rx%3D%222.11%22%20fill%3D%22%23d99a00%22/%3E%3C/g%3E%3C/svg%3E">
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -277,7 +278,7 @@ button { touch-action: manipulation }
 [hidden], .row[hidden], .seqbox[hidden], .mic[hidden], .note[hidden], .checks label[hidden], .notes section[hidden], .meter[hidden] { display: none !important }
 </style>
 
-<div class="wrap" data-sys="dumbbell">
+<div class="wrap notranslate" data-sys="dumbbell" translate="no">
   <header>
     <div class="langbox"><button class="btn" id="classBtn" title="Class mode: the whole room controls one box with its noise">Class mode</button><button class="btn helpbtn" id="helpBtn" aria-label="Help: quick tour" title="Help: quick tour">?</button><label for="lang" class="sr">Language</label>
       <select id="lang" aria-label="Language"><option value="en">English</option><option value="fi">Suomi</option><option value="sv">Svenska</option><option value="ru">Русский</option></select></div>
@@ -985,7 +986,7 @@ MDEngine.prototype.setupTable = function () {
     case 'hp': set(5, 5, p.epsHH); break;
     case 'crypt': set(5, 5, p.epsXX); break; // only sticky X beads attract (any chain); the fold itself is held by native contacts
     case 'lcst': set(3, 3, p.epsPP); break; // P-S: WCA core plus the narrow binding well below
-    case 'ice': sig[7] = 0.7; sig[3] = 0.8; set(7, 7, 0.1); set(3, 7, p.epsSalt !== undefined ? p.epsSalt : 0.5); break; // 3: antifreeze solute, binds water, no hydrogen bonds
+    case 'ice': sig[7] = 0.7; sig[3] = p.sigSalt || 1.4; set(7, 7, 0.1); set(3, 7, p.epsSalt !== undefined ? p.epsSalt : 1.0); break; // 3: antifreeze solute: twice the size of water (too big for the honeycomb holes), binds water, no hydrogen bonds
     // hydrophobic interactions added by hand, switched by temperature: cold, the solutes are attracted to water (epsW) and dissolve;
     // warm, that attraction fades and an attraction between nonpolar beads (epsH) grows, so they aggregate. MB water adds its own weaker effect.
     case 'plates': sig[7] = 0.7; sig[3] = p.sigP; set(7, 7, 0.1); set(3, 7, p.epsPW); set(3, 3, !p.epsPW && !p.plateHB ? E.hydroEps() : 0); break; // only water-fearing plates
@@ -2356,7 +2357,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "35 proteins": "35 proteiinia",
   "Antifreeze particles": "Pakkasenestohiukkaset",
   "Antifreeze particle": "Pakkasenestohiukkanen",
-  "Particles that attract water but cannot join the ice. They lower the melting point; about 120 keep most of the water liquid even when cold. The box rebuilds when you change the number.": "Hiukkaset vetävät vettä puoleensa mutta eivät voi liittyä jäähän. Ne alentavat sulamispistettä; noin 120 hiukkasta pitää suurimman osan vedestä nesteenä kylmässäkin. Laatikko rakennetaan uudelleen, kun muutat määrää."
+  "Particles twice the size of a water molecule that attract water but cannot join the ice. They lower the melting point; about 80 keep most of the water liquid even when cold. The box rebuilds when you change the number.": "Hiukkaset ovat kaksi kertaa vesimolekyylin kokoisia, vetävät vettä puoleensa mutta eivät voi liittyä jäähän. Ne alentavat sulamispistettä; noin 80 hiukkasta pitää suurimman osan vedestä nesteenä kylmässäkin. Laatikko rakennetaan uudelleen, kun muutat määrää.",
+  "{n} s": "{n} s"
  },
  "sv": {
   "Amphiphile Assembly Lab": "Självorganiseringslabbet",
@@ -2941,7 +2943,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "35 proteins": "35 proteiner",
   "Antifreeze particles": "Frostskyddspartiklar",
   "Antifreeze particle": "Frostskyddspartikel",
-  "Particles that attract water but cannot join the ice. They lower the melting point; about 120 keep most of the water liquid even when cold. The box rebuilds when you change the number.": "Partiklar som attraherar vatten men inte kan ingå i isen. De sänker smältpunkten; ungefär 120 håller det mesta av vattnet flytande även när det är kallt. Lådan byggs om när du ändrar antalet."
+  "Particles twice the size of a water molecule that attract water but cannot join the ice. They lower the melting point; about 80 keep most of the water liquid even when cold. The box rebuilds when you change the number.": "Partiklar dubbelt så stora som en vattenmolekyl, som attraherar vatten men inte kan ingå i isen. De sänker smältpunkten; ungefär 80 håller det mesta av vattnet flytande även när det är kallt. Lådan byggs om när du ändrar antalet.",
+  "{n} s": "{n} s"
  },
  "ru": {
   "Amphiphile Assembly Lab": "Лаборатория самосборки",
@@ -3526,7 +3529,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "35 proteins": "35 белков",
   "Antifreeze particles": "Частицы антифриза",
   "Antifreeze particle": "Частица антифриза",
-  "Particles that attract water but cannot join the ice. They lower the melting point; about 120 keep most of the water liquid even when cold. The box rebuilds when you change the number.": "Частицы притягивают воду, но не могут войти в лёд. Они понижают температуру плавления; около 120 частиц удерживают большую часть воды жидкой даже в холоде. При изменении числа ячейка строится заново."
+  "Particles twice the size of a water molecule that attract water but cannot join the ice. They lower the melting point; about 80 keep most of the water liquid even when cold. The box rebuilds when you change the number.": "Частицы вдвое крупнее молекулы воды: они притягивают воду, но не могут войти в лёд. Они понижают температуру плавления; около 80 частиц удерживают большую часть воды жидкой даже в холоде. При изменении числа ячейка строится заново.",
+  "{n} s": "{n} с"
  }
 };
   let LANG = 'en';
@@ -3586,7 +3590,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       trange: [0.12, 0.40], tstep: 0.005, rho: 0.85, dt: 0.01, concLab: '', plotMax: 12,
       plotLab: 'Water molecules in the gap between the plates', hl: '',
       legend: [['poly', 'Plate'], ['cold', 'Water at plate'], ['solv', 'Water']] },
-    ice: { scan: [0.10, 0.30], conc: 0, min: 0, max: 150, count: true, rebuildConc: true, cold: 0.12, hot: 0.26, start: 0.26, ordT: 0.08, box: 36,
+    ice: { scan: [0.10, 0.30], conc: 0, min: 0, max: 100, count: true, rebuildConc: true, cold: 0.12, hot: 0.26, start: 0.26, ordT: 0.08, box: 36,
       trange: [0.08, 0.36], tstep: 0.005, dt: 0.01, preT: 0.35, concLab: 'Antifreeze particles',
       plotLab: 'Fraction of molecules in ice', hl: 'Highlight ice (blue)',
       legend: [['cold', 'Ice'], ['solv', 'Liquid water'], ['tail', 'Antifreeze particle']] },
@@ -3868,7 +3872,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // concentration: live where possible; rebuild when there is too little solvent left to insert chains
   function concNote() { if (!eng) return; const solv = eng.N - eng.Lc * eng.nMol, t = $('concNote');
     t.className = 'note';
-    if (sys === 'ice') t.textContent = T('Particles that attract water but cannot join the ice. They lower the melting point; about 120 keep most of the water liquid even when cold. The box rebuilds when you change the number.');
+    if (sys === 'ice') t.textContent = T('Particles twice the size of a water molecule that attract water but cannot join the ice. They lower the melting point; about 80 keep most of the water liquid even when cold. The box rebuilds when you change the number.');
     else if (sys === 'demix') t.textContent = T('Changes apply live: beads switch between S and C.');
     else if (sys === 'brush') t.textContent = T('{n} grafted chains of {l} beads; droplet of {w} liquid beads.', { n: eng.nMol, l: eng.Lc, w: eng.nWaterPlaced });
     else if (sys === 'dumbbell') t.textContent = T('{n} dumbbells, {s} solvent beads. Changes apply live.', { n: eng.nMol, s: solv });
@@ -4102,7 +4106,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (g.side) $('gpeak').textContent = g.fmt(eng.nDrug ? 100 * (G.lost || 0) / eng.nDrug : 0);
     const st = starsFor(g, G.peak); if (st > (G.stShown || 0)) { G.stShown = st; if (frac < 1) starBurst(st); }
     $('gval').textContent = g.fmt(G.ema); $('gstars').textContent = starStr(st);
-    $('gtime').textContent = Math.ceil(GAME_SEC * (1 - frac)) + ' s';
+    $('gtime').textContent = T('{n} s', { n: Math.ceil(GAME_SEC * (1 - frac)) });
     $('gnow').style.left = (100 * Math.max(0, Math.min(1, G.ema / (g.scale || 1)))) + '%';
     $('gbar').style.width = (100 * frac) + '%';
     if (frac >= 1) endGame('done');
@@ -4551,7 +4555,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
         const ic = $('byCluster').checked && an && an.isIce ? an.isIce : null;
         disks(colors.solv, 0.35 * s, ic ? (i) => type[i] === 7 && !ic[i] : (i) => type[i] === 7, 0, N);
         if (ic) disks(colors.cold, 0.35 * s, (i) => ic[i] === 1, 0, N);
-        disks(colors.tail, 0.4 * s, (i) => type[i] === 3, 0, N); // antifreeze particles
+        disks(colors.tail, 0.68 * s, (i) => type[i] === 3, 0, N); // antifreeze particles, drawn at their size (σ = 1.4)
       }
       if (sys === 'ice' || ($('showSolv').checked && qLevel < 3)) {
         if (sys !== 'ice') { const sm = $('showShell').checked && shellMask && (sys === 'mbpoly' || sys === 'plates') ? shellMask : null;
