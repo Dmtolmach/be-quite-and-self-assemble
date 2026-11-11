@@ -28,7 +28,7 @@ Made by [Dmitry Tolmachev](https://scholar.google.com/citations?user=OQtj-R4AAAA
 
 - **Open the file** `amphiphile-assembly-lab.html` in a browser, or open the GitHub Pages link of the repository.
 - **Microphone:** the browser asks for permission the first time the microphone is used. Browsers allow the microphone only on `https://` pages or on a file opened from your own computer. Nothing is recorded or sent anywhere: the page only measures the loudness.
-- **Speed:** a recent laptop runs every system smoothly. Phones and old tablets run the smaller boxes well. The water systems (Ice, Hydrophobic particles) are the slowest, because each water molecule also rotates.
+- **Speed:** a recent laptop runs every system smoothly. On slow phones the page automatically switches to simpler drawing (see *Drawing quality* under Box and view). Phones and old tablets run the smaller boxes well. The water systems (Ice, Oily particles) are the slowest, because each water molecule also rotates.
 - **Language:** the menu in the top-right corner. The page starts in the browser's language if it is one of the four.
 - **Help:** the **?** button opens a short tour of the screen.
 
@@ -37,7 +37,7 @@ Made by [Dmitry Tolmachev](https://scholar.google.com/citations?user=OQtj-R4AAAA
 1. Open the page. It starts in **Game** mode with *Grow the biggest ice crystal* selected.
 2. Press **?** and go through the six-step tour together (1 minute).
 3. Play one game with the microphone, with the whole class quiet. Discuss: why did going silent at once not give the best ice? (Slow cooling lets molecules find their places.)
-4. Switch to **Explore**, pick **Amphiphiles**, and drag the temperature slider under the box from cold to hot and back. Click one molecule to follow its path, and compare how far it travels when cold and when hot.
+4. Switch to **Explore**, pick **Soap molecules**, and drag the temperature slider under the box from cold to hot and back. Click one molecule to follow its path, and compare how far it travels when cold and when hot.
 5. Finish with **Class mode** on the projector: the whole room has to stay quiet to build structures.
 
 ## The screen
@@ -54,6 +54,8 @@ Made by [Dmitry Tolmachev](https://scholar.google.com/citations?user=OQtj-R4AAAA
 | **Mode switch** (right) | **Game**, **Explore** and **Energy scan**. |
 | **In everyday life** (bottom) | Short real-world examples for the current system. |
 
+**On phones** the box and the temperature bar stay at the top of the screen. The mode switch moves to a bar at the bottom (**Game**, **Explore**, **Energy scan**, **Options**), and all panels open in a sheet that slides up from the bottom. **Game** and **Explore** open their options; **Energy scan** goes straight to the scan buttons and graphs under the box; **Options** in Explore opens at the current system's settings. Picking a game or a system, pressing Start, tapping outside the sheet or ✕ closes the sheet again.
+
 Temperatures are in reduced units (T*). They are not degrees Celsius: each system has its own natural scale, and the slider covers the useful range for that system.
 
 ## Game mode
@@ -63,9 +65,9 @@ Four 30-second games. Each one shows its goal, a short description, and up to th
 | Game | System | Goal | Stars at |
 |---|---|---|---|
 | **Grow the biggest ice crystal** | Ice | Turn as much water into ice as possible. | 40%, 48%, 55% ice |
-| **Separate the liquids** | Binary liquid | Separate two mixed liquids as far as possible. | s = 0.60, 0.72, 0.79 |
-| **Deliver the drug** | Amphiphiles carrying drug | Heat only during the red target windows, so the micelles release their drug at the right moment. Drug released at other times is lost. | 40%, 65%, 85% delivered |
-| **Grow the longest gel strand** | Protein unfolding | Unfold the proteins with heat, then cool them so they link into the longest possible network. | 80, 130, 170 σ path |
+| **Separate the liquids** | Two liquids | Separate two mixed liquids as far as possible. | s = 0.60, 0.72, 0.79 |
+| **Deliver the drug** | Soap molecules carrying drug | Heat only during the red target windows, so the micelles release their drug at the right moment. Drug released at other times is lost. | 40%, 65%, 85% delivered |
+| **Grow the longest gel strand** | Proteins | Unfold the proteins with heat, then cool them so they link into the longest possible network. | 80, 130, 170 σ path |
 
 How a game runs:
 
@@ -94,12 +96,12 @@ Seven systems, described in detail under [The systems](#the-systems):
 | Button | What it shows |
 |---|---|
 | **Ice** | Water freezes into a honeycomb and melts on heating. |
-| **Binary liquid** | Two liquids mix when hot and separate when cooled. |
-| **Amphiphiles** | Soap-like molecules form micelles and bilayers when cold. |
-| **Stiff polymer** | Chains crystallize below T* ≈ 1.5. |
-| **Polymer** | Flexible chains in a poor solvent: swollen coils when hot, collapsed globules when cold. |
-| **Protein unfolding** | Folded proteins hide sticky sites; heat unfolds them and they clump. |
-| **Hydrophobic particles** | Nonpolar particles in water dissolve when cold and gather when warm. |
+| **Two liquids** | Two liquids mix when hot and separate when cooled. |
+| **Soap molecules** | Soap-like molecules form micelles and bilayers when cold. |
+| **Plastic** | Stiff polymer chains crystallize below T* ≈ 1.5. |
+| **Polymer chains** | Flexible chains in a poor solvent: swollen coils when hot, collapsed globules when cold. |
+| **Proteins** | Folded proteins hide sticky sites; heat unfolds them and they clump. |
+| **Oily particles** | Nonpolar particles in water dissolve when cold and gather when warm. |
 
 ### Temperature
 
@@ -119,18 +121,19 @@ Only the controls that apply to the current system are shown.
 
 | Control | System | What it changes |
 |---|---|---|
+| **Antifreeze particles** | Ice | 0–150 particles that attract water but have no hydrogen-bond arms, placed on random lattice sites (the box rebuilds). They lower the melting point and stop the water from freezing. |
 | **Concentration** / **Number of …** | all | How many molecules of the solute there are. Changes are applied live: molecules are added or removed. |
-| **Tail–tail attraction ε_BB** | Amphiphiles | How strongly the oily tails stick together. Lower acts like heating. |
-| **Head–solvent attraction ε_AS** | Amphiphiles | How strongly the heads like the solvent. |
-| **Head diameter σ_A** | Amphiphiles | Larger heads make cone-shaped molecules that prefer curved micelles to flat bilayers. |
-| **Polymer–polymer attraction ε_PP** | Stiff polymer, Polymer, Hydrophobic particles | How strongly polymer beads attract each other. |
-| **Chain stiffness k_bend** | Stiff polymer | How strongly the chains resist bending. |
-| **Chain length N_c** | Stiff polymer, Polymer, Hydrophobic particles | Beads per chain (rebuilds the system). For Hydrophobic particles, length 1 gives free particles and longer lengths give chains. |
-| **S–C attraction ε_SC** | Binary liquid | Attraction between the two liquids. Lower means more incompatible, so they separate more readily. |
-| **Stickiness of the hidden beads ε_XX** | Protein unfolding | How strongly exposed sticky beads stick to other proteins. Set it to 0 for the control: the proteins still unfold, but nothing clumps. |
-| **Hydrophobic attraction ε_h when warm** | Hydrophobic particles | Attraction between nonpolar particles, switched on at warm temperatures. Added by hand (see the system description). |
-| **Solute–water attraction ε_w when cold** | Hydrophobic particles | Attraction between the particles and water, active at cold temperatures. Added by hand. |
-| **Water hydrogen bonds on** | Hydrophobic particles | Untick for the control: plain Lennard-Jones water without hydrogen bonds. |
+| **Tail–tail attraction ε_BB** | Soap molecules | How strongly the oily tails stick together. Lower acts like heating. |
+| **Head–solvent attraction ε_AS** | Soap molecules | How strongly the heads like the solvent. |
+| **Head diameter σ_A** | Soap molecules | Larger heads make cone-shaped molecules that prefer curved micelles to flat bilayers. |
+| **Polymer–polymer attraction ε_PP** | Plastic, Polymer chains, Oily particles | How strongly polymer beads attract each other. |
+| **Chain stiffness k_bend** | Plastic | How strongly the chains resist bending. |
+| **Chain length N_c** | Plastic, Polymer chains, Oily particles | Beads per chain (rebuilds the system). For Oily particles, length 1 gives free particles and longer lengths give chains. |
+| **S–C attraction ε_SC** | Two liquids | Attraction between the two liquids. Lower means more incompatible, so they separate more readily. |
+| **Stickiness of the hidden beads ε_XX** | Proteins | How strongly exposed sticky beads stick to other proteins. Set it to 0 for the control: the proteins still unfold, but nothing clumps. |
+| **Hydrophobic attraction ε_h when warm** | Oily particles | Attraction between nonpolar particles, switched on at warm temperatures. Added by hand (see the system description). |
+| **Solute–water attraction ε_w when cold** | Oily particles | Attraction between the particles and water, active at cold temperatures. Added by hand. |
+| **Water hydrogen bonds on** | Oily particles | Untick for the control: plain Lennard-Jones water without hydrogen bonds. |
 
 ### Model and integrator (collapsed by default)
 
@@ -149,10 +152,11 @@ Only the controls that apply to the current system are shown.
 | Control | What it does |
 |---|---|
 | **Box size** | 36, 48 or 64 sites wide. Smaller boxes run faster. |
+| **Drawing quality** | **Automatic** (default) watches how long each frame takes and, on slow devices, draws more simply, one step at a time: first at normal pixel density instead of double; then without the water-arm lines and with less frequent readouts; then only every second frame and without the solvent (except in Ice and Two liquids, where the solvent is the system). It never steps back up by itself during a session. The speed line under the readouts says when lighter drawing is on. **Full**, **Lighter**, **Light** and **Lightest** fix the level by hand. |
 | **Initial state** | **Ordered** starts from the cold structure (crystal, bilayers, folded proteins…), so heating destroys it right away. **Disordered** starts hot and mixed, so cooling shows it assembling. |
 | **Rebuild system** | Starts again from the chosen initial state. |
 | **Show solvent** | Hide the solvent to see the solute structure more clearly. |
-| **Highlight hydration-shell water** | (Hydrophobic particles) colours the water touching a particle. |
+| **Highlight hydration-shell water** | (Oily particles) colours the water touching a particle. |
 | **Color by micelle / cluster** | Gives each cluster its own colour. |
 | **Show bonds** | Draws the bonds inside molecules. |
 
@@ -171,11 +175,11 @@ Controls: **Heating scan**, **Cooling scan**, **Stop**, and the scan duration (F
 
 For a projector. The page goes full screen with the box on the left and, on the right, large readouts: the system's main score, the temperature, and a room-noise bar. The microphone switches on automatically.
 
-- **System menu**: Ice, Binary liquid, Amphiphiles, Stiff polymer, Polymer, Protein unfolding, Hydrophobic particles.
+- **System menu**: Ice, Two liquids, Soap molecules, Plastic, Polymer chains, Proteins, Oily particles.
 - **Set quiet level**: press it once with the class silent.
 - **Pause** and **Exit class mode** (or Esc).
 
-Suggested use: ask the class to build structures together (everyone quiet), then let one group make noise and watch them break. Ice and Amphiphiles give the most visible response.
+Suggested use: ask the class to build structures together (everyone quiet), then let one group make noise and watch them break. Ice and Soap molecules give the most visible response.
 
 ## The systems
 
@@ -191,9 +195,20 @@ All systems are 2D. Beads interact through Lennard-Jones potentials unless state
 - Cool it again and it does not come straight back: 200 τ at T* = 0.10–0.13 rebuilds only about 40% ice, as small crystals with defects between them. Freezing needs a nucleus to grow from, so a liquid can stay supercooled well below the melting point. The energy scan shows the same hysteresis.
 - The liquid is denser than the ice, so it opens small holes when the ice melts at fixed box size. Real ice floats for the same reason.
 
+**Antifreeze particles.** The slider adds 0–150 particles (σ = 0.8) that attract water (LJ, ε = 0.5) but have no hydrogen-bond arms, so they cannot be part of the honeycomb. They lower the melting point and slow freezing, as salt or antifreeze do. Measured from the ice start, 30 τ at each temperature (fraction of water in ice):
+
+| T* | 0 particles | 40 | 80 |
+|---|---|---|---|
+| 0.12 | 87% | 58% | 33% |
+| 0.15 | 70% | 36% | 24% |
+| 0.18 | 35% | 17% | 7% |
+| 0.21 | 1% | 0% | 0% |
+
+Cooling the liquid to T* = 0.13 for 200 τ gives 43% ice without particles, 28% with 40, 19% with 80 and 9% with 120.
+
 **Readouts.** Ice fraction, hydrogen bonds per molecule, molecules with 3 hydrogen bonds, number of molecules, energy per molecule, density.
 
-### Binary liquid
+### Two liquids
 
 **What is simulated.** Two liquids, S and C, of identical size. Like pairs attract with ε = 1, unlike pairs with ε_SC = 0.3. In the regular-solution picture the mixture separates below a critical temperature that grows with the mismatch 1 − ε_SC. There are no molecules here, only atoms, so this is the simplest example of a phase transition driven by energy against mixing entropy.
 
@@ -205,7 +220,7 @@ All systems are 2D. Beads interact through Lennard-Jones potentials unless state
 
 **Readouts.** Demixing s (0 = fully mixed, 1 = fully separated; like-contact fraction compared with an ideal mixture), interface beads, domain width (rough estimate: 2 × bead spacing / interface fraction), fraction of liquid C, unlike contacts per bead, beads.
 
-### Amphiphiles
+### Soap molecules (amphiphiles)
 
 **What is simulated.** Each amphiphile is an A–B dumbbell held by a harmonic bond. Every bead feels a Lennard-Jones potential, cut and shifted to zero at r_c:
 
@@ -225,7 +240,7 @@ Only the tail–tail pair (and optionally head–solvent) keeps the attractive w
 
 **Readouts.** Aggregated fraction, number of aggregates, largest aggregate, mean aggregation number, number of dumbbells, free dumbbells per σ². A micelle is any cluster of at least 4 molecules whose tails are within 1.5σ.
 
-### Stiff polymer
+### Plastic (stiff polymer)
 
 **What is simulated.** Each chain is N_c P beads (3–40, 12 by default) joined by harmonic bonds, with a bending penalty that favours straight chains. P–P pairs attract with well depth ε_PP (r_c = 2.5σ). P–S and S–S pairs are purely repulsive, so the solvent is poor for the polymer.
 
@@ -241,7 +256,7 @@ Defaults ε_PP = 1.75 and k_bend = 6.4 were calibrated for N_c = 12 at 40% polym
 
 **Readouts.** Crystalline fraction, number of crystallites, largest crystallite (beads), mean size, chains, mean radius of gyration R_g. A bead is crystalline when its six-fold order |ψ₆| exceeds 0.6 and agrees in phase with at least 4 polymer neighbours within 1.45σ, inside a crystallite of 10 or more beads.
 
-### Polymer
+### Polymer chains
 
 **What is simulated.** Flexible P chains (20 beads, 5% of beads) in an athermal solvent. P–P pairs attract with ε_PP = 1.0 (r_c = 2.5σ); P–S and S–S pairs are purely repulsive, so the solvent is poor for the polymer. The attraction does not depend on temperature; its effect is set by ε_PP/k_BT: weak when hot, so chains are swollen coils; strong when cold, so they collapse. This is upper-critical-solution (UCST) behaviour, the standard poor-solvent case of polymer physics.
 
@@ -252,7 +267,7 @@ Defaults ε_PP = 1.75 and k_bend = 6.4 were calibrated for N_c = 12 at 40% polym
 
 **Readouts.** Self-contact fraction, mean R_g, solvent contacts per bead, chains, chain length, R_g relative to the start.
 
-### Protein unfolding
+### Proteins
 
 **What is simulated.** Thirty small "proteins" in a solvent. Each is a chain of 37 beads that folds into one compact disc, its native fold. The fold is held together by native contacts: bead pairs that touch in the folded shape attract each other (strength 2.5). This is a Gō-type model, a standard simplification in protein research. Nineteen beads (orange) are sticky sites. In the fold they sit in the core, wrapped by a ring of 18 ordinary beads, so they are hidden: cryptic binding sites. They attract the sticky beads of other proteins (ε_XX = 4), but not those of their own protein. The start is every protein folded at T* = 0.6.
 
@@ -264,7 +279,7 @@ Defaults ε_PP = 1.75 and k_bend = 6.4 were calibrated for N_c = 12 at 40% polym
 
 **Readouts.** Proteins in clumps, largest clump, folded fraction (native contacts), hidden beads exposed, sticky contacts between proteins, proteins.
 
-### Hydrophobic particles
+### Oily particles (hydrophobic)
 
 **What is simulated.** Nonpolar particles (σ = 1.5) in Mercedes-Benz water, the same water as in Ice:
 
@@ -313,7 +328,7 @@ Cold, the particles are attracted to water, so they dissolve. Warm, that attract
 
 Three systems are still in the code but hidden from the menu, because they need more work:
 
-- **Diblock copolymer:** chains of an A block and a B block that dislike each other, forming microphase-separated domains about one chain size wide. Works, but the change with temperature is gradual.
+- **Diblock copolymer:** chains of an A block and a B block that dislike each other, forming microphase-separated domains about one chain size wide. Works, but the change with temperature is gradual and slow in 2D.
 - **Brush + droplet:** a polymer brush grafted on a surface with a liquid droplet on top, whose wetting should switch with temperature. The change in surface chemistry is real, but the contact angle of a droplet this small fluctuates too much to show it.
 - **Plates in water:** two flat plates in MB water. Water-fearing plates dry out the gap between them and snap together; water-attracting and hydrogen-bonding plates keep water in the gap.
 
