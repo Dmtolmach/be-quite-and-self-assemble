@@ -177,7 +177,7 @@ table.eps th { font-weight: 500; color: var(--muted) }
 .clspanel .btn { font-size: 15px; padding: 8px 14px }
 @media (max-width: 800px) { .classmode .cellbox { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto; overflow-y: auto; align-content: start }
   .classmode #sim { width: min(100%, 52svh); justify-self: center } .clspanel { grid-row: 3; grid-column: 1 } .classmode .legend { grid-row: 2 } }
-#sim { cursor: crosshair } .legend .zhint { margin-left: auto; font-style: italic }
+#sim { cursor: crosshair } .gamemode #sim { cursor: default } .gamemode .zhint { display: none !important } .legend .zhint { margin-left: auto; font-style: italic }
 .gfx { position: absolute; pointer-events: none; display: grid; place-items: center; z-index: 6; overflow: hidden; border-radius: 6px }
 .gfx .cd { grid-area: 1 / 1; font-family: var(--f-display); font-weight: 700; font-size: clamp(64px, 22vmin, 170px); line-height: 1; color: var(--accent);
   -webkit-text-stroke: 3px var(--panel); paint-order: stroke fill; text-shadow: 0 4px 18px color-mix(in srgb, var(--ink) 25%, transparent); animation: cdpop 0.8s ease-out both }
@@ -4263,7 +4263,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // ---------- app modes: explore / game / energy scan ----------
   let appMode = 'explore';
   function setAppMode(m) {
-    const fromGame = appMode === 'game' && m !== 'game';
+    const fromGame = appMode === 'game' && m !== 'game'; if (m === 'game') follow = null;
+    document.querySelector('.wrap').classList.toggle('gamemode', m === 'game');
     if (m !== 'game') { if (game) endGame(null); else if (!$('ghud').hidden) closeHud(); }
     if (m !== 'game' && gameRange) { gameRange = null; applySysUI(); setT(tset); }
     if (m !== 'scan' && scan) stopScan(false);
@@ -4473,7 +4474,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   }
   // ---------- follow one molecule: click or tap it to ring it and draw its recent path ----------
   let follow = null; // { a, b: bead range, cx, cy: unwrapped centre, trail: [[x, y]...], v: smoothed speed }
-  const canFollow = () => eng && !eng.walls && !eng2;
+  const canFollow = () => eng && !eng.walls && !eng2 && appMode !== 'game'; // not in games
   const molRange = (i) => { const n = eng.Lc * eng.nMol; if (eng.Lc > 1 && i < n) { const m = Math.floor(i / eng.Lc); return [m * eng.Lc, (m + 1) * eng.Lc]; } return [i, i + 1]; };
   function molCentre(a, b) { const L = eng.L, x0 = eng.x[a], y0 = eng.y[a]; let sx = 0, sy = 0;
     for (let i = a; i < b; i++) { let dx = eng.x[i] - x0, dy = eng.y[i] - y0; dx -= L * Math.round(dx / L); dy -= L * Math.round(dy / L); sx += dx; sy += dy; }
