@@ -50,7 +50,7 @@ Made by [Dmitry Tolmachev](https://scholar.google.com/citations?user=OQtj-R4AAAA
 | **Simulation box** | The molecules, moving in real time. The box is periodic: a molecule that leaves on one side comes back on the other. |
 | **Temperature bar** (under the box) | Shows the set temperature T* and the measured kinetic temperature. Drag the slider to set the temperature. **Mic** switches to room-noise control; the bar under it shows the noise level. |
 | **Legend** (under the box) | Names the colours of the current system and shows the box size. |
-| **Click a molecule** | Rings it and draws its path over the last few seconds. Click it again or press Esc to stop. For chains the whole chain is followed. |
+| **Click a molecule** (Explore and Energy scan) | Rings it and draws its path over the last few seconds. Click it again or press Esc to stop. For chains the whole chain is followed. |
 | **Mode switch** (right) | **Game**, **Explore** and **Energy scan**. |
 | **In everyday life** (bottom) | Short real-world examples for the current system. |
 
@@ -121,7 +121,7 @@ Only the controls that apply to the current system are shown.
 
 | Control | System | What it changes |
 |---|---|---|
-| **Antifreeze particles** | Ice | 0–150 particles that attract water but have no hydrogen-bond arms, placed on random lattice sites (the box rebuilds). They lower the melting point and stop the water from freezing. |
+| **Antifreeze particles** | Ice | 0–100 particles, twice the size of a water molecule, that attract water but have no hydrogen-bond arms (the box rebuilds). They lower the melting point and stop the water from freezing; about 80 keep most of the water liquid. |
 | **Concentration** / **Number of …** | all | How many molecules of the solute there are. Changes are applied live: molecules are added or removed. |
 | **Tail–tail attraction ε_BB** | Soap molecules | How strongly the oily tails stick together. Lower acts like heating. |
 | **Head–solvent attraction ε_AS** | Soap molecules | How strongly the heads like the solvent. |
@@ -152,7 +152,7 @@ Only the controls that apply to the current system are shown.
 | Control | What it does |
 |---|---|
 | **Box size** | 36, 48 or 64 sites wide. Smaller boxes run faster. |
-| **Drawing quality** | **Automatic** (default) watches how long each frame takes and, on slow devices, draws more simply, one step at a time: first at normal pixel density instead of double; then without the water-arm lines and with less frequent readouts; then only every second frame and without the solvent (except in Ice and Two liquids, where the solvent is the system). It never steps back up by itself during a session. The speed line under the readouts says when lighter drawing is on. **Full**, **Lighter**, **Light** and **Lightest** fix the level by hand. |
+| **Drawing quality** | **Automatic** (default on phones and tablets; computers start at **Full**) watches how long each frame takes and, on slow devices, draws more simply, one step at a time: first at normal pixel density instead of double; then without the water-arm lines and with less frequent readouts; then only every second frame and without the solvent (except in Ice and Two liquids, where the solvent is the system). It never steps back up by itself during a session. The speed line under the readouts says when lighter drawing is on. **Full**, **Lighter**, **Light** and **Lightest** fix the level by hand. |
 | **Initial state** | **Ordered** starts from the cold structure (crystal, bilayers, folded proteins…), so heating destroys it right away. **Disordered** starts hot and mixed, so cooling shows it assembling. |
 | **Rebuild system** | Starts again from the chosen initial state. |
 | **Show solvent** | Hide the solvent to see the solute structure more clearly. |
@@ -195,16 +195,16 @@ All systems are 2D. Beads interact through Lennard-Jones potentials unless state
 - Cool it again and it does not come straight back: 200 τ at T* = 0.10–0.13 rebuilds only about 40% ice, as small crystals with defects between them. Freezing needs a nucleus to grow from, so a liquid can stay supercooled well below the melting point. The energy scan shows the same hysteresis.
 - The liquid is denser than the ice, so it opens small holes when the ice melts at fixed box size. Real ice floats for the same reason.
 
-**Antifreeze particles.** The slider adds 0–150 particles (σ = 0.8) that attract water (LJ, ε = 0.5) but have no hydrogen-bond arms, so they cannot be part of the honeycomb. They lower the melting point and slow freezing, as salt or antifreeze do. Measured from the ice start, 30 τ at each temperature (fraction of water in ice):
+**Antifreeze particles.** The slider adds 0–100 particles that attract water (LJ, ε = 1.0) but have no hydrogen-bond arms, so they cannot be part of the honeycomb. They are twice the size of a water molecule (σ = 1.4). Smaller particles fit into the holes of the honeycomb and get frozen in without harm, so they barely affect the ice. At this size each particle holds a patch of liquid water around itself, and the ice can only grow away from them, as with salt or antifreeze. Measured from the ice start, 30 τ at each temperature (fraction of water in ice):
 
-| T* | 0 particles | 40 | 80 |
-|---|---|---|---|
-| 0.12 | 87% | 58% | 33% |
-| 0.15 | 70% | 36% | 24% |
-| 0.18 | 35% | 17% | 7% |
-| 0.21 | 1% | 0% | 0% |
+| T* | 0 particles | 20 | 40 | 80 |
+|---|---|---|---|---|
+| 0.10 | 96% | 75% | 49% | 21% |
+| 0.13 | 80% | 63% | 42% | 15% |
+| 0.16 | 62% | 44% | 28% | 8% |
+| 0.19 | 18% | 11% | 4% | 1% |
 
-Cooling the liquid to T* = 0.13 for 200 τ gives 43% ice without particles, 28% with 40, 19% with 80 and 9% with 120.
+Cooling the liquid to T* = 0.12 for 200 τ gives 39% ice without particles, 33% with 20, 22% with 40 and 9% with 80. The particles stay spread out; they do not clump.
 
 **Readouts.** Ice fraction, hydrogen bonds per molecule, molecules with 3 hydrogen bonds, number of molecules, energy per molecule, density.
 
