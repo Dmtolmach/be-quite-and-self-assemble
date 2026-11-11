@@ -127,6 +127,9 @@ table.eps th { font-weight: 500; color: var(--muted) }
 @media (max-width: 700px) { .ghud .gstat div { align-items: center; text-align: center; padding: 4px 2px } .ghud .gstat span { white-space: normal; overflow-wrap: anywhere; line-height: 1.15; min-height: 2.3em; display: flex; align-items: center; justify-content: center; max-width: 100%; font-size: 10px } .ghead { text-align: center; flex-direction: column; align-items: center; gap: 6px } .gres { text-align: center } .gstat b { font-size: 14px } .ghud { padding: 6px 8px; gap: 5px } .ghead { font-size: 12px } .ghud .gstat { gap: 6px } .gstat span { font-size: 10.5px }
   .ingame .legend { display: none } .gband { height: 16px } .gband .tick { line-height: 16px } .gbar { height: 7px } .ghud .gres { font-size: 12.5px } .htip { display: none } }
 .offmode { display: none !important }
+.thgraphs { display: flex; flex-direction: column; gap: 8px; min-width: 0 }
+.graphpanel .thgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 14px } .graphpanel .thplot { height: 150px } .graphpanel .thgrid figcaption { font-size: 12px; line-height: 1.3 }
+.graphpanel .thsum { font-size: 13.5px } .graphpanel .thkey { font-size: 11.5px }
 .dbgline { font-family: var(--f-mono); font-size: 11px; line-height: 1.35; color: var(--ink); background: color-mix(in srgb, var(--cryst) 22%, var(--panel)); border: 1px dashed var(--cryst); border-radius: 6px; padding: 6px 8px; white-space: normal; overflow-wrap: anywhere; user-select: all }
 /* games show only what the game needs: temperature, score, time; no physics readouts under the box */
 .ingame .kinlab, .ingame .legend { display: none !important }
@@ -215,9 +218,8 @@ header { position: relative } .langbox { position: absolute; top: 0; right: 0; d
 .thermo .note { margin: 0 }
 .thmore { font-size: 13px; color: var(--muted) } .thmore summary { cursor: pointer; color: var(--accent) } .thmore p { margin: 6px 0; max-width: 90ch }
 .thgrid figcaption span { color: var(--muted); display: block }
-.inscan #sim { width: min(100%, calc(100vh - 500px)); width: min(100%, calc(100svh - 500px)); min-width: 260px; margin: 0 auto }
 @media (min-width: 701px) { .thermo .thgrid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px } .thermo .thplot { height: 130px } .thgrid figcaption { font-size: 11.5px; line-height: 1.3 } }
-@media (max-width: 700px) { .inscan .cellbox { position: static } .inscan #sim { width: min(100%, 46svh); min-width: 0 } .thermo .thgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px } .thermo .thplot { height: 110px } .thgrid figcaption { font-size: 11.5px; line-height: 1.3 } }
+@media (max-width: 700px) { .inscan .cellbox { position: static } .thermo .thgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px } .thermo .thplot { height: 110px } .thgrid figcaption { font-size: 11.5px; line-height: 1.3 } }
 .thhead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px }
 .thhead .btns { align-items: center }
 .thgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 22px }
@@ -345,6 +347,7 @@ button { touch-action: manipulation }
           </div>
         </div>
         <p class="note" id="scanStatus">Press <b>Heating scan</b>: the computer starts from the ordered structure, warms it slowly and measures the energy at every temperature. Then try <b>Cooling scan</b>.</p>
+        <div class="thgraphs" id="thGraphs">
         <div class="thgrid">
           <figure><figcaption><b>1 · Energy U</b> <span>climbs as it breaks</span></figcaption><canvas class="thplot" id="thU"></canvas></figure>
           <figure><figcaption><b>2 · Heat capacity C</b> <span>peak = melting point</span></figcaption><canvas class="thplot" id="thC"></canvas></figure>
@@ -367,6 +370,7 @@ button { touch-action: manipulation }
           <p><b>4 · Free energy F = U − T·S</b>: energy minus the “disorder bonus”. Nature picks the state with the lower F. Where the two dashed lines cross, ordered and broken are equally good: that is the melting point.</p>
           <p class="note" id="thUnit"></p>
         </details>
+        </div>
       </div>
     </div>
 
@@ -436,6 +440,7 @@ button { touch-action: manipulation }
         </div>
       </div>
 
+      <div class="panel graphpanel" id="graphPanel" data-mode="scan" hidden></div>
       <div class="panel" data-mode="explore">
         <h2>Live readouts</h2>
         <div class="readouts">
@@ -4266,6 +4271,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (eng && m === 'explore' && !eng.p.baro && baroOn()) { eng.p.baro = true; eng.p.P0 = null; }
     document.querySelectorAll('[data-appmode]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.appmode === m)));
     document.querySelectorAll('[data-mbmode]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mbmode === m)));
+    placeGraphs();
     if ($('sheetTitle')) $('sheetTitle').textContent = T(m === 'game' ? 'Game' : m === 'scan' ? 'Energy scan' : 'Explore');
     document.querySelectorAll('[data-mode]').forEach((el) => el.classList.toggle('offmode', !el.dataset.mode.split(' ').includes(m)));
     const w = document.querySelector('.wrap'); w.classList.toggle('inscan', m === 'scan');
@@ -4369,6 +4375,15 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     for (const v of vlines) { g.strokeStyle = v.color; g.lineWidth = 1.5 * dpr; g.setLineDash([2 * dpr, 3 * dpr]); g.beginPath(); g.moveTo(X(v.x), padT); g.lineTo(X(v.x), h - padB); g.stroke(); g.setLineDash([]); }
     g.restore();
   }
+  // on wide screens the scan graphs sit in the right column, so the box keeps its size and the graphs stay in view; the buttons stay under the box
+  function wideUI() { return matchMedia('(min-width: 961px)').matches; }
+  function placeGraphs() {
+    const g = $('thGraphs'), side = wideUI() && appMode === 'scan', gp = $('graphPanel');
+    gp.hidden = !side;
+    const target = side ? gp : $('thermoPanel');
+    if (g.parentElement !== target) { target.appendChild(g); if (typeof drawThermo === 'function') requestAnimationFrame(drawThermo); }
+  }
+  matchMedia('(min-width: 961px)').addEventListener('change', placeGraphs);
   function drawThermo() {
     if (!thermo) return;
     const xl = [thermo.lo, thermo.hi], res = {}, f3 = (v) => v.toFixed(Math.abs(v) < 10 ? 2 : 1);
@@ -4416,7 +4431,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   let dpr = 1, W = 0;
   // ---- adaptive drawing quality: watch frame time and drawing time, step down when the device cannot keep up ----
   // 0 full · 1 canvas at 1x pixel density · 2 also no water arms, readouts less often · 3 also every 2nd frame drawn, solvent hidden (not in Ice / Binary liquid)
-  let qLevel = 0, qAuto = true, qDraw = null, qFrame = null, qSim = 0, qT = 0, loopN = 0, simMsFrame = 0;
+  let qLevel = 0, qAuto = isPhone, qDraw = null, qFrame = null, qSim = 0, qT = 0, loopN = 0, simMsFrame = 0;
   const ANEVERY = [6, 9, 15, 20];
   function setQuality(q) { q = Math.max(0, Math.min(3, q)); if (q === qLevel) return; const pix = (q >= 1) !== (qLevel >= 1); qLevel = q; if (pix) resize(); qDraw = qFrame = null; qT = performance.now(); }
   function qualityTick(now, dMs, fMs) {
@@ -4428,6 +4443,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if ((qFrame > (qLevel >= 3 ? 40 : 24) && qFrame - qSim > 0.35 * qFrame) || qDraw > 7) { setQuality(qLevel + 1); $('quality').value = 'auto'; } // a slow simulation alone is not helped by simpler drawing
     else qT = now - 1500; // re-check about once a second
   }
+  if (!isPhone) $('quality').value = '0';
   $('quality').addEventListener('change', (e) => { const v = e.target.value; qAuto = v === 'auto'; setQuality(qAuto ? 0 : +v); });
   function resize() { dpr = Math.min(qLevel >= 1 ? 1 : 2, window.devicePixelRatio || 1); W = cv.clientWidth; cv.width = Math.round(W * dpr); cv.height = Math.round(W * dpr); sizePlots(); }
   window.addEventListener('resize', resize);
