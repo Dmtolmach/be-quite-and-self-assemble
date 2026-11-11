@@ -127,6 +127,7 @@ table.eps th { font-weight: 500; color: var(--muted) }
 @media (max-width: 700px) { .ghud .gstat div { align-items: center; text-align: center; padding: 4px 2px } .ghud .gstat span { white-space: normal; overflow-wrap: anywhere; line-height: 1.15; min-height: 2.3em; display: flex; align-items: center; justify-content: center; max-width: 100%; font-size: 10px } .ghead { text-align: center; flex-direction: column; align-items: center; gap: 6px } .gres { text-align: center } .gstat b { font-size: 14px } .ghud { padding: 6px 8px; gap: 5px } .ghead { font-size: 12px } .ghud .gstat { gap: 6px } .gstat span { font-size: 10.5px }
   .ingame .legend { display: none } .gband { height: 16px } .gband .tick { line-height: 16px } .gbar { height: 7px } .ghud .gres { font-size: 12.5px } .htip { display: none } }
 .offmode { display: none !important }
+header .sub { font-size: 15px; line-height: 1.45 } header .sub b { color: var(--ink); font-weight: 650 }
 .thgraphs { display: flex; flex-direction: column; gap: 8px; min-width: 0 }
 .graphpanel .thgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 14px } .graphpanel .thplot { height: 150px } .graphpanel .thgrid figcaption { font-size: 12px; line-height: 1.3 }
 .graphpanel .thsum { font-size: 13.5px } .graphpanel .thkey { font-size: 11.5px }
@@ -206,6 +207,8 @@ header { position: relative } .langbox { position: absolute; top: 0; right: 0; d
 .tcard .tx { position: absolute; top: 8px; right: 8px; border: 0; background: none; color: var(--muted); font-size: 20px; line-height: 1; cursor: pointer; padding: 4px 8px }
 .tdemo { display: flex; flex-direction: column; gap: 4px } .tdemo canvas { width: 100%; aspect-ratio: 16 / 9; background: var(--cell); border-radius: 8px; display: block }
 .tdemo small { color: var(--muted); font-size: 12.5px; min-height: 1.2em }
+.tdctl { display: flex; align-items: center; gap: 10px } .tdctl input { flex: 1; min-width: 0; accent-color: var(--hot) }
+.tdmic { display: inline-flex; align-items: center; gap: 6px; font-weight: 600 } .tdmic[aria-pressed="true"] { background: var(--hot); color: #fff; border-color: var(--hot) }
 @media (max-width: 700px) { header > div:not(.langbox) { padding-right: 0 } }
 @media (prefers-reduced-motion: reduce) { .tour .spot, .tcard { transition: none } }
 .langbox select { font: inherit; font-size: 13px; padding: 4px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--ink) }
@@ -286,7 +289,7 @@ button { touch-action: manipulation }
       <select id="lang" aria-label="Language"><option value="en">English</option><option value="fi">Suomi</option><option value="sv">Svenska</option><option value="ru">Русский</option></select></div>
     <div>
       <div class="brand"><svg class="logo" viewBox="0 0 48 48" width="44" height="44" aria-hidden="true"><line x1="32.7" y1="29.0" x2="39.8" y2="33.1" stroke="var(--bond)" stroke-width="2.2"/><circle cx="39.8" cy="33.1" r="4.8" fill="var(--head)"/><line x1="24.0" y1="34.1" x2="24.0" y2="42.3" stroke="var(--bond)" stroke-width="2.2"/><circle cx="24.0" cy="42.3" r="4.8" fill="var(--head)"/><line x1="15.3" y1="29.0" x2="8.2" y2="33.1" stroke="var(--bond)" stroke-width="2.2"/><circle cx="8.2" cy="33.1" r="4.8" fill="var(--head)"/><line x1="15.3" y1="18.9" x2="8.2" y2="14.8" stroke="var(--bond)" stroke-width="2.2"/><circle cx="8.2" cy="14.8" r="4.8" fill="var(--head)"/><line x1="24.0" y1="13.9" x2="24.0" y2="5.7" stroke="var(--bond)" stroke-width="2.2"/><circle cx="24.0" cy="5.7" r="4.8" fill="var(--head)"/><line x1="32.7" y1="18.9" x2="39.8" y2="14.8" stroke="var(--bond)" stroke-width="2.2"/><circle cx="39.8" cy="14.8" r="4.8" fill="var(--head)"/><g stroke="#4a3000" stroke-width="1.1" stroke-linecap="round"><circle cx="24" cy="24" r="10.6" fill="var(--cryst)"/><path d="M18.59 20.39 q1.80 -1.58 3.61 0 M25.80 20.39 q1.80 -1.58 3.61 0" fill="none"/><path d="M19.94 28.51 h8.12" fill="none"/><rect x="21.89" y="24.68" width="4.22" height="12.63" rx="2.11" fill="var(--cryst)"/></g></svg><h1>Shut Up and Get Structured</h1></div>
-      <p class="sub">Build structures from molecules with your voice: stay quiet and they form, make noise and they break.</p>
+      <p class="sub">Control molecules with your voice. <b>Quiet</b>: they build structures. <b>Noise</b>: they fall apart.</p>
       <p class="credit"><span>Vibe coded by</span> <a href="https://scholar.google.com/citations?user=OQtj-R4AAAAJ" target="_blank" rel="noopener">Dmitry Tolmachev</a> · <a href="https://scholar.google.com/citations?user=OQtj-R4AAAAJ" target="_blank" rel="noopener">Google Scholar</a></p>
     </div>
   </header>
@@ -294,7 +297,7 @@ button { touch-action: manipulation }
     <div class="spot" id="tSpot"></div>
     <div class="tcard" id="tCard"><button class="tx" id="tClose" aria-label="Close help">×</button>
       <h3 id="tTitle"></h3>
-      <div class="tdemo" id="tDemo" hidden><canvas id="tCanvas" width="640" height="360"></canvas><small id="tDemoCap"></small></div>
+      <div class="tdemo" id="tDemo" hidden><canvas id="tCanvas" width="640" height="360"></canvas><small id="tDemoCap"></small><div class="tdctl"><button class="btn tdmic" id="tdMic" aria-pressed="false"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/></svg><span>Microphone</span></button><input type="range" id="tdT" min="0" max="1" step="0.01" value="0" aria-label="Temperature"></div></div>
       <p id="tText"></p>
       <div class="tnav"><span class="cnt" id="tCount"></span><button class="btn" id="tBack">Back</button><button class="btn primary" id="tNext">Next</button></div>
     </div>
@@ -2151,7 +2154,6 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Score {s}": "Pisteet {s}",
   "(new best ever!)": "(uusi ennätys!)",
   "(best ever {b})": "(ennätys {b})",
-  "The box now shows your best moment, reached at {s} s; press Resume to let it run on.": "Laatikossa näkyy nyt paras hetkesi, joka saavutettiin {s} s kohdalla; paina Jatka antaaksesi sen jatkua.",
   "Next star at {v}.": "Seuraava tähti: {v}.",
   "Top score!": "Huippupisteet!",
   "Numbers are per molecule bead, in the simulation’s own units. The solvent’s energy is left out: it changes smoothly and would hide the melting point. Entropy and free energy are counted from the start of the scan.": "Luvut ovat molekyylihelmeä kohden simulaation omissa yksiköissä. Liuottimen energia on jätetty pois: se muuttuu tasaisesti ja peittäisi sulamispisteen. Entropia ja vapaa energia lasketaan skannauksen alusta.",
@@ -2277,18 +2279,14 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "{i} of {n}": "{i}/{n}",
   "Close help": "Sulje ohje",
   "How this works": "Näin tämä toimii",
-  "Every dot is a molecule. Cold molecules stick together and build structures; heat shakes them apart. Here a small piece of ice melts as it warms and freezes again as it cools.": "Jokainen piste on molekyyli. Kylmät molekyylit tarttuvat toisiinsa ja muodostavat rakenteita; lämpö ravistelee ne irti. Tässä pieni pala jäätä sulaa lämmetessään ja jäätyy uudelleen jäähtyessään.",
   "Modes": "Tilat",
   "Game: reach a goal in 30 seconds. Explore: try any system freely. Energy scan: measure where a structure melts.": "Peli: saavuta tavoite 30 sekunnissa. Tutki: kokeile mitä tahansa järjestelmää vapaasti. Energiaskannaus: mittaa, missä rakenne sulaa.",
   "Simulation box": "Simulaatiolaatikko",
-  "The molecules move here in real time. The legend under the box names the colours.": "Molekyylit liikkuvat täällä reaaliajassa. Laatikon alla oleva selite kertoo värien merkityksen.",
   "Drag the slider to cool or heat the box. Press Mic to use room noise instead: quiet cools the box, sound heats it.": "Vedä liukusäädintä jäähdyttääksesi tai lämmittääksesi laatikkoa. Paina Mic käyttääksesi huoneen ääntä: hiljaisuus jäähdyttää, ääni lämmittää.",
   "Games": "Pelit",
   "Pick a game, read the goal and press Start. Reach the marked levels to earn up to three stars.": "Valitse peli, lue tavoite ja paina Aloita. Saavuta merkityt tasot ja ansaitse jopa kolme tähteä.",
   "Systems": "Järjestelmät",
   "Pick a system. Each card says what happens to it on cooling or heating.": "Valitse järjestelmä. Jokainen kortti kertoo, mitä sille tapahtuu jäähdytettäessä tai lämmitettäessä.",
-  "Language and help": "Kieli ja ohje",
-  "Switch the language here. Press ? to see this tour again.": "Vaihda kieltä tästä. Paina ? nähdäksesi tämän esittelyn uudelleen.",
   "Heating: the honeycomb breaks and the ice melts": "Lämmitys: hunajakenno hajoaa ja jää sulaa",
   "Cooling: the molecules lock into a honeycomb again": "Jäähdytys: molekyylit lukittuvat taas hunajakennoksi",
   "Hot: liquid water": "Kuuma: nestemäistä vettä",
@@ -2314,7 +2312,6 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Bile from your liver is full of amphiphiles. They break the fat in your food into tiny droplets, so that it can be digested.": "Maksan tuottama sappi on täynnä amfifiilejä. Ne pilkkovat ruoan rasvan pieniksi pisaroiksi, jotta se voidaan sulattaa.",
   "Milk is tiny droplets of fat in water, each wrapped in a thin skin of amphiphilic molecules that stops the droplets from merging.": "Maito on pieniä rasvapisaroita vedessä, ja jokaista ympäröi ohut amfifiilisten molekyylien kalvo, joka estää pisaroita yhdistymästä.",
   "Frying meat and heating milk: heat unfolds the proteins, their hidden sticky parts stick to each other, the meat turns firm and a skin forms on the milk.": "Lihan paistaminen ja maidon lämmittäminen: lämpö avaa proteiinit, niiden piilossa olleet tahmeat osat tarttuvat toisiinsa, liha kiinteytyy ja maidon pinnalle muodostuu kalvo.",
-  "Build structures from molecules with your voice: stay quiet and they form, make noise and they break.": "Rakenna molekyyleistä rakenteita äänelläsi: ole hiljaa, niin ne muodostuvat, pidä ääntä, niin ne hajoavat.",
   "Drawing quality": "Piirtotarkkuus",
   "Automatic (lighter on slow devices)": "Automaattinen (kevyempi hitailla laitteilla)",
   "Full": "Täysi",
@@ -2363,7 +2360,13 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Antifreeze particles": "Pakkasenestohiukkaset",
   "Antifreeze particle": "Pakkasenestohiukkanen",
   "Particles twice the size of a water molecule that attract water but cannot join the ice. They lower the melting point; about 80 keep most of the water liquid even when cold. The box rebuilds when you change the number.": "Hiukkaset ovat kaksi kertaa vesimolekyylin kokoisia, vetävät vettä puoleensa mutta eivät voi liittyä jäähän. Ne alentavat sulamispistettä; noin 80 hiukkasta pitää suurimman osan vedestä nesteenä kylmässäkin. Laatikko rakennetaan uudelleen, kun muutat määrää.",
-  "{n} s": "{n} s"
+  "{n} s": "{n} s",
+  "Control molecules with your voice. <b>Quiet</b>: they build structures. <b>Noise</b>: they fall apart.": "Ohjaa molekyylejä äänelläsi. <b>Hiljaisuus</b>: ne järjestyvät rakenteiksi. <b>Melu</b>: rakenteet hajoavat.",
+  "Every dot is a molecule. Cold molecules stick together and build structures; heat shakes them apart. Turn on the microphone and melt this ice with your voice, or drag the slider.": "Jokainen piste on molekyyli. Kylmät molekyylit tarttuvat toisiinsa ja muodostavat rakenteita; lämpö ravistelee ne irti. Laita mikrofoni päälle ja sulata tämä jää äänelläsi, tai vedä liukusäädintä.",
+  "The molecules move here in real time.": "Molekyylit liikkuvat täällä reaaliajassa.",
+  "For the projector: one big box, and the whole room controls the temperature with its noise. Everyone quiet: structures grow. Noise: they break.": "Projektorille: yksi iso laatikko, ja koko luokka säätää lämpötilaa äänellään. Kaikki hiljaa: rakenteet kasvavat. Melu: ne hajoavat.",
+  "Switch the language here.": "Vaihda kieltä tästä.",
+  "Microphone": "Mikrofoni"
  },
  "sv": {
   "Amphiphile Assembly Lab": "Självorganiseringslabbet",
@@ -2737,7 +2740,6 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Score {s}": "Poäng {s}",
   "(new best ever!)": "(nytt rekord!)",
   "(best ever {b})": "(rekord {b})",
-  "The box now shows your best moment, reached at {s} s; press Resume to let it run on.": "Lådan visar nu ditt bästa ögonblick, nått efter {s} s; tryck Fortsätt för att låta det fortsätta.",
   "Next star at {v}.": "Nästa stjärna vid {v}.",
   "Top score!": "Toppoäng!",
   "Numbers are per molecule bead, in the simulation’s own units. The solvent’s energy is left out: it changes smoothly and would hide the melting point. Entropy and free energy are counted from the start of the scan.": "Värdena gäller per molekylkula, i simuleringens egna enheter. Lösningsmedlets energi är utelämnad: den ändras jämnt och skulle dölja smältpunkten. Entropi och fri energi räknas från skanningens början.",
@@ -2863,18 +2865,14 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "{i} of {n}": "{i} av {n}",
   "Close help": "Stäng hjälpen",
   "How this works": "Så fungerar det",
-  "Every dot is a molecule. Cold molecules stick together and build structures; heat shakes them apart. Here a small piece of ice melts as it warms and freezes again as it cools.": "Varje prick är en molekyl. Kalla molekyler fastnar i varandra och bygger strukturer; värme skakar isär dem. Här smälter en liten bit is när den värms och fryser igen när den kyls.",
   "Modes": "Lägen",
   "Game: reach a goal in 30 seconds. Explore: try any system freely. Energy scan: measure where a structure melts.": "Spel: nå ett mål på 30 sekunder. Utforska: prova vilket system som helst fritt. Energiskanning: mät var en struktur smälter.",
   "Simulation box": "Simuleringslåda",
-  "The molecules move here in real time. The legend under the box names the colours.": "Molekylerna rör sig här i realtid. Förklaringen under lådan anger vad färgerna betyder.",
   "Drag the slider to cool or heat the box. Press Mic to use room noise instead: quiet cools the box, sound heats it.": "Dra reglaget för att kyla eller värma lådan. Tryck på Mic för att använda ljud i rummet i stället: tystnad kyler, ljud värmer.",
   "Games": "Spel",
   "Pick a game, read the goal and press Start. Reach the marked levels to earn up to three stars.": "Välj ett spel, läs målet och tryck på Starta. Nå de markerade nivåerna för att få upp till tre stjärnor.",
   "Systems": "System",
   "Pick a system. Each card says what happens to it on cooling or heating.": "Välj ett system. Varje kort berättar vad som händer med det vid kylning eller uppvärmning.",
-  "Language and help": "Språk och hjälp",
-  "Switch the language here. Press ? to see this tour again.": "Byt språk här. Tryck på ? för att se den här genomgången igen.",
   "Heating: the honeycomb breaks and the ice melts": "Uppvärmning: bikakan bryts och isen smälter",
   "Cooling: the molecules lock into a honeycomb again": "Kylning: molekylerna låser sig i en bikaka igen",
   "Hot: liquid water": "Varmt: flytande vatten",
@@ -2900,7 +2898,6 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Bile from your liver is full of amphiphiles. They break the fat in your food into tiny droplets, so that it can be digested.": "Gallan från levern är full av amfifiler. De bryter ner fettet i maten till små droppar så att det kan smältas.",
   "Milk is tiny droplets of fat in water, each wrapped in a thin skin of amphiphilic molecules that stops the droplets from merging.": "Mjölk är små fettdroppar i vatten, var och en omsluten av en tunn hinna av amfifila molekyler som hindrar dropparna från att slå sig samman.",
   "Frying meat and heating milk: heat unfolds the proteins, their hidden sticky parts stick to each other, the meat turns firm and a skin forms on the milk.": "Att steka kött och värma mjölk: värmen vecklar ut proteinerna, deras gömda klibbiga delar fastnar i varandra, köttet blir fast och det bildas en hinna på mjölken.",
-  "Build structures from molecules with your voice: stay quiet and they form, make noise and they break.": "Bygg strukturer av molekyler med rösten: var tyst så bildas de, för oväsen så går de sönder.",
   "Drawing quality": "Ritkvalitet",
   "Automatic (lighter on slow devices)": "Automatisk (lättare på långsamma enheter)",
   "Full": "Full",
@@ -2949,7 +2946,13 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Antifreeze particles": "Frostskyddspartiklar",
   "Antifreeze particle": "Frostskyddspartikel",
   "Particles twice the size of a water molecule that attract water but cannot join the ice. They lower the melting point; about 80 keep most of the water liquid even when cold. The box rebuilds when you change the number.": "Partiklar dubbelt så stora som en vattenmolekyl, som attraherar vatten men inte kan ingå i isen. De sänker smältpunkten; ungefär 80 håller det mesta av vattnet flytande även när det är kallt. Lådan byggs om när du ändrar antalet.",
-  "{n} s": "{n} s"
+  "{n} s": "{n} s",
+  "Control molecules with your voice. <b>Quiet</b>: they build structures. <b>Noise</b>: they fall apart.": "Styr molekylerna med rösten. <b>Tyst</b>: de bygger strukturer. <b>Oväsen</b>: de faller isär.",
+  "Every dot is a molecule. Cold molecules stick together and build structures; heat shakes them apart. Turn on the microphone and melt this ice with your voice, or drag the slider.": "Varje prick är en molekyl. Kalla molekyler fastnar i varandra och bygger strukturer; värme skakar isär dem. Slå på mikrofonen och smält isen med rösten, eller dra i reglaget.",
+  "The molecules move here in real time.": "Molekylerna rör sig här i realtid.",
+  "For the projector: one big box, and the whole room controls the temperature with its noise. Everyone quiet: structures grow. Noise: they break.": "För projektorn: en stor låda, och hela rummet styr temperaturen med sitt ljud. Alla tysta: strukturer växer. Oväsen: de går sönder.",
+  "Switch the language here.": "Byt språk här.",
+  "Microphone": "Mikrofon"
  },
  "ru": {
   "Amphiphile Assembly Lab": "Лаборатория самосборки",
@@ -3323,7 +3326,6 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Score {s}": "Счёт {s}",
   "(new best ever!)": "(новый рекорд!)",
   "(best ever {b})": "(рекорд {b})",
-  "The box now shows your best moment, reached at {s} s; press Resume to let it run on.": "Сейчас показан ваш лучший момент, достигнутый на {s} с; нажмите «Продолжить», чтобы расчёт шёл дальше.",
   "Next star at {v}.": "Следующая звезда при {v}.",
   "Top score!": "Максимальный результат!",
   "Numbers are per molecule bead, in the simulation’s own units. The solvent’s energy is left out: it changes smoothly and would hide the melting point. Entropy and free energy are counted from the start of the scan.": "Значения даны на бусину молекул, в собственных единицах модели. Энергия растворителя не учтена: она меняется плавно и скрыла бы точку плавления. Энтропия и свободная энергия отсчитываются от начала сканирования.",
@@ -3449,18 +3451,14 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "{i} of {n}": "{i} из {n}",
   "Close help": "Закрыть справку",
   "How this works": "Как это работает",
-  "Every dot is a molecule. Cold molecules stick together and build structures; heat shakes them apart. Here a small piece of ice melts as it warms and freezes again as it cools.": "Каждая точка — молекула. Холодные молекулы слипаются и строят структуры; нагрев их растряхивает. Здесь маленький кусочек льда тает при нагреве и снова замерзает при охлаждении.",
   "Modes": "Режимы",
   "Game: reach a goal in 30 seconds. Explore: try any system freely. Energy scan: measure where a structure melts.": "Игра: достигните цели за 30 секунд. Исследование: свободно пробуйте любую систему. Энергетическое сканирование: измерьте, где структура плавится.",
   "Simulation box": "Ячейка моделирования",
-  "The molecules move here in real time. The legend under the box names the colours.": "Здесь молекулы движутся в реальном времени. Легенда под ячейкой объясняет цвета.",
   "Drag the slider to cool or heat the box. Press Mic to use room noise instead: quiet cools the box, sound heats it.": "Двигайте ползунок, чтобы охладить или нагреть ячейку. Нажмите Mic, чтобы управлять шумом в комнате: тишина охлаждает, звук нагревает.",
   "Games": "Игры",
   "Pick a game, read the goal and press Start. Reach the marked levels to earn up to three stars.": "Выберите игру, прочитайте цель и нажмите «Старт». Достигайте отмеченных уровней и получайте до трёх звёзд.",
   "Systems": "Системы",
   "Pick a system. Each card says what happens to it on cooling or heating.": "Выберите систему. На каждой карточке написано, что с ней происходит при охлаждении или нагреве.",
-  "Language and help": "Язык и справка",
-  "Switch the language here. Press ? to see this tour again.": "Здесь можно сменить язык. Нажмите ?, чтобы снова посмотреть эту экскурсию.",
   "Heating: the honeycomb breaks and the ice melts": "Нагрев: соты разрушаются, и лёд тает",
   "Cooling: the molecules lock into a honeycomb again": "Охлаждение: молекулы снова выстраиваются в соты",
   "Hot: liquid water": "Горячо: жидкая вода",
@@ -3486,7 +3484,6 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Bile from your liver is full of amphiphiles. They break the fat in your food into tiny droplets, so that it can be digested.": "Желчь из печени полна амфифилов. Они разбивают жир из пищи на крошечные капли, чтобы его можно было переварить.",
   "Milk is tiny droplets of fat in water, each wrapped in a thin skin of amphiphilic molecules that stops the droplets from merging.": "Молоко — это крошечные капли жира в воде, каждая в тонкой оболочке из амфифильных молекул, которая не даёт каплям слиться.",
   "Frying meat and heating milk: heat unfolds the proteins, their hidden sticky parts stick to each other, the meat turns firm and a skin forms on the milk.": "Жарка мяса и нагрев молока: тепло разворачивает белки, их спрятанные липкие участки слипаются, мясо становится твёрдым, а на молоке появляется пенка.",
-  "Build structures from molecules with your voice: stay quiet and they form, make noise and they break.": "Стройте структуры из молекул голосом: молчите — и они собираются, шумите — и они разрушаются.",
   "Drawing quality": "Качество отрисовки",
   "Automatic (lighter on slow devices)": "Автоматически (проще на медленных устройствах)",
   "Full": "Полное",
@@ -3535,7 +3532,13 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Antifreeze particles": "Частицы антифриза",
   "Antifreeze particle": "Частица антифриза",
   "Particles twice the size of a water molecule that attract water but cannot join the ice. They lower the melting point; about 80 keep most of the water liquid even when cold. The box rebuilds when you change the number.": "Частицы вдвое крупнее молекулы воды: они притягивают воду, но не могут войти в лёд. Они понижают температуру плавления; около 80 частиц удерживают большую часть воды жидкой даже в холоде. При изменении числа ячейка строится заново.",
-  "{n} s": "{n} с"
+  "{n} s": "{n} с",
+  "Control molecules with your voice. <b>Quiet</b>: they build structures. <b>Noise</b>: they fall apart.": "Управляйте молекулами голосом. <b>Тишина</b> — они собираются в структуры. <b>Шум</b> — структуры разрушаются.",
+  "Every dot is a molecule. Cold molecules stick together and build structures; heat shakes them apart. Turn on the microphone and melt this ice with your voice, or drag the slider.": "Каждая точка — молекула. Холодные молекулы слипаются и строят структуры; нагрев их растряхивает. Включите микрофон и растопите этот лёд голосом — или подвиньте ползунок.",
+  "The molecules move here in real time.": "Здесь молекулы движутся в реальном времени.",
+  "For the projector: one big box, and the whole room controls the temperature with its noise. Everyone quiet: structures grow. Noise: they break.": "Для проектора: одна большая ячейка, и весь класс управляет температурой своим шумом. Все молчат — структуры растут. Шум — они разрушаются.",
+  "Switch the language here.": "Здесь можно сменить язык.",
+  "Microphone": "Микрофон"
  }
 };
   let LANG = 'en';
@@ -4098,7 +4101,6 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (G.snap) { restoreSnap(G.snap); running = false; $('pause').textContent = T('Resume'); const r = report(); showReport(r);
       if (g.value) g.value(); const rv = G.peak; $('gval').textContent = g.fmt(rv); $('gval').className = ''; $('gnow').style.left = (100 * Math.max(0, Math.min(1, rv / (g.scale || 1)))) + '%'; }
     $('gres').innerHTML = `<span class="big">${starStr(st)}</span> <b>${T('Score {s}', { s: g.fmt(v) })}</b> ${rec ? T('(new best ever!)') : T('(best ever {b})', { b: g.fmt(Math.max(b, v)) })}. ` +
-      (G.snap ? T('The box now shows your best moment, reached at {s} s; press Resume to let it run on.', { s: G.peakSec.toFixed(0) }) + ' ' : '') +
       (st <= 1 ? '<b>' + T('Tip:') + '</b> ' + T(g.hint) + ' ' : '') + '<b>' + T('Did you know?') + '</b> ' + T(g.facts[Math.floor(Math.random() * g.facts.length)]) + ' ' + (st === 3 ? T('Top score!') + ' ' : '') + T('Your average so far: {a} (games played: {n}).', { n: S.n, a: g.fmt(S.sum / S.n) });
     renderPick();
   }
@@ -4164,15 +4166,16 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
 
   // ---------- help: quick tour of the main controls, opened with the ? button ----------
   const TOUR = [
-    { t: 'How this works', d: 'Every dot is a molecule. Cold molecules stick together and build structures; heat shakes them apart. Here a small piece of ice melts as it warms and freezes again as it cools.', demo: true },
+    { t: 'How this works', d: 'Every dot is a molecule. Cold molecules stick together and build structures; heat shakes them apart. Turn on the microphone and melt this ice with your voice, or drag the slider.', demo: true },
     { sel: () => phoneUI() ? '.mbnav' : '.modeseg', t: 'Modes', d: 'Game: reach a goal in 30 seconds. Explore: try any system freely. Energy scan: measure where a structure melts.' },
-    { sel: '#sim', t: 'Simulation box', d: 'The molecules move here in real time. The legend under the box names the colours.' },
+    { sel: '#sim', t: 'Simulation box', d: 'The molecules move here in real time.' },
     { sel: '.mbar', t: 'Temperature', d: 'Drag the slider to cool or heat the box. Press Mic to use room noise instead: quiet cools the box, sound heats it.' },
     { sel: () => phoneUI() ? '#mbOpt' : appMode === 'game' ? '#gamePanel' : '#sysPanel', t: () => phoneUI() ? 'Options' : appMode === 'game' ? 'Games' : 'Systems',
       d: () => phoneUI() ? 'Tap Options to pick a game or a system and to change the settings. Then press Start on the box.' : appMode === 'game' ? 'Pick a game, read the goal and press Start. Reach the marked levels to earn up to three stars.' : 'Pick a system. Each card says what happens to it on cooling or heating.' },
-    { sel: '.langbox', t: 'Language and help', d: 'Switch the language here. Press ? to see this tour again.' },
+    { sel: '#classBtn', t: 'Class mode', d: 'For the projector: one big box, and the whole room controls the temperature with its noise. Everyone quiet: structures grow. Noise: they break.' },
+    { sel: '#lang', t: 'Language', d: 'Switch the language here.' },
   ];
-  let tourI = -1, tourRaf = 0, tourT0 = 0;
+  let tourI = -1, tourRaf = 0, tourT0 = 0, demoCtl = 'auto', demoT = 0, demoPrev = 0, demoLast = 0; // auto: plays by itself until the viewer uses the microphone or the slider
   const tv = (v) => typeof v === 'function' ? v() : v;
   function tourPlace() {
     if (tourI < 0) return; const st = TOUR[tourI], spot = $('tSpot'), card = $('tCard'), vw = innerWidth, vh = innerHeight;
@@ -4188,14 +4191,17 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     tourI = i; const st = TOUR[i], n = TOUR.length;
     $('tTitle').textContent = T(tv(st.t)); $('tText').textContent = T(tv(st.d)); $('tCount').textContent = T('{i} of {n}', { i: i + 1, n });
     $('tBack').disabled = i === 0; $('tNext').textContent = T(i === n - 1 ? 'Done' : 'Next');
-    $('tDemo').hidden = !st.demo; cancelAnimationFrame(tourRaf); if (st.demo) { tourT0 = performance.now(); tourRaf = requestAnimationFrame(iceDemo); }
+    $('tDemo').hidden = !st.demo; cancelAnimationFrame(tourRaf); if (st.demo) { tourT0 = demoLast = performance.now(); tourRaf = requestAnimationFrame(iceDemo); }
     const el = st.sel ? document.querySelector(tv(st.sel)) : null;
     if (el && el.scrollIntoView) { const r = el.getBoundingClientRect(); if (r.top < 0 || r.bottom > innerHeight) el.scrollIntoView({ block: 'center', behavior: 'auto' }); }
     requestAnimationFrame(tourPlace);
   }
-  function tourOpen() { $('tour').hidden = false; tourShow(0); $('tNext').focus(); }
+  function tourOpen() { demoCtl = 'auto'; $('tdMic').setAttribute('aria-pressed', 'false'); $('tour').hidden = false; tourShow(0); $('tNext').focus(); }
   function tourClose() { markTour(); $('tour').hidden = true; tourI = -1; cancelAnimationFrame(tourRaf); $('helpBtn').focus(); }
   $('helpBtn').addEventListener('click', tourOpen);
+  $('tdT').addEventListener('input', () => { demoCtl = 'slider'; $('tdMic').setAttribute('aria-pressed', 'false'); });
+  $('tdMic').addEventListener('click', async () => { if (demoCtl === 'mic') { demoCtl = 'slider'; $('tdMic').setAttribute('aria-pressed', 'false'); return; }
+    await setMode('mic'); if (analyser) { demoCtl = 'mic'; $('tdMic').setAttribute('aria-pressed', 'true'); } });
   let seenTour = false; try { seenTour = localStorage.getItem('mdlab-tour') === '1'; } catch (e) {}
   if (!seenTour) setTimeout(() => { if (tourI < 0) tourOpen(); }, 700); // first visit: show what to do
   const markTour = () => { try { localStorage.setItem('mdlab-tour', '1'); } catch (e) {} };
@@ -4215,12 +4221,18 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     return { pts, nb, W, H, a }; })();
   function iceDemo(now) {
     const c = $('tCanvas'), g = c.getContext('2d'), t = ((now - tourT0) / 1000) % 10, red = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    // temperature cycle: cold 0-2 s, heat 2-5 s, hot 5-6 s, cool 6-9 s, cold 9-10 s
-    let T01 = t < 2 ? 0 : t < 5 ? (t - 2) / 3 : t < 6 ? 1 : t < 9 ? 1 - (t - 6) / 3 : 0; if (red) T01 = t < 5 ? 0 : 1;
+    const dts = Math.min(0.1, (now - demoLast) / 1000); demoLast = now;
+    // auto: cold 0-2 s, heat 2-5 s, hot 5-6 s, cool 6-9 s, cold 9-10 s; microphone: loudness heats quickly and the ice refreezes slowly; slider: as set
+    let T01;
+    if (demoCtl === 'mic') { const d = levelDb(), span = Math.max(0.5, +$('micrange').value), x = d === null ? 0 : Math.max(0, Math.min(1, (d - quietDb) / span));
+      demoT += (1 - Math.exp(-dts / (x > demoT ? 0.3 : 1.6))) * (x - demoT); T01 = demoT; $('tdT').value = T01.toFixed(2); }
+    else if (demoCtl === 'slider') { T01 = +$('tdT').value; demoT = T01; }
+    else { T01 = t < 2 ? 0 : t < 5 ? (t - 2) / 3 : t < 6 ? 1 : t < 9 ? 1 - (t - 6) / 3 : 0; if (red) T01 = t < 5 ? 0 : 1; $('tdT').value = T01.toFixed(2); }
+    const rising = T01 > demoPrev + 1e-4, falling = T01 < demoPrev - 1e-4; demoPrev = T01;
     const melt = Math.max(0, Math.min(1, (T01 - 0.35) / 0.4)), W = c.width, H = c.height, sc = W / ICE.W;
     for (const p of ICE.pts) { if (melt > 0) { p.vx += (Math.random() - 0.5) * 0.06 * melt; p.vy += (Math.random() - 0.5) * 0.06 * melt; p.vx *= 0.93; p.vy *= 0.93; p.dx += p.vx; p.dy += p.vy; }
       else { p.dx *= 0.9; p.dy *= 0.9; p.vx = p.vy = 0; }
-      if (T01 < 0.5 && t > 6) { p.dx *= 0.965; p.dy *= 0.965; } // cooling: back into the honeycomb
+      if (T01 < 0.5 && (demoCtl === 'auto' ? t > 6 : !rising)) { p.dx *= 0.965; p.dy *= 0.965; } // cooling: back into the honeycomb
       const x = p.x0 + p.dx, y = p.y0 + p.dy; if (x < 0.4 || x > ICE.W - 2.0) p.vx *= -1; if (y < 0.4 || y > ICE.H - 0.4) p.vy *= -1;
       p.dx = Math.max(0.4 - p.x0, Math.min(ICE.W - 2.0 - p.x0, p.dx)); p.dy = Math.max(0.4 - p.y0, Math.min(ICE.H - 0.4 - p.y0, p.dy)); }
     g.clearRect(0, 0, W, H); const jit = 0.05 + 0.12 * T01, ph = now / 160;
@@ -4232,7 +4244,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     // thermometer on the right
     const bx = W - 26, by = 18, bh = H - 36; g.fillStyle = colors.line; g.fillRect(bx, by, 10, bh);
     g.fillStyle = T01 > 0.5 ? colors.hot : colors.cold; g.fillRect(bx, by + bh * (1 - (0.12 + 0.88 * T01)), 10, bh * (0.12 + 0.88 * T01));
-    $('tDemoCap').textContent = T(t >= 2 && t < 6 ? 'Heating: the honeycomb breaks and the ice melts' : t >= 6 && t < 9 ? 'Cooling: the molecules lock into a honeycomb again' : T01 > 0.5 ? 'Hot: liquid water' : 'Cold: ice');
+    const heatCap = demoCtl === 'auto' ? t >= 2 && t < 6 : rising && T01 > 0.05, coolCap = demoCtl === 'auto' ? t >= 6 && t < 9 : falling && T01 > 0.05;
+    $('tDemoCap').textContent = T(heatCap ? 'Heating: the honeycomb breaks and the ice melts' : coolCap ? 'Cooling: the molecules lock into a honeycomb again' : T01 > 0.5 ? 'Hot: liquid water' : 'Cold: ice');
     if (tourI >= 0 && TOUR[tourI].demo) tourRaf = requestAnimationFrame(iceDemo);
   }
 
@@ -4719,6 +4732,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   function setLang(l) {
     LANG = I18N[l] || l === 'en' ? l : 'en'; $('lang').value = LANG;
     applyStatic(); refreshTexts(); document.title = T('Shut Up and Get Structured'); barLabels();
+    if (typeof tourI !== 'undefined' && tourI >= 0) tourShow(tourI); // an open help tour follows the language
   }
   // short labels for the phone's bottom bar: a quarter of a narrow screen fits about 10 letters
   const BAR = { en: { game: 'Game', explore: 'Explore', scan: 'Energy scan', opt: 'Options' },
