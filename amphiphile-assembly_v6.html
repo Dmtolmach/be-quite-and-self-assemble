@@ -1107,11 +1107,13 @@ MDEngine.prototype.computeForces = function () {
             if (drr < hbCut && drr > -hbCut) {
               const Gr = Math.exp(-drr * drr * i2s2), ux = -dx / r, uy = -dy / r, oi = 6 * i, oj = 6 * j;
               let A = 0, Ad = 0, B = 0, Bd = 0;
-              for (let a = 0; a < 6; a += 2) {
-                const ax = arm[oi + a], ay = arm[oi + a + 1], cA = ax * ux + ay * uy - 1, gA = Math.exp(-cA * cA * i2s2);
-                A += gA; Ad += -cA / s2 * gA * (ay * ux - ax * uy);
-                const bx = arm[oj + a], by = arm[oj + a + 1], cB = bx * ux + by * uy + 1, gB = Math.exp(-cB * cB * i2s2);
-                B += gB; Bd += -cB / s2 * gB * (by * ux - bx * uy);
+              for (let a = 0; a < 6; a += 2) { // arms more than ~25 degrees off the bond contribute exp(-12) or less: skipped
+                const ax = arm[oi + a], ay = arm[oi + a + 1], cA = ax * ux + ay * uy - 1, qA = cA * cA * i2s2;
+                if (qA < 14) { const gA = Math.exp(-qA); A += gA; Ad += -cA / s2 * gA * (ay * ux - ax * uy); }
+              }
+              if (A > 1e-9) for (let a = 0; a < 6; a += 2) {
+                const bx = arm[oj + a], by = arm[oj + a + 1], cB = bx * ux + by * uy + 1, qB = cB * cB * i2s2;
+                if (qB < 14) { const gB = Math.exp(-qB); B += gB; Bd += -cB / s2 * gB * (by * ux - bx * uy); }
               }
               const uhb = -eHB * Gr * A * B;
               if (uhb < -1e-12) {
@@ -1289,11 +1291,11 @@ MDEngine.prototype.step = function () {
       if (fixed && fixed[i]) continue;
       vx[i] += hdt * fx[i]; vy[i] += hdt * fy[i];
       x[i] += hdt * vx[i]; y[i] += hdt * vy[i];
-      vx[i] = c1 * vx[i] + c2 * E.gauss(); vy[i] = c1 * vy[i] + c2 * E.gauss();
+      vx[i] = c1 * vx[i] + c2 * (3.4641016 * E.rand() - 1.7320508); vy[i] = c1 * vy[i] + c2 * (3.4641016 * E.rand() - 1.7320508); // uniform noise, unit variance (Duenweg & Paul 1991): same temperature, much cheaper than Gaussian
       x[i] += hdt * vx[i]; y[i] += hdt * vy[i];
       if (mb && type[i] === 7) {
         om[i] += hdt * tq[i] * iI; th[i] += hdt * om[i];
-        om[i] = c1 * om[i] + c2r * E.gauss(); th[i] += hdt * om[i];
+        om[i] = c1 * om[i] + c2r * (3.4641016 * E.rand() - 1.7320508); th[i] += hdt * om[i];
       }
     }
     E.wrap(); E.computeForces();
@@ -3849,11 +3851,12 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   bindRange('gamma', (v) => v.toFixed(2), (v) => { if (eng) eng.p.gamma = v; });
   bindRange('tau', (v) => v.toFixed(2), (v) => { if (eng) eng.p.tau = v; });
   bindRange('spf', (v) => String(v));
-  const BUDGET_MS = isPhone ? 9 : 12; let msPerStep = null;
+  const BUDGET0 = isPhone ? 9 : 12; let BUDGET_MS = BUDGET0, msPerStep = null; // raised to ~25 ms (about 30 fps) when one step costs more than 1.5 ms
   function autoSpeed(n, ms) {
     if (!$('autoSpf').checked || n < 1) return;
     const m = ms / n; msPerStep = msPerStep === null ? m : 0.9 * msPerStep + 0.1 * m;
     if (frame % 20 !== 0) return;
+    BUDGET_MS = msPerStep > 1.5 ? 25 : BUDGET0;
     const want = Math.max(1, Math.min(60, Math.round(BUDGET_MS / msPerStep)));
     if (want !== n) { $('spf').value = want; $('spfO').textContent = want; }
   }
@@ -4064,7 +4067,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     cdTimer = setTimeout(() => { o.hidden = true; o.innerHTML = ''; }, 1400);
   }
   function gameSteps(dtSec) { // steps this frame so that D time units take 30 s; limited by what the device can do
-    const want = game.rate * dtSec / eng.p.dt + gameCarry, cap = msPerStep ? Math.max(1, Math.floor(2 * BUDGET_MS / msPerStep)) : 30;
+    const want = game.rate * dtSec / eng.p.dt + gameCarry, cap = msPerStep ? Math.max(1, Math.floor((BUDGET_MS > BUDGET0 ? 1.3 : 2) * BUDGET_MS / msPerStep)) : 30;
     const n = Math.max(0, Math.min(cap, Math.floor(want))); gameCarry = Math.min(want - n, 5); return n;
   }
   function takeSnap() { // full state, so the best moment can be shown and the run continued from it
@@ -4409,15 +4412,16 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   let dpr = 1, W = 0;
   // ---- adaptive drawing quality: watch frame time and drawing time, step down when the device cannot keep up ----
   // 0 full · 1 canvas at 1x pixel density · 2 also no water arms, readouts less often · 3 also every 2nd frame drawn, solvent hidden (not in Ice / Binary liquid)
-  let qLevel = 0, qAuto = true, qDraw = null, qFrame = null, qT = 0, loopN = 0;
+  let qLevel = 0, qAuto = true, qDraw = null, qFrame = null, qSim = 0, qT = 0, loopN = 0, simMsFrame = 0;
   const ANEVERY = [6, 9, 15, 20];
   function setQuality(q) { q = Math.max(0, Math.min(3, q)); if (q === qLevel) return; const pix = (q >= 1) !== (qLevel >= 1); qLevel = q; if (pix) resize(); qDraw = qFrame = null; qT = performance.now(); }
   function qualityTick(now, dMs, fMs) {
     if (fMs > 200 || document.visibilityState !== 'visible') { qT = now; return; } // tab was hidden or the page was busy elsewhere
-    qDraw = qDraw === null ? dMs : 0.92 * qDraw + 0.08 * dMs; qFrame = qFrame === null ? fMs : 0.92 * qFrame + 0.08 * fMs;
+    qDraw = qDraw === null ? dMs : 0.92 * qDraw + 0.08 * dMs; qFrame = qFrame === null ? fMs : 0.92 * qFrame + 0.08 * fMs; qSim = 0.92 * qSim + 0.08 * simMsFrame;
     if (!qAuto || qLevel >= 3 || !running) { if (!running) qT = now; return; }
     if (now - qT < 2500) return; // let it settle after a change
-    if (qFrame > (qLevel >= 3 ? 40 : 24) || qDraw > 7) { setQuality(qLevel + 1); $('quality').value = 'auto'; }
+    // the browser paints the canvas after our code returns, so painting shows up as frame time outside the simulation, not in qDraw
+    if ((qFrame > (qLevel >= 3 ? 40 : 24) && qFrame - qSim > 0.35 * qFrame) || qDraw > 7) { setQuality(qLevel + 1); $('quality').value = 'auto'; } // a slow simulation alone is not helped by simpler drawing
     else qT = now - 1500; // re-check about once a second
   }
   $('quality').addEventListener('change', (e) => { const v = e.target.value; qAuto = v === 'auto'; setQuality(qAuto ? 0 : +v); });
@@ -4640,9 +4644,10 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (running) {
       const n = game ? gameSteps(dtSec) : +$('spf').value, t0 = performance.now();
       for (let k = 0; k < n; k++) eng.step();
+      simMsFrame = performance.now() - t0;
       if (dbg) { dbg.sim += performance.now() - t0; dbg.steps += n; }
       if (eng2) { eng2.p.T = eng.p.T; eng2.p.mbEps = eng.p.mbEps; for (let k = 0; k < n; k++) eng2.step(); }
-      if (game) { if (n) { const m = (performance.now() - t0) / n; msPerStep = msPerStep === null ? m : 0.9 * msPerStep + 0.1 * m; } } else autoSpeed(n, performance.now() - t0);
+      if (game) { if (n) { const m = (performance.now() - t0) / n; msPerStep = msPerStep === null ? m : 0.9 * msPerStep + 0.1 * m; BUDGET_MS = msPerStep > 1.5 ? 25 : BUDGET0; } } else autoSpeed(n, performance.now() - t0);
       if (scan) scanSample();
       stepCount += n;
       const tk = eng.tempKin();
