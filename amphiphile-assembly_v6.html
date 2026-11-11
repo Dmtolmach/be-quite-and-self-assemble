@@ -126,6 +126,7 @@ table.eps th { font-weight: 500; color: var(--muted) }
 @media (max-width: 700px) { .ghud .gstat div { align-items: center; text-align: center; padding: 4px 2px } .ghud .gstat span { white-space: normal; overflow-wrap: anywhere; line-height: 1.15; min-height: 2.3em; display: flex; align-items: center; justify-content: center; max-width: 100%; font-size: 10px } .ghead { text-align: center; flex-direction: column; align-items: center; gap: 6px } .gres { text-align: center } .gstat b { font-size: 14px } .ghud { padding: 6px 8px; gap: 5px } .ghead { font-size: 12px } .ghud .gstat { gap: 6px } .gstat span { font-size: 10.5px }
   .ingame .legend { display: none } .gband { height: 16px } .gband .tick { line-height: 16px } .gbar { height: 7px } .ghud .gres { font-size: 12.5px } .htip { display: none } }
 .offmode { display: none !important }
+.dbgline { font-family: var(--f-mono); font-size: 11px; line-height: 1.35; color: var(--ink); background: color-mix(in srgb, var(--cryst) 22%, var(--panel)); border: 1px dashed var(--cryst); border-radius: 6px; padding: 6px 8px; white-space: normal; overflow-wrap: anywhere; user-select: all }
 /* games show only what the game needs: temperature, score, time; no physics readouts under the box */
 .ingame .kinlab, .ingame .legend { display: none !important }
 @media (max-width: 360px) { .ingame .ghead > div:first-child { font-size: 12.5px } }
@@ -4618,6 +4619,20 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
 
   // ---- main loop ----
   let last = performance.now(), stepCount = 0, perfT = last, sps = 0, tkinAvg = null;
+  // ---------- hidden debug line: add ?debug=1 to the address (or #debug) ----------
+  const dbgOn = /[?&]debug(=1)?\b/.test(location.search) || location.hash === '#debug';
+  let dbg = dbgOn ? { t: performance.now(), frames: 0, frameSum: 0, frameMax: 0, sim: 0, draw: 0, ana: 0, steps: 0 } : null;
+  if (dbgOn) { const d = document.createElement('div'); d.id = 'dbgLine'; d.className = 'dbgline'; $('sim').insertAdjacentElement('afterend', d); }
+  function debugTick(now, frameMs) {
+    dbg.frames++; dbg.frameSum += frameMs; if (frameMs < 1000) dbg.frameMax = Math.max(dbg.frameMax, frameMs);
+    const span = now - dbg.t; if (span < 1000) return;
+    const f = dbg.frames || 1, per = (v) => (v / f).toFixed(1), sps = dbg.steps * 1000 / span, need = game ? game.rate / eng.p.dt : null;
+    const busy = (dbg.sim + dbg.draw + dbg.ana) / f, other = Math.max(0, dbg.frameSum / f - busy);
+    $('dbgLine').textContent = `${(1000 * f / span).toFixed(0)} fps (worst ${dbg.frameMax.toFixed(0)} ms) · per frame: sim ${per(dbg.sim)} ms, draw ${per(dbg.draw)} ms, readouts ${per(dbg.ana)} ms, idle/browser ${other.toFixed(1)} ms`
+      + ` · ${sps.toFixed(0)} steps/s = ${(sps * eng.p.dt).toFixed(2)} τ/s` + (need ? ` (game needs ${need.toFixed(0)})` : '')
+      + ` · ${dbg.steps ? (1000 * dbg.sim / dbg.steps).toFixed(0) : '–'} µs/step · N ${eng.N} · quality ${qLevel} · canvas ${cv.width}×${cv.height} @${dpr}x · ${navigator.hardwareConcurrency || '?'} cores`;
+    dbg = { t: now, frames: 0, frameSum: 0, frameMax: 0, sim: 0, draw: 0, ana: 0, steps: 0 };
+  }
   function loop(now) {
     const frameMs = now - last, dtSec = Math.min(0.1, frameMs / 1000); last = now;
     if (scan && running) scanStep();
@@ -4625,6 +4640,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (running) {
       const n = game ? gameSteps(dtSec) : +$('spf').value, t0 = performance.now();
       for (let k = 0; k < n; k++) eng.step();
+      if (dbg) { dbg.sim += performance.now() - t0; dbg.steps += n; }
       if (eng2) { eng2.p.T = eng.p.T; eng2.p.mbEps = eng.p.mbEps; for (let k = 0; k < n; k++) eng2.step(); }
       if (game) { if (n) { const m = (performance.now() - t0) / n; msPerStep = msPerStep === null ? m : 0.9 * msPerStep + 0.1 * m; } } else autoSpeed(n, performance.now() - t0);
       if (scan) scanSample();
@@ -4632,6 +4648,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       const tk = eng.tempKin();
       tkinAvg = tkinAvg === null ? tk : 0.9 * tkinAvg + 0.1 * tk;
       if (frame % ANEVERY[qLevel] === 0) {
+        const a0 = dbg ? performance.now() : 0;
         const rep = report(); showReport(rep); if (game) gameUpdate(game.g.value ? game.g.value() : rep.v); if (classOn) classUpdate();
         push(hist.tset, tset); push(hist.tkin, tkinAvg); push(hist.frac, rep.v);
         $('tkin').textContent = $('tkinM').textContent = tkinAvg.toFixed(2);
@@ -4643,12 +4660,14 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
         plot(pT, [{ data: hist.tset, color: colors.muted, w: 1.5, dash: true }, { data: hist.tkin, color: colors.hot, w: 1.8, dot: true }], 0, thi * 1.04, tt);
         plot(pF, [{ data: hist.frac, color: colors.accent, w: 2, dot: true }], 0, plotMax, [0, plotMax / 2, plotMax]);
         if (scan && frame % 18 === 0) drawThermo();
+        if (dbg) dbg.ana += performance.now() - a0;
       }
       frame++;
     }
     if (now - perfT > 1000) { sps = stepCount * 1000 / (now - perfT); stepCount = 0; perfT = now; $('perf').textContent = `${Math.round(sps)} ${T('steps/s')} · ${(sps * eng.p.dt).toFixed(1)} τ/s` + (qLevel ? ' · ' + T('lighter drawing ({q})', { q: qLevel }) : ''); }
     followTick();
-    if (qLevel < 3 || (loopN & 1) === 0) { const d0 = performance.now(); draw(); qualityTick(now, performance.now() - d0, frameMs); } loopN++;
+    if (qLevel < 3 || (loopN & 1) === 0) { const d0 = performance.now(); draw(); const dm = performance.now() - d0; qualityTick(now, dm, frameMs); if (dbg) dbg.draw += dm; } loopN++;
+    if (dbg) debugTick(now, frameMs);
     syncBoxStart();
     requestAnimationFrame(loop);
   }
