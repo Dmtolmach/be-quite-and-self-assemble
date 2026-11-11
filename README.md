@@ -60,27 +60,34 @@ Temperatures are in reduced units (T*). They are not degrees Celsius: each syste
 
 ## Game mode
 
-Four 30-second games. Each one shows its goal, a short description, and up to three stars.
+Four 30-second games. Each one shows its goal, a short description, and up to three stars. At first only the ice game is open: a star in a game opens the next one. **Unlock all games (for teachers)**, under the statistics, opens all four on this device (press it again to lock them).
 
 | Game | System | Goal | Stars at |
 |---|---|---|---|
-| **Grow the biggest ice crystal** | Ice | Turn as much water into ice as possible. | 40%, 48%, 55% ice |
-| **Separate the liquids** | Two liquids | Separate two mixed liquids as far as possible. | s = 0.60, 0.72, 0.79 |
-| **Deliver the drug** | Soap molecules carrying drug | Heat only during the red target windows, so the micelles release their drug at the right moment. Drug released at other times is lost. | 40%, 65%, 85% delivered |
+| **Grow the biggest ice crystal** | Ice | Turn as much water into ice as possible. | 35%, 47%, 56% ice |
+| **Separate the liquids** | Two liquids | Separate two mixed liquids as far as possible. | s = 0.40, 0.48, 0.54 |
+| **Deliver the drug** | Soap molecules carrying drug | Heat only during the red target windows, so the micelles release their drug at the right moment. Drug released at other times is lost. | 35%, 65%, 85% delivered |
 | **Grow the longest gel strand** | Proteins | Unfold the proteins with heat, then cool them so they link into the longest possible network. | 80, 130, 170 σ path |
 
 How a game runs:
 
+- **The very first game is guided.** The box shows a crystal of ice and a line of instructions: make noise (or drag the slider right) and the ice melts; be quiet (or drag it left) and it freezes again; then **Play** starts the real game. **Skip** jumps straight to the game. The guide appears once per browser.
 - Press **Start**. A 3-2-1-Go countdown runs over the box; the clock and the molecules wait for it.
 - **Use the microphone** (ticked by default) lets the room control the temperature. Untick it to use the slider instead.
+- **Show tips** (ticked by default) turns on the coach line during the game and, after it, the sentence about the run and the tip for 0–1 stars. Untick it for a plain game, for example in a competition or a test. The choice is remembered in this browser. The guided first game, the green band and the replay graph stay.
 - During the game, the bar shows the score now, the star levels and the time left. When a new star is reached, the stars pop up over the box.
-- At the end, the box shows the best moment of the run (press **Resume** to let it continue from there). The text gives the score and one random fact related to the game. Students who get 0 or 1 star also get a tip.
+- **A coach line on the box** says what the molecules are doing and what to try, for example *Too warm: the ice cannot grow. Get quieter!* or *Red window: make noise now!* It follows the temperature and how the score is changing, and changes at most every 1.5 s.
+- **Temperature in words.** During games the number under the box is replaced by a symbol: ❄️❄️ cold, ❄️ cool, ☀️ warm, 🔥 hot (the word shows as a tooltip). Symbols keep the bar the same width in every language. A green band on the slider and on the **Your noise** bar (the microphone level, shown big when the microphone is on) marks the temperatures to aim for. For the two liquids it is fixed (*cool*, where the blobs grow fastest). For ice it is a **green path** that moves down during the game: start warm, cool slowly, and stay quiet for the last seconds (annealing). If the ice stops growing, the coach suggests a short burst of noise to melt badly packed bits, then cooling again.
+- At the end, the box shows the best moment of the run (press **Resume** to let it continue from there). The text gives the score, **one sentence about this run** (for example how much of the game was spent too warm, too cold or in the green band, how many drug windows were heated, or whether the proteins were ever heated enough), and one random fact related to the game. Students who get 0 or 1 star also get a tip.
+- **A replay graph** under the text shows the student's temperature over the 30 s (red line), the score (teal line, dot at the best moment) and the star levels, with the green band (ice, liquids) or the red drug windows shaded. It shows at a glance whether the student was too loud, too quiet, or late.
 - **Statistics on this device** lists games played, average and best score for each game. They are stored only in this browser. **Reset statistics** clears them.
 - **Give up** ends a game early; **Play again** restarts it.
 
+The star levels come from test runs of simple ways to play. In the ice game, staying silent gives about 25–30% ice (no star), a constant medium-quiet level about 40% (one star), and following the green path 55–60% (two or three stars). Adding one or two short bursts of heat on the way gave similar or slightly higher scores (57–61%) in the test runs. Chatting, with noise going up and down, keeps the box warm and grows almost no ice, because the box heats quickly and cools slowly.
+
 Each game needs a different strategy, which is what makes them good discussion starters:
 
-- **Ice** rewards slow cooling (annealing): going silent at once freezes a disordered jumble.
+- **Ice** rewards slow cooling from warm (annealing), then staying cold: going silent at once freezes a disordered jumble, and holding one temperature grows too little. A short reheating can melt defects so they regrow in order.
 - **Separate the liquids** rewards a temperature that is cold enough to separate but warm enough for molecules to move: too cold and everything freezes in place.
 - **Deliver the drug** rewards timing: the micelles need a moment to open, so start the noise just before each window and stop just before it ends.
 - **Gel strand** rewards heat-then-cool: folded proteins cannot link, and too much heat breaks the links.

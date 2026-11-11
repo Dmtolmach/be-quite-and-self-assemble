@@ -412,6 +412,7 @@ button { touch-action: manipulation }
           <div class="btns">
             <button class="btn primary" id="gstart">Start</button>
             <label class="gmic"><input type="checkbox" id="guseMic" checked> Use the microphone</label>
+            <label class="gmic"><input type="checkbox" id="gtips" checked> Show tips</label>
           </div>
         </div>
         <div class="gstats">
@@ -1801,6 +1802,24 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // text written by the script goes through T(), with {name} placeholders for numbers.
   const I18N = {
  "fi": {
+  "Show tips": "Näytä vinkit",
+  "green path": "vihreä polku",
+  "Too warm: the ice melts. Get quieter, slowly.": "Liian lämmin: jää sulaa. Hiljennä vähitellen.",
+  "Good: the heat melts the defects. Now cool again.": "Hyvä: lämpö sulattaa virheet. Viilennä nyt taas.",
+  "A bit warmer than the green path: cool down a little.": "Vähän vihreää polkua lämpimämpi: viilennä hieman.",
+  "Start warm: make some noise, then cool down slowly.": "Aloita lämpimästä: pidä vähän ääntä ja viilennä sitten hitaasti.",
+  "Cooling too fast: the ice will be a jumble. A little noise!": "Liian nopea jäähdytys: jäästä tulee sekasotku. Vähän ääntä!",
+  "Now stay quiet: the ice you grew is setting.": "Ole nyt hiljaa: kasvattamasi jää jähmettyy.",
+  "Growth has stalled. A short burst of noise can melt the defects, then cool again.": "Kasvu on pysähtynyt. Lyhyt äänipyrähdys voi sulattaa virheet, sitten viilennä taas.",
+  "Good: slow cooling, the ice is growing.": "Hyvä: hidas jäähdytys, jää kasvaa.",
+  "On track: keep cooling slowly along the green path.": "Oikealla tiellä: jatka hidasta viilennystä vihreää polkua pitkin.",
+  "You were warmer than the green path for {p}% of the game, so the ice melted or could not grow. Cool down step by step.": "Olit vihreää polkua lämpimämpi {p} % pelistä, joten jää suli tai ei voinut kasvaa. Viilennä askel kerrallaan.",
+  "You were colder than the green path for {p}% of the game: cooling that fast freezes a jumble. Cool more slowly.": "Olit vihreää polkua kylmempi {p} % pelistä: niin nopea jäähdytys jäädyttää sekasotkun. Viilennä hitaammin.",
+  "You cooled slowly along the green path for {p}% of the game. Excellent!": "Viilensit hitaasti vihreää polkua pitkin {p} % pelistä. Erinomaista!",
+  "You followed the green path for {p}% of the game. Nice! If the ice stops growing, try a short burst of noise and cool again.": "Seurasit vihreää polkua {p} % pelistä. Hienoa! Jos jää lakkaa kasvamasta, kokeile lyhyttä äänipyrähdystä ja viilennä taas.",
+  "You followed the green path for only {p}% of the game. Start warm, then cool down slowly with it.": "Seurasit vihreää polkua vain {p} % pelistä. Aloita lämpimästä ja viilennä sitten hitaasti sen mukana.",
+  "Start warm, then cool down slowly along the green path and stay quiet at the end. If the ice stops growing, a short burst of noise melts the badly packed bits; then cool again.": "Aloita lämpimästä, viilennä sitten hitaasti vihreää polkua pitkin ja ole lopussa hiljaa. Jos jää lakkaa kasvamasta, lyhyt äänipyrähdys sulattaa huonosti pakkautuneet kohdat; viilennä sitten taas.",
+  "Cooled too fast, the molecules lock in wherever they happen to be; kept at one temperature, the crystals grow too slowly or melt again. Start warm, cool step by step, and if growth stalls, heat briefly and cool again.": "Liian nopeasti jäähdytettyinä molekyylit lukittuvat mihin sattuvat; yhdessä lämpötilassa kiteet kasvavat liian hitaasti tai sulavat taas. Aloita lämpimästä, viilennä askel kerrallaan, ja jos kasvu pysähtyy, lämmitä hetki ja viilennä taas.",
   "Not now! Heat outside the red windows wastes the drug.": "Ei nyt! Lämpö punaisten ikkunoiden ulkopuolella haaskaa lääkettä.",
   "Your noise": "Sinun äänesi",
   "Skip": "Ohita",
@@ -2448,6 +2467,24 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Microphone": "Mikrofoni"
  },
  "sv": {
+  "Show tips": "Visa tips",
+  "green path": "grön stig",
+  "Too warm: the ice melts. Get quieter, slowly.": "För varmt: isen smälter. Bli tystare, långsamt.",
+  "Good: the heat melts the defects. Now cool again.": "Bra: värmen smälter defekterna. Kyl ner igen nu.",
+  "A bit warmer than the green path: cool down a little.": "Lite varmare än den gröna stigen: kyl ner lite.",
+  "Start warm: make some noise, then cool down slowly.": "Börja varmt: låt lite och kyl sedan ner långsamt.",
+  "Cooling too fast: the ice will be a jumble. A little noise!": "För snabb nedkylning: isen blir ett virrvarr. Lite ljud!",
+  "Now stay quiet: the ice you grew is setting.": "Var tyst nu: isen du odlat stelnar.",
+  "Growth has stalled. A short burst of noise can melt the defects, then cool again.": "Tillväxten har stannat. En kort ljudstöt kan smälta defekterna, kyl sedan ner igen.",
+  "Good: slow cooling, the ice is growing.": "Bra: långsam nedkylning, isen växer.",
+  "On track: keep cooling slowly along the green path.": "Rätt spår: fortsätt kyla långsamt längs den gröna stigen.",
+  "You were warmer than the green path for {p}% of the game, so the ice melted or could not grow. Cool down step by step.": "Du var varmare än den gröna stigen under {p} % av spelet, så isen smälte eller kunde inte växa. Kyl ner steg för steg.",
+  "You were colder than the green path for {p}% of the game: cooling that fast freezes a jumble. Cool more slowly.": "Du var kallare än den gröna stigen under {p} % av spelet: så snabb nedkylning fryser ett virrvarr. Kyl långsammare.",
+  "You cooled slowly along the green path for {p}% of the game. Excellent!": "Du kylde långsamt längs den gröna stigen under {p} % av spelet. Utmärkt!",
+  "You followed the green path for {p}% of the game. Nice! If the ice stops growing, try a short burst of noise and cool again.": "Du följde den gröna stigen under {p} % av spelet. Snyggt! Om isen slutar växa, prova en kort ljudstöt och kyl ner igen.",
+  "You followed the green path for only {p}% of the game. Start warm, then cool down slowly with it.": "Du följde den gröna stigen bara {p} % av spelet. Börja varmt och kyl sedan ner långsamt med den.",
+  "Start warm, then cool down slowly along the green path and stay quiet at the end. If the ice stops growing, a short burst of noise melts the badly packed bits; then cool again.": "Börja varmt, kyl sedan ner långsamt längs den gröna stigen och var tyst i slutet. Om isen slutar växa smälter en kort ljudstöt de dåligt packade delarna; kyl sedan ner igen.",
+  "Cooled too fast, the molecules lock in wherever they happen to be; kept at one temperature, the crystals grow too slowly or melt again. Start warm, cool step by step, and if growth stalls, heat briefly and cool again.": "Kyls det för snabbt låser sig molekylerna där de råkar vara; vid en enda temperatur växer kristallerna för långsamt eller smälter igen. Börja varmt, kyl steg för steg och värm kort om tillväxten stannar, kyl sedan igen.",
   "Not now! Heat outside the red windows wastes the drug.": "Inte nu! Värme utanför de röda fönstren slösar bort läkemedlet.",
   "Your noise": "Ditt ljud",
   "Skip": "Hoppa över",
@@ -3095,6 +3132,24 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Microphone": "Mikrofon"
  },
  "ru": {
+  "Show tips": "Показывать подсказки",
+  "green path": "зелёная дорожка",
+  "Too warm: the ice melts. Get quieter, slowly.": "Слишком тепло: лёд тает. Постепенно становитесь тише.",
+  "Good: the heat melts the defects. Now cool again.": "Хорошо: тепло расплавляет дефекты. Теперь снова охлаждайте.",
+  "A bit warmer than the green path: cool down a little.": "Чуть теплее зелёной дорожки: немного охладите.",
+  "Start warm: make some noise, then cool down slowly.": "Начните с тепла: немного пошумите, потом медленно охлаждайте.",
+  "Cooling too fast: the ice will be a jumble. A little noise!": "Слишком быстрое охлаждение: лёд выйдет беспорядочным. Немного пошумите!",
+  "Now stay quiet: the ice you grew is setting.": "Теперь тишина: выращенный лёд застывает.",
+  "Growth has stalled. A short burst of noise can melt the defects, then cool again.": "Рост остановился. Короткий всплеск шума расплавит дефекты, потом снова охлаждайте.",
+  "Good: slow cooling, the ice is growing.": "Хорошо: медленное охлаждение, лёд растёт.",
+  "On track: keep cooling slowly along the green path.": "Всё верно: продолжайте медленно охлаждать по зелёной дорожке.",
+  "You were warmer than the green path for {p}% of the game, so the ice melted or could not grow. Cool down step by step.": "{p}% игры было теплее зелёной дорожки, поэтому лёд таял или не мог расти. Охлаждайте шаг за шагом.",
+  "You were colder than the green path for {p}% of the game: cooling that fast freezes a jumble. Cool more slowly.": "{p}% игры было холоднее зелёной дорожки: такое быстрое охлаждение замораживает беспорядок. Охлаждайте медленнее.",
+  "You cooled slowly along the green path for {p}% of the game. Excellent!": "Вы медленно охлаждали по зелёной дорожке {p}% игры. Превосходно!",
+  "You followed the green path for {p}% of the game. Nice! If the ice stops growing, try a short burst of noise and cool again.": "Вы шли по зелёной дорожке {p}% игры. Неплохо! Если лёд перестал расти, коротко пошумите и снова охлаждайте.",
+  "You followed the green path for only {p}% of the game. Start warm, then cool down slowly with it.": "Вы шли по зелёной дорожке всего {p}% игры. Начните с тепла и медленно охлаждайте вместе с ней.",
+  "Start warm, then cool down slowly along the green path and stay quiet at the end. If the ice stops growing, a short burst of noise melts the badly packed bits; then cool again.": "Начните с тепла, затем медленно охлаждайте по зелёной дорожке, а в конце молчите. Если лёд перестал расти, короткий всплеск шума расплавит плохо уложенные участки; потом снова охлаждайте.",
+  "Cooled too fast, the molecules lock in wherever they happen to be; kept at one temperature, the crystals grow too slowly or melt again. Start warm, cool step by step, and if growth stalls, heat briefly and cool again.": "При слишком быстром охлаждении молекулы застывают где попало; при одной температуре кристаллы растут слишком медленно или снова тают. Начните с тепла, охлаждайте шаг за шагом, а если рост остановился — ненадолго нагрейте и снова охладите.",
   "Not now! Heat outside the red windows wastes the drug.": "Не сейчас! Нагрев вне красных окон тратит лекарство впустую.",
   "Your noise": "Ваш шум",
   "Skip": "Пропустить",
@@ -4174,15 +4229,19 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   const GAMES = [
     { id: 'ice', title: 'Grow the biggest ice crystal', sub: 'Ice · slow cooling wins', sys: 'ice', ordered: false, range: [0.02, 0.30], D: 150,
       lab: 'Ice', fmt: (v) => pct(v), stars: [0.35, 0.47, 0.56],
-      zone: [0.07, 0.16], words: [0.07, 0.16, 0.21], earlyS: 12, rise: 0.01, // ice grows between about 0.07 and 0.16; colder freezes a jumble, warmer melts
-      cz: { hot: 'Too warm: the ice cannot grow. Get quieter!', coldEarly: 'Very cold already: the water will freeze as a jumble. A little noise!', cold: 'Cold: the ice you grew is setting.', coldCls: '',
-        good: 'Good: the ice is growing. Keep it like this.', flat: 'In the green zone. Get a little quieter, slowly.' },
-      dz: { hot: 'You were too warm for {p}% of the game, so the ice could not grow.', coldEarly: 'You went quiet right away: the water froze into a jumble before crystals could grow.',
-        cold: 'You were very cold for {p}% of the game: the water froze as a jumble instead of growing crystals.' },
+      // the green path: start warm and cool slowly (annealing), then stay quiet for the last seconds; test runs that followed it reached 2-3 stars
+      path: (s) => { const c = 0.17 - 0.12 * Math.min(1, s / 25); return [s >= 24 ? 0.02 : c - 0.025, c + 0.025]; },
+      words: [0.07, 0.16, 0.21], rise: 0.01,
+      dz: { hot: 'You were warmer than the green path for {p}% of the game, so the ice melted or could not grow. Cool down step by step.',
+        coldEarly: 'You went quiet right away: the water froze into a jumble before crystals could grow.',
+        cold: 'You were colder than the green path for {p}% of the game: cooling that fast freezes a jumble. Cool more slowly.',
+        top: 'You cooled slowly along the green path for {p}% of the game. Excellent!',
+        inGood: 'You followed the green path for {p}% of the game. Nice! If the ice stops growing, try a short burst of noise and cool again.',
+        inBad: 'You followed the green path for only {p}% of the game. Start warm, then cool down slowly with it.' },
       short: "Turn as much of the water into ice as you can within 30 seconds.", goal: 'Turn as much water into ice as you can. Quiet cools the box, noise warms it. Your score is the most ice you reach. The water starts liquid; when it cools, its molecules can lock into a neat honeycomb pattern: ice.', facts: ["Almost every snowflake has six arms. The six-fold shape comes from the honeycomb arrangement of water molecules in ice.", "Ice is lighter than liquid water, so it floats. That is why lakes freeze from the top down and fish survive the winter below.", "Very pure water can stay liquid well below 0 °C. Cloud droplets can stay liquid down to about −40 °C before they freeze."],
-      hint: 'Going silent at once freezes the water into a jumble: no star. Ice needs time to grow in order. Start with some noise, then get quieter little by little.',
+      hint: 'Start warm, then cool down slowly along the green path and stay quiet at the end. If the ice stops growing, a short burst of noise melts the badly packed bits; then cool again.',
       lesson: { good: 'Cooling slowly gave the molecules time to find their places in the honeycomb, so the crystals grew large. This is annealing: how glassmakers and metal workers make strong, clear materials.',
-        bad: 'Cooled too fast, the molecules lock in wherever they happen to be; kept at one temperature, the crystals grow too slowly or melt again. Try starting a bit warm and cooling step by step.' } },
+        bad: 'Cooled too fast, the molecules lock in wherever they happen to be; kept at one temperature, the crystals grow too slowly or melt again. Start warm, cool step by step, and if growth stalls, heat briefly and cool again.' } },
     { id: 'demix', title: 'Separate the liquids', sub: 'Two liquids · not too cold', sys: 'demix', ordered: false, range: [0.02, 1.0], D: 90, box: '36',
       lab: 'Separation', fmt: (v) => v.toFixed(2), stars: [0.40, 0.48, 0.54],
       zone: [0.27, 0.42], words: [0.27, 0.42, 0.65], rise: 0.01, // separates fastest around 0.3-0.36; colder the molecules hardly move, warmer they mix
@@ -4314,14 +4373,14 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     $('gstart').disabled = false; gstartKey = 'Play again'; $('gstart').textContent = T(gstartKey); $('gquit').textContent = T('Close');
     if (!G || !result) { closeHud(); return; }
     const g = G.g, v = G.peak, st = starsFor(g, v), b = getBest(g), rec = b === null || v > b, gi = GAMES.indexOf(g), wasOpen = gi + 1 < GAMES.length && isOpen(gi + 1); if (rec) setBest(g, v);
-    const opened = gi + 1 < GAMES.length && !wasOpen && isOpen(gi + 1), dg = diagnose(G, st);
+    const opened = gi + 1 < GAMES.length && !wasOpen && isOpen(gi + 1), dg = tipsOn() ? diagnose(G, st) : '';
     const S = addStat(g, v);
     $('hudGoal').textContent = $('hudTip').textContent = ''; $('gagain').hidden = false;
     if (G.snap) { restoreSnap(G.snap); running = false; $('pause').textContent = T('Resume'); const r = report(); showReport(r);
       if (g.value) g.value(); const rv = G.peak; $('gval').textContent = g.fmt(rv); $('gval').className = ''; $('gnow').style.left = (100 * Math.max(0, Math.min(1, rv / (g.scale || 1)))) + '%'; }
     $('gres').innerHTML = `<span class="big">${starStr(st)}</span> <b>${T('Score {s}', { s: g.fmt(v) })}</b> ${rec ? T('(new best ever!)') : T('(best ever {b})', { b: g.fmt(Math.max(b, v)) })}. ` + (dg ? dg + ' ' : '') +
       (opened ? '<b>' + T('New game unlocked: {g}!', { g: T(GAMES[gi + 1].title) }) + '</b> ' : '') +
-      (st <= 1 ? '<b>' + T('Tip:') + '</b> ' + T(g.hint) + ' ' : '') + '<b>' + T('Did you know?') + '</b> ' + T(g.facts[Math.floor(Math.random() * g.facts.length)]) + ' ' + (st === 3 ? T('Top score!') + ' ' : '') + T('Your average so far: {a} (games played: {n}).', { n: S.n, a: g.fmt(S.sum / S.n) });
+      (st <= 1 && tipsOn() ? '<b>' + T('Tip:') + '</b> ' + T(g.hint) + ' ' : '') + '<b>' + T('Did you know?') + '</b> ' + T(g.facts[Math.floor(Math.random() * g.facts.length)]) + ' ' + (st === 3 ? T('Top score!') + ' ' : '') + T('Your average so far: {a} (games played: {n}).', { n: S.n, a: g.fmt(S.sum / S.n) });
     renderPick(); drawReplay(G);
   }
   function gameUpdate(v) {
@@ -4338,7 +4397,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     $('gbar').style.width = (100 * frac) + '%';
     const sNow = GAME_SEC * frac; // the run, kept for the replay and the diagnosis after the game
     if (!G.rec.length || sNow - G.rec[G.rec.length - 1].s >= 0.25) G.rec.push({ s: sNow, T: tset, v: G.ema, d: G.del || 0, l: G.lost || 0 });
-    if (frac < 1) coachTick(G, sNow);
+    if (frac < 1) { coachTick(G, sNow); if (g.path) zoneMarks(sNow); }
     if (frac >= 1) endGame('done');
   }
   $('gpick').addEventListener('click', (e) => { const b = e.target.closest('[data-game]'); if (b) selectGame(b.dataset.game); });
@@ -4527,13 +4586,14 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // ---------- help for first-time players: temperature in words, the good zone, a live coach line, a replay with a diagnosis, a guided first game, unlocking ----------
   const T_WORDS = ['cold', 'cool', 'warm', 'hot'];
   const tWord = (g, Tv) => { const [lo, hi] = g.range, w = g.words || [0.25, 0.5, 0.75].map((q) => lo + q * (hi - lo)); return w.filter((b) => Tv >= b).length; };
+  const zoneOf = (g, s) => (g.path ? g.path(s) : g.zone);
   const gameNow = () => (appMode === 'game' && gameRange ? (game ? game.g : gameSel) : null);
   function tWordShow() { // during games the box shows cold / cool / warm / hot instead of a number
     const g = gameNow(), b = $('tsetM');
     if (g) { const k = tWord(g, tset); b.textContent = T(T_WORDS[k]); b.className = 'tw tw' + k; } else if (b.className) b.className = '';
   }
-  function zoneMarks() { // the green band on the noise bar and on the slider: temperatures that build the structure
-    const g = gameNow(), z = g && g.zone, nz = $('nzone'), sz = $('szone');
+  function zoneMarks(sNow) { // the green band on the noise bar and on the slider: temperatures that build the structure (for ice it moves down during the game)
+    const g = gameNow(), z = g && (g.zone || g.path) ? zoneOf(g, sNow || 0) : null, nz = $('nzone'), sz = $('szone');
     nz.classList.toggle('on', !!z); sz.classList.toggle('on', !!z); if (!z) return;
     const [lo, hi] = g.range, f = (Tv) => (Tv - lo) / (hi - lo), xn = (Tv) => Math.max(0, Math.min(1, (f(Tv) - 0.05) / 0.9));
     nz.style.left = 100 * xn(z[0]) + '%'; nz.style.width = 100 * (xn(z[1]) - xn(z[0])) + '%';
@@ -4546,8 +4606,11 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   let coachMsg = null; // [key, params, class], kept so a language switch can redraw it
   function coachSay(key, cls, params) { coachMsg = [key, params, cls]; const o = $('coach'); $('coachTxt').textContent = T(key, params); o.className = 'coach ' + (cls || ''); o.hidden = false; placeCoach(); }
   function coachHide() { coachMsg = null; $('coach').hidden = true; $('coachBtn').hidden = $('coachSkip').hidden = true; }
+  const tipsOn = () => $('gtips').checked;
+  try { if (localStorage.getItem('mdlab-tips') === '0') $('gtips').checked = false; } catch (e) {}
+  $('gtips').addEventListener('change', () => { try { localStorage.setItem('mdlab-tips', tipsOn() ? '1' : '0'); } catch (e) {} if (!tipsOn() && !guide) coachHide(); });
   function coachTick(G, s) {
-    const g = G.g; if (!g.coach) return;
+    const g = G.g; if (!g.coach || !tipsOn()) return;
     const r = G.rec, back = r.find((q) => q.s >= s - 2) || r[0], tr = back ? G.ema - back.v : 0;
     const [key, cls] = g.coach(G, s, tset, tr);
     if (key !== G.cKey) { G.cKey = key; G.cCls = cls; G.cSince = s; }
@@ -4559,6 +4622,17 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (Tv > b) return [c.hot, 'bad'];
     if (Tv < a) return s < (g.earlyS || 0) && c.coldEarly ? [c.coldEarly, 'warn'] : [c.cold, c.coldCls || 'warn'];
     return tr > g.rise ? [c.good, 'good'] : [c.flat, ''];
+  }
+  function iceCoach(G, s, Tv, tr) { // follow the green path down; a short burst of heat when growth stalls
+    const g = G.g, [a, b] = g.path(s), r = G.rec, b4 = r.find((q) => q.s >= s - 4) || r[0], stalled = s > 7 && s < 23 && G.ema > 0.05 && G.ema > 0.85 * G.peak && b4 && Math.abs(G.ema - b4.v) < 0.005; // flat near the best so far (not regrowing after a melt)
+    if (stalled) G.kickUntil = s + 3.5; // a short burst of heat right after a stall is the advice, not a mistake
+    if (Tv > b && s < (G.kickUntil || 0)) return ['Good: the heat melts the defects. Now cool again.', 'good'];
+    if (Tv > b + 0.03) return ['Too warm: the ice melts. Get quieter, slowly.', 'bad'];
+    if (Tv > b) return ['A bit warmer than the green path: cool down a little.', ''];
+    if (Tv < a) return s < 4 ? ['Start warm: make some noise, then cool down slowly.', 'warn'] : ['Cooling too fast: the ice will be a jumble. A little noise!', 'warn'];
+    if (s >= 24) return ['Now stay quiet: the ice you grew is setting.', 'good'];
+    if (stalled) return ['Growth has stalled. A short burst of noise can melt the defects, then cool again.', 'warn'];
+    return tr > g.rise ? ['Good: slow cooling, the ice is growing.', 'good'] : ['On track: keep cooling slowly along the green path.', ''];
   }
   function drugCoach(G, s, Tv) {
     const w = drugWindow(), r = G.rec, p = r.find((q) => q.s >= s - 1) || r[0] || { d: 0, l: 0 }, g = G.g;
@@ -4577,7 +4651,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (Tv > g.openT) return ['Now get quieter so the links hold.', ''];
     return ['Hold it cool: let the clumps join up.', ''];
   }
-  for (const g of GAMES) g.coach = g.id === 'drug' ? drugCoach : g.id === 'gel' ? gelCoach : zoneCoach;
+  for (const g of GAMES) g.coach = g.id === 'drug' ? drugCoach : g.id === 'gel' ? gelCoach : g.id === 'ice' ? iceCoach : zoneCoach;
   // one sentence about this player's run
   function diagnose(G, st) {
     const g = G.g, r = G.rec || [], n = r.length; if (n < 8) return '';
@@ -4586,7 +4660,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       const W = G.win || []; let hit = 0;
       for (const [a, b] of W) { const q = r.filter((x) => x.s >= a / G.rate && x.s < b / G.rate); if (q.length && q.filter((x) => x.T > g.hotT).length >= 0.4 * q.length) hit++; }
       const lost = Math.round(100 * (G.lost || 0) / (eng.nDrug || 1));
-      if ((G.lost || 0) > (G.del || 0)) return T('Most of the drug escaped between the windows ({l}% lost). Stay quiet when there is no red window.', { l: lost });
+      if ((G.lost || 0) > (G.del || 0) && lost >= 10) return T('Most of the drug escaped between the windows ({l}% lost). Stay quiet when there is no red window.', { l: lost });
       if (hit < W.length / 2) return T('You heated in {h} of {n} red windows. Make noise as soon as a window starts.', { h: hit, n: W.length });
       return T(st === 3 ? 'Great timing: you heated in {h} of {n} windows and lost only {l}% of the drug.' : 'You heated in {h} of {n} windows and lost {l}% of the drug. Start the noise a little before each window.', { h: hit, n: W.length, l: lost });
     }
@@ -4597,16 +4671,16 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       if (hot > 60 || lateHot) return T('You were warm for {p}% of the game. Links keep breaking while it is warm: cool down sooner.', { p: hot });
       return T('You were warm for {p}% of the game. Try heating for about a third of the game, then go quiet.', { p: hot });
     }
-    const [a, b] = g.zone, hot = pc((x) => x.T > b), cold = pc((x) => x.T < a), inz = 100 - hot - cold;
-    const early = r.filter((x) => x.s < 8), earlyCold = early.length > 0 && early.filter((x) => x.T < a).length > 0.7 * early.length;
-    const after = r.filter((x) => x.s > G.peakSec), lostIt = G.peakSec < 25 && after.length > 4 && G.peak - r[n - 1].v > 0.08 * g.stars[2] && after.filter((x) => x.T > b).length > 0.3 * after.length;
-    if (st === 3) return T('You kept the box in the green zone for {p}% of the game. Excellent!', { p: inz });
+    const zA = (x) => zoneOf(g, x.s)[0], zB = (x) => zoneOf(g, x.s)[1], hot = pc((x) => x.T > zB(x)), cold = pc((x) => x.T < zA(x)), inz = 100 - hot - cold;
+    const early = r.filter((x) => x.s < 8), earlyCold = early.length > 0 && early.filter((x) => x.T < zA(x)).length > 0.7 * early.length;
+    const after = r.filter((x) => x.s > G.peakSec), lostIt = G.peakSec < 25 && after.length > 4 && G.peak - r[n - 1].v > 0.08 * g.stars[2] && after.filter((x) => x.T > zB(x)).length > 0.3 * after.length;
+    if (st === 3) return T(g.dz.top || 'You kept the box in the green zone for {p}% of the game. Excellent!', { p: inz });
     if (g.dz.coldEarly && earlyCold) return T(g.dz.coldEarly);
-    if (hot >= 50) return T(g.dz.hot, { p: hot });
+    if (hot >= (g.path ? 40 : 50)) return T(g.dz.hot, { p: hot });
     if (lostIt) return T('Your best was at {s} s. After that it got too warm and you lost some of it.', { s: Math.round(G.peakSec) });
     if (hot >= 25 && hot >= cold) return T(g.dz.hot, { p: hot });
     if (cold >= 35) return T(g.dz.cold, { p: cold });
-    return T(inz >= 50 ? 'You were in the green zone for {p}% of the game. Nice! Now try to stay there a little longer.' : 'You were in the green zone for only {p}% of the game. Try to keep the temperature in the green band.', { p: inz });
+    return T(inz >= 50 ? g.dz.inGood || 'You were in the green zone for {p}% of the game. Nice! Now try to stay there a little longer.' : g.dz.inBad || 'You were in the green zone for only {p}% of the game. Try to keep the temperature in the green band.', { p: inz });
   }
   // after the game: the player's temperature over the 30 s, the good zone shaded, and the score
   function drawReplay(G) {
@@ -4620,7 +4694,9 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const X = (s) => padL + pw * s / GAME_SEC, [lo, hi] = g.range, YT = (Tv) => padT + ph * (1 - (Tv - lo) / (hi - lo));
     const top = Math.max(g.stars[2] * 1.12, G.peak * 1.05) || 1, YV = (v) => padT + ph * (1 - Math.max(0, Math.min(top, v)) / top);
     x.fillStyle = col('cell'); x.fillRect(padL, padT, pw, ph);
-    if (g.zone) { x.fillStyle = col('good') + '33'; const y1 = YT(Math.min(hi, g.zone[1])), y0 = YT(Math.max(lo, g.zone[0])); x.fillRect(padL, y1, pw, y0 - y1); }
+    if (g.zone || g.path) { x.fillStyle = col('good') + '33'; x.beginPath(); const ss = []; for (let q = 0; q <= 60; q++) ss.push(GAME_SEC * q / 60);
+      ss.forEach((sv, i) => (i ? x.lineTo : x.moveTo).call(x, X(sv), YT(Math.min(hi, zoneOf(g, sv)[1]))));
+      for (let i = ss.length - 1; i >= 0; i--) x.lineTo(X(ss[i]), YT(Math.max(lo, zoneOf(g, ss[i])[0]))); x.closePath(); x.fill(); }
     for (const [a, b] of G.win || []) { x.fillStyle = col('hot') + '33'; x.fillRect(X(a / G.rate), padT, X(b / G.rate) - X(a / G.rate), ph); }
     x.font = `${fs}px ${css('--f-body')}`; x.textBaseline = 'middle';
     g.stars.forEach((sv, k) => { const y = YV(sv); x.strokeStyle = col('cryst') + 'aa'; x.lineWidth = 1; x.setLineDash([3, 3]); x.beginPath(); x.moveTo(padL, y); x.lineTo(padL + pw, y); x.stroke();
@@ -4632,7 +4708,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     // legend along the top
     let lx = padL; const item = (color, label, box) => { x.fillStyle = color; if (box) x.fillRect(lx, 5, 12, 10); else x.fillRect(lx, 9, 14, 3); lx += 18; x.fillStyle = col('ink'); x.textAlign = 'left'; x.fillText(label, lx, 10); lx += x.measureText(label).width + 12; };
     item(col('hot'), T('your temperature')); item(col('accent'), T('score'));
-    if (g.zone) item(col('good') + '66', T('green zone'), true); else if (G.win) item(col('hot') + '55', T('red windows'), true);
+    if (g.zone || g.path) item(col('good') + '66', T(g.path ? 'green path' : 'green zone'), true); else if (G.win) item(col('hot') + '55', T('red windows'), true);
   }
   // games open one after another: a star in a game opens the next; teachers can open all
   const unlockAll = () => { try { return localStorage.getItem('mdlab-unlock') === '1'; } catch (e) { return false; } };
