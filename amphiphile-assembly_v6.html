@@ -208,7 +208,7 @@ html:not(.debug) .dbgonly { display: none !important } /* test tools, shown with
 .wrap.gamemode #boxinfo { display: none } .ggoal:empty, .ghint:empty { display: none }
 .gstatsbox { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--line) } .gstatsbox summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--muted) } .gstatsbox[open] summary { margin-bottom: 8px }
 #micnote:not(.err) { display: none } /* only errors (microphone blocked) are shown */
-.gteach .gbattle { margin-top: 10px } .teachpanel { margin-top: 16px } .qrow { margin: 8px 0 2px } .teachpanel details.teacher { margin: 0 } .mrlab { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--muted); grid-column: 1 / -1 }
+.gteach .gbattle { margin-top: 10px } .teachpanel { margin-top: 16px } .qrow { margin: 8px 0 2px; display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; justify-content: space-between } .qrow select { min-width: 0; max-width: 100% } .teachpanel details.teacher { margin: 0 } .mrlab { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--muted); grid-column: 1 / -1 }
 header .sub { font-size: 15px; line-height: 1.45 } header .sub b { color: var(--ink); font-weight: 650 }
 .thgraphs { display: flex; flex-direction: column; gap: 8px; min-width: 0 }
 .graphpanel .thgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 14px } .graphpanel .thplot { height: 150px } .graphpanel .thgrid figcaption { font-size: 12px; line-height: 1.3 }
@@ -601,12 +601,6 @@ button { touch-action: manipulation }
         <div class="row" id="concRow"><label for="conc" id="concLab">Concentration</label><output id="concO">26%</output>
           <input type="range" id="conc" min="2" max="60" step="1" value="26"></div>
         <p class="note" id="concNote"></p>
-        <div class="checks" data-show="ice"><label><input type="checkbox" id="pitchP"> Voice pitch sets the pressure</label></div>
-        <div class="pitchtune" id="pitchTune" data-show="ice" hidden>
-          <div class="row"><label for="pLo">Lowest note: pressure 0</label><select id="pLo"></select><button class="btn" id="pLoSing">Sing it</button></div>
-          <div class="row"><label for="pHi">Highest note: top pressure</label><select id="pHi"></select><button class="btn" id="pHiSing">Sing it</button></div>
-        </div>
-        <p class="note" data-show="ice" id="pitchNote">Loudness sets the temperature, pitch sets the pressure: a high voice squeezes the box, a low voice lets it expand. Higher pressure lowers the freezing point, as in real water.</p>
         <div class="checks dbgonly" data-show="ice"><label><input type="checkbox" id="iceWall"> Ice-like wall</label></div>
         <p class="note dbgonly" data-show="ice">A pinned row of molecules across the box with the ice honeycomb pattern, binding water strongly, like a mineral surface. Ice can grow from its flat faces without first having to form a nucleus. Changes apply live.</p>
 
@@ -695,6 +689,13 @@ button { touch-action: manipulation }
         <div class="row" id="p0Row" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice" hidden><label for="p0">Target pressure P*</label><output id="p0O">1.00</output>
           <input type="range" id="p0" min="0" max="4" step="0.01" value="1"></div>
         <p class="note" id="baroNote" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice" hidden></p>
+        <div class="checks" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice"><label><input type="checkbox" id="pitchP"> Voice pitch sets the pressure</label></div>
+        <div class="pitchtune" id="pitchTune" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice" hidden>
+          <div class="row"><label for="pLo">Lowest note: pressure 0</label><select id="pLo"></select><button class="btn" id="pLoSing">Sing it</button></div>
+          <div class="row"><label for="pHi">Highest note: top pressure</label><select id="pHi"></select><button class="btn" id="pHiSing">Sing it</button></div>
+        </div>
+        <p class="note" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice" id="pitchNote">Loudness sets the temperature, pitch sets the pressure: a high voice squeezes the box, a low voice lets it expand.</p>
+        <p class="note" data-show="ice">In ice, higher pressure lowers the freezing point, as in real water.</p>
         <div class="row"><label for="spf">MD steps per frame</label><output id="spfO">12</output>
           <input type="range" id="spf" min="1" max="60" step="1" value="12"></div>
         <div class="checks"><label><input type="checkbox" id="autoSpf" checked> Adjust steps per frame automatically to keep the animation smooth</label></div>
@@ -735,7 +736,7 @@ button { touch-action: manipulation }
             <div class="row qrow"><label for="quality">Drawing quality</label>
           <select id="quality"><option value="auto" selected>Automatic (lighter on slow devices)</option><option value="0">Full</option><option value="1">Lighter</option><option value="2">Light</option><option value="3">Lightest</option></select></div>
             <p class="note">For slow computers or projectors: lighter drawing keeps the simulation smooth.</p>
-            <div class="btns"><button class="btn" id="gunlock">Unlock all games</button><button class="btn" id="ladUnlock">Unlock all challenges</button></div>
+            <div class="btns"><button class="btn" id="gunlock">Unlock all games</button><button class="btn" id="ladUnlock">Unlock all challenges</button><button class="btn" id="welAgain">Show the welcome</button></div>
             <p class="note">For this browser only. Press again to lock.</p>
         <div class="gbattle">
           <h3>Class battle</h3>
@@ -1948,6 +1949,9 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // text written by the script goes through T(), with {name} placeholders for numbers.
   const I18N = {
  "fi": {
+  "Show the welcome": "Näytä tervetulotoivotus",
+  "Loudness sets the temperature, pitch sets the pressure: a high voice squeezes the box, a low voice lets it expand.": "Äänenvoimakkuus asettaa lämpötilan, sävelkorkeus paineen: korkea ääni puristaa laatikkoa, matala antaa sen laajeta.",
+  "In ice, higher pressure lowers the freezing point, as in real water.": "Jäässä suurempi paine laskee jäätymispistettä, kuten oikeassa vedessä.",
   "For slow computers or projectors: lighter drawing keeps the simulation smooth.": "Hitaille tietokoneille tai projektoreille: kevyempi piirto pitää simulaation sujuvana.",
   "Help": "Ohje",
   "▶ Play: make ice": "▶ Pelaa: tee jäätä",
@@ -2814,6 +2818,9 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Microphone": "Mikrofoni"
  },
  "sv": {
+  "Show the welcome": "Visa välkomsten",
+  "Loudness sets the temperature, pitch sets the pressure: a high voice squeezes the box, a low voice lets it expand.": "Ljudstyrkan sätter temperaturen, tonhöjden trycket: en ljus röst trycker ihop lådan, en mörk låter den växa.",
+  "In ice, higher pressure lowers the freezing point, as in real water.": "I is sänker högre tryck fryspunkten, som i riktigt vatten.",
   "For slow computers or projectors: lighter drawing keeps the simulation smooth.": "För långsamma datorer eller projektorer: lättare ritning håller simuleringen jämn.",
   "Help": "Hjälp",
   "▶ Play: make ice": "▶ Spela: gör is",
@@ -3680,6 +3687,9 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Microphone": "Mikrofon"
  },
  "ru": {
+  "Show the welcome": "Показать приветствие",
+  "Loudness sets the temperature, pitch sets the pressure: a high voice squeezes the box, a low voice lets it expand.": "Громкость задаёт температуру, высота голоса — давление: высокий голос сжимает ячейку, низкий даёт ей расшириться.",
+  "In ice, higher pressure lowers the freezing point, as in real water.": "Во льду более высокое давление понижает температуру замерзания, как в настоящей воде.",
   "For slow computers or projectors: lighter drawing keeps the simulation smooth.": "Для медленных компьютеров и проекторов: более простая отрисовка сохраняет плавность симуляции.",
   "Help": "Помощь",
   "▶ Play: make ice": "▶ Играть: сделать лёд",
@@ -4864,11 +4874,13 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const tauUp = 0.3, tauDown = 0.6;   // follows the room quickly both ways, so players keep control (cooling used to lag 2.5 s)
     const a = 1 - Math.exp(-dtSec / (target > micT ? tauUp : tauDown));
     micT += a * (target - micT); setT(micT);
-    if (sys === 'ice' && $('pitchP').checked && appMode === 'explore' && eng && eng.p.baro) pitchUpdate(dtSec); else if (!$('mpitch').hidden) pitchBar();
+    if ($('pitchP').checked && appMode === 'explore' && eng && eng.p.baro) pitchUpdate(dtSec); else if (!$('mpitch').hidden) pitchBar();
   }
   // voice pitch by autocorrelation of the microphone signal (80-1000 Hz); a clear pitch sets the barostat's target pressure
   let pitchHz = null, pitchP = null, pitchFrame = 0;
+  let pitchSys = null;
   function pitchUpdate(dtSec) {
+    if (pitchSys !== sys) { pitchSys = sys; pitchP = null; } // a new system starts from its own pressure range
     if (++pitchFrame % 3) return;
     const sr = audio.sampleRate, n = 1024, b = buf, lo = Math.floor(sr / 1000), hi = Math.min(n - 1, Math.ceil(sr / 80));
     let e0 = 0; for (let i = 0; i < n; i++) e0 += b[i] * b[i]; if (e0 < 1e-4 * n * 0.01) { pitchHz = null; pitchNoteShow(); return; }
@@ -4878,7 +4890,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       R[lag] = c / Math.sqrt(e0 * e1 + 1e-12); if (R[lag] > mx && lag > lo + 1) mx = R[lag]; }
     let bl = 0; for (let lag = lo + 1; lag < hi; lag++) if (R[lag] >= 0.9 * mx && R[lag] >= R[lag - 1] && R[lag] >= R[lag + 1]) { bl = lag; break; } // first peak near the top: avoids octave errors
     if (mx < 0.6 || !bl) { pitchHz = null; pitchNoteShow(); return; }
-    pitchHz = sr / bl; const x = Math.max(0, Math.min(1, Math.log(pitchHz / pitchLo) / Math.log(pitchHi / pitchLo))), target = 0.35 * x; pitchX = x;
+    pitchHz = sr / bl; const x = Math.max(0, Math.min(1, Math.log(pitchHz / pitchLo) / Math.log(pitchHi / pitchLo))), target = pTop() * x; pitchX = x;
     pitchP = pitchP === null ? target : pitchP + (1 - Math.exp(-3 * dtSec * 3)) * (target - pitchP);
     eng.p.P0 = pitchP; if (typeof p0Range === 'function') { $('p0').value = pitchP; $('p0O').textContent = pitchP.toFixed(3); }
     pitchNoteShow();
@@ -4906,10 +4918,11 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       got.sort((a, c) => a - c); const f = hzOf(midiOf(got[got.length >> 1])); isLo ? pitchSet(f, pitchHi) : pitchSet(pitchLo, f); };
     requestAnimationFrame(tick); });
   singBtn('pLoSing', true); singBtn('pHiSing', false); pitchTuneUI();
+  const pTop = () => (sys === 'ice' ? 0.35 : 2.0); // top pressure of the highest note: water ice is soft to squeeze, the bead systems need more
   function pitchBar() { // the bar under the box: note, frequency, where it sits between the lowest and highest note, and the pressure
-    const on = sys === 'ice' && $('pitchP').checked && appMode === 'explore'; $('mpitch').hidden = !on; $('pitchTune').hidden = !$('pitchP').checked; if (!on) return;
+    const on = $('pitchP').checked && appMode === 'explore' && !!eng && !!eng.p.baro; $('mpitch').hidden = !on; $('pitchTune').hidden = !$('pitchP').checked; if (!on) return;
     $('pbNote').textContent = pitchHz ? noteName(midiOf(pitchHz)) : '–'; $('pbHz').textContent = pitchHz ? Math.round(pitchHz) + ' Hz' : T('sing a note');
-    const x = pitchP === null ? 0 : Math.max(0, Math.min(1, pitchP / 0.35)); $('pbFill').style.width = (100 * x).toFixed(1) + '%';
+    const x = pitchP === null ? 0 : Math.max(0, Math.min(1, pitchP / pTop())); $('pbFill').style.width = (100 * x).toFixed(1) + '%';
     $('pbNow').style.left = `calc(${(100 * (pitchHz ? pitchX : x)).toFixed(1)}% - 1.5px)`; $('pbNow').style.opacity = pitchHz ? 1 : 0.3; $('pbP').textContent = (pitchP || 0).toFixed(2);
   }
   function pitchNoteShow() { pitchBar(); const el = $('pitchNote'); if (!$('pitchP').checked) return;
@@ -5030,7 +5043,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       : T('Pressure {p} (target {t}) · density {d} / σ² · box {l} σ ({r}% of the start)', { p: P.toFixed(3), t: eng.p.P0.toFixed(3), d: rho.toFixed(3), l: eng.L.toFixed(1), r: (100 * eng.L / eng.L0).toFixed(0) }); }
   $('pitchP').addEventListener('change', () => { // pitch control needs the barostat
     if ($('pitchP').checked) { if (mode !== 'mic') setMode('mic'); $('baro').checked = true; if (eng) { eng.p.baro = baroOn(); pitchP = null; } baroUI(); pitchNoteShow(); }
-    pitchBar(); if (!$('pitchP').checked) $('pitchNote').textContent = T('Loudness sets the temperature, pitch sets the pressure: a high voice squeezes the box, a low voice lets it expand. Higher pressure lowers the freezing point, as in real water.');
+    pitchBar(); if (!$('pitchP').checked) $('pitchNote').textContent = T('Loudness sets the temperature, pitch sets the pressure: a high voice squeezes the box, a low voice lets it expand.');
   });
   $('baro').addEventListener('change', () => { if (eng) { eng.p.baro = baroOn(); if (eng.p.baro) eng.p.P0 = null; } baroUI(); });
   $('p0').addEventListener('input', () => { const v = +$('p0').value; $('p0O').textContent = v.toFixed(+$('p0').max < 2 ? 3 : 2); if (eng && eng.p.baro) eng.p.P0 = v; });
@@ -5445,16 +5458,19 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     requestAnimationFrame(tourPlace);
   }
   function tourOpen(wel) { welcome = wel === true; demoCtl = 'auto'; $('tdMic').setAttribute('aria-pressed', 'false'); $('tour').hidden = false; tourShow(0); (welcome ? $('tPlay') : $('tNext')).focus(); }
-  function tourClose() { markTour(); $('tour').hidden = true; tourI = -1; cancelAnimationFrame(tourRaf); $('helpBtn').focus(); }
+  function tourClose() { markTour(); if (welcome || $('tCard').classList.contains('welcome')) markWel(); $('tour').hidden = true; tourI = -1; cancelAnimationFrame(tourRaf); $('helpBtn').focus(); }
   $('helpBtn').addEventListener('click', () => tourOpen(false));
-  $('tPlay').addEventListener('click', () => { welcome = false; tourClose(); setAppMode('game'); selectGame('ice'); startGame(); }); // the guided first game (with the microphone set-up)
-  $('tTour').addEventListener('click', () => { welcome = false; tourShow(0); $('tNext').focus(); });
-  $('tFree').addEventListener('click', () => { welcome = false; tourClose(); });
+  $('welAgain').addEventListener('click', () => tourOpen(true)); // what a new student sees on the first visit
+  $('tPlay').addEventListener('click', () => { markWel(); welcome = false; tourClose(); setAppMode('game'); selectGame('ice'); startGame(); }); // the guided first game (with the microphone set-up)
+  $('tTour').addEventListener('click', () => { markWel(); welcome = false; tourShow(0); $('tNext').focus(); });
+  $('tFree').addEventListener('click', () => { markWel(); welcome = false; tourClose(); });
   $('tdT').addEventListener('input', () => { demoCtl = 'slider'; $('tdMic').setAttribute('aria-pressed', 'false'); });
   $('tdMic').addEventListener('click', async () => { if (demoCtl === 'mic') { demoCtl = 'slider'; $('tdMic').setAttribute('aria-pressed', 'false'); return; }
     await setMode('mic'); if (analyser) { demoCtl = 'mic'; $('tdMic').setAttribute('aria-pressed', 'true'); } });
   let seenTour = false; try { seenTour = localStorage.getItem('mdlab-tour') === '1'; } catch (e) {}
-  if (!seenTour) setTimeout(() => { if (tourI < 0) tourOpen(true); }, 700); // first visit: the story, then Play
+  let seenWel = false; try { seenWel = localStorage.getItem('mdlab-welcome') === '1'; } catch (e) {}
+  if (!seenWel) setTimeout(() => { if (tourI < 0) tourOpen(true); }, 700); // first visit (also for browsers that saw the old tour): the story, then Play
+  const markWel = () => { try { localStorage.setItem('mdlab-welcome', '1'); } catch (e) {} };
   const markTour = () => { try { localStorage.setItem('mdlab-tour', '1'); } catch (e) {} };
   $('tClose').addEventListener('click', tourClose);
   $('tBack').addEventListener('click', () => { if (tourI > 0) tourShow(tourI - 1); });
