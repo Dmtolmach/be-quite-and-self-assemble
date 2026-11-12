@@ -12,7 +12,7 @@
 /* Layout: instrument bench — square simulation cell on the left, control rack + live readouts on the right, model notes below. */
 :root {
   --bg: #eef1f3; --panel: #ffffff; --ink: #15202b; --muted: #5b6875; --line: #d4dbe1;
-  --cell: #f8fafb; --head: #1f8a8a; --tail: #d0761f; --solv: #9aa9b6; --bond: #44525e;
+  --cell: #f8fafb; --head: #13627a; --tail: #d0761f; --solv: #9aa9b6; --bond: #44525e;
   --accent: #1f8a8a; --accent-ink: #ffffff; --hot: #c4472b; --cold: #2c6fb0; --poly: #6b6fd6; --cryst: #d99a00; --good: #2f9e57; --icef: #cfe3f5; --water: #e2eff8; --oil: #f3c56e; --soft: #eaeef1; --mixS: #3567b5; --mixC: #d1603d;
   --f-display: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
   --f-body: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
@@ -111,7 +111,7 @@ table.eps th { font-weight: 500; color: var(--muted) }
 .gstat div { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; display: flex; flex-direction: column; gap: 2px }
 .gstat span { font-size: 12px; color: var(--muted) } .gstat b { font-family: var(--f-mono); font-weight: 500; font-size: 16px }
 .gstat b.in { color: var(--accent) } .gstat b.out { color: var(--hot) }
-.gbar { position: relative; height: 10px; border-radius: 5px; background: var(--line); overflow: hidden } .gbar .win { position: absolute; top: 0; bottom: 0; background: var(--hot); opacity: .6 } .gbar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s }
+.gbar { position: relative; height: 10px; border-radius: 5px; background: var(--line); overflow: hidden } .gbar .win { position: absolute; top: 0; bottom: 0; background: repeating-linear-gradient(135deg, var(--hot) 0 4px, color-mix(in srgb, var(--hot) 45%, var(--panel)) 4px 7px); opacity: .85; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--hot) 70%, black) } .gbar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s }
 .gband { position: relative; height: 22px; border-radius: 6px; background: var(--line); overflow: hidden }
 .gband .tick { position: absolute; top: 0; bottom: 0; border-left: 2px solid var(--cryst); padding-left: 3px; font-size: 10px; line-height: 22px; color: var(--cryst); white-space: nowrap }
 .gstat b.gst { color: var(--cryst); letter-spacing: 1px }
@@ -196,6 +196,7 @@ html:not(.debug) .dbgonly { display: none !important } /* test tools, shown with
 .tw0 { color: var(--cold) } .tw1 { color: var(--accent) } .tw2 { color: var(--cryst) } .tw3 { color: var(--hot) }
 .coach { position: absolute; z-index: 8; transform: translateX(-50%); width: max-content; max-width: min(92%, 34em); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center;
   padding: 7px 14px; border-radius: 14px; background: rgba(12,18,24,.78); color: #fff; font-weight: 600; font-size: clamp(13px, 2.1vmin, 16.5px); line-height: 1.3; text-align: center; pointer-events: none; transition: background .3s }
+.coach.good::before { content: '✓ ' } .coach.bad::before { content: '▲ ' } .coach.warn::before { content: '❄ ' } /* shapes as well as colours */
 .coach.good { background: color-mix(in srgb, var(--good) 82%, black) } .coach.bad { background: color-mix(in srgb, var(--hot) 88%, black) } .coach.warn { background: color-mix(in srgb, var(--cold) 85%, black) }
 .coach .btn { pointer-events: auto; font-size: 14px; padding: 5px 14px } .coach.guide { font-size: clamp(15px, 2.6vmin, 20px); padding: 10px 16px; max-width: min(94%, 30em) }
 .greplay { width: 100%; height: 150px; display: block } @media (max-width: 700px) { .greplay { height: 120px } .coach { font-size: 13px; padding: 5px 10px } }
@@ -302,10 +303,15 @@ header .sub { font-size: 15px; line-height: 1.45 } header .sub b { color: var(--
 .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 4px } .brand .logo { flex: none } @media (max-width: 700px) { body header { flex-direction: column; align-items: stretch; gap: 10px } body header .langbox { position: static; align-self: flex-end }
   body header > div:not(.langbox) { padding-right: 0; text-align: center; width: 100% } .brand { justify-content: center } .brand .logo { width: 34px; height: 34px } header .sub { margin-left: auto; margin-right: auto } }
 header { position: relative } .langbox { position: absolute; top: 0; right: 0; display: flex; gap: 8px; align-items: center } header > div:not(.langbox) { padding-right: 170px }
-.helpbtn { width: 32px; height: 32px; padding: 0; border-radius: 50%; font-weight: 700; font-size: 15px; color: var(--accent); border-color: var(--accent) }
+.helpbtn { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--accent); border-color: var(--accent); padding-inline: 10px 12px }
+.helpbtn span { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: var(--panel); font-size: 12px; font-weight: 700 }
+.hsep { width: 1px; align-self: stretch; margin: 4px 6px; background: var(--line) }
+header > div:not(.langbox) { padding-right: 270px }
 .tour { position: fixed; inset: 0; z-index: 50 }
 .tour .spot { position: fixed; border-radius: 10px; box-shadow: 0 0 0 9999px color-mix(in srgb, #0b1116 62%, transparent); outline: 2px solid var(--accent); outline-offset: 2px; transition: all .25s ease; pointer-events: none }
 .tour .spot.none { box-shadow: 0 0 0 9999px color-mix(in srgb, #0b1116 62%, transparent); outline: none; width: 0; height: 0; left: 50%; top: 50% }
+.twel { display: flex; flex-direction: column; gap: 8px; margin-top: 4px } .twplay { font-size: 17px; padding: 12px 16px; font-weight: 700 } .twmore { display: flex; gap: 8px; justify-content: center } .twmore .btn { flex: 1 }
+.tcard.welcome .tnav { display: none } .tcard.welcome { width: min(420px, calc(100vw - 32px)) }
 .tcard { position: fixed; width: min(360px, calc(100vw - 32px)); background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px;
   box-shadow: 0 14px 40px -12px rgba(0,0,0,.5); transition: top .25s ease, left .25s ease }
 .tcard h3 { margin: 0; font-family: var(--f-display); font-size: 16px; text-wrap: balance } .tcard p { margin: 0; font-size: 14px; line-height: 1.45 }
@@ -391,7 +397,7 @@ button { touch-action: manipulation }
 
 <div class="wrap notranslate" data-sys="dumbbell" translate="no">
   <header>
-    <div class="langbox"><button class="btn" id="classBtn" title="Class mode: the whole room controls one box with its noise">Class mode</button><button class="btn helpbtn" id="helpBtn" aria-label="Help: quick tour" title="Help: quick tour">?</button><label for="lang" class="sr">Language</label>
+    <div class="langbox"><button class="btn" id="classBtn" title="Class mode: the whole room controls one box with its noise">Class mode</button><span class="hsep" aria-hidden="true"></span><button class="btn helpbtn" id="helpBtn" aria-label="Help: quick tour" title="Help: quick tour"><span aria-hidden="true">?</span> Help</button><label for="lang" class="sr">Language</label>
       <select id="lang" aria-label="Language"><option value="en">English</option><option value="fi">Suomi</option><option value="sv">Svenska</option><option value="ru">Русский</option></select></div>
     <div>
       <div class="brand"><svg class="logo" viewBox="0 0 48 48" width="44" height="44" aria-hidden="true"><line x1="32.7" y1="29.0" x2="39.8" y2="33.1" stroke="var(--bond)" stroke-width="2.2"/><circle cx="39.8" cy="33.1" r="4.8" fill="var(--head)"/><line x1="24.0" y1="34.1" x2="24.0" y2="42.3" stroke="var(--bond)" stroke-width="2.2"/><circle cx="24.0" cy="42.3" r="4.8" fill="var(--head)"/><line x1="15.3" y1="29.0" x2="8.2" y2="33.1" stroke="var(--bond)" stroke-width="2.2"/><circle cx="8.2" cy="33.1" r="4.8" fill="var(--head)"/><line x1="15.3" y1="18.9" x2="8.2" y2="14.8" stroke="var(--bond)" stroke-width="2.2"/><circle cx="8.2" cy="14.8" r="4.8" fill="var(--head)"/><line x1="24.0" y1="13.9" x2="24.0" y2="5.7" stroke="var(--bond)" stroke-width="2.2"/><circle cx="24.0" cy="5.7" r="4.8" fill="var(--head)"/><line x1="32.7" y1="18.9" x2="39.8" y2="14.8" stroke="var(--bond)" stroke-width="2.2"/><circle cx="39.8" cy="14.8" r="4.8" fill="var(--head)"/><g stroke="#4a3000" stroke-width="1.1" stroke-linecap="round"><circle cx="24" cy="24" r="10.6" fill="var(--cryst)"/><path d="M18.59 20.39 q1.80 -1.58 3.61 0 M25.80 20.39 q1.80 -1.58 3.61 0" fill="none"/><path d="M19.94 28.51 h8.12" fill="none"/><rect x="21.89" y="24.68" width="4.22" height="12.63" rx="2.11" fill="var(--cryst)"/></g></svg><h1>Shut Up and Get Structured</h1></div>
@@ -405,6 +411,7 @@ button { touch-action: manipulation }
       <h3 id="tTitle"></h3>
       <div class="tdemo" id="tDemo" hidden><canvas id="tCanvas" width="640" height="360"></canvas><small id="tDemoCap"></small><div class="tdctl"><button class="btn tdmic" id="tdMic" aria-pressed="false"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/></svg><span>Microphone</span></button><input type="range" id="tdT" min="0" max="1" step="0.01" value="0" aria-label="Temperature"></div></div>
       <p id="tText"></p>
+      <div class="twel" id="tWel" hidden><button class="btn primary twplay" id="tPlay">▶ Play: make ice</button><div class="twmore"><button class="btn" id="tTour">Show me around</button><button class="btn ghost" id="tFree">Just explore</button></div></div>
       <div class="tnav"><span class="cnt" id="tCount"></span><button class="btn" id="tBack">Back</button><button class="btn primary" id="tNext">Next</button></div>
     </div>
   </div>
@@ -1940,6 +1947,11 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // text written by the script goes through T(), with {name} placeholders for numbers.
   const I18N = {
  "fi": {
+  "Help": "Ohje",
+  "▶ Play: make ice": "▶ Pelaa: tee jäätä",
+  "Show me around": "Esittely",
+  "Just explore": "Tutkin itse",
+  "Your voice is the thermostat. Quiet cools the molecules and they build structures; noise heats them and breaks everything apart. Ready to try?": "Äänesi on termostaatti. Hiljaisuus jäähdyttää molekyylejä ja ne rakentavat rakenteita; melu lämmittää niitä ja hajottaa kaiken. Valmis kokeilemaan?",
   "First star!": "Ensimmäinen tähti!",
   "Second star!": "Toinen tähti!",
   "Three stars!": "Kolme tähteä!",
@@ -2800,6 +2812,11 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Microphone": "Mikrofoni"
  },
  "sv": {
+  "Help": "Hjälp",
+  "▶ Play: make ice": "▶ Spela: gör is",
+  "Show me around": "Visa mig runt",
+  "Just explore": "Utforska själv",
+  "Your voice is the thermostat. Quiet cools the molecules and they build structures; noise heats them and breaks everything apart. Ready to try?": "Din röst är termostaten. Tystnad kyler molekylerna och de bygger strukturer; ljud värmer dem och slår sönder allt. Redo att prova?",
   "First star!": "Första stjärnan!",
   "Second star!": "Andra stjärnan!",
   "Three stars!": "Tre stjärnor!",
@@ -3660,6 +3677,11 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Microphone": "Mikrofon"
  },
  "ru": {
+  "Help": "Помощь",
+  "▶ Play: make ice": "▶ Играть: сделать лёд",
+  "Show me around": "Экскурсия",
+  "Just explore": "Просто исследовать",
+  "Your voice is the thermostat. Quiet cools the molecules and they build structures; noise heats them and breaks everything apart. Ready to try?": "Ваш голос — это термостат. Тишина охлаждает молекулы, и они строят структуры; шум нагревает их и всё разрушает. Готовы попробовать?",
   "First star!": "Первая звезда!",
   "Second star!": "Вторая звезда!",
   "Three stars!": "Три звезды!",
@@ -5107,7 +5129,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
         bad: 'Very cold molecules hardly move, so they stay stuck next to the wrong neighbours. Try a little noise to keep them moving.' } },
     { id: 'drug', title: 'Deliver the drug', sub: 'Soap molecules · hit the target windows', sys: 'dumbbell', ordered: true, range: [0.4, 2.5], D: 60, box: '48', conc: 34,
       prm: { nDrug: 90, drugPerMic: 3, extraTails: 3, preSteps: 1000, epsDB: 2.5, epsBB: 2.5, epsAS: 0, sigA: 1.0 }, raw: true, noSnap: true, side: 'Lost',
-      lab: 'Delivered', fmt: (v) => v.toFixed(0) + '%', stars: [30, 45, 60], scale: 100, hotT: 1.35,
+      lab: 'Delivered', fmt: (v) => v.toFixed(0) + '%', stars: [30, 45, 70], scale: 100, hotT: 1.35,
       setup: (G) => { const w = []; let a = 6 + 4 * Math.random(); const W = 8 / 2.25; /* windows ≈ 1.8 s of play each */ while (a + W <= 58) { w.push([a, a + W]); a += W + 5 + 4 * Math.random(); } G.win = w; G.del = 0; G.lost = 0; },
       value: () => drugTick(),
       // challenges use a tumour zone instead: blood flow (flowU) carries three micelles through a heated band; some heat (spill) leaks outside
@@ -5120,7 +5142,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       lesson: { good: 'Short, well-timed bursts of heat opened the micelles exactly when the drug was needed, and the cold kept it locked inside the rest of the time. Temperature-sensitive carriers are designed to do just this at a warmed tumour.',
         bad: 'Heat frees the drug a little after it starts and keeps freeing it for a moment after it stops, so late or long bursts waste it. Watch the windows on the time bar and start a little early.' } },
     { id: 'gel', title: 'Grow the longest gel strand', sub: '35 proteins', sys: 'crypt', ordered: true, range: [0.6, 7.0], D: 90, box: '48', conc: 35, epsXX: 5,
-      lab: 'Gel path', fmt: (v) => v.toFixed(0) + ' σ', stars: [50, 75, 100], scale: 200, openT: 2.2, tooHot: 4.5, openSec: 4, rise: 3, words: [1.4, 2.2, 4.5], value: () => { gelShow = eng.gelPath(1.5, 2); return gelShow.len; },
+      lab: 'Gel path', fmt: (v) => v.toFixed(0) + ' σ', stars: [50, 75, 130], scale: 200, openT: 2.2, tooHot: 4.5, openSec: 4, rise: 3, words: [1.4, 2.2, 4.5], value: () => { gelShow = eng.gelPath(1.5, 2); return gelShow.len; },
       short: "Link the proteins into the longest gel strand you can within 30 seconds.", goal: 'Link the proteins into the longest gel strand you can. Your score is the longest path through the gel, from protein to protein (red line); the box is 62 σ wide. The proteins start folded, with their sticky beads hidden inside. Two proteins are linked when they share at least two sticky contacts.', facts: ["Boiling an egg turns the clear egg white solid: heat unfolds its proteins, and they stick together into a gel.", "Gelatin jelly melts at about 30–35 °C, a little below body temperature. That is why it melts in your mouth.", "Tofu is a protein gel: soy milk is heated, then salts such as magnesium chloride make the soy proteins clump together."],
       hint: 'Folded proteins cannot link, and boiling breaks the links. Heat to open the folds, then cool well down so the links hold and the network grows.',
       lesson: { good: 'Heating opened the folds and exposed the sticky beads, cooling let the links hold, and the clumps joined into a long network. This is how heated egg white or gelatin-like protein solutions set into a gel.',
@@ -5407,23 +5429,28 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const left = Math.min(Math.max(16, r.left + r.width / 2 - cw / 2), vw - cw - 16);
     card.style.top = top + 'px'; card.style.left = left + 'px';
   }
+  let welcome = false; // first visit: the story on the first card, then one big Play button
   function tourShow(i) {
-    tourI = i; const st = TOUR[i], n = TOUR.length;
-    $('tTitle').textContent = T(tv(st.t)); $('tText').textContent = T(tv(st.d)); $('tCount').textContent = T('{i} of {n}', { i: i + 1, n });
+    tourI = i; const st = TOUR[i], n = TOUR.length; if (i > 0) welcome = false;
+    $('tCard').classList.toggle('welcome', welcome); $('tWel').hidden = !welcome;
+    $('tTitle').textContent = welcome ? T('Shut Up and Get Structured') : T(tv(st.t)); $('tText').textContent = welcome ? T('Your voice is the thermostat. Quiet cools the molecules and they build structures; noise heats them and breaks everything apart. Ready to try?') : T(tv(st.d)); $('tCount').textContent = T('{i} of {n}', { i: i + 1, n });
     $('tBack').disabled = i === 0; $('tNext').textContent = T(i === n - 1 ? 'Done' : 'Next');
     $('tDemo').hidden = !st.demo; cancelAnimationFrame(tourRaf); if (st.demo) { tourT0 = demoLast = performance.now(); tourRaf = requestAnimationFrame(iceDemo); }
     const el = st.sel ? document.querySelector(tv(st.sel)) : null;
     if (el && el.scrollIntoView) { const r = el.getBoundingClientRect(); if (r.top < 0 || r.bottom > innerHeight) el.scrollIntoView({ block: 'center', behavior: 'auto' }); }
     requestAnimationFrame(tourPlace);
   }
-  function tourOpen() { demoCtl = 'auto'; $('tdMic').setAttribute('aria-pressed', 'false'); $('tour').hidden = false; tourShow(0); $('tNext').focus(); }
+  function tourOpen(wel) { welcome = wel === true; demoCtl = 'auto'; $('tdMic').setAttribute('aria-pressed', 'false'); $('tour').hidden = false; tourShow(0); (welcome ? $('tPlay') : $('tNext')).focus(); }
   function tourClose() { markTour(); $('tour').hidden = true; tourI = -1; cancelAnimationFrame(tourRaf); $('helpBtn').focus(); }
-  $('helpBtn').addEventListener('click', tourOpen);
+  $('helpBtn').addEventListener('click', () => tourOpen(false));
+  $('tPlay').addEventListener('click', () => { welcome = false; tourClose(); setAppMode('game'); selectGame('ice'); startGame(); }); // the guided first game (with the microphone set-up)
+  $('tTour').addEventListener('click', () => { welcome = false; tourShow(0); $('tNext').focus(); });
+  $('tFree').addEventListener('click', () => { welcome = false; tourClose(); });
   $('tdT').addEventListener('input', () => { demoCtl = 'slider'; $('tdMic').setAttribute('aria-pressed', 'false'); });
   $('tdMic').addEventListener('click', async () => { if (demoCtl === 'mic') { demoCtl = 'slider'; $('tdMic').setAttribute('aria-pressed', 'false'); return; }
     await setMode('mic'); if (analyser) { demoCtl = 'mic'; $('tdMic').setAttribute('aria-pressed', 'true'); } });
   let seenTour = false; try { seenTour = localStorage.getItem('mdlab-tour') === '1'; } catch (e) {}
-  if (!seenTour) setTimeout(() => { if (tourI < 0) tourOpen(); }, 700); // first visit: show what to do
+  if (!seenTour) setTimeout(() => { if (tourI < 0) tourOpen(true); }, 700); // first visit: the story, then Play
   const markTour = () => { try { localStorage.setItem('mdlab-tour', '1'); } catch (e) {} };
   $('tClose').addEventListener('click', tourClose);
   $('tBack').addEventListener('click', () => { if (tourI > 0) tourShow(tourI - 1); });
@@ -5756,13 +5783,13 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     x.font = `${fs}px ${css('--f-body')}`; x.textBaseline = 'middle';
     g.stars.forEach((sv, k) => { const y = YV(sv); x.strokeStyle = col('cryst') + 'aa'; x.lineWidth = 1; x.setLineDash([3, 3]); x.beginPath(); x.moveTo(padL, y); x.lineTo(padL + pw, y); x.stroke();
       x.setLineDash([]); x.fillStyle = col('cryst'); x.textAlign = 'left'; x.fillText('★'.repeat(k + 1), padL + pw + 2, y); });
-    const line = (key, Y, color, w) => { x.strokeStyle = color; x.lineWidth = w; x.lineJoin = 'round'; x.beginPath(); r.forEach((q, i) => (i ? x.lineTo : x.moveTo).call(x, X(q.s), Y(q[key]))); x.stroke(); };
-    line('T', YT, col('hot'), 2); if (nD) line('lp', YV, col('muted'), 2); line('v', YV, col('accent'), 2.5);
+    const line = (key, Y, color, w, dash) => { x.strokeStyle = color; x.lineWidth = w; x.lineJoin = 'round'; x.setLineDash(dash || []); x.beginPath(); r.forEach((q, i) => (i ? x.lineTo : x.moveTo).call(x, X(q.s), Y(q[key]))); x.stroke(); x.setLineDash([]); }; // dashes as well as colours, for colour-blind players
+    line('T', YT, col('hot'), 2, [7, 4]); if (nD) line('lp', YV, col('muted'), 2, [2, 4]); line('v', YV, col('accent'), 3);
     x.fillStyle = col('accent'); x.beginPath(); x.arc(X(G.peakSec), YV(G.peak), 4, 0, 7); x.fill();
     x.fillStyle = col('muted'); x.textAlign = 'center'; for (const s of [0, 10, 20, 30]) x.fillText(s === 30 ? T('{n} s', { n: 30 }) : String(s), s === 30 ? padL + pw - 10 : Math.max(padL + 4, X(s)), H - padB / 2 + 1);
     // legend along the top
-    let lx = padL; const item = (color, label, box) => { x.fillStyle = color; if (box) x.fillRect(lx, 5, 12, 10); else x.fillRect(lx, 9, 14, 3); lx += 18; x.fillStyle = col('ink'); x.textAlign = 'left'; x.fillText(label, lx, 10); lx += x.measureText(label).width + 12; };
-    item(col('hot'), T('your temperature')); item(col('accent'), T('score')); if (nD) item(col('muted'), T('lost drug'));
+    let lx = padL; const item = (color, label, box, dash) => { x.fillStyle = color; if (box) x.fillRect(lx, 5, 12, 10); else if (dash) { x.strokeStyle = color; x.lineWidth = 2.5; x.setLineDash(dash); x.beginPath(); x.moveTo(lx, 10.5); x.lineTo(lx + 16, 10.5); x.stroke(); x.setLineDash([]); } else x.fillRect(lx, 9, 14, 3); lx += 20; x.fillStyle = col('ink'); x.textAlign = 'left'; x.fillText(label, lx, 10); lx += x.measureText(label).width + 12; };
+    item(col('hot'), T('your temperature'), false, [5, 3]); item(col('accent'), T('score')); if (nD) item(col('muted'), T('lost drug'), false, [2, 3]);
     if (g.zone || g.path) item(col('good') + '66', T(g.path ? 'green path' : 'green zone'), true); else if (G.win) item(col('hot') + '55', T('red windows'), true); else if (g.flowU) item(col('hot') + '55', T('micelle in the tumour'), true);
   }
   // games open one after another: a star in a game opens the next; teachers can open all
