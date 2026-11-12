@@ -134,6 +134,8 @@ table.eps th { font-weight: 500; color: var(--muted) }
 .gbattle h3 { font-size: 12.5px; margin: 10px 0 6px; color: var(--muted); font-weight: 600 } .gbattle .note { margin: 6px 0 0 } .gbattle select { font: inherit; margin-left: 6px }
 .btable { border-collapse: collapse; margin: 4px 0; font-size: 15px } .btable td { padding: 3px 12px 3px 0; border-bottom: 1px solid var(--line) } .btable td:nth-child(2) { font-family: var(--f-mono) } .btable td:nth-child(3) { color: var(--cryst) }
 .btable tr.win td { font-weight: 700 } .btable tr.todo td { color: var(--muted) }
+.teacher { margin-top: 8px; font-size: 13px } .teacher summary { cursor: pointer; color: var(--muted); font-weight: 600 } .teacher .btns { margin-top: 8px } .teacher .note { margin: 6px 0 0 }
+.micpanel .btns { margin-bottom: 8px } .micpanel .meter { height: 10px; margin-bottom: 8px }
 /* fact cards */
 .albumhead { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap } .albumhead h2 { margin: 0 } .albumcount { font-family: var(--f-mono); color: var(--muted); font-size: 13px } .albumhead .btn { margin-left: auto; font-size: 12px; padding: 4px 10px }
 #album { display: grid; gap: 18px; margin-top: 10px }
@@ -401,7 +403,7 @@ button { touch-action: manipulation }
         <div class="clsbig"><span id="clsLab2">Temperature</span><b id="clsT">–</b></div>
         <div class="clsres" id="clsRes"></div>
         <div class="clsnoise"><span>Room noise</span><div class="meter"><i id="micbarC"></i></div></div>
-        <div class="btns"><button class="btn" id="clsCalib">Set quiet level</button><button class="btn" id="clsPause">Pause</button></div>
+        <div class="btns"><button class="btn" id="clsSetup">Set up the microphone</button><button class="btn" id="clsCalib">Set quiet level</button><button class="btn" id="clsPause">Pause</button></div>
         <p class="note" id="clsNote"></p>
       </div>
       <div class="mbar">
@@ -478,7 +480,11 @@ button { touch-action: manipulation }
         <div class="gstats">
           <h3>Statistics on this device</h3>
           <table><thead><tr><th>Game</th><th>Played</th><th>Average</th><th>Best</th></tr></thead><tbody id="gstatsBody"></tbody></table>
-          <div class="btns"><button class="btn" id="gstatsReset">Reset statistics</button><button class="btn" id="gunlock">Unlock all games (for teachers)</button></div>
+          <div class="btns"><button class="btn" id="gstatsReset">Reset statistics</button></div>
+          <details class="teacher"><summary>Teacher options</summary>
+            <div class="btns"><button class="btn" id="gunlock">Unlock all games</button><button class="btn" id="ladUnlock">Unlock all challenges</button></div>
+            <p class="note">For this browser only. Press again to lock.</p>
+          </details>
         </div>
       </div>
 
@@ -498,6 +504,17 @@ button { touch-action: manipulation }
         </div>
       </div>
 
+      <div class="panel micpanel" data-mode="explore game scan">
+        <h2>Microphone</h2>
+        <div class="mic" id="micbox">
+          <div class="btns"><button class="btn primary" id="micSetup">Set up the microphone</button><button class="btn" id="calib">Set quiet level</button></div>
+          <div class="meter" aria-hidden="true"><i id="micbar"></i></div>
+          <div class="row"><label for="micrange">Sensitivity</label><output id="micrangeO">30 dB</output>
+            <input type="range" id="micrange" min="6" max="50" step="1" value="30" style="direction: rtl" aria-label="Sensitivity: right is more sensitive"></div>
+          <p class="note" id="micnote">Quiet room keeps the system cold. Talk, clap or play music to heat it.</p>
+          <p class="note">Right = more sensitive: quieter sounds heat the box. The number is how many decibels above the quiet room give the hottest setting. <b>Set up the microphone</b> measures your room and your loudest voice.</p>
+        </div>
+      </div>
       <div class="panel" data-mode="explore game scan">
         <h2>Temperature</h2>
         <div class="tbig tfull"><b id="tset">2.00</b><small>T* set point &nbsp;·&nbsp; kinetic <span id="tkin">–</span></small></div>
@@ -513,13 +530,7 @@ button { touch-action: manipulation }
           <button class="btn hot" id="melt">Heat to 2.0</button>
           <button class="btn" id="pause">Pause</button>
         </div>
-        <div class="mic" id="micbox" hidden>
-          <div class="meter" aria-hidden="true"><i id="micbar"></i></div>
-          <div class="row"><label for="micrange">Sensitivity (dB span)</label><output id="micrangeO">30 dB</output>
-            <input type="range" id="micrange" min="0" max="50" step="1" value="30"></div>
-          <div class="btns"><button class="btn" id="calib">Set quiet level</button></div>
-          <p class="note" id="micnote">Quiet room keeps the system cold. Talk, clap or play music to heat it.</p>
-        </div>
+
       </div>
 
       <div class="panel graphpanel" id="graphPanel" data-mode="scan" hidden></div>
@@ -1878,6 +1889,18 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // text written by the script goes through T(), with {name} placeholders for numbers.
   const I18N = {
  "fi": {
+  "Heat wave coming!": "Helleaalto tulossa!",
+  "Set up the microphone": "Säädä mikrofoni",
+  "Sensitivity": "Herkkyys",
+  "Right = more sensitive: quieter sounds heat the box. The number is how many decibels above the quiet room give the hottest setting. <b>Set up the microphone</b> measures your room and your loudest voice.": "Oikealle = herkempi: hiljaisemmatkin äänet lämmittävät laatikkoa. Luku kertoo, montako desibeliä hiljaisen huoneen yläpuolella antaa kuumimman asetuksen. <b>Säädä mikrofoni</b> mittaa huoneesi ja kovimman äänesi.",
+  "Microphone set-up: everyone quiet for {s} s…": "Mikrofonin säätö: kaikki hiljaa {s} s…",
+  "Now the loudest noise you will use: shout, clap or sing! {s} s…": "Nyt kovin ääni, jota käytätte: huutakaa, taputtakaa tai laulakaa! {s} s…",
+  "Microphone ready: quiet is cold, your loudest is hot.": "Mikrofoni valmis: hiljaisuus on kylmää, kovin äänenne on kuumaa.",
+  "Teacher options": "Opettajan asetukset",
+  "Unlock all games": "Avaa kaikki pelit",
+  "Unlock all challenges": "Avaa kaikki haasteet",
+  "Lock the challenges again": "Lukitse haasteet uudelleen",
+  "For this browser only. Press again to lock.": "Vain tässä selaimessa. Paina uudelleen lukitaksesi.",
   "Team play": "Joukkuepeli",
   "Soap molecules · heat the tumour": "Saippuamolekyylit · lämmitä kasvainta",
   "Make noise when a micelle is in the red tumour zone.": "Pidä ääntä, kun miselli on punaisella kasvainalueella.",
@@ -2684,6 +2707,18 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Microphone": "Mikrofoni"
  },
  "sv": {
+  "Heat wave coming!": "Värmebölja på väg!",
+  "Set up the microphone": "Ställ in mikrofonen",
+  "Sensitivity": "Känslighet",
+  "Right = more sensitive: quieter sounds heat the box. The number is how many decibels above the quiet room give the hottest setting. <b>Set up the microphone</b> measures your room and your loudest voice.": "Höger = känsligare: tystare ljud värmer lådan. Talet anger hur många decibel över det tysta rummet som ger den hetaste inställningen. <b>Ställ in mikrofonen</b> mäter ditt rum och din högsta röst.",
+  "Microphone set-up: everyone quiet for {s} s…": "Inställning av mikrofonen: alla tysta i {s} s…",
+  "Now the loudest noise you will use: shout, clap or sing! {s} s…": "Nu det högsta ljudet ni kommer att använda: ropa, klappa eller sjung! {s} s…",
+  "Microphone ready: quiet is cold, your loudest is hot.": "Mikrofonen är klar: tystnad är kallt, ert högsta ljud är hett.",
+  "Teacher options": "Lärarinställningar",
+  "Unlock all games": "Lås upp alla spel",
+  "Unlock all challenges": "Lås upp alla utmaningar",
+  "Lock the challenges again": "Lås utmaningarna igen",
+  "For this browser only. Press again to lock.": "Bara i den här webbläsaren. Tryck igen för att låsa.",
   "Team play": "Lagspel",
   "Soap molecules · heat the tumour": "Tvålmolekyler · värm tumören",
   "Make noise when a micelle is in the red tumour zone.": "Låt när en micell är i den röda tumörzonen.",
@@ -3490,6 +3525,18 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Microphone": "Mikrofon"
  },
  "ru": {
+  "Heat wave coming!": "Идёт волна жары!",
+  "Set up the microphone": "Настроить микрофон",
+  "Sensitivity": "Чувствительность",
+  "Right = more sensitive: quieter sounds heat the box. The number is how many decibels above the quiet room give the hottest setting. <b>Set up the microphone</b> measures your room and your loudest voice.": "Вправо — чувствительнее: и тихие звуки нагревают ящик. Число — на сколько децибел выше тишины в комнате достигается самая горячая настройка. <b>Настроить микрофон</b> измеряет вашу комнату и ваш самый громкий голос.",
+  "Microphone set-up: everyone quiet for {s} s…": "Настройка микрофона: всем тишина {s} с…",
+  "Now the loudest noise you will use: shout, clap or sing! {s} s…": "Теперь самый громкий звук, который вы будете использовать: кричите, хлопайте или пойте! {s} с…",
+  "Microphone ready: quiet is cold, your loudest is hot.": "Микрофон готов: тишина — холод, ваш самый громкий звук — жара.",
+  "Teacher options": "Настройки для учителя",
+  "Unlock all games": "Открыть все игры",
+  "Unlock all challenges": "Открыть все испытания",
+  "Lock the challenges again": "Снова закрыть испытания",
+  "For this browser only. Press again to lock.": "Только в этом браузере. Нажмите ещё раз, чтобы закрыть.",
   "Team play": "Командная игра",
   "Soap molecules · heat the tumour": "Молекулы мыла · нагрейте опухоль",
   "Make noise when a micelle is in the red tumour zone.": "Шумите, когда мицелла в красной зоне опухоли.",
@@ -4467,7 +4514,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       nSalt: sys === 'ice' ? v : 0, iceWall: sys === 'ice' && !opts.game && $('iceWall').checked, epsPP: +$('epsPP').value, epsH: (sys === 'mbpoly' || sys === 'plates') ? +$('epsH').value : 0, epsW: sys === 'mbpoly' ? +$('epsW').value : 0, kBend: sys === 'plates' ? 150 : +$('kBend').value, chainLen: +$('chainLen').value,
       fA: +$('fA').value, epsAB: +$('epsAB').value, epsSC: +$('epsSC').value, xC: v / 100,
       epsHH: +$('epsHH').value, sequence: cleanSeq(), cryptSeq: 'PPPPPXXXPPXXXXPPXXXXXPPXXXXPPXXXPPPPP', epsGo: 2.5, goCut: 1.6, epsXX: +$('epsXX').value, epsB: 0 };
-    if (opts.game && gameSel && gameSel.prm) Object.assign(prm, gameSel.prm); else prm.nDrug = 0;
+    const gcf = opts.game ? gameCfg() : null; if (gcf && gcf.prm) Object.assign(prm, gcf.prm); else prm.nDrug = 0;
     prm.baro = baroOn(opts); prm.P0 = null; // target set from the pressure the box has after it settles
     eng = new MDEngine(prm); baroShown = null; follow = null;
     eng2 = sys === 'plates' && $('plateCompare').checked ? new MDEngine(Object.assign({}, prm, { epsPW: 0, plateHB: 0 })) : null;
@@ -4498,7 +4545,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   function setT(v) {
     const [lo, hi] = curRange();
     tset = Math.max(lo, Math.min(hi, v));
-    if (eng) { eng.p.T = tset + (coachReady && game ? game.bump || 0 : 0); if (eng.p.hotBand) eng.p.hotBand.Tout = lo + (gameSel && gameSel.spill || 0.25) * (tset - lo); }
+    if (eng) { eng.p.T = tset + (coachReady && game ? game.bump || 0 : 0); if (eng.p.hotBand) eng.p.hotBand.Tout = lo + (coachReady && game && game.g.spill || 0.12) * (tset - lo); }
     $('tset').textContent = $('tsetM').textContent = tset.toFixed((SYS[sys].tstep || 0.01) < 0.01 ? 3 : 2); $('tslider').value = $('tsliderM').value = tset;
     if (coachReady) tWordShow();
   }
@@ -4538,11 +4585,30 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   function calibrate() { const samples = []; let k = 0;
     const id = setInterval(() => { const d = levelDb(); if (d !== null) samples.push(d); if (++k >= 15) { clearInterval(id); if (samples.length) { samples.sort((a, b) => a - b); quietDb = samples[Math.floor(samples.length / 2)] + 3; } } }, 40); }
   $('calib').addEventListener('click', calibrate);
+  // microphone set-up: 3 s of quiet sets the quiet level, 3 s of the loudest noise players will use sets the range
+  let micWiz = false;
+  async function micWizard(done) {
+    if (micWiz) return; micWiz = true;
+    if (!analyser) await setMode('mic');
+    if (!analyser) { micWiz = false; if (done) done(false); return; }
+    const phase = (key, cls) => new Promise((res) => { const got = [], t0 = performance.now();
+      const id = setInterval(() => { const d = levelDb(); if (d !== null) got.push(d); const left = Math.max(0, 3 - (performance.now() - t0) / 1000);
+        coachSay(key, cls, { s: Math.ceil(left) }); if (left <= 0) { clearInterval(id); res(got.sort((a, b) => a - b)); } }, 60); });
+    const q = await phase('Microphone set-up: everyone quiet for {s} s…', 'guide');
+    if (q.length) quietDb = q[Math.floor(q.length / 2)] + 3;
+    await new Promise((r) => setTimeout(r, 300));
+    const l = await phase('Now the loudest noise you will use: shout, clap or sing! {s} s…', 'bad');
+    const top = l.length ? l[Math.floor(l.length * 0.9)] : quietDb + 30, span = Math.round(Math.max(6, Math.min(50, top - quietDb - 2)));
+    $('micrange').value = span; $('micrangeO').textContent = span + ' dB';
+    coachSay('Microphone ready: quiet is cold, your loudest is hot.', 'good'); micWiz = false;
+    setTimeout(() => { if (!guide && !battle) coachHide(); if (done) done(true); }, 1600);
+  }
+  $('micSetup').addEventListener('click', () => micWizard());
   $('micrange').addEventListener('input', (e) => { $('micrangeO').textContent = e.target.value + ' dB'; });
   async function setMode(m) {
     mode = m;
     $('modeSlider').setAttribute('aria-pressed', m === 'slider'); $('modeMic').setAttribute('aria-pressed', m === 'mic');
-    $('micbox').hidden = m !== 'mic'; $('tslider').disabled = $('tsliderM').disabled = m === 'mic';
+ $('tslider').disabled = $('tsliderM').disabled = m === 'mic';
     $('micM').setAttribute('aria-pressed', m === 'mic'); $('mmeter').hidden = m !== 'mic';
     if (m === 'mic') { micT = tset; if (!analyser) await startMic(); else if (audio.state === 'suspended') audio.resume(); }
   }
@@ -4750,8 +4816,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   let drugLast = 0;
   function drugTick() {
     const G = game; if (!G || !eng.nDrug) return drugLast;
-    const r = eng.drugStats(1.5, 2);
-    for (let i = 0; i < eng.N; i++) if (eng.type[i] === 4 && r.cnt[i] < 2) { if (inBand(eng.x[i], 1)) { eng.type[i] = 3; G.del++; } else { eng.type[i] = 6; G.lost++; } }
+    const r = eng.drugStats(1.5, 2), t = eng.time - G.t0, inW = G.win ? G.win.some(([a, b]) => t >= a && t < b) : false;
+    for (let i = 0; i < eng.N; i++) if (eng.type[i] === 4 && r.cnt[i] < 2) { if (G.win ? inW : inBand(eng.x[i], 1)) { eng.type[i] = 3; G.del++; } else { eng.type[i] = 6; G.lost++; } }
     drugLast = 100 * G.del / eng.nDrug; return drugLast;
   }
   function inBand(x, m) { const hb = eng.p.hotBand; if (!hb) return false; let b = x - hb.x0 + (m || 0); b -= eng.L * Math.floor(b / eng.L); return b < hb.w + 2 * (m || 0); }
@@ -4777,7 +4843,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       lesson: { good: 'Cooling slowly gave the molecules time to find their places in the honeycomb, so the crystals grew large. This is annealing: how glassmakers and metal workers make strong, clear materials.',
         bad: 'Cooled too fast, the molecules lock in wherever they happen to be; kept at one temperature, the crystals grow too slowly or melt again. Start warm, cool step by step, and if growth stalls, heat briefly and cool again.' } },
     { id: 'demix', title: 'Separate the liquids', sub: 'Two liquids · not too cold', sys: 'demix', ordered: false, range: [0.02, 1.0], D: 90, box: '36',
-      lab: 'Separation', fmt: (v) => v.toFixed(2), stars: [0.40, 0.48, 0.54],
+      lab: 'Separation', fmt: (v) => v.toFixed(2), stars: [0.40, 0.55, 0.75],
       zone: [0.27, 0.42], words: [0.27, 0.42, 0.65], rise: 0.01, // separates fastest around 0.3-0.36; colder the molecules hardly move, warmer they mix
       cz: { hot: 'Too warm: the liquids mix again. Get quieter!', cold: 'Too cold: the molecules are stuck in place. A little noise!',
         good: 'Good: the blobs are growing. Keep it like this.', flat: 'In the green zone. Hold it there.' },
@@ -4786,23 +4852,28 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       hint: 'Total silence freezes the molecules before they can sort themselves: no star. Find a level that is cold enough to separate but warm enough to move.',
       lesson: { good: 'Cool enough that the molecules prefer their own kind, warm enough that they can still move: the blobs grow quickly. Too cold, and everything freezes in place.',
         bad: 'Very cold molecules hardly move, so they stay stuck next to the wrong neighbours. Try a little noise to keep them moving.' } },
-    { id: 'drug', title: 'Deliver the drug', sub: 'Soap molecules · heat the tumour', sys: 'dumbbell', ordered: true, range: [0.4, 3.5], D: 60, box: '48', conc: 34,
-      // blood flow (flowU) carries four drug-loaded micelles through a tumour band; noise heats the band, and a quarter of the heat spills outside
-      prm: { nDrug: 12, drugPerMic: 3, extraTails: 3, preSteps: 1000, epsDB: 2.5, epsBB: 2.5, epsAS: 0, sigA: 1.0, drugXs: [2, 16, 30, 44].map((d) => DRUG_X0 - d) }, raw: true, noSnap: true, side: 'Lost',
-      lab: 'Delivered', fmt: (v) => v.toFixed(0) + '%', stars: [25, 45, 65], scale: 100, hotT: 1.6, flowU: 0.5, bandW: 10, spill: 0.25,
-      setup: (G) => { G.del = 0; G.lost = 0; },
+    { id: 'drug', title: 'Deliver the drug', sub: 'Soap molecules · hit the target windows', sys: 'dumbbell', ordered: true, range: [0.4, 2.5], D: 60, box: '48', conc: 34,
+      prm: { nDrug: 90, drugPerMic: 3, extraTails: 3, preSteps: 1000, epsDB: 2.5, epsBB: 2.5, epsAS: 0, sigA: 1.0 }, raw: true, noSnap: true, side: 'Lost',
+      lab: 'Delivered', fmt: (v) => v.toFixed(0) + '%', stars: [30, 45, 60], scale: 100, hotT: 1.35,
+      setup: (G) => { const w = []; let a = 6 + 4 * Math.random(); const W = 4 / 1.5; while (a + W <= 58) { w.push([a, a + W]); a += W + 5 + 4 * Math.random(); } G.win = w; G.del = 0; G.lost = 0; },
       value: () => drugTick(),
-      short: "Make noise when a micelle is in the red tumour zone.", goal: 'Blood flow carries micelles full of drug (stars) through the red tumour zone. Noise heats the tumour and opens the micelles there. Drug released in the tumour is delivered and turns yellow; drug released anywhere else is lost and turns grey. Some heat leaks outside the tumour, so long noise wastes drug.', facts: ["The first nanoparticle cancer medicine, Doxil, was approved in 1995. It carries the drug inside tiny bubbles made of lipids, the molecules of cell membranes.", "Heat-triggered carriers are being tested in medicine: some release their drug when a tumour is warmed just above body temperature, to about 40–42 °C.", "Soap works like these micelles: grease hides in the oily cores of soap micelles and is rinsed away with the water."],
-      hint: 'Micelles need a few seconds of heat to open, so start the noise as a micelle enters the red zone and stop when it leaves. A steady medium noise often works better than shouting all the time.',
-      lesson: { good: 'You heated the tumour while the carriers passed through it, so they opened where the drug was needed. Temperature-sensitive carriers are designed to do just this at a warmed tumour.',
-        bad: 'Heat leaks into healthy tissue, and carriers there open too. Heat when a micelle is in the tumour and keep quiet in between.' } },
+      // challenges use a tumour zone instead: blood flow (flowU) carries four micelles through a heated band; a little heat (spill) leaks outside
+      tumour: { sub: 'Soap molecules · heat the tumour', range: [0.4, 3.5], prm: { nDrug: 12, drugPerMic: 3, extraTails: 3, preSteps: 1000, epsDB: 2.5, epsBB: 2.5, epsAS: 0, sigA: 1.0, drugXs: [2, 17.5, 33, 48.5].map((d) => DRUG_X0 - d) },
+        stars: [25, 40, 60], hotT: 1.6, flowU: 1.0, bandW: 10, spill: 0.12, setup: (G) => { G.del = 0; G.lost = 0; },
+        short: "Make noise when a micelle is in the red tumour zone.", goal: 'Blood flow carries micelles full of drug (stars) through the red tumour zone. Noise heats the tumour and opens the micelles there. Drug released in the tumour is delivered and turns yellow; drug released anywhere else is lost and turns grey. Some heat leaks outside the tumour, so long noise wastes drug.',
+        hint: 'Micelles need a few seconds of heat to open, so start the noise as a micelle enters the red zone and stop when it leaves. A steady medium noise often works better than shouting all the time.', lesson: { good: 'You heated the tumour while the carriers passed through it, so they opened where the drug was needed. Temperature-sensitive carriers are designed to do just this at a warmed tumour.', bad: 'Heat leaks into healthy tissue, and carriers there open too. Heat when a micelle is in the tumour and keep quiet in between.' } },
+      short: "Heat only in the red windows to deliver the drug (stars).", goal: 'Deliver as much drug (stars) as you can at the right moment. Heat only during the red target windows. Drug released at any other time is lost and turns grey; delivered drug turns yellow. The micelles carry the drug in their oily cores, and heat breaks them open.', facts: ["The first nanoparticle cancer medicine, Doxil, was approved in 1995. It carries the drug inside tiny bubbles made of lipids, the molecules of cell membranes.", "Heat-triggered carriers are being tested in medicine: some release their drug when a tumour is warmed just above body temperature, to about 40–42 °C.", "Soap works like these micelles: grease hides in the oily cores of soap micelles and is rinsed away with the water."],
+      hint: 'The micelles need a moment to open, so start the noise just before a window and stop just before it ends. Stay quiet between windows so the micelles hold on to the rest.',
+      lesson: { good: 'Short, well-timed bursts of heat opened the micelles exactly when the drug was needed, and the cold kept it locked inside the rest of the time. Temperature-sensitive carriers are designed to do just this at a warmed tumour.',
+        bad: 'Heat frees the drug a little after it starts and keeps freeing it for a moment after it stops, so late or long bursts waste it. Watch the windows on the time bar and start a little early.' } },
     { id: 'gel', title: 'Grow the longest gel strand', sub: '35 proteins', sys: 'crypt', ordered: true, range: [0.6, 7.0], D: 90, box: '48', conc: 35, epsXX: 5,
-      lab: 'Gel path', fmt: (v) => v.toFixed(0) + ' σ', stars: [80, 130, 170], scale: 200, openT: 2.2, tooHot: 4.5, openSec: 4, rise: 3, words: [1.4, 2.2, 4.5], value: () => { gelShow = eng.gelPath(1.5, 2); return gelShow.len; },
+      lab: 'Gel path', fmt: (v) => v.toFixed(0) + ' σ', stars: [50, 75, 100], scale: 200, openT: 2.2, tooHot: 4.5, openSec: 4, rise: 3, words: [1.4, 2.2, 4.5], value: () => { gelShow = eng.gelPath(1.5, 2); return gelShow.len; },
       short: "Link the proteins into the longest gel strand you can within 30 seconds.", goal: 'Link the proteins into the longest gel strand you can. Your score is the longest path through the gel, from protein to protein (red line); the box is 62 σ wide. The proteins start folded, with their sticky beads hidden inside. Two proteins are linked when they share at least two sticky contacts.', facts: ["Boiling an egg turns the clear egg white solid: heat unfolds its proteins, and they stick together into a gel.", "Gelatin jelly melts at about 30–35 °C, a little below body temperature. That is why it melts in your mouth.", "Tofu is a protein gel: soy milk is heated, then salts such as magnesium chloride make the soy proteins clump together."],
       hint: 'Folded proteins cannot link, and boiling breaks the links. Heat to open the folds, then cool well down so the links hold and the network grows.',
       lesson: { good: 'Heating opened the folds and exposed the sticky beads, cooling let the links hold, and the clumps joined into a long network. This is how heated egg white or gelatin-like protein solutions set into a gel.',
         bad: 'A gel needs both steps: heat to expose the sticky beads, then cooler conditions so the links last long enough for clumps to join. Try heating for a third of the time, then going quieter.' } },
   ];
+  function gameCfg(base) { const g = base || gameSel; if (!g || !gameLevel || !g.tumour) return g; return g._zv || (g._zv = Object.assign({}, g, g.tumour)); }
   let game = null, gameSel = null, gameRange = null, gameCarry = 0;
   const curRange = () => gameRange || SYS[sys].trange || [0.3, 2.5];
   const bestKey = (g) => 'mdlab-best2-' + g.id;
@@ -4852,7 +4923,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     running = true; $('pause').textContent = T('Pause');
   }
   function startGame() {
-    const g = gameSel; if (!g) return;
+    const g = gameCfg(); if (!g) return;
     if (guide) { guide = null; coachHide(); }
     if (needGuide(g) && !battle && !gameLevel && !classOn) { guideStart(g); return; }
     prepGame(g); coachHide(); $('greplay').hidden = true;
@@ -4860,7 +4931,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (battle) game.battle = battle.k;
     if (g.setup) g.setup(game);
     if (gameLevel) { const tw = ladTwist(g, gameLevel); Object.assign(game, { af: tw.af || 0, flowK: tw.flowK || 1, bandK: tw.bandK || 1 });
-      if (tw.waveAmp) { game.waves = []; let a = 3 + 2 * Math.random(); while (a < 28) { game.waves.push([a, a + 2, tw.waveAmp]); a += 5 + 3 * Math.random(); } } }
+      if (tw.waveAmp) { game.waves = []; let a = 2.5 + 1.5 * Math.random(); while (a < 28) { game.waves.push([a, a + tw.waveLen, tw.waveAmp]); a += tw.waveLen + tw.waveGap * (0.7 + 0.6 * Math.random()); } } }
     const gb = document.querySelector('.gbar'); gb.querySelectorAll('.win').forEach((x) => x.remove());
     for (const [w0, w1] of game.win || []) { const d = document.createElement('div'); d.className = 'win'; d.style.left = (100 * w0 / g.D) + '%'; d.style.width = (100 * (w1 - w0) / g.D) + '%'; gb.appendChild(d); }
     $('gpeakLab').textContent = T(g.side || 'Best this run');
@@ -4943,7 +5014,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     $('gbar').style.width = (100 * frac) + '%';
     const sNow = GAME_SEC * frac; // the run, kept for the replay and the diagnosis after the game
     if (!G.rec.length || sNow - G.rec[G.rec.length - 1].s >= 0.25) G.rec.push({ s: sNow, T: tset, v: G.ema, d: G.del || 0, l: G.lost || 0, z: g.flowU ? micInBand(0) : false });
-    if (frac < 1) { coachTick(G, sNow); if (g.path) zoneMarks(sNow); if (G.level) twistTick(G, sNow); }
+    if (frac < 1) { coachTick(G, sNow); if (g.path || g.zoneLive) zoneMarks(sNow); if (G.level) twistTick(G, sNow); }
     if (frac >= 1) endGame('done');
   }
   $('gpick').addEventListener('click', (e) => { const b = e.target.closest('[data-game]'); if (b) selectGame(b.dataset.game); });
@@ -5015,6 +5086,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   $('clsExit').addEventListener('click', classExit);
   $('clsSys').addEventListener('change', () => { pickSys($('clsSys').value); if (mode !== 'mic') setMode('mic'); resize(); classUpdate(); });
   $('clsCalib').addEventListener('click', () => { $('calib').click(); });
+  $('clsSetup').addEventListener('click', () => micWizard());
   $('clsPause').addEventListener('click', () => { $('pause').click(); classUpdate(); });
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && classOn && tourI < 0) classExit(); });
   document.addEventListener('fullscreenchange', () => { if (classOn) resize(); });
@@ -5160,7 +5232,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   const T_WORDS = ['cold', 'cool', 'warm', 'hot'], T_SIGNS = ['❄️❄️', '❄️', '☀️', '🔥'];
   const tWord = (g, Tv) => { const [lo, hi] = g.range, w = g.words || [0.25, 0.5, 0.75].map((q) => lo + q * (hi - lo)); return w.filter((b) => Tv >= b).length; };
   const zoneOf = (g, s) => (g.path ? g.path(s) : g.zone);
-  const gameNow = () => (appMode === 'game' && gameRange ? (game ? game.g : gameSel) : null);
+  const gameNow = () => (appMode === 'game' && gameRange ? (game ? game.g : gameCfg()) : null);
   function tWordShow() { // during games the box shows cold / cool / warm / hot instead of a number
     const g = gameNow(), b = $('tsetM');
     // symbols instead of words, so the bar keeps its width in every language; the word stays as the tooltip and for screen readers
@@ -5168,7 +5240,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     else if (b.className) { b.className = ''; b.removeAttribute('title'); b.removeAttribute('aria-label'); }
   }
   function zoneMarks(sNow) { // the green band on the noise bar and on the slider: temperatures that build the structure (for ice it moves down during the game)
-    const g = gameNow(), z = g && (g.zone || g.path) ? zoneOf(g, sNow || 0) : null, nz = $('nzone'), sz = $('szone');
+    const g = gameNow(), hide = !tipsOn() || (game ? game.level : gameLevel); // the green band is a tip: not in challenges or with tips off
+    const z = !g || hide ? null : g.zoneLive ? g.zoneLive(game) : (g.zone || g.path) ? zoneOf(g, sNow || 0) : null, nz = $('nzone'), sz = $('szone');
     nz.classList.toggle('on', !!z); sz.classList.toggle('on', !!z); if (!z) return;
     const [lo, hi] = g.range, f = (Tv) => (Tv - lo) / (hi - lo), xn = (Tv) => Math.max(0, Math.min(1, (f(Tv) - 0.05) / 0.9));
     nz.style.left = 100 * xn(z[0]) + '%'; nz.style.width = 100 * (xn(z[1]) - xn(z[0])) + '%';
@@ -5182,6 +5255,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   function coachSay(key, cls, params) { coachMsg = [key, params, cls]; const o = $('coach'); $('coachTxt').textContent = T(key, params); o.className = 'coach ' + (cls || ''); o.hidden = false; placeCoach(); }
   function coachHide() { coachMsg = null; $('coach').hidden = true; $('coachBtn').hidden = $('coachSkip').hidden = true; }
   const tipsOn = () => $('gtips').checked;
+  $('gtips').addEventListener('change', () => zoneMarks());
   try { if (localStorage.getItem('mdlab-tips') === '0') $('gtips').checked = false; } catch (e) {}
   $('gtips').addEventListener('change', () => { try { localStorage.setItem('mdlab-tips', tipsOn() ? '1' : '0'); } catch (e) {} if (!tipsOn() && !guide) coachHide(); });
   function coachTick(G, s) {
@@ -5210,12 +5284,22 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     return tr > g.rise ? ['Good: slow cooling, the ice is growing.', 'good'] : ['On track: keep cooling slowly along the green path.', ''];
   }
   function drugCoach(G, s, Tv) {
+    if (G.win) return drugWinCoach(G, s, Tv);
     const r = G.rec, p = r.find((q) => q.s >= s - 1) || r[0] || { d: 0, l: 0 }, g = G.g, inZ = micInBand(2);
     if (inZ) return (G.del || 0) > p.d ? ['Yes! The drug is being delivered.', 'good']
       : Tv > g.hotT ? ['Keep the noise up: the micelle is opening.', ''] : ['A micelle is in the tumour: make noise now!', 'bad'];
     if (Tv > g.hotT) return ['No micelle in the tumour: quiet! The heat leaks drug elsewhere.', 'bad'];
     if ((G.lost || 0) > p.l) return ['Drug is escaping outside the tumour! Keep quiet.', 'bad'];
     if (micInBand(6)) return ['Get ready: a micelle is about to enter the tumour.', 'warn'];
+    return ['Good: quiet keeps the drug inside.', 'good'];
+  }
+  function drugWinCoach(G, s, Tv) {
+    const w = drugWindow(), r = G.rec, p = r.find((q) => q.s >= s - 1) || r[0] || { d: 0, l: 0 }, g = G.g;
+    if (w && w.on) return (G.del || 0) > p.d ? ['Yes! The drug is being delivered.', 'good']
+      : Tv > g.hotT ? ['Keep the noise up: the micelles are opening.', ''] : ['Red window: make noise now!', 'bad'];
+    if (Tv > g.hotT) return ['Not now! Heat outside the red windows wastes the drug.', 'bad'];
+    if ((G.lost || 0) > p.l) return ['Drug is escaping! Be quiet until the next red window.', 'bad'];
+    if (w && w.left !== null && w.left < 1.5) return ['Get ready: a red window starts in a moment.', 'warn'];
     return ['Good: quiet keeps the drug inside.', 'good'];
   }
   function gelCoach(G, s, Tv, tr) {
@@ -5226,11 +5310,25 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (Tv > g.openT) return ['Now get quieter so the links hold.', ''];
     return ['Hold it cool: let the clumps join up.', ''];
   }
+  const quietBand = (g) => [g.range[0], g.range[0] + 0.3 * (g.hotT - g.range[0])];
+  for (const g of GAMES) if (g.id === 'drug') g.zoneLive = (G) => { // loud band while the drug should be released, quiet band otherwise
+    const gg = G ? G.g : gameCfg(g), hotNow = G && (G.win ? (() => { const w = drugWindow(); return w && (w.on || (w.left !== null && w.left < 1)); })() : micInBand(2));
+    return hotNow ? [gg.hotT, gg.range[1]] : quietBand(gg); };
+  else if (g.id === 'gel') g.zoneLive = (G) => { const hotSec = G ? G.rec.filter((q) => q.T > g.openT).length * 0.25 : 0;
+    return hotSec < g.openSec ? [g.openT, g.tooHot] : [g.range[0], g.openT]; };
   for (const g of GAMES) g.coach = g.id === 'drug' ? drugCoach : g.id === 'gel' ? gelCoach : g.id === 'ice' ? iceCoach : zoneCoach;
   // one sentence about this player's run
   function diagnose(G, st) {
     const g = G.g, r = G.rec || [], n = r.length; if (n < 8) return '';
     const pc = (f) => Math.round(100 * r.filter(f).length / n);
+    if (g.id === 'drug' && G.win) {
+      const W = G.win || []; let hit = 0;
+      for (const [a, b] of W) { const q = r.filter((x) => x.s >= a / G.rate && x.s < b / G.rate); if (q.length && q.filter((x) => x.T > g.hotT).length >= 0.4 * q.length) hit++; }
+      const lost = Math.round(100 * (G.lost || 0) / (eng.nDrug || 1));
+      if ((G.lost || 0) > (G.del || 0) && lost >= 10) return T('Most of the drug escaped between the windows ({l}% lost). Stay quiet when there is no red window.', { l: lost });
+      if (hit < W.length / 2) return T('You heated in {h} of {n} red windows. Make noise as soon as a window starts.', { h: hit, n: W.length });
+      return T(st === 3 ? 'Great timing: you heated in {h} of {n} windows and lost only {l}% of the drug.' : 'You heated in {h} of {n} windows and lost {l}% of the drug. Start the noise a little before each window.', { h: hit, n: W.length, l: lost });
+    }
     if (g.id === 'drug') {
       const zin = r.filter((x) => x.z), zout = r.filter((x) => !x.z), hotIn = zin.length ? Math.round(100 * zin.filter((x) => x.T > g.hotT).length / zin.length) : 0,
         hotOut = zout.length ? Math.round(100 * zout.filter((x) => x.T > g.hotT).length / zout.length) : 0, lost = Math.round(100 * (G.lost || 0) / (eng.nDrug || 1));
@@ -5271,6 +5369,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (g.zone || g.path) { x.fillStyle = col('good') + '33'; x.beginPath(); const ss = []; for (let q = 0; q <= 60; q++) ss.push(GAME_SEC * q / 60);
       ss.forEach((sv, i) => (i ? x.lineTo : x.moveTo).call(x, X(sv), YT(Math.min(hi, zoneOf(g, sv)[1]))));
       for (let i = ss.length - 1; i >= 0; i--) x.lineTo(X(ss[i]), YT(Math.max(lo, zoneOf(g, ss[i])[0]))); x.closePath(); x.fill(); }
+    for (const [a, b] of G.win || []) { x.fillStyle = col('hot') + '33'; x.fillRect(X(a / G.rate), padT, X(b / G.rate) - X(a / G.rate), ph); }
     if (g.flowU) { x.fillStyle = col('hot') + '33'; for (let i = 0; i < r.length; i++) if (r[i].z) { const s0 = r[i].s, s1 = i + 1 < r.length ? r[i + 1].s : GAME_SEC; x.fillRect(X(s0), padT, X(s1) - X(s0) + 0.5, ph); } }
     x.font = `${fs}px ${css('--f-body')}`; x.textBaseline = 'middle';
     g.stars.forEach((sv, k) => { const y = YV(sv); x.strokeStyle = col('cryst') + 'aa'; x.lineWidth = 1; x.setLineDash([3, 3]); x.beginPath(); x.moveTo(padL, y); x.lineTo(padL + pw, y); x.stroke();
@@ -5282,12 +5381,12 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     // legend along the top
     let lx = padL; const item = (color, label, box) => { x.fillStyle = color; if (box) x.fillRect(lx, 5, 12, 10); else x.fillRect(lx, 9, 14, 3); lx += 18; x.fillStyle = col('ink'); x.textAlign = 'left'; x.fillText(label, lx, 10); lx += x.measureText(label).width + 12; };
     item(col('hot'), T('your temperature')); item(col('accent'), T('score'));
-    if (g.zone || g.path) item(col('good') + '66', T(g.path ? 'green path' : 'green zone'), true); else if (g.flowU) item(col('hot') + '55', T('micelle in the tumour'), true);
+    if (g.zone || g.path) item(col('good') + '66', T(g.path ? 'green path' : 'green zone'), true); else if (G.win) item(col('hot') + '55', T('red windows'), true); else if (g.flowU) item(col('hot') + '55', T('micelle in the tumour'), true);
   }
   // games open one after another: a star in a game opens the next; teachers can open all
   const unlockAll = () => { try { return localStorage.getItem('mdlab-unlock') === '1'; } catch (e) { return false; } };
   function isOpen(i) { if (i <= 0 || unlockAll()) return true; const p = GAMES[i - 1], b = getBest(p); return b !== null && starsFor(p, b) >= 1; }
-  function unlockLabel() { $('gunlock').textContent = T(unlockAll() ? 'Lock the games again' : 'Unlock all games (for teachers)'); }
+  function unlockLabel() { $('gunlock').textContent = T(unlockAll() ? 'Lock the games again' : 'Unlock all games'); }
   $('gunlock').addEventListener('click', () => { try { localStorage.setItem('mdlab-unlock', unlockAll() ? '0' : '1'); } catch (e) {} unlockLabel(); renderPick(); });
   unlockLabel();
   // guided first game: melt the ice with noise, freeze it with quiet, then play
@@ -5309,10 +5408,12 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     guide = { k: 0, t: performance.now(), mic: false, lo: 1 };
     if (typeof sheet === 'function') sheet(false);
     guideShow();
-    if ($('guseMic').checked) setMode('mic').then(() => { if (!guide) return; guide.mic = !!analyser; if (!analyser) setMode('slider'); guideShow(); });
+    if ($('guseMic').checked) setMode('mic').then(() => { if (!guide) return; guide.mic = !!analyser; if (!analyser) { setMode('slider'); guideShow(); return; }
+      guide.wiz = true; micWizard(() => { if (!guide) return; guide.wiz = false; guide.t = performance.now(); guideShow(); }); });
     else setMode('slider');
   }
   function guideTick(v) {
+    if (guide.wiz) return;
     const G = guide, el = (performance.now() - G.t) / 1000;
     if (G.k === 0 && v < 0.3 && el > 1.5) { G.k = 1; G.t = performance.now(); G.lo = v; guideShow(); }
     else if (G.k === 1) { G.lo = Math.min(G.lo, v); if ((v > G.lo + 0.12 && el > 2) || (el > 12 && v > G.lo + 0.04)) { G.k = 2; guideShow(); } }
@@ -5529,21 +5630,25 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
 
   // ---------- challenges: once all six cards of a game are collected, five harder levels; a star opens the next; no tips ----------
   const LADDER = 5, AF_LEVELS = [8, 16, 24, 32, 40]; // antifreeze per ice challenge: following the green path gives about 53, 45, 44, 40 and 36% ice (one star at 35%)
-  const deckDone = (g) => { const own = fcOwned(); return FC_ALL.filter((c) => c.deck.game === g.id).every((c) => own.includes(c.id)); };
+  const ladAll = () => { try { return localStorage.getItem('mdlab-ladall') === '1'; } catch (e) { return false; } };
+  const deckDone = (g) => { if (ladAll()) return true; const own = fcOwned(); return FC_ALL.filter((c) => c.deck.game === g.id).every((c) => own.includes(c.id)); };
   const ladGet = (g) => { try { return JSON.parse(localStorage.getItem('mdlab-ladder-' + g.id) || '{}') || {}; } catch (e) { return {}; } }; // level -> best stars
   const ladSet = (g, k, st) => { const o = ladGet(g); o[k] = Math.max(o[k] || 0, st); try { localStorage.setItem('mdlab-ladder-' + g.id, JSON.stringify(o)); } catch (e) {} };
-  const ladOpen = (g, k) => k === 1 || (ladGet(g)[k - 1] || 0) >= 1;
+  const ladOpen = (g, k) => ladAll() || k === 1 || (ladGet(g)[k - 1] || 0) >= 1;
+  const ladLabel = () => { $('ladUnlock').textContent = T(ladAll() ? 'Lock the challenges again' : 'Unlock all challenges'); };
+  $('ladUnlock').addEventListener('click', () => { try { localStorage.setItem('mdlab-ladall', ladAll() ? '0' : '1'); } catch (e) {} ladLabel(); renderLadder(); });
   function ladTwist(g, k) { // what makes level k harder
     if (g.id === 'ice') return { af: AF_LEVELS[k - 1], txt: ['Antifreeze particles appear one by one during the run: {n} by the end.', { n: AF_LEVELS[k - 1] }] };
-    if (g.id === 'demix') return { waveAmp: 0.04 + 0.04 * k, txt: ['Heat waves hit the box every few seconds. Get quieter when one comes.', {}] };
-    if (g.id === 'drug') return { bandK: 1 - 0.06 * k, flowK: 1 + 0.08 * k, txt: ['The tumour is narrower and the blood flows faster.', {}] };
+    if (g.id === 'demix') return { waveAmp: 0.12 * (k + 1), waveGap: 7.5 - 0.9 * k, waveLen: 1.5 + 0.4 * k, txt: ['Heat waves hit the box: level {k} of 5, stronger and more often each level. Get quieter when one comes.', { k }] };
+    if (g.id === 'drug') return { bandK: 1 - 0.06 * k, flowK: 1 + 0.08 * k, txt: [k === 1 ? 'New rules: blood flow carries the micelles through a red tumour zone. Heat while a micelle is in the zone.' : 'The tumour is narrower and the blood flows faster.', {}] };
     return { conc: 35 - 2 * k, txt: ['Fewer proteins: {n}.', { n: 35 - 2 * k }] };
   }
   function twistTick(G, s) {
     if (G.af) { const want = Math.round(G.af * Math.min(1, s / 25)), ty = eng.type; let have = 0; for (let i = 0; i < eng.N; i++) if (ty[i] === 3) have++;
       for (let guard = 0; have < want && guard < 50 * eng.N; guard++) { const j = Math.floor(Math.random() * eng.N); if (ty[j] === 7) { ty[j] = 3; have++; } } }
-    if (G.waves) { const w = G.waves.find(([a, b]) => s >= a && s < b), bump = w ? w[2] : 0;
-      if (bump !== G.bump) { G.bump = bump; eng.p.T = tset + bump; if (bump) coachSay('Heat wave!', 'bad'); else coachHide(); } }
+    if (G.waves) { const w = G.waves.find(([a, b]) => s >= a && s < b), bump = w ? w[2] : 0, soon = !w && G.waves.some(([a]) => a > s && a - s < 1.3);
+      if (soon && !G.warned) { G.warned = true; coachSay('Heat wave coming!', 'warn'); } // announced a moment before the heat arrives
+      if (bump !== G.bump) { G.bump = bump; eng.p.T = tset + bump; if (bump) coachSay('Heat wave!', 'bad'); else { coachHide(); G.warned = false; } } }
   }
   function renderLadder() {
     const games = GAMES.filter((g) => deckDone(g));
@@ -5556,7 +5661,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const g = GAMES.find((x) => x.id === id); if (!g || !ladOpen(g, k)) return;
     selectGame(id); gameLevel = k; const tw = ladTwist(g, k);
     $('ggoal').innerHTML = `<b>${T('Challenge {k}', { k })}.</b> ${T(tw.txt[0], tw.txt[1])} ${T(g.goal)} ${T('No tips in challenges.')}`;
-    gstartKey = 'Start'; $('gstart').textContent = T('Start'); prepGame(g); renderLadder();
+    gstartKey = 'Start'; $('gstart').textContent = T('Start'); prepGame(gameCfg(g)); renderLadder();
   }
   document.addEventListener('click', (e) => { const b = e.target.closest('[data-lad]'); if (!b || b.disabled) return; const [id, k] = b.dataset.lad.split(':'); selectLevel(id, +k);
     if (b.closest('#gres')) startGame(); else if (typeof sheet === 'function' && phoneUI()) sheet(false); });
@@ -5570,7 +5675,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       (st > was && was ? ' ' + T('New best for this challenge.') : '') + (next ? ` <button class="btn primary" data-lad="${g.id}:${k + 1}">${T('Next challenge')}</button>` : '');
     renderLadder(); drawReplay(G);
   }
-  renderLadder();
+  renderLadder(); ladLabel();
 
   // ---------- class battle: teams take turns on the same game from the same start; highest score wins ----------
   function battleShow(msg, cls, go, stop) { coachSay(msg, cls); const b = $('coachBtn'), k = $('coachSkip'); b.hidden = false; b.textContent = go; k.hidden = false; k.textContent = stop; }
@@ -5778,7 +5883,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (eng.walls) { ctx.translate(0, cv.height); ctx.scale(1, -1); } // brush: substrate at the bottom
     if (!eng.walls && eng.L0 && (eng.p.baro || eng.L !== eng.L0)) { // barostat: fixed magnification, box centre fixed, periodic copies fill the view so the box edge never shows
       const k = eng.L / eng.L0, Wc = cv.width, Hc = cv.height, reps = k < 0.999 ? [-1, 0, 1] : [0];
-      ctx.fillStyle = colors.cell; ctx.fillRect(0, 0, Wc, Hc);
+      ctx.fillStyle = heatBg(); ctx.fillRect(0, 0, Wc, Hc);
       ctx.translate(Wc / 2, Hc / 2); ctx.scale(k, k); ctx.translate(-Wc / 2, -Hc / 2);
       noBg = true; for (const oy of reps) for (const ox of reps) { ctx.save(); ctx.translate(ox * Wc, oy * Hc); drawScene(); ctx.restore(); } noBg = false;
     } else drawScene();
@@ -5821,6 +5926,15 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   }
   cv.addEventListener('click', pickAt);
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && follow && tourI < 0) follow = null; });
+  let heatGlow = 0; // 0..1, eases towards 1 during a heat wave
+  function heatBg() {
+    const want = coachReady && game && game.bump ? 1 : 0; heatGlow += (want - heatGlow) * 0.06; if (heatGlow < 0.004) { heatGlow = 0; return colors.cell; }
+    const a = hexRgb(colors.cell), b = hexRgb(isDark() ? '#5c2438' : '#ffc4d6'), f = heatGlow;
+    return `rgb(${Math.round(a[0] + (b[0] - a[0]) * f)},${Math.round(a[1] + (b[1] - a[1]) * f)},${Math.round(a[2] + (b[2] - a[2]) * f)})`;
+  }
+  const hexRgb = (h) => { h = String(h).trim(); if (h[0] === '#') { if (h.length === 4) h = '#' + h[1] + h[1] + h[2] + h[2] + h[3] + h[3]; return [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)); }
+    const m = h.match(/\d+/g); return m ? m.slice(0, 3).map(Number) : [255, 255, 255]; };
+  const isDark = () => { const c = hexRgb(colors.cell); return c[0] + c[1] + c[2] < 300; };
   function drawDrug() {
     const s = cv.width / eng.L, type = eng.type, hb = eng.p.hotBand;
     if (hb) { // the tumour: a red band; in the barostat-free game box the view is one box, so draw it and its periodic copy
@@ -5874,7 +5988,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   let noBg = false;
   function drawScene() {
     const L = eng.L, s = cv.width / L, N = eng.N, x = eng.x, y = eng.y, type = eng.type, sig = eng.sig, Lc = eng.Lc, nCh = Lc * eng.nMol;
-    if (!noBg) { ctx.fillStyle = colors.cell; ctx.fillRect(0, 0, cv.width, cv.height); }
+    if (!noBg) { ctx.fillStyle = heatBg(); ctx.fillRect(0, 0, cv.width, cv.height); }
     if (eng.walls) {
       ctx.fillStyle = colors.line; ctx.fillRect(0, 0, cv.width, eng.walls.lo * s);
       if ($('showBonds').checked && eng.bonds2) {
@@ -6047,7 +6161,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     applyStatic(); refreshTexts(); document.title = T('Shut Up and Get Structured'); barLabels();
     if (typeof tourI !== 'undefined' && tourI >= 0) tourShow(tourI); // an open help tour follows the language
     if (classOn && typeof clsModeUI === 'function') clsModeUI();
-    if (fcReady) { renderAlbum(); renderLadder(); $('fcBack').innerHTML = fcBackArt; if (fcShown) { $('fcFront').innerHTML = fcFace(fcShown[0]); $('fcClose').textContent = T(fcShown[1] ? 'Add to my cards' : 'Close'); } }
+    if (fcReady) { renderAlbum(); renderLadder(); ladLabel(); $('fcBack').innerHTML = fcBackArt; if (fcShown) { $('fcFront').innerHTML = fcFace(fcShown[0]); $('fcClose').textContent = T(fcShown[1] ? 'Add to my cards' : 'Close'); } }
     if (coachReady) { tWordShow(); unlockLabel(); renderPick(); if (guide) guideShow(); else if (coachMsg) coachSay(coachMsg[0], coachMsg[2], coachMsg[1]); const rp = $('greplay'); if (!rp.hidden && rp._run) drawReplay(rp._run); }
   }
   // short labels for the phone's bottom bar: a quarter of a narrow screen fits about 10 letters
