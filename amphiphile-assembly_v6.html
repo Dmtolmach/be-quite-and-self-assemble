@@ -1889,6 +1889,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // text written by the script goes through T(), with {name} placeholders for numbers.
   const I18N = {
  "fi": {
+  "Too loud: the heat leaks out and opens micelles outside the tumour.": "Liian kovaa: lämpö vuotaa ulos ja avaa misellejä kasvaimen ulkopuolella.",
   "Heat wave coming!": "Helleaalto tulossa!",
   "Set up the microphone": "Säädä mikrofoni",
   "Sensitivity": "Herkkyys",
@@ -2707,6 +2708,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Microphone": "Mikrofoni"
  },
  "sv": {
+  "Too loud: the heat leaks out and opens micelles outside the tumour.": "För högt: värmen läcker ut och öppnar miceller utanför tumören.",
   "Heat wave coming!": "Värmebölja på väg!",
   "Set up the microphone": "Ställ in mikrofonen",
   "Sensitivity": "Känslighet",
@@ -3525,6 +3527,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Microphone": "Mikrofon"
  },
  "ru": {
+  "Too loud: the heat leaks out and opens micelles outside the tumour.": "Слишком громко: тепло утекает и раскрывает мицеллы вне опухоли.",
   "Heat wave coming!": "Идёт волна жары!",
   "Set up the microphone": "Настроить микрофон",
   "Sensitivity": "Чувствительность",
@@ -4619,7 +4622,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const span = Math.max(0.5, +$('micrange').value), x = Math.max(0, Math.min(1, (d - quietDb) / span));
     $('micbar').style.width = $('micbarM').style.width = $('micbarC').style.width = (x * 100).toFixed(0) + '%';
     const [lo, hi] = curRange(), target = lo + (0.05 + 0.9 * x) * (hi - lo);
-    const tauUp = 0.4, tauDown = 2.5;   // heats quickly, cools slowly
+    const tauUp = 0.3, tauDown = 0.6;   // follows the room quickly both ways, so players keep control (cooling used to lag 2.5 s)
     const a = 1 - Math.exp(-dtSec / (target > micT ? tauUp : tauDown));
     micT += a * (target - micT); setT(micT);
     if (sys === 'ice' && $('pitchP').checked && appMode === 'explore' && eng && eng.p.baro) pitchUpdate(dtSec);
@@ -4817,9 +4820,12 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   function drugTick() {
     const G = game; if (!G || !eng.nDrug) return drugLast;
     const r = eng.drugStats(1.5, 2), t = eng.time - G.t0, inW = G.win ? G.win.some(([a, b]) => t >= a && t < b) : false;
-    for (let i = 0; i < eng.N; i++) if (eng.type[i] === 4 && r.cnt[i] < 2) { if (G.win ? inW : inBand(eng.x[i], 1)) { eng.type[i] = 3; G.del++; } else { eng.type[i] = 6; G.lost++; } }
+    const cut = G.win ? 2 : 1; // the tumour version counts drug only once it has no tail neighbours left, so cold micelles do not leak by chance
+    for (let i = 0; i < eng.N; i++) if (eng.type[i] === 4 && r.cnt[i] < cut) { if (G.win ? inW : inTumour(eng.x[i])) { eng.type[i] = 3; G.del++; } else { eng.type[i] = 6; G.lost++; } }
     drugLast = 100 * G.del / eng.nDrug; return drugLast;
   }
+  function inTumour(x) { // delivery counts in the band, from 1 σ before it to 4 σ after it (drug that the stream has just carried out still reaches the tumour)
+    const hb = eng.p.hotBand; if (!hb) return false; let b = x - hb.x0 + 1; b -= eng.L * Math.floor(b / eng.L); return b < hb.w + 5; }
   function inBand(x, m) { const hb = eng.p.hotBand; if (!hb) return false; let b = x - hb.x0 + (m || 0); b -= eng.L * Math.floor(b / eng.L); return b < hb.w + 2 * (m || 0); }
   function micInBand(ahead) { // a loaded micelle (held drug) inside the tumour band, or within `ahead` upstream of it
     if (!eng.p.hotBand) return false; for (let i = 0; i < eng.N; i++) if (eng.type[i] === 4) { const hb = eng.p.hotBand; let b = eng.x[i] - hb.x0 + (ahead || 0); b -= eng.L * Math.floor(b / eng.L); if (b < hb.w + (ahead || 0)) return true; } return false; }
@@ -4858,8 +4864,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       setup: (G) => { const w = []; let a = 6 + 4 * Math.random(); const W = 4 / 1.5; while (a + W <= 58) { w.push([a, a + W]); a += W + 5 + 4 * Math.random(); } G.win = w; G.del = 0; G.lost = 0; },
       value: () => drugTick(),
       // challenges use a tumour zone instead: blood flow (flowU) carries four micelles through a heated band; a little heat (spill) leaks outside
-      tumour: { sub: 'Soap molecules · heat the tumour', range: [0.4, 3.5], prm: { nDrug: 12, drugPerMic: 3, extraTails: 3, preSteps: 1000, epsDB: 2.5, epsBB: 2.5, epsAS: 0, sigA: 1.0, drugXs: [2, 17.5, 33, 48.5].map((d) => DRUG_X0 - d) },
-        stars: [25, 40, 60], hotT: 1.6, flowU: 1.0, bandW: 10, spill: 0.12, setup: (G) => { G.del = 0; G.lost = 0; },
+      tumour: { sub: 'Soap molecules · heat the tumour', range: [0.4, 3.0], prm: { nDrug: 12, drugPerMic: 3, extraTails: 3, preSteps: 1000, epsDB: 2.0, epsBB: 2.5, epsAS: 0, sigA: 1.0, drugXs: [2, 17.5, 33, 48.5].map((d) => DRUG_X0 - d) },
+        stars: [25, 40, 60], hotT: 1.5, safeT: 2.3, flowU: 1.0, bandW: 10, spill: 0.45, // medium noise opens micelles in the zone only; loud noise leaks enough heat to open them outside too setup: (G) => { G.del = 0; G.lost = 0; },
         short: "Make noise when a micelle is in the red tumour zone.", goal: 'Blood flow carries micelles full of drug (stars) through the red tumour zone. Noise heats the tumour and opens the micelles there. Drug released in the tumour is delivered and turns yellow; drug released anywhere else is lost and turns grey. Some heat leaks outside the tumour, so long noise wastes drug.',
         hint: 'Micelles need a few seconds of heat to open, so start the noise as a micelle enters the red zone and stop when it leaves. A steady medium noise often works better than shouting all the time.', lesson: { good: 'You heated the tumour while the carriers passed through it, so they opened where the drug was needed. Temperature-sensitive carriers are designed to do just this at a warmed tumour.', bad: 'Heat leaks into healthy tissue, and carriers there open too. Heat when a micelle is in the tumour and keep quiet in between.' } },
       short: "Heat only in the red windows to deliver the drug (stars).", goal: 'Deliver as much drug (stars) as you can at the right moment. Heat only during the red target windows. Drug released at any other time is lost and turns grey; delivered drug turns yellow. The micelles carry the drug in their oily cores, and heat breaks them open.', facts: ["The first nanoparticle cancer medicine, Doxil, was approved in 1995. It carries the drug inside tiny bubbles made of lipids, the molecules of cell membranes.", "Heat-triggered carriers are being tested in medicine: some release their drug when a tumour is warmed just above body temperature, to about 40–42 °C.", "Soap works like these micelles: grease hides in the oily cores of soap micelles and is rinsed away with the water."],
@@ -5287,6 +5293,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (G.win) return drugWinCoach(G, s, Tv);
     const r = G.rec, p = r.find((q) => q.s >= s - 1) || r[0] || { d: 0, l: 0 }, g = G.g, inZ = micInBand(2);
     if (inZ) return (G.del || 0) > p.d ? ['Yes! The drug is being delivered.', 'good']
+      : g.safeT && Tv > g.safeT + 0.2 ? ['Too loud: the heat leaks out and opens micelles outside the tumour.', 'bad']
       : Tv > g.hotT ? ['Keep the noise up: the micelle is opening.', ''] : ['A micelle is in the tumour: make noise now!', 'bad'];
     if (Tv > g.hotT) return ['No micelle in the tumour: quiet! The heat leaks drug elsewhere.', 'bad'];
     if ((G.lost || 0) > p.l) return ['Drug is escaping outside the tumour! Keep quiet.', 'bad'];
@@ -5313,7 +5320,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   const quietBand = (g) => [g.range[0], g.range[0] + 0.3 * (g.hotT - g.range[0])];
   for (const g of GAMES) if (g.id === 'drug') g.zoneLive = (G) => { // loud band while the drug should be released, quiet band otherwise
     const gg = G ? G.g : gameCfg(g), hotNow = G && (G.win ? (() => { const w = drugWindow(); return w && (w.on || (w.left !== null && w.left < 1)); })() : micInBand(2));
-    return hotNow ? [gg.hotT, gg.range[1]] : quietBand(gg); };
+    return hotNow ? [gg.hotT, gg.safeT || gg.range[1]] : quietBand(gg); };
   else if (g.id === 'gel') g.zoneLive = (G) => { const hotSec = G ? G.rec.filter((q) => q.T > g.openT).length * 0.25 : 0;
     return hotSec < g.openSec ? [g.openT, g.tooHot] : [g.range[0], g.openT]; };
   for (const g of GAMES) g.coach = g.id === 'drug' ? drugCoach : g.id === 'gel' ? gelCoach : g.id === 'ice' ? iceCoach : zoneCoach;
