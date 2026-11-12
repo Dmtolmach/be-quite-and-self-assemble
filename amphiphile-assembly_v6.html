@@ -1889,6 +1889,10 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // text written by the script goes through T(), with {name} placeholders for numbers.
   const I18N = {
  "fi": {
+  "Preview · noise heats the proteins: they open": "Esikatselu · ääni lämmittää proteiineja: ne avautuvat",
+  "Preview · quiet: the open proteins link into a gel": "Esikatselu · hiljaisuus: avautuneet proteiinit liittyvät geeliksi",
+  "Preview · noise heats it: order is lost": "Esikatselu · ääni lämmittää: järjestys katoaa",
+  "Preview · quiet cools it: order grows": "Esikatselu · hiljaisuus viilentää: järjestys kasvaa",
   "Too loud: the heat leaks out and opens micelles outside the tumour.": "Liian kovaa: lämpö vuotaa ulos ja avaa misellejä kasvaimen ulkopuolella.",
   "Heat wave coming!": "Helleaalto tulossa!",
   "Set up the microphone": "Säädä mikrofoni",
@@ -2708,6 +2712,10 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Microphone": "Mikrofoni"
  },
  "sv": {
+  "Preview · noise heats the proteins: they open": "Förhandsvisning · ljud värmer proteinerna: de öppnas",
+  "Preview · quiet: the open proteins link into a gel": "Förhandsvisning · tystnad: de öppna proteinerna binds till en gel",
+  "Preview · noise heats it: order is lost": "Förhandsvisning · ljud värmer: ordningen försvinner",
+  "Preview · quiet cools it: order grows": "Förhandsvisning · tystnad kyler: ordningen växer",
   "Too loud: the heat leaks out and opens micelles outside the tumour.": "För högt: värmen läcker ut och öppnar miceller utanför tumören.",
   "Heat wave coming!": "Värmebölja på väg!",
   "Set up the microphone": "Ställ in mikrofonen",
@@ -3527,6 +3535,10 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Microphone": "Mikrofon"
  },
  "ru": {
+  "Preview · noise heats the proteins: they open": "Превью · шум нагревает белки: они раскрываются",
+  "Preview · quiet: the open proteins link into a gel": "Превью · тишина: раскрытые белки сцепляются в гель",
+  "Preview · noise heats it: order is lost": "Превью · шум нагревает: порядок теряется",
+  "Preview · quiet cools it: order grows": "Превью · тишина охлаждает: порядок растёт",
   "Too loud: the heat leaks out and opens micelles outside the tumour.": "Слишком громко: тепло утекает и раскрывает мицеллы вне опухоли.",
   "Heat wave coming!": "Идёт волна жары!",
   "Set up the microphone": "Настроить микрофон",
@@ -4861,7 +4873,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     { id: 'drug', title: 'Deliver the drug', sub: 'Soap molecules · hit the target windows', sys: 'dumbbell', ordered: true, range: [0.4, 2.5], D: 60, box: '48', conc: 34,
       prm: { nDrug: 90, drugPerMic: 3, extraTails: 3, preSteps: 1000, epsDB: 2.5, epsBB: 2.5, epsAS: 0, sigA: 1.0 }, raw: true, noSnap: true, side: 'Lost',
       lab: 'Delivered', fmt: (v) => v.toFixed(0) + '%', stars: [30, 45, 60], scale: 100, hotT: 1.35,
-      setup: (G) => { const w = []; let a = 6 + 4 * Math.random(); const W = 4 / 1.5; while (a + W <= 58) { w.push([a, a + W]); a += W + 5 + 4 * Math.random(); } G.win = w; G.del = 0; G.lost = 0; },
+      setup: (G) => { const w = []; let a = 6 + 4 * Math.random(); const W = 8 / 2.25; /* windows ≈ 1.8 s of play each */ while (a + W <= 58) { w.push([a, a + W]); a += W + 5 + 4 * Math.random(); } G.win = w; G.del = 0; G.lost = 0; },
       value: () => drugTick(),
       // challenges use a tumour zone instead: blood flow (flowU) carries four micelles through a heated band; a little heat (spill) leaks outside
       tumour: { sub: 'Soap molecules · heat the tumour', range: [0.4, 3.0], prm: { nDrug: 12, drugPerMic: 3, extraTails: 3, preSteps: 1000, epsDB: 2.0, epsBB: 2.5, epsAS: 0, sigA: 1.0, drugXs: [2, 17.5, 33, 48.5].map((d) => DRUG_X0 - d) },
@@ -5233,6 +5245,62 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     try { localStorage.setItem('mdlab-mode', m); } catch (e) {}
   }
   document.querySelectorAll('[data-appmode]').forEach((b) => b.addEventListener('click', () => setAppMode(b.dataset.appmode)));
+
+
+  // ---------- goal preview: before a game starts, the box plays a fast "film" of the system: heated it falls apart (forward),
+  // cooled it orders (the same film played backwards), 10 s of film, then 20 s of the live box, repeated ----------
+  const DEMO = { ice: { T: 0.34, ord: true, tau: 24 }, demix: { T: 2.0, ord: true, tau: 18 }, drug: { T: 2.5, ord: true, tau: 12 },
+    gel: { T: 3.5, ord: true, tau: 26, heatTau: 8, coolT: 1.2 } }; // gel: a real heat-then-cool run, played forwards only
+  const demoCache = {}; let demo = null, demoDrawing = false, demoHeat = 0, filmCtl = false;
+  const previewOn = () => appMode === 'game' && !!gameSel && !game && !guide && !battle && !classOn && tourI < 0 && !gameLevel && !!DEMO[gameSel.id] && !!eng;
+  function demoTick(budgetMs) { // record the film in small slices of each frame, on a copy of the game's system
+    if (!previewOn()) return; const id = gameSel.id, cf = DEMO[id];
+    if (!demo || demo.id !== id) demo = demoCache[id] || null;
+    if (!demo) {
+      let E; try { E = new MDEngine(Object.assign({}, eng.p, { T: cf.T, ordered: cf.ord, seed: 7 + id.length, baro: false, hotBand: null, flowU: 0, iceWall: false })); } catch (e) { return; }
+      E.setupTable(); const nf = 60, every = Math.max(1, Math.round(cf.tau / nf / E.p.dt));
+      demo = demoCache[id] = { id, E, frames: [], every, nf, t0: 0, k: 0 }; demo.frames.push(demoGrab(E));
+    }
+    if (demo.frames.length >= demo.nf) return;
+    const t0 = performance.now(), E = demo.E;
+    while (performance.now() - t0 < budgetMs && demo.frames.length < demo.nf) {
+      if (cf.heatTau && demo.k === Math.round(cf.heatTau / E.p.dt)) { E.p.T = cf.coolT; E.setupTable(); } // gel film: heat, then cool
+      E.step(); if (++demo.k % demo.every === 0) demo.frames.push(demoGrab(E)); }
+    if (demo.frames.length >= demo.nf) demo.t0 = performance.now();
+  }
+  window.__demo = () => demo && { id: demo.id, n: demo.frames.length, nf: demo.nf, k: demo.k, every: demo.every, prev: previewOn() };
+  const demoGrab = (E) => { const fr = { x: Float32Array.from(E.x.subarray(0, E.N)), y: Float32Array.from(E.y.subarray(0, E.N)), arm: E.mb && E.arm ? Float32Array.from(E.arm.subarray(0, 6 * E.N)) : null, T: E.p.T, rel: null };
+    if (E.nDrug) { const r = E.drugStats(1.5, 2), rel = []; for (let i = 0; i < E.N; i++) if (E.type[i] === 4 && r.cnt[i] < 2) rel.push(i); fr.rel = Int32Array.from(rel); } // released drug glows in the film
+    return fr; };
+  function demoFrame() { // which frame to show now, or null for the live box
+    if (!previewOn() || !demo || demo.id !== gameSel.id || demo.frames.length < demo.nf) return null;
+    const t = ((performance.now() - demo.t0) / 1000) % 10, cf = DEMO[demo.id];
+    if (cf.heatTau) { // gel: the run forwards over 8 s, then 2 s on its last frame; the controls follow the temperature it was run at
+      const i = Math.min(demo.nf - 1, Math.round(Math.min(1, t / 8) * (demo.nf - 1))), hot = demo.frames[i].T > cf.coolT + 0.01;
+      return { i, fwd: hot, f: hot ? 0.9 : 0.15, gel: true }; }
+    // others loop while the preview is on: 4 s heating, 4 s cooling (the film backwards), 2 s cold
+    const fwd = t < 4, f = fwd ? t / 4 : t < 8 ? 1 - (t - 4) / 4 : 0, i = Math.min(demo.nf - 1, Math.round(f * (demo.nf - 1)));
+    return { i, fwd, f };
+  }
+  function drawDemo(fr) {
+    const E = demo.E, F = demo.frames[fr.i]; E.x.set(F.x); E.y.set(F.y); if (F.arm) E.arm.set(F.arm);
+    const keepE = eng, keepAn = an; eng = E; an = null; demoDrawing = true; demoHeat = fr.f;
+    try { draw(); } finally { eng = keepE; an = keepAn; demoDrawing = false; }
+    if (F.rel && F.rel.length) { const s = cv.width / E.L; ctx.save(); ctx.globalCompositeOperation = isDark() ? 'lighter' : 'source-over';
+      for (const i of F.rel) { const X = F.x[i] * s, Y = F.y[i] * s, R = 1.8 * s, gr = ctx.createRadialGradient(X, Y, 0, X, Y, R);
+        gr.addColorStop(0, 'rgba(255,214,64,0.95)'); gr.addColorStop(0.45, 'rgba(255,200,40,0.45)'); gr.addColorStop(1, 'rgba(255,200,40,0)'); ctx.fillStyle = gr; ctx.fillRect(X - R, Y - R, 2 * R, 2 * R); }
+      ctx.restore(); }
+    // banner and thermometer
+    const W = cv.width, H = cv.height, u = dpr; ctx.save();
+    const msg = T(fr.gel ? (fr.fwd ? 'Preview · noise heats the proteins: they open' : 'Preview · quiet: the open proteins link into a gel') : fr.fwd ? 'Preview · noise heats it: order is lost' : 'Preview · quiet cools it: order grows');
+    ctx.font = `700 ${14 * u}px ${css('--f-body') || 'sans-serif'}`; const tw = ctx.measureText(msg).width + 24 * u;
+    ctx.globalAlpha = 0.85; ctx.fillStyle = fr.fwd ? colors.hot : colors.cold; ctx.beginPath(); ctx.roundRect ? ctx.roundRect((W - tw) / 2, 10 * u, tw, 28 * u, 14 * u) : ctx.rect((W - tw) / 2, 10 * u, tw, 28 * u); ctx.fill();
+    ctx.globalAlpha = 1; ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(msg, W / 2, 24 * u);
+    ctx.restore();
+    // the player's own controls under the box show what the film does: the slider and the noise bar move, the symbol changes
+    const g = gameSel, [lo, hi] = g.range, Tf = lo + (0.05 + 0.9 * fr.f) * (hi - lo);
+    $('tsliderM').value = Tf; $('micbarM').style.width = (100 * fr.f) + '%'; const k = tWord(g, Tf), b = $('tsetM'); b.textContent = T_SIGNS[k]; b.className = 'tw tw' + k; filmCtl = true;
+  }
 
   // ---------- help for first-time players: temperature in words, the good zone, a live coach line, a replay with a diagnosis, a guided first game, unlocking ----------
   const T_WORDS = ['cold', 'cool', 'warm', 'hot'], T_SIGNS = ['❄️❄️', '❄️', '☀️', '🔥'];
@@ -5895,8 +5963,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       noBg = true; for (const oy of reps) for (const ox of reps) { ctx.save(); ctx.translate(ox * Wc, oy * Hc); drawScene(); ctx.restore(); } noBg = false;
     } else drawScene();
     if (sys === 'dumbbell' && eng.nDrug) drawDrug();
-    if (sys === 'crypt' && gelShow && gelShow.path.length > 1 && appMode === 'game' && ((game && game.g.id === 'gel') || (!game && gameSel && gameSel.id === 'gel'))) drawGel(gelShow);
-    if (follow) drawFollow(false);
+    if (!demoDrawing && sys === 'crypt' && gelShow && gelShow.path.length > 1 && appMode === 'game' && ((game && game.g.id === 'gel') || (!game && gameSel && gameSel.id === 'gel'))) drawGel(gelShow);
+    if (follow && !demoDrawing) drawFollow(false);
     ctx.restore();
   }
   // ---------- follow one molecule: click or tap it to ring it and draw its recent path ----------
@@ -5935,7 +6003,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && follow && tourI < 0) follow = null; });
   let heatGlow = 0; // 0..1, eases towards 1 during a heat wave
   function heatBg() {
-    const want = coachReady && game && game.bump ? 1 : 0; heatGlow += (want - heatGlow) * 0.06; if (heatGlow < 0.004) { heatGlow = 0; return colors.cell; }
+    const want = demoDrawing ? 0 : coachReady && game && game.bump ? 1 : 0; // the preview film keeps the normal background heatGlow += (want - heatGlow) * (demoDrawing ? 0.25 : 0.06); if (heatGlow < 0.004) { heatGlow = 0; return colors.cell; }
     const a = hexRgb(colors.cell), b = hexRgb(isDark() ? '#5c2438' : '#ffc4d6'), f = heatGlow;
     return `rgb(${Math.round(a[0] + (b[0] - a[0]) * f)},${Math.round(a[1] + (b[1] - a[1]) * f)},${Math.round(a[2] + (b[2] - a[2]) * f)})`;
   }
@@ -6110,7 +6178,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     else if (mode === 'mic') micUpdate(dtSec);
     if (fcReady) cardTick(dtSec);
     if (running) {
-      const n = game ? gameSteps(dtSec) : +$('spf').value, t0 = performance.now();
+      const prev = coachReady && previewOn(), n = game ? gameSteps(dtSec) : prev ? 1 : +$('spf').value, t0 = performance.now();
       for (let k = 0; k < n; k++) eng.step();
       simMsFrame = performance.now() - t0;
       if (dbg) { dbg.sim += performance.now() - t0; dbg.steps += n; }
@@ -6139,7 +6207,9 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     }
     if (now - perfT > 1000) { sps = stepCount * 1000 / (now - perfT); stepCount = 0; perfT = now; $('perf').textContent = `${Math.round(sps)} ${T('steps/s')} · ${(sps * eng.p.dt).toFixed(1)} τ/s` + (qLevel ? ' · ' + T('lighter drawing ({q})', { q: qLevel }) : ''); }
     followTick();
-    if (qLevel < 3 || (loopN & 1) === 0) { const d0 = performance.now(); draw(); const dm = performance.now() - d0; qualityTick(now, dm, frameMs); if (dbg) dbg.draw += dm; } loopN++;
+    if (coachReady) demoTick(isPhone ? 5 : 7); const dfr = coachReady ? demoFrame() : null;
+    if (!dfr && filmCtl) { filmCtl = false; $('tsliderM').value = tset; $('micbarM').style.width = '0%'; tWordShow(); }
+    if (qLevel < 3 || (loopN & 1) === 0) { const d0 = performance.now(); if (dfr) drawDemo(dfr); else draw(); const dm = performance.now() - d0; qualityTick(now, dm, frameMs); if (dbg) dbg.draw += dm; } loopN++;
     if (dbg) debugTick(now, frameMs);
     syncBoxStart();
     requestAnimationFrame(loop);
