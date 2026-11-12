@@ -28,9 +28,10 @@ Made by [Dmitry Tolmachev](https://scholar.google.com/citations?user=OQtj-R4AAAA
 
 - **Open the file** `amphiphile-assembly-lab.html` in a browser, or open the GitHub Pages link of the repository.
 - **Microphone:** the browser asks for permission the first time the microphone is used. Browsers allow the microphone only on `https://` pages or on a file opened from your own computer. Nothing is recorded or sent anywhere: the page only measures the loudness.
-- **Speed:** a recent laptop runs every system smoothly. On slow phones the page automatically switches to simpler drawing (see *Drawing quality* under Box and view). Phones and old tablets run the smaller boxes well. The water systems (Ice, Oily particles) are the slowest, because each water molecule also rotates.
+- **Speed:** a recent laptop runs every system smoothly. On slow phones the page automatically switches to simpler drawing (see *Drawing quality* in Teacher options at the bottom of the page). Phones and old tablets run the smaller boxes well. The water systems (Ice, Oily particles) are the slowest, because each water molecule also rotates.
 - **Language:** the menu in the top-right corner. The page starts in the browser's language if it is one of the four.
-- **Help:** the **?** button opens a short tour of the screen. It also opens by itself on the first visit.
+- **First visit:** a welcome card plays the 15-second story (molecule → crystal → shouting face melts it → refreezes) and offers one big **▶ Play: make ice** button, which starts the guided first game with the microphone set-up. **Show me around** opens the tour instead; **Just explore** closes the card. It appears once per browser (also for browsers that saw the older tour); **Show the welcome** in Teacher options plays it again.
+- **Help:** the **? Help** button (set apart from **Class mode** by a thin divider) opens a short tour of the screen. Its first card plays a 15-second story: one water molecule (a bead with three arms), the honeycomb crystal growing around it, a shouting face with sound waves that melts it, and quiet letting it refreeze. **Microphone** or the slider on that card take over the animation.
 
 ## A first lesson in 10 minutes
 
@@ -60,36 +61,41 @@ Temperatures are in reduced units (T*). They are not degrees Celsius: each syste
 
 ## Game mode
 
-Four 30-second games. Each one shows its goal, a short description, and up to three stars. At first only the ice game is open: a star in a game opens the next one. **Unlock all games (for teachers)**, under the statistics, opens all four on this device (press it again to lock them).
+Four 30-second games. The game panel is kept short: game cards (title and one-line hint), **Start**, **Use the microphone** and **Show tips**; the goal preview film on the box shows what to do. In games the box size line and the Temperature panel (Cool/Heat/Pause) are hidden; the slider and Mic button under the box remain. At first only the ice game is open: a star in a game opens the next one. The folded **Teacher options** at the very bottom of the page, under the cards, hold **Unlock all games**, **Unlock all challenges** (this browser only; press again to lock) and **Class battle**.
 
 | Game | System | Goal | Stars at |
 |---|---|---|---|
 | **Grow the biggest ice crystal** | Ice | Turn as much water into ice as possible. | 35%, 47%, 56% ice |
-| **Separate the liquids** | Two liquids | Separate two mixed liquids as far as possible. | s = 0.40, 0.48, 0.54 |
-| **Deliver the drug** | Soap molecules carrying drug | Blood flow carries four drug-loaded micelles through a red tumour zone. Noise heats the tumour (a quarter of the heat leaks outside it); drug released in the tumour is delivered, drug released elsewhere is lost. | 25%, 45%, 65% delivered |
-| **Grow the longest gel strand** | Proteins | Unfold the proteins with heat, then cool them so they link into the longest possible network. | 80, 130, 170 σ path |
+| **Separate the liquids** | Two liquids | Separate two mixed liquids as far as possible. | s = 0.40, 0.55, 0.75 |
+| **Deliver the drug** | Soap molecules carrying drug | Heat only during the red target windows on the time bar (each about 1.8 s of play), so the micelles release their drug at the right moment. Drug released at other times is lost. | 30%, 45%, 70% delivered |
+| **Grow the longest gel strand** | Proteins | Unfold the proteins with heat, then cool them so they link into the longest possible network. | 50, 75, 130 σ path |
 
 How a game runs:
 
-- **The very first game is guided.** The box shows a crystal of ice and a line of instructions: make noise (or drag the slider right) and the ice melts; be quiet (or drag it left) and it freezes again; then **Play** starts the real game. **Skip** jumps straight to the game. The guide appears once per browser.
+- **The very first game is guided.** With the microphone on, it starts with the microphone set-up: 3 s of quiet sets the quiet level, then 3 s of the loudest noise the players will use sets the sensitivity. Then the ice lesson follows.
+- **The box follows the room quickly**: the microphone temperature rises with a 0.3 s time constant and falls with 0.6 s, so players can cool the box in time for a drug window or a heat wave.
+- **Microphone panel** (right column): **Set up the microphone** (the same 3 + 3 s measurement, any time), **Set quiet level**, the live level bar and **Sensitivity** (no explanatory text; a message appears only if the microphone is blocked) (right = more sensitive, shown in words from *Least sensitive* to *Very sensitive*; internally it is how many dB above the quiet room give the hottest setting: ≤14 very sensitive, ≤24 sensitive, ≤34 normal, ≤42 less, above that least). Class mode has the same **Set up the microphone** button.
+  After that, the box shows a crystal of ice and a line of instructions: make noise (or drag the slider right) and the ice melts; be quiet (or drag it left) and it freezes again; then **Play** starts the real game. **Skip** jumps straight to the game. The guide appears once per browser.
+- **Goal preview.** Before a game starts, the box plays a short film of the system (ice, two liquids and the drug game) in a loop for as long as the preview is on: 4 s of heating, where the order is lost, then the same film backwards for 4 s, where cooling brings the order back, then 2 s cold. The player's own controls under the box move with the film: the temperature slider (and the noise bar, with the microphone on) goes up and down and the temperature symbol changes, so students see what to do. A banner on the box says what is happening. The film is recorded in the background from a copy of the game's system as soon as the game is picked (a few seconds on a laptop). The gel game's film is a real heat-then-cool run played forwards: 8 s in which noise opens the proteins and then quiet lets the open proteins link into a gel, then 2 s on the final gel. In the drug film, drug that has left its micelle glows yellow. It is not shown in challenges, class mode or the guided first game.
 - Press **Start**. A 3-2-1-Go countdown runs over the box; the clock and the molecules wait for it.
 - **Use the microphone** (ticked by default) lets the room control the temperature. Untick it to use the slider instead.
 - **Show tips** (ticked by default) turns on the coach line during the game and, after it, the sentence about the run and the tip for 0–1 stars. Untick it for a plain game, for example in a competition or a test. The choice is remembered in this browser. The guided first game, the green band and the replay graph stay.
 - During the game, the bar shows the score now, the star levels and the time left. When a new star is reached, the stars pop up over the box.
 - **A coach line on the box** says what the molecules are doing and what to try, for example *Too warm: the ice cannot grow. Get quieter!* or *Red window: make noise now!* It follows the temperature and how the score is changing, and changes at most every 1.5 s.
+- **The green band is a tip**: it is hidden in challenges and when **Show tips** is off. In Deliver the drug it shows the loud range while a window is open (or about to) and the quiet range otherwise; in the gel game it shows the opening range until the proteins have had about 4 s of heat, then the cool range.
 - **Temperature in words.** During games the number under the box is replaced by a symbol: ❄️❄️ cold, ❄️ cool, ☀️ warm, 🔥 hot (the word shows as a tooltip). Symbols keep the bar the same width in every language. A green band on the slider and on the **Your noise** bar (the microphone level, shown big when the microphone is on) marks the temperatures to aim for. For the two liquids it is fixed (*cool*, where the blobs grow fastest). For ice it is a **green path** that moves down during the game: start warm, cool slowly, and stay quiet for the last seconds (annealing). If the ice stops growing, the coach suggests a short burst of noise to melt badly packed bits, then cooling again.
 - At the end, the box shows the best moment of the run (press **Resume** to let it continue from there). The text gives the score, **one sentence about this run** (for example how much of the game was spent too warm, too cold or in the green band, how many drug windows were heated, or whether the proteins were ever heated enough). Students who get 0 or 1 star also get a tip.
-- **A replay graph** under the text shows the student's temperature over the 30 s (red line), the score (teal line, dot at the best moment) and the star levels, with the green band (ice, liquids) or the red drug windows shaded. It shows at a glance whether the student was too loud, too quiet, or late.
-- **Statistics on this device** lists games played, average and best score for each game. They are stored only in this browser. **Reset statistics** clears them.
+- **A replay graph** under the text shows the student's temperature over the 30 s (red line), the score (teal line, dot at the best moment) and the star levels, with the green band (ice, liquids) or the red drug windows shaded. In the drug game a grey line shows the lost drug (%) next to the delivered score. It shows at a glance whether the student was too loud, too quiet, or late.
+- **Statistics on this device** (folded under the box; click to open) lists games played, average and best score for each game. They are stored only in this browser. **Reset statistics** clears them.
 - **Give up** ends a game early; **Play again** restarts it.
 
-The star levels come from test runs of simple ways to play. In the ice game, staying silent gives about 25–30% ice (no star), a constant medium-quiet level about 40% (one star), and following the green path 55–60% (two or three stars). Adding one or two short bursts of heat on the way gave similar or slightly higher scores (57–61%) in the test runs. Chatting, with noise going up and down, keeps the box warm and grows almost no ice, because the box heats quickly and cools slowly.
+The star levels come from test runs of simple ways to play. In the ice game, staying silent gives about 25–30% ice (no star), a constant medium-quiet level about 40% (one star), and following the green path 55–60% (two or three stars). Adding one or two short bursts of heat on the way gave similar or slightly higher scores (57–61%) in the test runs. Chatting, with noise going up and down, keeps the box warm and grows almost no ice, because the box heats quickly and cools quickly.
 
 Each game needs a different strategy, which is what makes them good discussion starters:
 
 - **Ice** rewards slow cooling from warm (annealing), then staying cold: going silent at once freezes a disordered jumble, and holding one temperature grows too little. A short reheating can melt defects so they regrow in order.
 - **Separate the liquids** rewards a temperature that is cold enough to separate but warm enough for molecules to move: too cold and everything freezes in place.
-- **Deliver the drug** rewards aim: the micelles need a few seconds of heat to open, so heat while a micelle passes through the tumour and keep quiet in between, because the heat that leaks out opens micelles in healthy tissue. A steady medium noise often beats shouting. (Test runs: silent 0%, always loud 25–33%, steady medium 33–53%, heating only while a micelle is in the tumour about 50%; individual runs vary a lot with only 12 drug molecules.)
+- **Deliver the drug** rewards timing: the micelles need a moment to open, so start the noise just before each window and stop just before it ends. Its challenges switch to a tumour zone (see Challenges).
 - **Gel strand** rewards heat-then-cool: folded proteins cannot link, and too much heat breaks the links.
 
 ### Challenges
@@ -99,13 +105,13 @@ When all six cards of a game's deck are collected, that game opens five **challe
 | Game | What makes each level harder |
 |---|---|
 | Ice | Antifreeze particles appear one by one during the run: 8, 16, 24, 32 and 40 by the end. Test runs following the green path reached about 53, 45, 44, 40 and 36% ice (one star at 35%). |
-| Two liquids | Heat waves of growing strength (+0.08 to +0.24 T*) hit the box for 2 s every 5–8 s; the box shows "Heat wave!". |
-| Deliver the drug | The tumour gets narrower (6% per level) and the blood flows faster (8% per level). |
+| Two liquids | Heat waves: +0.24 T* at level 1 up to +0.72 at level 5, lasting 1.9–3.5 s and coming more often each level. During a wave the box turns pink (fading in and out) and shows "Heat wave!"; about 1.3 s before each wave the box announces "Heat wave coming!". |
+| Deliver the drug | New rules (no time windows): blood flow carries three drug-loaded micelles, one after another, through a red tumour zone. Noise heats the zone; the heat that leaks out to the rest of the box grows with the square of the noise, so medium noise opens micelles in the zone only, while loud noise warms the whole box and opens them before they arrive. Drug counts as released once it has had fewer than 2 tail neighbours for 1 time unit; it is delivered if that happens from 3 σ before the zone to 4 σ after it. Stars at 35, 50, 65%. Each level narrows the zone by 6%, speeds the flow by 7% and lets more heat leak out, so the right volume range gets narrower. Test runs in the browser (bot with 0.4 s reaction and microphone smoothing): medium noise only while a micelle is in the zone 73–100% (3 stars) at every level; steady medium noise 67–100% at level 1 but 47% at level 5; loud noise when a micelle is in the zone 47% at level 5; always loud 27–47% (usually not cleared). |
 | Gel strand | Fewer proteins: 33, 31, 29, 27, 25. |
 
 ### Class battle
 
-Under the games, **Class battle** lets 2–6 teams play the selected game in turn. Every team starts from exactly the same starting arrangement of molecules. A prompt on the box calls each team ("Team 2, get ready!"), the table under the scores fills in, and after the last team the winner (or a draw) is announced. **New battle** starts again with a fresh start; **End battle** stops. Battles do not change the statistics or win cards. Tips follow the **Show tips** setting.
+In **Teacher options**, **Class battle** lets 2–6 teams play the selected game in turn. Every team starts from exactly the same starting arrangement of molecules. A prompt on the box calls each team ("Team 2, get ready!"), the table under the scores fills in, and after the last team the winner (or a draw) is announced. **New battle** starts again with a fresh start; **End battle** stops. Battles do not change the statistics or win cards. Tips follow the **Show tips** setting.
 
 ## Fact cards
 
@@ -142,26 +148,40 @@ Seven systems, described in detail under [The systems](#the-systems):
 | **Proteins** | Folded proteins hide sticky sites; heat unfolds them and they clump. |
 | **Oily particles** | Nonpolar particles in water dissolve when cold and gather when warm. |
 
-### Temperature
+### Colour-blind safety
 
-- **Cool to … / Heat to …** jump to a typical cold or hot temperature for the system.
-- **Pause / Resume** stops and restarts the simulation.
-- With the microphone on (**Mic** under the box), two more settings appear:
-  - **Sensitivity (dB span)**: how much louder than the quiet level the room must get to reach the maximum temperature. Lower values make the box react to quieter sounds.
-  - **Set quiet level**: listens for a moment and takes that as "silence". Press it once with the room quiet before playing.
+Checked with simulated protanopia, deuteranopia and tritanopia (Machado 2009) on every system and game:
+- Soap/protein heads are a darker teal (#13627a), so they stay apart from the grey solvent for red–green colour blindness; orange vs dark teal and orange vs blue remain distinct in all three.
+- The red drug windows on the time bar are striped; in the replay graph your temperature is dashed, the score solid and lost drug dotted, with matching legend marks.
+- Coach messages carry a symbol as well as a colour: ✓ good, ▲ too hot or a problem, ❄ too cold.
+- Temperature words use the ❄/♨ symbols; stars are ★ vs ☆; delivered drug glows yellow and lost drug is grey.
+
+### Sound and celebration
+
+- **Sound effects** (🔊 / 🔇 under the box, remembered in this browser) are synthesised in the page, short and soft. While one plays and for 150 ms after, the microphone reading is held at its last value, so the game never hears its own sounds.
+- Each goal has its own sound: **ice** a glassy tink each time the frozen share grows by 4%, higher as more freezes; **two liquids** a chord every 2.2 s that goes from a harsh clash (mixed) through an open fifth to a bright major chord (above the 3-star level); **drug** a rising two-note bloop for drug released in the right place and a low falling buzz for drug lost; **gel** a marimba note one step up the scale each time the strand grows by 7 σ.
+- **Each star as it is earned**: big star burst over the box with "First star!", "Second star!", "Three stars!", an arpeggio and a flash of the score panel.
+- **End of the game**: a card over the box (the box behind it shows the best moment). The three stars fill in one by one with a note each, the score counts up, "New personal best!" when it beats the best ever, the diagnosis, and buttons **Try again**, **Next: (next game)** or **Challenge k+1**, and **Look at the box**. A new fact card opens after the stars. Not shown in class battles or class mode.
+
+### Under the box (all modes)
+
+- **Temperature slider**, **Mic** and **Pause / Resume** sit under the box (there is no separate Temperature panel any more).
+- Also under the box: Explore: **Live readouts**. Energy scan: the scan buttons and the four graphs. Games: the folded **Statistics on this device**.
+- The right column holds the game or system choice, the **Microphone** panel (**Set up the microphone**, **Set quiet level**, the live level bar and **Sensitivity** in words, *Least sensitive* … *Very sensitive*; slide right for more sensitive) and, in Explore, the folded settings.
+- **My cards** is folded under the box; click it to open the album.
 
 ### Live readouts
 
-Six numbers for the current system, updated several times a second, and two plots over time: the temperature (set and measured) and the system's main structural measure. The readouts change with the system; their meaning is given under [The systems](#the-systems). Besides them, every system shows the elapsed simulation time, the energy per bead and the speed (steps per second).
+Under the box in Explore. Six numbers for the current system, updated several times a second, and two plots over time: the temperature (set and measured) and the system's main structural measure. The readouts change with the system; their meaning is given under [The systems](#the-systems). Besides them, every system shows the elapsed simulation time, the energy per bead and the speed (steps per second).
 
 ### Composition and interactions
 
-Only the controls that apply to the current system are shown.
+Folded by default (click to open). Only the controls that apply to the current system are shown.
 
 | Control | System | What it changes |
 |---|---|---|
 | **Antifreeze particles** | Ice | 0–100 particles, twice the size of a water molecule, that attract water but have no hydrogen-bond arms (the box rebuilds). They lower the melting point and stop the water from freezing; about 80 keep most of the water liquid. |
-| **Voice pitch sets the pressure** | Ice | With the microphone on, loudness sets the temperature and the pitch of a sung or hummed note (about 110–700 Hz) sets the barostat's target pressure from 0 to 0.35; the barostat switches on with it. Higher pressure lowers the freezing point here, as in real water: at pressure 0.3 the water stays liquid at T* 0.15–0.16, where at zero pressure it partly freezes. The pitch shows under the option. Explore only. |
+| **Voice pitch sets the pressure** (Model and integrator, under the barostat) | Every Explore system with a barostat | With the microphone on, loudness sets the temperature and the pitch of a sung or hummed note (by default A2 110 Hz → pressure 0 up to F5 698 Hz → top pressure) sets the barostat's target pressure from 0 to 0.35 for ice (0 to 2 for the bead systems); the barostat switches on with it. Higher pressure lowers the freezing point here, as in real water: at pressure 0.3 the water stays liquid at T* 0.15–0.16, where at zero pressure it partly freezes. The pitch shows under the option. Explore only. While it is on, a second bar under the box shows the note (e.g. G4), its frequency in Hz, a marker between the lowest and highest note, and the pressure P. Under the checkbox, **Lowest note: pressure 0** and **Highest note: top pressure** can be picked from E2–B5 or sung with **Sing it** (listens 1.5 s, takes the median note); kept in this browser. |
 | **Ice-like wall** (debug mode only, `?debug=1`) | Ice | A test tool: a pinned strip of 44 molecules over the middle 60% of the box, laid out as the ice honeycomb and binding water twice as strongly as water binds water (gold). It keeps its own lattice spacing when the barostat changes the box. Switches on and off live; not used in games. Water next to it lines up with the honeycomb, but in this 2D model it does not speed up freezing: in 300 τ runs at constant pressure (P* 0.1 and 0.3) the ice fraction was the same with and without the wall, within noise. Ice grows slowly from any surface here. |
 | **Concentration** / **Number of …** | all | How many molecules of the solute there are. Changes are applied live: molecules are added or removed. |
 | **Tail–tail attraction ε_BB** | Soap molecules | How strongly the oily tails stick together. Lower acts like heating. |
@@ -193,7 +213,7 @@ Only the controls that apply to the current system are shown.
 | Control | What it does |
 |---|---|
 | **Box size** | 36, 48 or 64 sites wide. Smaller boxes run faster. |
-| **Drawing quality** | **Automatic** (default on phones and tablets; computers start at **Full**) watches how long each frame takes and, on slow devices, draws more simply, one step at a time: first at normal pixel density instead of double; then without the water-arm lines and with less frequent readouts; then only every second frame and without the solvent (except in Ice and Two liquids, where the solvent is the system). It never steps back up by itself during a session. The speed line under the readouts says when lighter drawing is on. **Full**, **Lighter**, **Light** and **Lightest** fix the level by hand. |
+| **Drawing quality** (in Teacher options) | **Automatic** (default on phones and tablets; computers start at **Full**) watches how long each frame takes and, on slow devices, draws more simply, one step at a time: first at normal pixel density instead of double; then without the water-arm lines and with less frequent readouts; then only every second frame and without the solvent (except in Ice and Two liquids, where the solvent is the system). It never steps back up by itself during a session. The speed line under the readouts says when lighter drawing is on. **Full**, **Lighter**, **Light** and **Lightest** fix the level by hand. |
 | **Initial state** | **Ordered** starts from the cold structure (crystal, bilayers, folded proteins…), so heating destroys it right away. **Disordered** starts hot and mixed, so cooling shows it assembling. |
 | **Rebuild system** | Starts again from the chosen initial state. |
 | **Show solvent** | Hide the solvent to see the solute structure more clearly. |
