@@ -124,6 +124,16 @@ table.eps th { font-weight: 500; color: var(--muted) }
 .gstats .btns { margin-top: 8px } .gstats .btn { font-size: 12px; padding: 4px 10px }
 .gres { margin: 0; font-size: 15px; max-width: 80ch } .gres .big { font-size: 22px; color: var(--cryst); letter-spacing: 2px }
 @media (prefers-reduced-motion: reduce) { .gbar i { transition: none } }
+
+.ladder:empty { display: none } .ladder h3 { font-size: 12.5px; margin: 10px 0 6px; color: var(--muted); font-weight: 600 }
+.ladrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 0; border-bottom: 1px solid var(--line); font-size: 13px } .ladrow span { min-width: 0 }
+.ladbtns { display: flex; gap: 4px; flex: none } .ladbtns button { font: inherit; font-weight: 700; width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; display: grid; place-items: center; line-height: 1; padding: 0 }
+.ladbtns button small { font-size: 8px; color: var(--cryst); letter-spacing: -1px; font-weight: 400; min-height: 8px } .ladbtns button[aria-pressed=true] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--panel)) } .ladbtns button:disabled { opacity: .45; cursor: not-allowed }
+.gres .btn { margin-left: 6px; font-size: 13px; padding: 3px 12px }
+
+.gbattle h3 { font-size: 12.5px; margin: 10px 0 6px; color: var(--muted); font-weight: 600 } .gbattle .note { margin: 6px 0 0 } .gbattle select { font: inherit; margin-left: 6px }
+.btable { border-collapse: collapse; margin: 4px 0; font-size: 15px } .btable td { padding: 3px 12px 3px 0; border-bottom: 1px solid var(--line) } .btable td:nth-child(2) { font-family: var(--f-mono) } .btable td:nth-child(3) { color: var(--cryst) }
+.btable tr.win td { font-weight: 700 } .btable tr.todo td { color: var(--muted) }
 /* fact cards */
 .albumhead { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap } .albumhead h2 { margin: 0 } .albumcount { font-family: var(--f-mono); color: var(--muted); font-size: 13px } .albumhead .btn { margin-left: auto; font-size: 12px; padding: 4px 10px }
 #album { display: grid; gap: 18px; margin-top: 10px }
@@ -163,6 +173,7 @@ svg.fcsk { display: block; width: 100%; height: auto; background: var(--cell); a
 .mbar-t b.tw0 { background: color-mix(in srgb, var(--cold) 22%, transparent) } .mbar-t b.tw1 { background: color-mix(in srgb, var(--cold) 10%, transparent) }
 .mbar-t b.tw2 { background: color-mix(in srgb, var(--cryst) 18%, transparent) } .mbar-t b.tw3 { background: color-mix(in srgb, var(--hot) 22%, transparent) }
 @media (max-width: 700px) { .mbar-t b.tw { font-size: 1.1rem; width: 2.4em } .gamemode .mbar-t { min-width: 0 } }
+html:not(.debug) .dbgonly { display: none !important } /* test tools, shown with ?debug=1 */
 .tw0 { color: var(--cold) } .tw1 { color: var(--accent) } .tw2 { color: var(--cryst) } .tw3 { color: var(--hot) }
 .coach { position: absolute; z-index: 8; transform: translateX(-50%); width: max-content; max-width: min(92%, 34em); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center;
   padding: 7px 14px; border-radius: 14px; background: rgba(12,18,24,.78); color: #fff; font-weight: 600; font-size: clamp(13px, 2.1vmin, 16.5px); line-height: 1.3; text-align: center; pointer-events: none; transition: background .3s }
@@ -223,6 +234,11 @@ header .sub { font-size: 15px; line-height: 1.45 } header .sub b { color: var(--
 .clsnoise { display: flex; flex-direction: column; gap: 6px } .clsnoise span { color: var(--muted); font-size: clamp(14px, 1.4vw, 18px); text-transform: uppercase; letter-spacing: 0.06em }
 .clsnoise .meter { height: clamp(18px, 2.4vw, 32px); border-radius: 999px } .clsnoise .meter i { background: var(--hot) }
 .clspanel .btn { font-size: 15px; padding: 8px 14px }
+.clsseg { display: flex; gap: 0; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; align-self: flex-start } .clsseg button { font: inherit; font-size: 16px; font-weight: 600; padding: 8px 20px; border: 0; background: var(--panel); color: var(--ink); cursor: pointer }
+.clsseg button[aria-pressed=true] { background: var(--accent); color: var(--panel) }
+.clsgame { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center } .clsgame select { font: inherit; font-size: 16px; padding: 8px 10px } .clsteam { display: flex; gap: 14px; align-items: center; font-size: 16px } .clsteam select { padding: 4px 6px; margin-left: 6px }
+.clsstars { font-style: normal; color: var(--cryst); font-size: clamp(22px, 2.6vw, 36px); letter-spacing: 2px } .clsres:empty { display: none } .clsres { font-size: 16px; line-height: 1.4 } .clsres .btable { font-size: clamp(16px, 1.8vw, 24px) }
+
 @media (max-width: 800px) { .classmode .cellbox { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto; overflow-y: auto; align-content: start }
   .classmode #sim { width: min(100%, 52svh); justify-self: center } .clspanel { grid-row: 3; grid-column: 1 } .classmode .legend { grid-row: 2 } }
 #sim { cursor: crosshair } .gamemode #sim { cursor: default } .gamemode .zhint { display: none !important } .legend .zhint { margin-left: auto; font-style: italic }
@@ -370,13 +386,20 @@ button { touch-action: manipulation }
       <div class="coach" id="coach" hidden aria-live="polite"><span id="coachTxt"></span><button class="btn primary" id="coachBtn" hidden></button><button class="btn" id="coachSkip" hidden>Skip</button></div>
       <button class="btn primary boxstart" id="gstartBox" hidden>Start</button>
       <div class="clspanel" id="clsPanel" hidden>
+        <div class="clsseg" role="group" aria-label="Mode"><button data-clsmode="explore" aria-pressed="true">Explore</button><button data-clsmode="game" aria-pressed="false">Game</button></div>
         <div class="clshead"><select id="clsSys" aria-label="System">
           <option value="ice">Ice</option><option value="demix">Two liquids</option><option value="dumbbell">Soap molecules</option><option value="polymer">Plastic</option>
           <option value="lcst">Polymer chains</option><option value="crypt">Proteins</option><option value="mbpoly">Oily particles</option></select>
           <button class="btn" id="clsExit">Exit class mode</button></div>
-        <p class="clsgoal">Everyone quiet: the box cools and structures grow. Noise heats it and breaks them.</p>
-        <div class="clsbig"><span id="clsLab">–</span><b id="clsVal">–</b></div>
-        <div class="clsbig"><span>Temperature</span><b id="clsT">–</b></div>
+        <div class="clsgame" id="clsGame" hidden>
+          <select id="clsGameSel" aria-label="Game"></select>
+          <div class="clsteam"><label><input type="checkbox" id="clsTeams"> Team play</label><label>Teams <select id="clsTeamN"><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select></label></div>
+          <button class="btn primary" id="clsStart">Start</button>
+        </div>
+        <p class="clsgoal" id="clsGoal">Everyone quiet: the box cools and structures grow. Noise heats it and breaks them.</p>
+        <div class="clsbig"><span id="clsLab">–</span><b id="clsVal">–</b><i class="clsstars" id="clsStars"></i></div>
+        <div class="clsbig"><span id="clsLab2">Temperature</span><b id="clsT">–</b></div>
+        <div class="clsres" id="clsRes"></div>
         <div class="clsnoise"><span>Room noise</span><div class="meter"><i id="micbarC"></i></div></div>
         <div class="btns"><button class="btn" id="clsCalib">Set quiet level</button><button class="btn" id="clsPause">Pause</button></div>
         <p class="note" id="clsNote"></p>
@@ -437,6 +460,7 @@ button { touch-action: manipulation }
         <h2>Game: steer the molecules with your voice</h2>
         <p class="ghint" style="color:var(--ink)">Silence cools the box, noise heats it. Each game lasts 30 seconds: your score is the best structure you reach, and at the end you see it. Just going silent never earns a star.</p>
         <div class="gpick" id="gpick"></div>
+        <div class="ladder" id="ladder"></div>
         <div class="gsel" id="gsel" hidden>
           <p class="ggoal" id="ggoal"></p>
           <p class="ghint" id="ghint"></p>
@@ -445,6 +469,11 @@ button { touch-action: manipulation }
             <label class="gmic"><input type="checkbox" id="guseMic" checked> Use the microphone</label>
             <label class="gmic"><input type="checkbox" id="gtips" checked> Show tips</label>
           </div>
+        </div>
+        <div class="gbattle">
+          <h3>Class battle</h3>
+          <div class="btns"><label class="gmic">Teams <select id="bTeams"><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select></label><button class="btn" id="bStart">Start a battle</button></div>
+          <p class="note">Teams take turns on the selected game, all from the same start. The highest score wins. Battles do not change statistics or cards.</p>
         </div>
         <div class="gstats">
           <h3>Statistics on this device</h3>
@@ -460,12 +489,12 @@ button { touch-action: manipulation }
           <button data-pick="demix" aria-pressed="false"><b>Two liquids</b><small>Separate when cooled</small></button>
           <button data-pick="dumbbell" aria-pressed="false"><b>Soap molecules</b><small>Form micelles when cooled</small></button>
           <button data-pick="polymer" aria-pressed="false"><b>Plastic</b><small>Crystallizes when cooled</small></button>
-          <button data-pick="diblock" aria-pressed="false" hidden><b>Diblock copolymer</b><small>Blocks segregate on cooling</small></button>
+          <button data-pick="diblock" aria-pressed="false" class="dbgonly"><b>Diblock copolymer</b><small>Blocks segregate on cooling</small></button>
           <button data-pick="lcst" aria-pressed="false"><b>Polymer chains</b><small>Curl up when cooled</small></button>
           <button data-pick="crypt" aria-pressed="false"><b>Proteins</b><small>Unfold and stick when heated</small></button>
           <button data-pick="mbpoly" aria-pressed="false"><b>Oily particles</b><small>Clump when heated</small></button>
-          <button data-pick="brush" aria-pressed="false" hidden><b>Brush + droplet</b><small>Wetting switches with temperature</small><em class="devtag">In development</em></button>
-          <button data-pick="plates" aria-pressed="false" hidden><b>Plates in water</b><small>Water-fearing surfaces stick</small><em class="devtag">In development</em></button>
+          <button data-pick="brush" aria-pressed="false" class="dbgonly"><b>Brush + droplet</b><small>Wetting switches with temperature</small><em class="devtag">In development</em></button>
+          <button data-pick="plates" aria-pressed="false" class="dbgonly"><b>Plates in water</b><small>Water-fearing surfaces stick</small><em class="devtag">In development</em></button>
         </div>
       </div>
 
@@ -521,6 +550,10 @@ button { touch-action: manipulation }
         <div class="row" id="concRow"><label for="conc" id="concLab">Concentration</label><output id="concO">26%</output>
           <input type="range" id="conc" min="2" max="60" step="1" value="26"></div>
         <p class="note" id="concNote"></p>
+        <div class="checks" data-show="ice"><label><input type="checkbox" id="pitchP"> Voice pitch sets the pressure</label></div>
+        <p class="note" data-show="ice" id="pitchNote">Loudness sets the temperature, pitch sets the pressure: a high voice squeezes the box, a low voice lets it expand. Higher pressure lowers the freezing point, as in real water.</p>
+        <div class="checks dbgonly" data-show="ice"><label><input type="checkbox" id="iceWall"> Ice-like wall</label></div>
+        <p class="note dbgonly" data-show="ice">A pinned row of molecules across the box with the ice honeycomb pattern, binding water strongly, like a mineral surface. Ice can grow from its flat faces without first having to form a nucleus. Changes apply live.</p>
 
         <div class="row" data-show="dumbbell"><label for="epsBB">Tail–tail attraction ε<sub>BB</sub></label><output id="epsBBO">2.50</output>
           <input type="range" id="epsBB" min="0" max="4" step="0.05" value="2.5"></div>
@@ -772,6 +805,7 @@ MDEngine.prototype.init = function () {
 MDEngine.prototype.initIce = function () {
   const E = this, p = E.p, d = p.mbR, nx = p.iceNx || 19, ny = p.iceNy || 11, N = 4 * nx * ny;
   const L = ny * 3 * d, sx = L / (nx * Math.sqrt(3) * d), w = Math.sqrt(3) * d * sx;
+  E.iceLat = { nx, ny, w, d };
   E.L = L; E.N = N; E.seq = []; E.Lc = 1; E.nMol = 0; E.solv = 7; E.mb = true;
   E.x = new Float64Array(N); E.y = new Float64Array(N); E.vx = new Float64Array(N); E.vy = new Float64Array(N);
   E.fx = new Float64Array(N); E.fy = new Float64Array(N); E.type = new Uint8Array(N).fill(7);
@@ -786,7 +820,30 @@ MDEngine.prototype.initIce = function () {
   // antifreeze solute: particles that attract water but have no hydrogen-bond arms, put on random lattice sites (type 3)
   const nS = Math.max(0, Math.min(N - 10, p.nSalt | 0)); if (nS) { const idx = [...Array(N).keys()];
     for (let k = 0; k < nS; k++) { const j = k + Math.floor(E.rand() * (N - k)); [idx[k], idx[j]] = [idx[j], idx[k]]; E.type[idx[k]] = 3; } }
-  E.keepTh = true;
+  E.keepTh = true; E.wallIds = null;
+  if (p.iceWall) E.addIceWall();
+};
+// Ice wall: one row of honeycomb cells across the middle 60% of the box, pinned (type 4), with stronger hydrogen bonds to water
+// (seedHB), like a mineral surface whose atoms match the ice lattice. It gives ice two long flat fronts to grow from, so no
+// nucleus has to form first. The water molecules nearest to the wall sites are moved onto them and oriented as in ice.
+MDEngine.prototype.addIceWall = function () {
+  const E = this, N = E.N, L = E.L, lat = E.iceLat; if (!lat || E.wallIds) return 0;
+  const { nx, w, d } = lat, y0 = 0.5 * L - 1.5 * d;
+  if (!E.fixed) { E.fixed = new Uint8Array(N); E.nFixed = 0; }
+  const ids = [];
+  const c0 = Math.round(0.2 * nx), c1 = Math.round(0.8 * nx); // a strip over the middle 60% of the box: its own lattice spacing, free ends
+  for (let cx = c0; cx < c1; cx++) for (const [u, v, a] of [[0, 0, 1], [0, d, -1], [w / 2, 1.5 * d, 1], [w / 2, 2.5 * d, -1]]) {
+    const px = (cx * w + u + 0.25 * w) % L, py = y0 + v;
+    let best = -1, bd = 1e9;
+    for (let i = 0; i < N; i++) { if (E.type[i] !== 7) continue; let dx = E.x[i] - px, dy = E.y[i] - py; dx -= L * Math.round(dx / L); dy -= L * Math.round(dy / L); const r2 = dx * dx + dy * dy; if (r2 < bd) { bd = r2; best = i; } }
+    if (best < 0) break;
+    E.x[best] = px; E.y[best] = py; E.th[best] = a * Math.PI / 2; E.type[best] = 4; E.vx[best] = E.vy[best] = 0; E.om[best] = 0; E.fixed[best] = 1; E.nFixed++; ids.push(best);
+  }
+  E.wallIds = ids; return ids.length;
+};
+MDEngine.prototype.removeIceWall = function () { // the wall turns back into ordinary water
+  const E = this, ids = E.wallIds; if (!ids) return;
+  for (const i of ids) { E.type[i] = 7; E.fixed[i] = 0; E.nFixed--; } E.wallIds = null;
 };
 // Brush: chains grafted upright on a substrate wall at the bottom, an MB water droplet resting on top,
 // vacuum above, periodic in x. Free-end beads (nEnd) are H (type 5), the rest Q (type 6); invert swaps them.
@@ -903,7 +960,9 @@ MDEngine.prototype.initOrdered = function () {
           for (let k = 0; k < nd; k++) { const t = ph + 2 * Math.PI * k / nd; o.push([rd * Math.cos(t), rd * Math.sin(t)]); }
           for (let k = 0; k < nt; k++) { const t = ph + 2 * Math.PI * (k + 0.5) / nt; o.push([(rt + bl) * Math.cos(t), (rt + bl) * Math.sin(t)], [rt * Math.cos(t), rt * Math.sin(t)]); }
           objs.push(o); }
-        const placed = E.spreadObjects(objs), drugs = [];
+        const placed = p.drugXs ? objs.map((o, m) => { // drug game: micelles at given distances along the flow, at random heights
+            const cx = p.drugXs[m % p.drugXs.length], cy = L * (0.2 + 0.6 * E.rand()); return o.map(([x, y]) => [x + cx, y + cy]); })
+          : E.spreadObjects(objs), drugs = [];
         for (const o of placed) { for (let k = 0; k < nd; k++) drugs.push(o[k]); for (let k = nd; k < o.length; k += 2) mols.push([o[k], o[k + 1]]); }
         E._exclExtra = drugs; E.placeMolecules(mols, 1.0); E._exclExtra = null;
         let k = E.N - 1; for (const [dx, dy] of drugs) { E.x[k] = ((dx % L) + L) % L; E.y[k] = ((dy % L) + L) % L; E.type[k] = 4; k--; }
@@ -992,7 +1051,7 @@ MDEngine.prototype.finishInit = function () {
   let px = 0, py = 0; const sq = Math.sqrt(p.T);
   for (let i = 0; i < N; i++) { E.vx[i] = sq * E.gauss(); E.vy[i] = sq * E.gauss(); px += E.vx[i]; py += E.vy[i]; }
   px /= N; py /= N; for (let i = 0; i < N; i++) { E.vx[i] -= px; E.vy[i] -= py; }
-  if (E.mb) { const sw = Math.sqrt(p.T / p.mbI); for (let i = 0; i < N; i++) if (E.type[i] === 7) { if (!E.keepTh) E.th[i] = 2 * Math.PI * E.rand(); E.om[i] = sw * E.gauss(); } }
+  if (E.mb) { const sw = Math.sqrt(p.T / p.mbI), sT = p.system === 'ice' ? 4 : 7; for (let i = 0; i < N; i++) if (E.type[i] === 7 || E.type[i] === sT) { if (!E.keepTh) E.th[i] = 2 * Math.PI * E.rand(); E.om[i] = sw * E.gauss(); } }
   E.keepTh = false;
   if (E.fixed) for (let i = 0; i < N; i++) if (E.fixed[i]) { E.vx[i] = 0; E.vy[i] = 0; }
   E.time = 0; E.steps = 0;
@@ -1018,7 +1077,7 @@ MDEngine.prototype.setupTable = function () {
     case 'hp': set(5, 5, p.epsHH); break;
     case 'crypt': set(5, 5, p.epsXX); break; // only sticky X beads attract (any chain); the fold itself is held by native contacts
     case 'lcst': set(3, 3, p.epsPP); break; // P-S: WCA core plus the narrow binding well below
-    case 'ice': sig[7] = 0.7; sig[3] = p.sigSalt || 1.4; set(7, 7, 0.1); set(3, 7, p.epsSalt !== undefined ? p.epsSalt : 1.0); break; // 3: antifreeze solute: twice the size of water (too big for the honeycomb holes), binds water, no hydrogen bonds
+    case 'ice': sig[7] = 0.7; sig[3] = p.sigSalt || 1.4; sig[4] = 0.7; set(7, 7, 0.1); set(4, 7, 0.1); set(4, 4, 0.1); set(3, 7, p.epsSalt !== undefined ? p.epsSalt : 1.0); break; // 4: ice seed, a water-sized molecule whose hydrogen bonds are seedHB times stronger // 3: antifreeze solute: twice the size of water (too big for the honeycomb holes), binds water, no hydrogen bonds
     // hydrophobic interactions added by hand, switched by temperature: cold, the solutes are attracted to water (epsW) and dissolve;
     // warm, that attraction fades and an attraction between nonpolar beads (epsH) grows, so they aggregate. MB water adds its own weaker effect.
     case 'plates': sig[7] = 0.7; sig[3] = p.sigP; set(7, 7, 0.1); set(3, 7, p.epsPW); set(3, 3, !p.epsPW && !p.plateHB ? E.hydroEps() : 0); break; // only water-fearing plates
@@ -1083,12 +1142,13 @@ MDEngine.prototype.computeForces = function () {
   let U = 0, Uss = 0, Wv = 0; const sm = E.solvMask || 0; // Wv: pair virial sum r_ij.F_ij (for the pressure); Uss: energy of solvent-solvent pairs (background)
   // MB water: arm unit vectors at theta, theta + 120, theta + 240 degrees
   const mb = E.mb, th = E.th, tq = E.tq, arm = E.arm;
-  const eHB = E.p.mbEps, Rhb = E.p.mbR, s2 = E.p.mbSig * E.p.mbSig, i2s2 = 0.5 / s2, hbCut = 6 * E.p.mbSig;
+  const eHB0 = E.p.mbEps, seedHB = E.p.system === 'ice' ? (E.p.seedHB || 3) : 0, Rhb = E.p.mbR, s2 = E.p.mbSig * E.p.mbSig, i2s2 = 0.5 / s2, hbCut = 6 * E.p.mbSig;
   let nHB = 0; const hbN = E.hbN;
   if (mb) {
     tq.fill(0); if (hbN) hbN.fill(0);
     const C = -0.5, S = Math.sqrt(3) / 2;
-    for (let i = 0; i < E.N; i++) if (type[i] === 7) {
+    const sT = E.p.system === 'ice' ? 4 : 7; // ice seeds carry arms and bond like water (they do not turn)
+    for (let i = 0; i < E.N; i++) if (type[i] === 7 || type[i] === sT) {
       const c = Math.cos(th[i]), s = Math.sin(th[i]), o = 6 * i;
       arm[o] = c; arm[o + 1] = s;
       arm[o + 2] = c * C - s * S; arm[o + 3] = s * C + c * S;
@@ -1135,8 +1195,8 @@ MDEngine.prototype.computeForces = function () {
           if (ff * r > fmax) ff = fmax / r;
           fx[i] += ff * dx; fy[i] += ff * dy; fx[j] -= ff * dx; fy[j] -= ff * dy; Wv += ff * r2;
           // MB hydrogen bond: U = -eHB G(r - R) sum_k G(i_k.u - 1) sum_l G(j_l.u + 1), u = unit vector i -> j
-          if (k === 63 && mb) {
-            const drr = r - Rhb;
+          if (mb && (k === 63 || (seedHB && (k === 39 || k === 60 || k === 36)))) { // water-water, or an ice seed (type 4, ice only) with stronger bonds
+            const eHB = k === 63 ? eHB0 : eHB0 * seedHB, drr = r - Rhb;
             if (drr < hbCut && drr > -hbCut) {
               const Gr = Math.exp(-drr * drr * i2s2), ux = -dx / r, uy = -dy / r, oi = 6 * i, oj = 6 * j;
               let A = 0, Ad = 0, B = 0, Bd = 0;
@@ -1285,7 +1345,8 @@ MDEngine.prototype.rotKinetic = function () {
   return 0.5 * E.p.mbI * K;
 };
 // Kinetic temperature from translational and (MB water) rotational degrees of freedom.
-MDEngine.prototype.dof = function () { return this.fixed ? 2 * (this.N - this.nFixed) + this.nWater() : 2 * this.N - 2 + this.nWater(); };
+MDEngine.prototype.nRot = function () { return this.nWater(); };
+MDEngine.prototype.dof = function () { return this.fixed ? 2 * (this.N - this.nFixed) + this.nRot() : 2 * this.N - 2 + this.nRot(); };
 MDEngine.prototype.tempKin = function () {
   const nf = this.dof();
   return 2 * (this.kinetic() + this.rotKinetic()) / nf;
@@ -1306,7 +1367,12 @@ MDEngine.prototype.baroStep = function (nB) {
   let lam = Math.exp(Math.max(-0.002, Math.min(0.002, 0.5 * rate * dt))); // length scale factor, capped at 0.2% per call
   const Ln = Math.max(0.6 * L0, Math.min(1.5 * L0, E.L * lam)); lam = Ln / E.L;
   if (lam === 1) return;
-  const x = E.x, y = E.y; for (let i = 0; i < E.N; i++) { x[i] *= lam; y[i] *= lam; }
+  const x = E.x, y = E.y, fx0 = E.fixed;
+  if (fx0 && E.nFixed && E.wallIds) { // the pinned ice wall keeps its own lattice spacing: it moves with the box as one rigid piece
+    let mx = 0, my = 0; const ids = E.wallIds; for (const i of ids) { mx += x[i]; my += y[i]; } mx /= ids.length; my /= ids.length;
+    const dx = mx * (lam - 1), dy = my * (lam - 1);
+    for (let i = 0; i < E.N; i++) { if (fx0[i]) { x[i] += dx; y[i] += dy; } else { x[i] *= lam; y[i] *= lam; } }
+  } else for (let i = 0; i < E.N; i++) { x[i] *= lam; y[i] *= lam; }
   E.L = Ln; E.wrap();
   const nc = Math.max(3, Math.floor(E.L / E.rcMax)); if (nc !== E.nc) { E.nc = nc; E.head = new Int32Array(nc * nc); } E.cs = E.L / E.nc;
   E.computeForces();
@@ -1316,35 +1382,39 @@ MDEngine.prototype.baroStep = function (nB) {
 MDEngine.prototype.step = function () {
   const E = this, p = E.p, N = E.N, dt = p.dt, hdt = 0.5 * dt;
   const x = E.x, y = E.y, vx = E.vx, vy = E.vy, fx = E.fx, fy = E.fy;
-  const mb = E.mb, th = E.th, om = E.om, tq = E.tq, type = E.type, iI = 1 / p.mbI;
+  const mb = E.mb, th = E.th, om = E.om, tq = E.tq, type = E.type, iI = 1 / p.mbI, sT = 7; // only water turns (ice seeds are pinned)
   if (p.thermostat === 'langevin') {
     const c1 = Math.exp(-p.gamma * dt), c2 = Math.sqrt((1 - c1 * c1) * p.T), c2r = Math.sqrt((1 - c1 * c1) * p.T * iI);
     const fixed = E.fixed;
+    // drug game: the solvent flows along x at speed flowU (friction pulls velocities towards the stream), and only a vertical
+    // band (the tumour, hotBand = {x0, w, Tout}) is at the set temperature; elsewhere the thermostat holds Tout
+    const hb = p.hotBand, cu = (1 - c1) * (p.flowU || 0), c2o = hb ? Math.sqrt((1 - c1 * c1) * hb.Tout) : c2, Lb = E.L;
     for (let i = 0; i < N; i++) {
       if (fixed && fixed[i]) continue;
       vx[i] += hdt * fx[i]; vy[i] += hdt * fy[i];
       x[i] += hdt * vx[i]; y[i] += hdt * vy[i];
-      vx[i] = c1 * vx[i] + c2 * (3.4641016 * E.rand() - 1.7320508); vy[i] = c1 * vy[i] + c2 * (3.4641016 * E.rand() - 1.7320508); // uniform noise, unit variance (Duenweg & Paul 1991): same temperature, much cheaper than Gaussian
+      let cc = c2; if (hb) { let bx = x[i] - hb.x0; bx -= Lb * Math.floor(bx / Lb); if (bx >= hb.w) cc = c2o; }
+      vx[i] = c1 * vx[i] + cu + cc * (3.4641016 * E.rand() - 1.7320508); vy[i] = c1 * vy[i] + cc * (3.4641016 * E.rand() - 1.7320508); // uniform noise, unit variance (Duenweg & Paul 1991): same temperature, much cheaper than Gaussian
       x[i] += hdt * vx[i]; y[i] += hdt * vy[i];
-      if (mb && type[i] === 7) {
+      if (mb && (type[i] === 7 || type[i] === sT)) {
         om[i] += hdt * tq[i] * iI; th[i] += hdt * om[i];
         om[i] = c1 * om[i] + c2r * (3.4641016 * E.rand() - 1.7320508); th[i] += hdt * om[i];
       }
     }
     E.wrap(); E.computeForces();
     for (let i = 0; i < N; i++) { if (fixed && fixed[i]) continue; vx[i] += hdt * fx[i]; vy[i] += hdt * fy[i]; }
-    if (mb) for (let i = 0; i < N; i++) if (type[i] === 7) om[i] += hdt * tq[i] * iI;
+    if (mb) for (let i = 0; i < N; i++) if (type[i] === 7 || type[i] === sT) om[i] += hdt * tq[i] * iI;
   } else {
     const fixed = E.fixed;
     for (let i = 0; i < N; i++) {
       if (fixed && fixed[i]) continue;
       vx[i] += hdt * fx[i]; vy[i] += hdt * fy[i];
       x[i] += dt * vx[i]; y[i] += dt * vy[i];
-      if (mb && type[i] === 7) { om[i] += hdt * tq[i] * iI; th[i] += dt * om[i]; }
+      if (mb && (type[i] === 7 || type[i] === sT)) { om[i] += hdt * tq[i] * iI; th[i] += dt * om[i]; }
     }
     E.wrap(); E.computeForces();
     for (let i = 0; i < N; i++) { if (fixed && fixed[i]) continue; vx[i] += hdt * fx[i]; vy[i] += hdt * fy[i]; }
-    if (mb) for (let i = 0; i < N; i++) if (type[i] === 7) om[i] += hdt * tq[i] * iI;
+    if (mb) for (let i = 0; i < N; i++) if (type[i] === 7 || type[i] === sT) om[i] += hdt * tq[i] * iI;
     if (p.thermostat === 'none') { E.time += dt; E.steps++; return; } // plain NVE, for testing
     const Nf = E.dof(), K = E.kinetic() + E.rotKinetic(), Kt = 0.5 * Nf * p.T;
     if (K > 0) {
@@ -1619,6 +1689,7 @@ MDEngine.prototype.lcstStats = function (rcut) {
 };
 // Ice: a molecule is ice-like when it and all molecules within the first shell hold 3 hydrogen bonds
 // (fraction of fully bonded molecules alone is also high in cold liquid patches, so require the neighbours too).
+MDEngine.prototype.countType = function (t) { let n = 0; for (let i = 0; i < this.N; i++) if (this.type[i] === t) n++; return n; };
 MDEngine.prototype.iceStats = function () {
   const E = this, N = E.N, h = E.hbN; if (!h) return { ice: 0, hbPerWater: 0, full: 0 };
   const ok = new Uint8Array(N); for (let i = 0; i < N; i++) ok[i] = h[i] >= 3 ? 1 : 0;
@@ -1626,7 +1697,7 @@ MDEngine.prototype.iceStats = function () {
   E.forPairs(1.25, (i, j) => { if (!ok[j]) bad[i] = 1; if (!ok[i]) bad[j] = 1; });
   let nIce = 0, nFull = 0, nW = 0; for (let i = 0; i < N; i++) { if (E.type[i] !== 7) continue; nW++; if (ok[i]) { nFull++; if (!bad[i]) nIce++; } }
   const isIce = new Uint8Array(N); for (let i = 0; i < N; i++) isIce[i] = E.type[i] === 7 && ok[i] && !bad[i] ? 1 : 0;
-  nW = nW || 1; return { ice: nIce / nW, full: nFull / nW, hbPerWater: 2 * E.nHB / nW, isIce, nWater: nW, nSalt: N - nW };
+  nW = nW || 1; return { ice: nIce / nW, full: nFull / nW, hbPerWater: 2 * E.nHB / nW, isIce, nWater: nW, nSalt: E.countType(3) };
 };
 // MB system: hydrogen bonds per water; polymer self-contact fraction and water contacts per polymer bead.
 MDEngine.prototype.mbStats = function (rcut) {
@@ -1807,6 +1878,56 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // text written by the script goes through T(), with {name} placeholders for numbers.
   const I18N = {
  "fi": {
+  "Team play": "Joukkuepeli",
+  "Soap molecules · heat the tumour": "Saippuamolekyylit · lämmitä kasvainta",
+  "Make noise when a micelle is in the red tumour zone.": "Pidä ääntä, kun miselli on punaisella kasvainalueella.",
+  "Blood flow carries micelles full of drug (stars) through the red tumour zone. Noise heats the tumour and opens the micelles there. Drug released in the tumour is delivered and turns yellow; drug released anywhere else is lost and turns grey. Some heat leaks outside the tumour, so long noise wastes drug.": "Verenkierto kuljettaa lääkkeellä täytettyjä misellejä (tähdet) punaisen kasvainalueen läpi. Ääni lämmittää kasvainta ja avaa misellit siellä. Kasvaimessa vapautunut lääke perillä ja muuttuu keltaiseksi; muualla vapautunut lääke menetetään ja muuttuu harmaaksi. Osa lämmöstä vuotaa kasvaimen ulkopuolelle, joten pitkä ääni haaskaa lääkettä.",
+  "Micelles need a few seconds of heat to open, so start the noise as a micelle enters the red zone and stop when it leaves. A steady medium noise often works better than shouting all the time.": "Misellit tarvitsevat muutaman sekunnin lämpöä avautuakseen, joten aloita ääni, kun miselli tulee punaiselle alueelle, ja lopeta, kun se poistuu. Tasainen keskivoimakas ääni toimii usein paremmin kuin jatkuva huutaminen.",
+  "You heated the tumour while the carriers passed through it, so they opened where the drug was needed. Temperature-sensitive carriers are designed to do just this at a warmed tumour.": "Lämmitit kasvainta, kun kantajat kulkivat sen läpi, joten ne avautuivat siellä, missä lääkettä tarvittiin. Lämpöherkät kantajat on suunniteltu toimimaan juuri näin lämmitetyssä kasvaimessa.",
+  "Heat leaks into healthy tissue, and carriers there open too. Heat when a micelle is in the tumour and keep quiet in between.": "Lämpö vuotaa terveeseen kudokseen, ja kantajat avautuvat sielläkin. Lämmitä, kun miselli on kasvaimessa, ja ole hiljaa niiden välillä.",
+  "Keep the noise up: the micelle is opening.": "Jatka ääntä: miselli avautuu.",
+  "A micelle is in the tumour: make noise now!": "Miselli on kasvaimessa: pidä ääntä nyt!",
+  "No micelle in the tumour: quiet! The heat leaks drug elsewhere.": "Kasvaimessa ei ole miselliä: hiljaa! Lämpö vuotaa lääkettä muualle.",
+  "Drug is escaping outside the tumour! Keep quiet.": "Lääkettä karkaa kasvaimen ulkopuolella! Ole hiljaa.",
+  "Get ready: a micelle is about to enter the tumour.": "Valmiina: miselli on tulossa kasvaimeen.",
+  "Most of the drug escaped outside the tumour ({l}% lost). You were loud for {o}% of the time when no micelle was in it.": "Suurin osa lääkkeestä karkasi kasvaimen ulkopuolelle ({l} % hukkaan). Pidit ääntä {o} % ajasta, jolloin kasvaimessa ei ollut miselliä.",
+  "You heated only {h}% of the time a micelle was in the tumour. Make noise as soon as one enters the red zone.": "Lämmitit vain {h} % siitä ajasta, kun miselli oli kasvaimessa. Pidä ääntä heti, kun sellainen tulee punaiselle alueelle.",
+  "Great aim: you heated {h}% of the time a micelle was in the tumour and lost only {l}% of the drug.": "Hyvä tähtäys: lämmitit {h} % ajasta, kun miselli oli kasvaimessa, ja menetit vain {l} % lääkkeestä.",
+  "You heated {h}% of the time a micelle was in the tumour and lost {l}% of the drug. Keep quieter between micelles.": "Lämmitit {h} % ajasta, kun miselli oli kasvaimessa, ja menetit {l} % lääkkeestä. Ole hiljempaa misellien välillä.",
+  "micelle in the tumour": "miselli kasvaimessa",
+  "Tumour": "Kasvain",
+  "Blood flow": "Verenkierto",
+  "Challenges": "Haasteet",
+  "Challenge {k}": "Haaste {k}",
+  "Antifreeze particles appear one by one during the run: {n} by the end.": "Jäätymisenestohiukkasia ilmestyy yksi kerrallaan: lopussa {n}.",
+  "Heat waves hit the box every few seconds. Get quieter when one comes.": "Helleaallot iskevät laatikkoon muutaman sekunnin välein. Hiljennä, kun sellainen tulee.",
+  "The tumour is narrower and the blood flows faster.": "Kasvain on kapeampi ja veri virtaa nopeammin.",
+  "Fewer proteins: {n}.": "Vähemmän proteiineja: {n}.",
+  "No tips in challenges.": "Haasteissa ei ole vinkkejä.",
+  "Heat wave!": "Helleaalto!",
+  "Cleared! Challenge {n} is open.": "Läpäisty! Haaste {n} on auki.",
+  "All five challenges cleared!": "Kaikki viisi haastetta läpäisty!",
+  "Not cleared: you need at least one star.": "Ei läpäisty: tarvitset vähintään yhden tähden.",
+  "New best for this challenge.": "Uusi ennätys tässä haasteessa.",
+  "Next challenge": "Seuraava haaste",
+  "Class battle": "Luokkakisa",
+  "Teams": "Joukkueet",
+  "Start a battle": "Aloita kisa",
+  "Teams take turns on the selected game, all from the same start. The highest score wins. Battles do not change statistics or cards.": "Joukkueet pelaavat valittua peliä vuorotellen samasta alusta. Suurin pistemäärä voittaa. Kisat eivät muuta tilastoja tai kortteja.",
+  "Team {n}": "Joukkue {n}",
+  "Class battle: {n} teams. Team 1, get ready!": "Luokkakisa: {n} joukkuetta. Joukkue 1, valmistautukaa!",
+  "Team {n}, get ready!": "Joukkue {n}, valmistautukaa!",
+  "End battle": "Lopeta kisa",
+  "A draw between {t}!": "Tasapeli: {t}!",
+  "Team {n} wins!": "Joukkue {n} voittaa!",
+  "New battle": "Uusi kisa",
+  "Voice pitch sets the pressure": "Äänen korkeus säätää painetta",
+  "Loudness sets the temperature, pitch sets the pressure: a high voice squeezes the box, a low voice lets it expand. Higher pressure lowers the freezing point, as in real water.": "Äänekkyys säätää lämpötilaa, äänen korkeus painetta: korkea ääni puristaa laatikkoa, matala antaa sen laajeta. Korkeampi paine laskee jäätymispistettä, kuten oikeassa vedessä.",
+  "Pitch {f} Hz → pressure {p}": "Äänenkorkeus {f} Hz → paine {p}",
+  "Sing or hum a steady note to set the pressure (high note = high pressure).": "Laula tai hyräile tasaista säveltä säätääksesi painetta (korkea sävel = korkea paine).",
+  "Ice-like wall": "Jään kaltainen seinä",
+  "Ice wall": "Jääseinä",
+  "A pinned row of molecules across the box with the ice honeycomb pattern, binding water strongly, like a mineral surface. Ice can grow from its flat faces without first having to form a nucleus. Changes apply live.": "Laatikon poikki kulkeva kiinnitetty molekyylirivi, jossa on jään hunajakennokuvio ja joka sitoo vettä voimakkaasti, kuten mineraalin pinta. Jää voi kasvaa sen tasaisilta pinnoilta ilman, että sen pitää ensin muodostaa ydin. Muutokset tulevat voimaan heti.",
   "My cards": "Korttini",
   "Reset cards": "Nollaa kortit",
   "Click again to remove all cards": "Napsauta uudelleen poistaaksesi kaikki kortit",
@@ -2563,6 +2684,56 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Microphone": "Mikrofoni"
  },
  "sv": {
+  "Team play": "Lagspel",
+  "Soap molecules · heat the tumour": "Tvålmolekyler · värm tumören",
+  "Make noise when a micelle is in the red tumour zone.": "Låt när en micell är i den röda tumörzonen.",
+  "Blood flow carries micelles full of drug (stars) through the red tumour zone. Noise heats the tumour and opens the micelles there. Drug released in the tumour is delivered and turns yellow; drug released anywhere else is lost and turns grey. Some heat leaks outside the tumour, so long noise wastes drug.": "Blodet för miceller fulla av läkemedel (stjärnor) genom den röda tumörzonen. Ljud värmer tumören och öppnar micellerna där. Läkemedel som frigörs i tumören levereras och blir gult; läkemedel som frigörs någon annanstans går förlorat och blir grått. Lite värme läcker ut från tumören, så långt ljud slösar läkemedel.",
+  "Micelles need a few seconds of heat to open, so start the noise as a micelle enters the red zone and stop when it leaves. A steady medium noise often works better than shouting all the time.": "Micellerna behöver några sekunders värme för att öppnas, så börja låta när en micell går in i den röda zonen och sluta när den lämnar den. Ett jämnt medelstarkt ljud fungerar ofta bättre än att ropa hela tiden.",
+  "You heated the tumour while the carriers passed through it, so they opened where the drug was needed. Temperature-sensitive carriers are designed to do just this at a warmed tumour.": "Du värmde tumören medan bärarna passerade, så de öppnades där läkemedlet behövdes. Temperaturkänsliga bärare är gjorda för just detta vid en uppvärmd tumör.",
+  "Heat leaks into healthy tissue, and carriers there open too. Heat when a micelle is in the tumour and keep quiet in between.": "Värme läcker ut i frisk vävnad, och bärare öppnas där också. Värm när en micell är i tumören och var tyst däremellan.",
+  "Keep the noise up: the micelle is opening.": "Fortsätt låta: micellen öppnas.",
+  "A micelle is in the tumour: make noise now!": "En micell är i tumören: låt nu!",
+  "No micelle in the tumour: quiet! The heat leaks drug elsewhere.": "Ingen micell i tumören: tyst! Värmen läcker ut läkemedel på fel ställe.",
+  "Drug is escaping outside the tumour! Keep quiet.": "Läkemedel läcker ut utanför tumören! Var tyst.",
+  "Get ready: a micelle is about to enter the tumour.": "Gör dig redo: en micell är på väg in i tumören.",
+  "Most of the drug escaped outside the tumour ({l}% lost). You were loud for {o}% of the time when no micelle was in it.": "Det mesta av läkemedlet läckte ut utanför tumören ({l} % förlorat). Du lät under {o} % av tiden då ingen micell var i den.",
+  "You heated only {h}% of the time a micelle was in the tumour. Make noise as soon as one enters the red zone.": "Du värmde bara under {h} % av tiden då en micell var i tumören. Låt så fort en kommer in i den röda zonen.",
+  "Great aim: you heated {h}% of the time a micelle was in the tumour and lost only {l}% of the drug.": "Bra sikte: du värmde {h} % av tiden då en micell var i tumören och förlorade bara {l} % av läkemedlet.",
+  "You heated {h}% of the time a micelle was in the tumour and lost {l}% of the drug. Keep quieter between micelles.": "Du värmde {h} % av tiden då en micell var i tumören och förlorade {l} % av läkemedlet. Var tystare mellan micellerna.",
+  "micelle in the tumour": "micell i tumören",
+  "Tumour": "Tumör",
+  "Blood flow": "Blodflöde",
+  "Challenges": "Utmaningar",
+  "Challenge {k}": "Utmaning {k}",
+  "Antifreeze particles appear one by one during the run: {n} by the end.": "Frostskyddspartiklar dyker upp en i taget: {n} i slutet.",
+  "Heat waves hit the box every few seconds. Get quieter when one comes.": "Värmeböljor slår mot lådan med några sekunders mellanrum. Bli tystare när en kommer.",
+  "The tumour is narrower and the blood flows faster.": "Tumören är smalare och blodet flödar snabbare.",
+  "Fewer proteins: {n}.": "Färre proteiner: {n}.",
+  "No tips in challenges.": "Inga tips i utmaningar.",
+  "Heat wave!": "Värmebölja!",
+  "Cleared! Challenge {n} is open.": "Klarad! Utmaning {n} är öppen.",
+  "All five challenges cleared!": "Alla fem utmaningar klarade!",
+  "Not cleared: you need at least one star.": "Inte klarad: du behöver minst en stjärna.",
+  "New best for this challenge.": "Nytt rekord i den här utmaningen.",
+  "Next challenge": "Nästa utmaning",
+  "Class battle": "Klasstävling",
+  "Teams": "Lag",
+  "Start a battle": "Starta en tävling",
+  "Teams take turns on the selected game, all from the same start. The highest score wins. Battles do not change statistics or cards.": "Lagen turas om att spela det valda spelet, alla från samma start. Högst poäng vinner. Tävlingar ändrar inte statistik eller kort.",
+  "Team {n}": "Lag {n}",
+  "Class battle: {n} teams. Team 1, get ready!": "Klasstävling: {n} lag. Lag 1, gör er redo!",
+  "Team {n}, get ready!": "Lag {n}, gör er redo!",
+  "End battle": "Avsluta tävlingen",
+  "A draw between {t}!": "Oavgjort mellan {t}!",
+  "Team {n} wins!": "Lag {n} vinner!",
+  "New battle": "Ny tävling",
+  "Voice pitch sets the pressure": "Röstens tonhöjd styr trycket",
+  "Loudness sets the temperature, pitch sets the pressure: a high voice squeezes the box, a low voice lets it expand. Higher pressure lowers the freezing point, as in real water.": "Ljudstyrkan styr temperaturen, tonhöjden trycket: en hög röst trycker ihop lådan, en låg låter den vidgas. Högre tryck sänker fryspunkten, som i riktigt vatten.",
+  "Pitch {f} Hz → pressure {p}": "Tonhöjd {f} Hz → tryck {p}",
+  "Sing or hum a steady note to set the pressure (high note = high pressure).": "Sjung eller nynna en jämn ton för att styra trycket (hög ton = högt tryck).",
+  "Ice-like wall": "Isliknande vägg",
+  "Ice wall": "Isvägg",
+  "A pinned row of molecules across the box with the ice honeycomb pattern, binding water strongly, like a mineral surface. Ice can grow from its flat faces without first having to form a nucleus. Changes apply live.": "En fastsatt rad molekyler tvärs över lådan med isens bikakemönster, som binder vatten starkt, som en mineralyta. Is kan växa från dess plana sidor utan att först behöva bilda en kärna. Ändringar gäller direkt.",
   "My cards": "Mina kort",
   "Reset cards": "Nollställ korten",
   "Click again to remove all cards": "Klicka igen för att ta bort alla kort",
@@ -3319,6 +3490,56 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Microphone": "Mikrofon"
  },
  "ru": {
+  "Team play": "Командная игра",
+  "Soap molecules · heat the tumour": "Молекулы мыла · нагрейте опухоль",
+  "Make noise when a micelle is in the red tumour zone.": "Шумите, когда мицелла в красной зоне опухоли.",
+  "Blood flow carries micelles full of drug (stars) through the red tumour zone. Noise heats the tumour and opens the micelles there. Drug released in the tumour is delivered and turns yellow; drug released anywhere else is lost and turns grey. Some heat leaks outside the tumour, so long noise wastes drug.": "Кровоток несёт мицеллы с лекарством (звёзды) через красную зону опухоли. Шум нагревает опухоль и раскрывает мицеллы в ней. Лекарство, высвободившееся в опухоли, доставлено и становится жёлтым; высвободившееся в другом месте — потеряно и становится серым. Часть тепла уходит за пределы опухоли, поэтому долгий шум тратит лекарство.",
+  "Micelles need a few seconds of heat to open, so start the noise as a micelle enters the red zone and stop when it leaves. A steady medium noise often works better than shouting all the time.": "Мицеллам нужно несколько секунд тепла, чтобы раскрыться: начинайте шуметь, когда мицелла входит в красную зону, и прекращайте, когда она выходит. Ровный средний шум часто лучше, чем постоянный крик.",
+  "You heated the tumour while the carriers passed through it, so they opened where the drug was needed. Temperature-sensitive carriers are designed to do just this at a warmed tumour.": "Вы грели опухоль, пока через неё проходили носители, и они раскрылись там, где нужно лекарство. Термочувствительные носители созданы именно для этого — для нагретой опухоли.",
+  "Heat leaks into healthy tissue, and carriers there open too. Heat when a micelle is in the tumour and keep quiet in between.": "Тепло уходит в здоровую ткань, и носители раскрываются и там. Грейте, когда мицелла в опухоли, а между ними молчите.",
+  "Keep the noise up: the micelle is opening.": "Продолжайте шуметь: мицелла раскрывается.",
+  "A micelle is in the tumour: make noise now!": "Мицелла в опухоли: шумите сейчас!",
+  "No micelle in the tumour: quiet! The heat leaks drug elsewhere.": "В опухоли нет мицеллы: тише! Тепло выпускает лекарство не там.",
+  "Drug is escaping outside the tumour! Keep quiet.": "Лекарство утекает вне опухоли! Тише.",
+  "Get ready: a micelle is about to enter the tumour.": "Приготовьтесь: мицелла вот-вот войдёт в опухоль.",
+  "Most of the drug escaped outside the tumour ({l}% lost). You were loud for {o}% of the time when no micelle was in it.": "Большая часть лекарства утекла вне опухоли (потеряно {l}%). Вы шумели {o}% времени, когда в ней не было мицеллы.",
+  "You heated only {h}% of the time a micelle was in the tumour. Make noise as soon as one enters the red zone.": "Вы грели только {h}% времени, пока мицелла была в опухоли. Шумите, как только она входит в красную зону.",
+  "Great aim: you heated {h}% of the time a micelle was in the tumour and lost only {l}% of the drug.": "Отличный прицел: вы грели {h}% времени, пока мицелла была в опухоли, и потеряли лишь {l}% лекарства.",
+  "You heated {h}% of the time a micelle was in the tumour and lost {l}% of the drug. Keep quieter between micelles.": "Вы грели {h}% времени, пока мицелла была в опухоли, и потеряли {l}% лекарства. Между мицеллами будьте тише.",
+  "micelle in the tumour": "мицелла в опухоли",
+  "Tumour": "Опухоль",
+  "Blood flow": "Кровоток",
+  "Challenges": "Испытания",
+  "Challenge {k}": "Испытание {k}",
+  "Antifreeze particles appear one by one during the run: {n} by the end.": "Частицы антифриза появляются по одной: к концу их {n}.",
+  "Heat waves hit the box every few seconds. Get quieter when one comes.": "Каждые несколько секунд в ящик бьёт волна жары. Когда она приходит, будьте тише.",
+  "The tumour is narrower and the blood flows faster.": "Опухоль уже, а кровь течёт быстрее.",
+  "Fewer proteins: {n}.": "Меньше белков: {n}.",
+  "No tips in challenges.": "В испытаниях подсказок нет.",
+  "Heat wave!": "Волна жары!",
+  "Cleared! Challenge {n} is open.": "Пройдено! Открыто испытание {n}.",
+  "All five challenges cleared!": "Все пять испытаний пройдены!",
+  "Not cleared: you need at least one star.": "Не пройдено: нужна хотя бы одна звезда.",
+  "New best for this challenge.": "Новый рекорд в этом испытании.",
+  "Next challenge": "Следующее испытание",
+  "Class battle": "Битва классов",
+  "Teams": "Команды",
+  "Start a battle": "Начать битву",
+  "Teams take turns on the selected game, all from the same start. The highest score wins. Battles do not change statistics or cards.": "Команды по очереди играют в выбранную игру с одного и того же старта. Побеждает наибольший счёт. Битвы не меняют статистику и карточки.",
+  "Team {n}": "Команда {n}",
+  "Class battle: {n} teams. Team 1, get ready!": "Битва классов: {n} команды. Команда 1, приготовьтесь!",
+  "Team {n}, get ready!": "Команда {n}, приготовьтесь!",
+  "End battle": "Закончить битву",
+  "A draw between {t}!": "Ничья: {t}!",
+  "Team {n} wins!": "Команда {n} побеждает!",
+  "New battle": "Новая битва",
+  "Voice pitch sets the pressure": "Высота голоса задаёт давление",
+  "Loudness sets the temperature, pitch sets the pressure: a high voice squeezes the box, a low voice lets it expand. Higher pressure lowers the freezing point, as in real water.": "Громкость задаёт температуру, высота голоса — давление: высокий голос сжимает ящик, низкий даёт ему расшириться. Высокое давление понижает температуру замерзания, как у настоящей воды.",
+  "Pitch {f} Hz → pressure {p}": "Высота {f} Гц → давление {p}",
+  "Sing or hum a steady note to set the pressure (high note = high pressure).": "Пойте или напевайте ровную ноту, чтобы задать давление (высокая нота = высокое давление).",
+  "Ice-like wall": "Льдоподобная стенка",
+  "Ice wall": "Ледяная стенка",
+  "A pinned row of molecules across the box with the ice honeycomb pattern, binding water strongly, like a mineral surface. Ice can grow from its flat faces without first having to form a nucleus. Changes apply live.": "Закреплённый ряд молекул поперёк ящика с узором ледяных сот, сильно притягивающий воду, — как поверхность минерала. Лёд может расти от её плоских граней, не образуя сначала зародыш. Изменения применяются сразу.",
   "My cards": "Мои карточки",
   "Reset cards": "Сбросить карточки",
   "Click again to remove all cards": "Нажмите ещё раз, чтобы удалить все карточки",
@@ -4135,7 +4356,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     ice: { scan: [0.10, 0.30], conc: 0, min: 0, max: 100, count: true, rebuildConc: true, cold: 0.12, hot: 0.26, start: 0.26, ordT: 0.08, box: 36,
       trange: [0.08, 0.36], tstep: 0.005, dt: 0.01, preT: 0.35, concLab: 'Antifreeze particles',
       plotLab: 'Fraction of molecules in ice', hl: 'Highlight ice (blue)',
-      legend: [['cold', 'Ice'], ['solv', 'Liquid water'], ['tail', 'Antifreeze particle']] },
+      legend: [['cold', 'Ice'], ['solv', 'Liquid water'], ['tail', 'Antifreeze particle'], ...(/[?&]debug(=1)?\b/.test(location.search) || location.hash === '#debug' ? [['cryst', 'Ice wall']] : [])] },
     dumbbell: { scan: [0.4, 2.0], conc: 50, min: 2, max: 60, cold: 0.5, hot: 2.0, start: 2.0, concLab: 'Dumbbell concentration (fraction of beads)',
       plotLab: 'Fraction of molecules in aggregates (bilayers, micelles)', hl: 'Color by aggregate',
       legend: [['head', 'Head'], ['tail', 'Tail'], ['solv', 'Solvent']] },
@@ -4241,9 +4462,9 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       plateLen: +$('plateLen').value, plateGap: +$('plateGap').value, plateFix: $('plateHold').checked,
       ordered: sys === 'plates' ? true : opts.ordered !== undefined ? opts.ordered : isOrdered(), demixStripes: 4, bilayerSpacing: 1.15,
       boxL: n, gravity: +$('grav').value, graftSpacing: +$('graft').value, epsCC: +$('epsCC').value, epsQL: +$('epsQL').value, epsHL: +$('epsHL').value, invert: $('bInvert').checked, nEnd: +$('nEnd').value, nWater: v,
-      thermostat: $('thermo').value, gamma: +$('gamma').value, tau: +$('tau').value, seed: (Math.random() * 1e9) | 0,
+      thermostat: $('thermo').value, gamma: +$('gamma').value, tau: +$('tau').value, seed: (battle && battle.seed) || (Math.random() * 1e9) | 0,
       epsSS: 0, epsAS: +$('epsAS').value, epsBB: +$('epsBB').value, sigA: +$('sigA').value, sigB: 1,
-      nSalt: sys === 'ice' ? v : 0, epsPP: +$('epsPP').value, epsH: (sys === 'mbpoly' || sys === 'plates') ? +$('epsH').value : 0, epsW: sys === 'mbpoly' ? +$('epsW').value : 0, kBend: sys === 'plates' ? 150 : +$('kBend').value, chainLen: +$('chainLen').value,
+      nSalt: sys === 'ice' ? v : 0, iceWall: sys === 'ice' && !opts.game && $('iceWall').checked, epsPP: +$('epsPP').value, epsH: (sys === 'mbpoly' || sys === 'plates') ? +$('epsH').value : 0, epsW: sys === 'mbpoly' ? +$('epsW').value : 0, kBend: sys === 'plates' ? 150 : +$('kBend').value, chainLen: +$('chainLen').value,
       fA: +$('fA').value, epsAB: +$('epsAB').value, epsSC: +$('epsSC').value, xC: v / 100,
       epsHH: +$('epsHH').value, sequence: cleanSeq(), cryptSeq: 'PPPPPXXXPPXXXXPPXXXXXPPXXXXPPXXXPPPPP', epsGo: 2.5, goCut: 1.6, epsXX: +$('epsXX').value, epsB: 0 };
     if (opts.game && gameSel && gameSel.prm) Object.assign(prm, gameSel.prm); else prm.nDrug = 0;
@@ -4277,11 +4498,11 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   function setT(v) {
     const [lo, hi] = curRange();
     tset = Math.max(lo, Math.min(hi, v));
-    if (eng) eng.p.T = tset;
+    if (eng) { eng.p.T = tset + (coachReady && game ? game.bump || 0 : 0); if (eng.p.hotBand) eng.p.hotBand.Tout = lo + (gameSel && gameSel.spill || 0.25) * (tset - lo); }
     $('tset').textContent = $('tsetM').textContent = tset.toFixed((SYS[sys].tstep || 0.01) < 0.01 ? 3 : 2); $('tslider').value = $('tsliderM').value = tset;
     if (coachReady) tWordShow();
   }
-  var coachReady = false, fcReady = false; // set once the game helpers and the cards below exist
+  var coachReady = false, fcReady = false, gameLevel = 0, battle = null; // set once the game helpers and the cards below exist
   $('tslider').addEventListener('input', (e) => { if (scan) stopScan(false); if (mode === 'slider') setT(+e.target.value); });
   $('tsliderM').addEventListener('input', (e) => { if (scan) stopScan(false); if (mode === 'slider') setT(+e.target.value); });
   $('micM').addEventListener('click', () => setMode(mode === 'mic' ? 'slider' : 'mic'));
@@ -4335,7 +4556,27 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const tauUp = 0.4, tauDown = 2.5;   // heats quickly, cools slowly
     const a = 1 - Math.exp(-dtSec / (target > micT ? tauUp : tauDown));
     micT += a * (target - micT); setT(micT);
+    if (sys === 'ice' && $('pitchP').checked && appMode === 'explore' && eng && eng.p.baro) pitchUpdate(dtSec);
   }
+  // voice pitch by autocorrelation of the microphone signal (80-1000 Hz); a clear pitch sets the barostat's target pressure
+  let pitchHz = null, pitchP = null, pitchFrame = 0;
+  function pitchUpdate(dtSec) {
+    if (++pitchFrame % 3) return;
+    const sr = audio.sampleRate, n = 1024, b = buf, lo = Math.floor(sr / 1000), hi = Math.min(n - 1, Math.ceil(sr / 80));
+    let e0 = 0; for (let i = 0; i < n; i++) e0 += b[i] * b[i]; if (e0 < 1e-4 * n * 0.01) { pitchHz = null; pitchNoteShow(); return; }
+    if (!pitchUpdate.r || pitchUpdate.r.length < hi + 2) pitchUpdate.r = new Float32Array(hi + 2);
+    const R = pitchUpdate.r; let mx = 0;
+    for (let lag = lo; lag <= hi; lag++) { let c = 0, e1 = 0; for (let i = 0; i < n - lag; i++) { c += b[i] * b[i + lag]; e1 += b[i + lag] * b[i + lag]; }
+      R[lag] = c / Math.sqrt(e0 * e1 + 1e-12); if (R[lag] > mx && lag > lo + 1) mx = R[lag]; }
+    let bl = 0; for (let lag = lo + 1; lag < hi; lag++) if (R[lag] >= 0.9 * mx && R[lag] >= R[lag - 1] && R[lag] >= R[lag + 1]) { bl = lag; break; } // first peak near the top: avoids octave errors
+    if (mx < 0.6 || !bl) { pitchHz = null; pitchNoteShow(); return; }
+    pitchHz = sr / bl; const x = Math.max(0, Math.min(1, Math.log(pitchHz / 110) / Math.log(700 / 110))), target = 0.35 * x;
+    pitchP = pitchP === null ? target : pitchP + (1 - Math.exp(-3 * dtSec * 3)) * (target - pitchP);
+    eng.p.P0 = pitchP; if (typeof p0Range === 'function') { $('p0').value = pitchP; $('p0O').textContent = pitchP.toFixed(3); }
+    pitchNoteShow();
+  }
+  function pitchNoteShow() { const el = $('pitchNote'); if (!$('pitchP').checked) return;
+    el.textContent = pitchHz ? T('Pitch {f} Hz → pressure {p}', { f: Math.round(pitchHz), p: (pitchP || 0).toFixed(2) }) : T('Sing or hum a steady note to set the pressure (high note = high pressure).'); }
 
   // ---- controls ----
   const bindRange = (id, fmt, apply) => { const el = $(id), o = $(id + 'O');
@@ -4431,6 +4672,12 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     clearTimeout(rebuildTimer);
     if (eng.nMol < target) { $('concNote').textContent = T('Too little solvent left to insert chains live. Rebuilding at this concentration…'); rebuildTimer = setTimeout(build, 400); }
   });
+  // the ice wall switches live: water molecules move onto the wall sites, or the wall turns back into water
+  $('iceWall').addEventListener('change', () => {
+    if (!eng || sys !== 'ice' || game || !eng.addIceWall) return;
+    if ($('iceWall').checked) eng.addIceWall(); else eng.removeIceWall();
+    eng.p.iceWall = $('iceWall').checked; eng.computeForces(); showReport(report());
+  });
   // barostat: only for fully periodic systems, only while exploring (games and scans stay at constant volume)
   const BARO_SYS = 'dumbbell polymer diblock demix crypt hp lcst mbpoly ice'.split(' ');
   let baroShown = null;
@@ -4444,6 +4691,10 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     $('baroNote').textContent = !eng.p.baro ? T('The barostat runs in Explore only; games and energy scans keep the box size fixed.')
       : eng.p.P0 === null ? T('Measuring the pressure of the current state…')
       : T('Pressure {p} (target {t}) · density {d} / σ² · box {l} σ ({r}% of the start)', { p: P.toFixed(3), t: eng.p.P0.toFixed(3), d: rho.toFixed(3), l: eng.L.toFixed(1), r: (100 * eng.L / eng.L0).toFixed(0) }); }
+  $('pitchP').addEventListener('change', () => { // pitch control needs the barostat
+    if ($('pitchP').checked) { if (mode !== 'mic') setMode('mic'); $('baro').checked = true; if (eng) { eng.p.baro = baroOn(); pitchP = null; } baroUI(); pitchNoteShow(); }
+    else $('pitchNote').textContent = T('Loudness sets the temperature, pitch sets the pressure: a high voice squeezes the box, a low voice lets it expand. Higher pressure lowers the freezing point, as in real water.');
+  });
   $('baro').addEventListener('change', () => { if (eng) { eng.p.baro = baroOn(); if (eng.p.baro) eng.p.P0 = null; } baroUI(); });
   $('p0').addEventListener('input', () => { const v = +$('p0').value; $('p0O').textContent = v.toFixed(+$('p0').max < 2 ? 3 : 2); if (eng && eng.p.baro) eng.p.P0 = v; });
   $('thermo').addEventListener('change', (e) => { if (eng) eng.p.thermostat = e.target.value;
@@ -4495,16 +4746,20 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // Star thresholds come from headless runs over 3 seeds: going silent at once (deep quench) scores below one star in every game;
   // the best scores need slow cooling (ice) or a cool-but-not-frozen temperature (liquids, block chains).
   const GAME_SEC = 30;
-  // drug game: free drug (fewer than 2 tail neighbours) is delivered inside a target window, lost outside one
+  // drug game: free drug (fewer than 2 tail neighbours) is delivered when it is released inside the tumour band, lost outside it
   let drugLast = 0;
   function drugTick() {
     const G = game; if (!G || !eng.nDrug) return drugLast;
-    const t = eng.time - G.t0, inW = (G.win || []).some(([a, b]) => t >= a && t < b), r = eng.drugStats(1.5, 2);
-    for (let i = 0; i < eng.N; i++) if (eng.type[i] === 4 && r.cnt[i] < 2) { if (inW) { eng.type[i] = 3; G.del++; } else { eng.type[i] = 6; G.lost++; } }
+    const r = eng.drugStats(1.5, 2);
+    for (let i = 0; i < eng.N; i++) if (eng.type[i] === 4 && r.cnt[i] < 2) { if (inBand(eng.x[i], 1)) { eng.type[i] = 3; G.del++; } else { eng.type[i] = 6; G.lost++; } }
     drugLast = 100 * G.del / eng.nDrug; return drugLast;
   }
+  function inBand(x, m) { const hb = eng.p.hotBand; if (!hb) return false; let b = x - hb.x0 + (m || 0); b -= eng.L * Math.floor(b / eng.L); return b < hb.w + 2 * (m || 0); }
+  function micInBand(ahead) { // a loaded micelle (held drug) inside the tumour band, or within `ahead` upstream of it
+    if (!eng.p.hotBand) return false; for (let i = 0; i < eng.N; i++) if (eng.type[i] === 4) { const hb = eng.p.hotBand; let b = eng.x[i] - hb.x0 + (ahead || 0); b -= eng.L * Math.floor(b / eng.L); if (b < hb.w + (ahead || 0)) return true; } return false; }
   function drugWindow() { const G = game; if (!G || !G.win) return null; const t = eng.time - G.t0;
     for (const [a, b] of G.win) { if (t >= a && t < b) return { on: true, left: (b - t) / G.rate }; if (t < a) return { on: false, left: (a - t) / G.rate }; } return { on: false, left: null }; }
+  const DRUG_X0 = 0.6 * 48 / Math.sqrt(0.6); // left edge of the tumour band in the drug game's box (48 beads across at density 0.6)
   const GAMES = [
     { id: 'ice', title: 'Grow the biggest ice crystal', sub: 'Ice · slow cooling wins', sys: 'ice', ordered: false, range: [0.02, 0.30], D: 150,
       lab: 'Ice', fmt: (v) => pct(v), stars: [0.35, 0.47, 0.56],
@@ -4531,15 +4786,16 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       hint: 'Total silence freezes the molecules before they can sort themselves: no star. Find a level that is cold enough to separate but warm enough to move.',
       lesson: { good: 'Cool enough that the molecules prefer their own kind, warm enough that they can still move: the blobs grow quickly. Too cold, and everything freezes in place.',
         bad: 'Very cold molecules hardly move, so they stay stuck next to the wrong neighbours. Try a little noise to keep them moving.' } },
-    { id: 'drug', title: 'Deliver the drug', sub: 'Soap molecules · hit the target windows', sys: 'dumbbell', ordered: true, range: [0.4, 2.5], D: 60, box: '48', conc: 34,
-      prm: { nDrug: 90, drugPerMic: 3, extraTails: 3, preSteps: 1000, epsDB: 2.5, epsBB: 2.5, epsAS: 0, sigA: 1.0 }, raw: true, noSnap: true, side: 'Lost',
-      lab: 'Delivered', fmt: (v) => v.toFixed(0) + '%', stars: [35, 65, 85], scale: 100, hotT: 1.35,
-      setup: (G) => { const w = []; let a = 6 + 4 * Math.random(); const W = 4 / 1.5; while (a + W <= 58) { w.push([a, a + W]); a += W + 5 + 4 * Math.random(); } G.win = w; G.del = 0; G.lost = 0; },
+    { id: 'drug', title: 'Deliver the drug', sub: 'Soap molecules · heat the tumour', sys: 'dumbbell', ordered: true, range: [0.4, 3.5], D: 60, box: '48', conc: 34,
+      // blood flow (flowU) carries four drug-loaded micelles through a tumour band; noise heats the band, and a quarter of the heat spills outside
+      prm: { nDrug: 12, drugPerMic: 3, extraTails: 3, preSteps: 1000, epsDB: 2.5, epsBB: 2.5, epsAS: 0, sigA: 1.0, drugXs: [2, 16, 30, 44].map((d) => DRUG_X0 - d) }, raw: true, noSnap: true, side: 'Lost',
+      lab: 'Delivered', fmt: (v) => v.toFixed(0) + '%', stars: [25, 45, 65], scale: 100, hotT: 1.6, flowU: 0.5, bandW: 10, spill: 0.25,
+      setup: (G) => { G.del = 0; G.lost = 0; },
       value: () => drugTick(),
-      short: "Heat only in the red windows to deliver the drug (stars).", goal: 'Deliver as much drug (stars) as you can at the right moment. Heat only during the red target windows. Drug released at any other time is lost and turns grey; delivered drug turns yellow. The micelles carry the drug in their oily cores, and heat breaks them open.', facts: ["The first nanoparticle cancer medicine, Doxil, was approved in 1995. It carries the drug inside tiny bubbles made of lipids, the molecules of cell membranes.", "Heat-triggered carriers are being tested in medicine: some release their drug when a tumour is warmed just above body temperature, to about 40–42 °C.", "Soap works like these micelles: grease hides in the oily cores of soap micelles and is rinsed away with the water."],
-      hint: 'The micelles need a moment to open, so start the noise just before a window and stop just before it ends. Stay quiet between windows so the micelles hold on to the rest.',
-      lesson: { good: 'Short, well-timed bursts of heat opened the micelles exactly when the drug was needed, and the cold kept it locked inside the rest of the time. Temperature-sensitive carriers are designed to do just this at a warmed tumour.',
-        bad: 'Heat frees the drug a little after it starts and keeps freeing it for a moment after it stops, so late or long bursts waste it. Watch the windows on the time bar and start a little early.' } },
+      short: "Make noise when a micelle is in the red tumour zone.", goal: 'Blood flow carries micelles full of drug (stars) through the red tumour zone. Noise heats the tumour and opens the micelles there. Drug released in the tumour is delivered and turns yellow; drug released anywhere else is lost and turns grey. Some heat leaks outside the tumour, so long noise wastes drug.', facts: ["The first nanoparticle cancer medicine, Doxil, was approved in 1995. It carries the drug inside tiny bubbles made of lipids, the molecules of cell membranes.", "Heat-triggered carriers are being tested in medicine: some release their drug when a tumour is warmed just above body temperature, to about 40–42 °C.", "Soap works like these micelles: grease hides in the oily cores of soap micelles and is rinsed away with the water."],
+      hint: 'Micelles need a few seconds of heat to open, so start the noise as a micelle enters the red zone and stop when it leaves. A steady medium noise often works better than shouting all the time.',
+      lesson: { good: 'You heated the tumour while the carriers passed through it, so they opened where the drug was needed. Temperature-sensitive carriers are designed to do just this at a warmed tumour.',
+        bad: 'Heat leaks into healthy tissue, and carriers there open too. Heat when a micelle is in the tumour and keep quiet in between.' } },
     { id: 'gel', title: 'Grow the longest gel strand', sub: '35 proteins', sys: 'crypt', ordered: true, range: [0.6, 7.0], D: 90, box: '48', conc: 35, epsXX: 5,
       lab: 'Gel path', fmt: (v) => v.toFixed(0) + ' σ', stars: [80, 130, 170], scale: 200, openT: 2.2, tooHot: 4.5, openSec: 4, rise: 3, words: [1.4, 2.2, 4.5], value: () => { gelShow = eng.gelPath(1.5, 2); return gelShow.len; },
       short: "Link the proteins into the longest gel strand you can within 30 seconds.", goal: 'Link the proteins into the longest gel strand you can. Your score is the longest path through the gel, from protein to protein (red line); the box is 62 σ wide. The proteins start folded, with their sticky beads hidden inside. Two proteins are linked when they share at least two sticky contacts.', facts: ["Boiling an egg turns the clear egg white solid: heat unfolds its proteins, and they stick together into a gel.", "Gelatin jelly melts at about 30–35 °C, a little below body temperature. That is why it melts in your mouth.", "Tofu is a protein gel: soy milk is heated, then salts such as magnesium chloride make the soy proteins clump together."],
@@ -4574,7 +4830,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const gi = GAMES.findIndex((g) => g.id === id); if (gi < 0 || (coachReady && !isOpen(gi))) return;
     if (game) endGame(null);
     if (coachReady && guide) { guide = null; coachHide(); }
-    gameSel = GAMES[gi]; renderPick(); if (coachReady) $('greplay').hidden = true;
+    if (battle && !battle.keep) { battle = null; if (coachReady) coachHide(); }
+    gameSel = GAMES[gi]; gameLevel = 0; renderPick(); if (coachReady) $('greplay').hidden = true;
     $('gsel').hidden = false; $('ggoal').textContent = T(gameSel.goal);
     $('ghint').innerHTML = `${T('Stars:')} ${gameSel.stars.map((s, k) => '★'.repeat(k + 1) + ' ' + gameSel.fmt(s)).join(' · ')}`;
     gstartKey = 'Start'; $('gstart').textContent = T('Start');
@@ -4585,21 +4842,25 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     gameRange = g.range;
     sys = g.sys; applySysUI();
     $('size').value = g.box || (SYS[sys].box ? String(SYS[sys].box) : $('size').value);
-    if (g.conc) { $('conc').value = g.conc; $('concO').textContent = g.conc; }
+    if (g.conc) { const c = gameLevel && ladTwist(g, gameLevel).conc || g.conc; $('conc').value = c; $('concO').textContent = c; }
     if (g.epsXX) { $('epsXX').value = g.epsXX; $('epsXXO').textContent = g.epsXX.toFixed(1); } // games use stickier beads than the lesson default
     $('initState').value = g.ordered ? 'ordered' : 'disordered';
     for (const id of ['tslider', 'tsliderM']) { const el = $(id); el.min = g.range[0]; el.max = g.range[1]; }
     setT(g.range[0]); build({ game: true }); // every game starts at its coldest setting
     if (coachReady) zoneMarks();
+    if (g.flowU) eng.p.hotBand = { x0: DRUG_X0, w: g.bandW, Tout: g.range[0] }; // the tumour is shown before the start
     running = true; $('pause').textContent = T('Pause');
   }
   function startGame() {
     const g = gameSel; if (!g) return;
     if (guide) { guide = null; coachHide(); }
-    if (needGuide(g)) { guideStart(g); return; }
+    if (needGuide(g) && !battle && !gameLevel && !classOn) { guideStart(g); return; }
     prepGame(g); coachHide(); $('greplay').hidden = true;
-    game = { g, t0: eng.time, last: eng.time, ema: null, rate: g.D / GAME_SEC, peak: -Infinity, peakSec: 0, snap: null, rec: [] };
+    game = { g, t0: eng.time, last: eng.time, ema: null, rate: g.D / GAME_SEC, peak: -Infinity, peakSec: 0, snap: null, rec: [], level: gameLevel, bump: 0 };
+    if (battle) game.battle = battle.k;
     if (g.setup) g.setup(game);
+    if (gameLevel) { const tw = ladTwist(g, gameLevel); Object.assign(game, { af: tw.af || 0, flowK: tw.flowK || 1, bandK: tw.bandK || 1 });
+      if (tw.waveAmp) { game.waves = []; let a = 3 + 2 * Math.random(); while (a < 28) { game.waves.push([a, a + 2, tw.waveAmp]); a += 5 + 3 * Math.random(); } } }
     const gb = document.querySelector('.gbar'); gb.querySelectorAll('.win').forEach((x) => x.remove());
     for (const [w0, w1] of game.win || []) { const d = document.createElement('div'); d.className = 'win'; d.style.left = (100 * w0 / g.D) + '%'; d.style.width = (100 * (w1 - w0) / g.D) + '%'; gb.appendChild(d); }
     $('gpeakLab').textContent = T(g.side || 'Best this run');
@@ -4609,7 +4870,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const band = $('gband'); band.querySelectorAll('.tick').forEach((x) => x.remove());
     g.stars.forEach((s, k) => { const d = document.createElement('div'); d.className = 'tick'; d.style.left = (100 * s / (g.scale || 1)) + '%'; d.textContent = '★'.repeat(k + 1); band.appendChild(d); });
     $('gnow').style.left = '0%'; $('gbar').style.width = '0%'; $('gres').textContent = '';
-    $('hudTitle').textContent = T(g.title) + ':'; $('hudGoal').textContent = T(phoneUI() ? g.short : g.goal); $('hudTip').textContent = '';
+    $('hudTitle').textContent = T(g.title) + (game.level ? ' · ' + T('Challenge {k}', { k: game.level }) : '') + ':'; $('hudGoal').textContent = T(phoneUI() ? g.short : g.goal); $('hudTip').textContent = '';
     $('ghud').hidden = false; document.querySelector('.wrap').classList.add('ingame'); $('gquit').textContent = T('Give up'); $('gagain').hidden = true;
     $('gstart').disabled = true; resize();
     countdown(game); if (typeof sheet === 'function') sheet(false);
@@ -4623,7 +4884,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     clearTimeout(cdTimer); running = false; G.cd = true; let k = 3; const o = gfxShow();
     const tick = () => { if (game !== G) { o.hidden = true; o.innerHTML = ''; return; }
       if (k > 0) { o.innerHTML = `<span class="cd">${k}</span>`; k--; cdTimer = setTimeout(tick, 800); return; }
-      o.innerHTML = `<span class="cd go">${T('Go!')}</span>`; G.cd = false; G.t0 = G.last = eng.time; running = true; $('pause').textContent = T('Pause');
+      o.innerHTML = `<span class="cd go">${T('Go!')}</span>`; G.cd = false; G.t0 = G.last = eng.time; running = true;
+      if (G.g.flowU) { const lo = G.g.range[0]; eng.p.flowU = G.g.flowU * (G.flowK || 1); eng.p.hotBand = { x0: DRUG_X0, w: G.g.bandW * (G.bandK || 1), Tout: lo + G.g.spill * (tset - lo) }; } $('pause').textContent = T('Pause');
       cdTimer = setTimeout(() => { if (o.querySelector('.go')) { o.hidden = true; o.innerHTML = ''; } }, 800); };
     tick();
   }
@@ -4649,8 +4911,11 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   }
   function endGame(result) {
     const G = game; game = null; clearTimeout(cdTimer); $('gfx').hidden = true; $('gfx').innerHTML = ''; coachHide();
+    if (eng && eng.p.flowU) { eng.p.flowU = 0; } // the stream stops with the game; the tumour band stays visible for the replay
     $('gstart').disabled = false; gstartKey = 'Play again'; $('gstart').textContent = T(gstartKey); $('gquit').textContent = T('Close');
     if (!G || !result) { closeHud(); return; }
+    if (G.battle !== undefined && battle) { battleEnd(G); return; }
+    if (G.level) { ladderEnd(G); return; }
     const g = G.g, v = G.peak, st = starsFor(g, v), b = getBest(g), rec = b === null || v > b, gi = GAMES.indexOf(g), wasOpen = gi + 1 < GAMES.length && isOpen(gi + 1); if (rec) setBest(g, v);
     const opened = gi + 1 < GAMES.length && !wasOpen && isOpen(gi + 1), dg = tipsOn() ? diagnose(G, st) : '';
     const card = st === 3 ? fcGive(FC_ALL.filter((c) => c.deck.game === g.id)) : null; // three stars: a new fact card, until the deck is complete
@@ -4677,15 +4942,15 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     $('gnow').style.left = (100 * Math.max(0, Math.min(1, G.ema / (g.scale || 1)))) + '%';
     $('gbar').style.width = (100 * frac) + '%';
     const sNow = GAME_SEC * frac; // the run, kept for the replay and the diagnosis after the game
-    if (!G.rec.length || sNow - G.rec[G.rec.length - 1].s >= 0.25) G.rec.push({ s: sNow, T: tset, v: G.ema, d: G.del || 0, l: G.lost || 0 });
-    if (frac < 1) { coachTick(G, sNow); if (g.path) zoneMarks(sNow); }
+    if (!G.rec.length || sNow - G.rec[G.rec.length - 1].s >= 0.25) G.rec.push({ s: sNow, T: tset, v: G.ema, d: G.del || 0, l: G.lost || 0, z: g.flowU ? micInBand(0) : false });
+    if (frac < 1) { coachTick(G, sNow); if (g.path) zoneMarks(sNow); if (G.level) twistTick(G, sNow); }
     if (frac >= 1) endGame('done');
   }
   $('gpick').addEventListener('click', (e) => { const b = e.target.closest('[data-game]'); if (b) selectGame(b.dataset.game); });
   $('gstart').addEventListener('click', startGame); $('gagain').addEventListener('click', startGame);
   $('gstartBox').addEventListener('click', startGame);
   function syncBoxStart() { // a Start button on the box whenever a game is picked but not running, so it is always next to the molecules
-    if (coachReady) placeCoach(); const b = $('gstartBox'), show = appMode === 'game' && !!gameSel && !game && !(coachReady && guide) && !classOn && tourI < 0;
+    if (coachReady) placeCoach(); const b = $('gstartBox'), show = appMode === 'game' && !!gameSel && !game && !(coachReady && guide) && !battle && !classOn && tourI < 0;
     if (b.hidden !== !show) b.hidden = !show;
     if (!show) return;
     const t = $('gstart').textContent; if (b.textContent !== t) b.textContent = t;
@@ -4694,15 +4959,16 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   renderPick();
 
   function closeHud() { $('ghud').hidden = true; if (coachReady) { coachHide(); $('greplay').hidden = true; } document.querySelector('.wrap').classList.remove('ingame'); resize(); }
-  $('gquit').addEventListener('click', () => { const was = !!game; endGame(null); if (was) { gameRange = null; applySysUI(); setT(tset); } closeHud(); });
+  $('gquit').addEventListener('click', () => { if (battle && coachReady) battleStop(); const was = !!game; endGame(null); if (was) { gameRange = null; applySysUI(); setT(tset); } closeHud(); });
   renderPick();
 
   // ---------- class mode: one big box on the projector, the whole room's noise sets the temperature ----------
   let classOn = false;
   async function classEnter() {
-    if (classOn) return; classOn = true;
-    if (appMode !== 'explore') setAppMode('explore');
-    const ok = BARO_SYS.includes(sys) && $('clsSys').querySelector(`option[value="${sys}"]`); if (!ok) pickSys('ice');
+    if (classOn) return; classOn = true; $('guseMic').checked = true;
+    if (appMode === 'scan') setAppMode('explore');
+    if (appMode === 'explore') { const ok = BARO_SYS.includes(sys) && $('clsSys').querySelector(`option[value="${sys}"]`); if (!ok) pickSys('ice'); }
+    clsModeUI();
     $('clsSys').value = sys;
     document.querySelector('.wrap').classList.add('classmode'); $('clsPanel').hidden = false; $('clsNote').textContent = '';
     try { if (document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen(); } catch (e) {}
@@ -4715,9 +4981,35 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     try { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen(); } catch (e) {}
     setMode('slider'); resize();
   }
-  function classUpdate() { if (!classOn || !eng) return; const r = report(), [lab, val] = r.cells[0];
-    $('clsLab').innerHTML = T(lab); $('clsVal').textContent = val; $('clsT').textContent = tset.toFixed((SYS[sys].tstep || 0.01) < 0.01 ? 3 : 2);
+  function classUpdate() { if (!classOn || !eng) return;
+    if (appMode === 'game') { // the game's own numbers, big
+      const g = game ? game.g : gameSel; $('clsLab').innerHTML = g ? T(g.lab) : '–'; $('clsVal').textContent = game ? $('gval').textContent : '–';
+      $('clsLab2').textContent = T('Time left'); $('clsT').textContent = game ? $('gtime').textContent : '–'; $('clsStars').textContent = game ? $('gstars').textContent : '';
+      const res = battle ? battleTable() : (!game && $('gres').innerHTML) || ''; if ($('clsRes').innerHTML !== res) $('clsRes').innerHTML = res;
+      $('clsStart').disabled = !!game || !!battle;
+    } else { const r = report(), [lab, val] = r.cells[0];
+      $('clsLab').innerHTML = T(lab); $('clsVal').textContent = val; $('clsLab2').textContent = T('Temperature'); $('clsT').textContent = tset.toFixed((SYS[sys].tstep || 0.01) < 0.01 ? 3 : 2); $('clsStars').textContent = ''; }
     $('clsPause').textContent = T(running ? 'Pause' : 'Resume'); }
+  // class mode can show Explore or a game; a game can be played by teams in turn (a class battle)
+  function clsModeUI() {
+    const gm = appMode === 'game'; document.querySelectorAll('[data-clsmode]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.clsmode === appMode)));
+    $('clsGame').hidden = !gm; $('clsSys').hidden = gm; $('clsPause').hidden = gm; $('clsRes').innerHTML = '';
+    $('clsGameSel').innerHTML = GAMES.map((g, i) => (typeof isOpen !== 'function' || isOpen(i) ? `<option value="${g.id}">${T(g.title)}</option>` : '')).join('');
+    if (gm && gameSel) $('clsGameSel').value = gameSel.id;
+    $('clsGoal').textContent = gm ? (gameSel ? T(gameSel.short) : '') : T('Everyone quiet: the box cools and structures grow. Noise heats it and breaks them.');
+    resize(); classUpdate();
+  }
+  document.querySelectorAll('[data-clsmode]').forEach((b) => b.addEventListener('click', async () => {
+    if (b.dataset.clsmode === appMode) return; if (battle) battleStop();
+    setAppMode(b.dataset.clsmode); if (appMode === 'explore') { const ok = BARO_SYS.includes(sys) && $('clsSys').querySelector(`option[value="${sys}"]`); if (!ok) pickSys('ice'); $('clsSys').value = sys; }
+    clsModeUI(); if (mode !== 'mic') await setMode('mic');
+  }));
+  $('clsGameSel').addEventListener('change', () => { selectGame($('clsGameSel').value); clsModeUI(); });
+  $('clsStart').addEventListener('click', () => {
+    if (!gameSel || game || battle) return; $('guseMic').checked = true; $('clsRes').innerHTML = '';
+    if ($('clsTeams').checked) { $('bTeams').value = $('clsTeamN').value; battleStart(); } else startGame();
+    classUpdate();
+  });
   function pickSys(id) { const b = document.querySelector(`[data-pick="${id}"]`); if (b) b.click(); }
   $('classBtn').addEventListener('click', classEnter);
   $('clsExit').addEventListener('click', classExit);
@@ -4841,7 +5133,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   function setAppMode(m) {
     const fromGame = appMode === 'game' && m !== 'game'; if (m === 'game') follow = null;
     document.querySelector('.wrap').classList.toggle('gamemode', m === 'game');
-    if (m !== 'game') { if (game) endGame(null); else if (!$('ghud').hidden) closeHud(); if (coachReady && guide) { guide = null; coachHide(); } }
+    if (m !== 'game') { if (game) endGame(null); else if (!$('ghud').hidden) closeHud(); if (coachReady && guide) { guide = null; coachHide(); } if (battle) { battle = null; if (coachReady) coachHide(); } }
     if (m !== 'game' && gameRange) { gameRange = null; applySysUI(); setT(tset); }
     if (m !== 'scan' && scan) stopScan(false);
     appMode = m;
@@ -4893,7 +5185,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   try { if (localStorage.getItem('mdlab-tips') === '0') $('gtips').checked = false; } catch (e) {}
   $('gtips').addEventListener('change', () => { try { localStorage.setItem('mdlab-tips', tipsOn() ? '1' : '0'); } catch (e) {} if (!tipsOn() && !guide) coachHide(); });
   function coachTick(G, s) {
-    const g = G.g; if (!g.coach || !tipsOn()) return;
+    const g = G.g; if (!g.coach || !tipsOn() || G.level) return;
     const r = G.rec, back = r.find((q) => q.s >= s - 2) || r[0], tr = back ? G.ema - back.v : 0;
     const [key, cls] = g.coach(G, s, tset, tr);
     if (key !== G.cKey) { G.cKey = key; G.cCls = cls; G.cSince = s; }
@@ -4918,12 +5210,12 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     return tr > g.rise ? ['Good: slow cooling, the ice is growing.', 'good'] : ['On track: keep cooling slowly along the green path.', ''];
   }
   function drugCoach(G, s, Tv) {
-    const w = drugWindow(), r = G.rec, p = r.find((q) => q.s >= s - 1) || r[0] || { d: 0, l: 0 }, g = G.g;
-    if (w && w.on) return (G.del || 0) > p.d ? ['Yes! The drug is being delivered.', 'good']
-      : Tv > g.hotT ? ['Keep the noise up: the micelles are opening.', ''] : ['Red window: make noise now!', 'bad'];
-    if (Tv > g.hotT) return ['Not now! Heat outside the red windows wastes the drug.', 'bad'];
-    if ((G.lost || 0) > p.l) return ['Drug is escaping! Be quiet until the next red window.', 'bad'];
-    if (w && w.left !== null && w.left < 1.5) return ['Get ready: a red window starts in a moment.', 'warn'];
+    const r = G.rec, p = r.find((q) => q.s >= s - 1) || r[0] || { d: 0, l: 0 }, g = G.g, inZ = micInBand(2);
+    if (inZ) return (G.del || 0) > p.d ? ['Yes! The drug is being delivered.', 'good']
+      : Tv > g.hotT ? ['Keep the noise up: the micelle is opening.', ''] : ['A micelle is in the tumour: make noise now!', 'bad'];
+    if (Tv > g.hotT) return ['No micelle in the tumour: quiet! The heat leaks drug elsewhere.', 'bad'];
+    if ((G.lost || 0) > p.l) return ['Drug is escaping outside the tumour! Keep quiet.', 'bad'];
+    if (micInBand(6)) return ['Get ready: a micelle is about to enter the tumour.', 'warn'];
     return ['Good: quiet keeps the drug inside.', 'good'];
   }
   function gelCoach(G, s, Tv, tr) {
@@ -4940,12 +5232,11 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const g = G.g, r = G.rec || [], n = r.length; if (n < 8) return '';
     const pc = (f) => Math.round(100 * r.filter(f).length / n);
     if (g.id === 'drug') {
-      const W = G.win || []; let hit = 0;
-      for (const [a, b] of W) { const q = r.filter((x) => x.s >= a / G.rate && x.s < b / G.rate); if (q.length && q.filter((x) => x.T > g.hotT).length >= 0.4 * q.length) hit++; }
-      const lost = Math.round(100 * (G.lost || 0) / (eng.nDrug || 1));
-      if ((G.lost || 0) > (G.del || 0) && lost >= 10) return T('Most of the drug escaped between the windows ({l}% lost). Stay quiet when there is no red window.', { l: lost });
-      if (hit < W.length / 2) return T('You heated in {h} of {n} red windows. Make noise as soon as a window starts.', { h: hit, n: W.length });
-      return T(st === 3 ? 'Great timing: you heated in {h} of {n} windows and lost only {l}% of the drug.' : 'You heated in {h} of {n} windows and lost {l}% of the drug. Start the noise a little before each window.', { h: hit, n: W.length, l: lost });
+      const zin = r.filter((x) => x.z), zout = r.filter((x) => !x.z), hotIn = zin.length ? Math.round(100 * zin.filter((x) => x.T > g.hotT).length / zin.length) : 0,
+        hotOut = zout.length ? Math.round(100 * zout.filter((x) => x.T > g.hotT).length / zout.length) : 0, lost = Math.round(100 * (G.lost || 0) / (eng.nDrug || 1));
+      if ((G.lost || 0) > (G.del || 0) && lost >= 10) return T('Most of the drug escaped outside the tumour ({l}% lost). You were loud for {o}% of the time when no micelle was in it.', { l: lost, o: hotOut });
+      if (hotIn < 50) return T('You heated only {h}% of the time a micelle was in the tumour. Make noise as soon as one enters the red zone.', { h: hotIn });
+      return T(st === 3 ? 'Great aim: you heated {h}% of the time a micelle was in the tumour and lost only {l}% of the drug.' : 'You heated {h}% of the time a micelle was in the tumour and lost {l}% of the drug. Keep quieter between micelles.', { h: hotIn, l: lost });
     }
     if (g.id === 'gel') {
       const hot = pc((x) => x.T > g.openT), maxT = Math.max(...r.map((x) => x.T)), late = r.filter((x) => x.s > 20), lateHot = late.length && late.filter((x) => x.T > g.openT).length > 0.6 * late.length;
@@ -4980,7 +5271,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (g.zone || g.path) { x.fillStyle = col('good') + '33'; x.beginPath(); const ss = []; for (let q = 0; q <= 60; q++) ss.push(GAME_SEC * q / 60);
       ss.forEach((sv, i) => (i ? x.lineTo : x.moveTo).call(x, X(sv), YT(Math.min(hi, zoneOf(g, sv)[1]))));
       for (let i = ss.length - 1; i >= 0; i--) x.lineTo(X(ss[i]), YT(Math.max(lo, zoneOf(g, ss[i])[0]))); x.closePath(); x.fill(); }
-    for (const [a, b] of G.win || []) { x.fillStyle = col('hot') + '33'; x.fillRect(X(a / G.rate), padT, X(b / G.rate) - X(a / G.rate), ph); }
+    if (g.flowU) { x.fillStyle = col('hot') + '33'; for (let i = 0; i < r.length; i++) if (r[i].z) { const s0 = r[i].s, s1 = i + 1 < r.length ? r[i + 1].s : GAME_SEC; x.fillRect(X(s0), padT, X(s1) - X(s0) + 0.5, ph); } }
     x.font = `${fs}px ${css('--f-body')}`; x.textBaseline = 'middle';
     g.stars.forEach((sv, k) => { const y = YV(sv); x.strokeStyle = col('cryst') + 'aa'; x.lineWidth = 1; x.setLineDash([3, 3]); x.beginPath(); x.moveTo(padL, y); x.lineTo(padL + pw, y); x.stroke();
       x.setLineDash([]); x.fillStyle = col('cryst'); x.textAlign = 'left'; x.fillText('★'.repeat(k + 1), padL + pw + 2, y); });
@@ -4991,7 +5282,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     // legend along the top
     let lx = padL; const item = (color, label, box) => { x.fillStyle = color; if (box) x.fillRect(lx, 5, 12, 10); else x.fillRect(lx, 9, 14, 3); lx += 18; x.fillStyle = col('ink'); x.textAlign = 'left'; x.fillText(label, lx, 10); lx += x.measureText(label).width + 12; };
     item(col('hot'), T('your temperature')); item(col('accent'), T('score'));
-    if (g.zone || g.path) item(col('good') + '66', T(g.path ? 'green path' : 'green zone'), true); else if (G.win) item(col('hot') + '55', T('red windows'), true);
+    if (g.zone || g.path) item(col('good') + '66', T(g.path ? 'green path' : 'green zone'), true); else if (g.flowU) item(col('hot') + '55', T('micelle in the tumour'), true);
   }
   // games open one after another: a star in a game opens the next; teachers can open all
   const unlockAll = () => { try { return localStorage.getItem('mdlab-unlock') === '1'; } catch (e) { return false; } };
@@ -5030,8 +5321,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (!guide) return; guide = null; coachHide(); try { localStorage.setItem('mdlab-guided', '1'); } catch (e) {}
     if (play) startGame();
   }
-  $('coachBtn').addEventListener('click', () => guideEnd(true));
-  $('coachSkip').addEventListener('click', () => guideEnd(true));
+  $('coachBtn').addEventListener('click', () => { if (guide) guideEnd(true); else if (battle) battleGo(); });
+  $('coachSkip').addEventListener('click', () => { if (guide) guideEnd(true); else if (battle) battleStop(); });
   coachReady = true; tWordShow(); zoneMarks(); renderPick();
 
   // ---------- fact cards: one fact per card, won with three stars (games) or a minute with a system (Explore), kept in an album ----------
@@ -5193,7 +5484,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   }
   function fcGive(pool) { // a random card from the pool that this browser does not have yet; null when the pool is complete
     const own = fcOwned(), left = pool.filter((c) => !own.includes(c.id)); if (!left.length) return null;
-    const c = left[Math.floor(Math.random() * left.length)]; own.push(c.id); fcSave(own); renderAlbum(); return c;
+    const c = left[Math.floor(Math.random() * left.length)]; own.push(c.id); fcSave(own); renderAlbum(); if (typeof renderLadder === 'function') renderLadder(); return c;
   }
   // the big card over the page: a new card flips over with stars; an album card just opens
   let fcShown = null;
@@ -5224,7 +5515,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   $('album').addEventListener('click', (e) => { const b = e.target.closest('[data-card]'); if (b) fcOpen(FC_ALL.find((c) => c.id === b.dataset.card), false); });
   let fcArm = false, fcArmT = 0; // resetting takes two clicks, since the page cannot show a confirm dialog
   $('fcReset').addEventListener('click', () => { if (!fcArm) { fcArm = true; $('fcReset').textContent = T('Click again to remove all cards'); clearTimeout(fcArmT); fcArmT = setTimeout(() => { fcArm = false; $('fcReset').textContent = T('Reset cards'); }, 4000); return; }
-    fcSave([]); renderAlbum(); });
+    fcSave([]); renderAlbum(); renderLadder(); });
   // Explore: every minute of running with a system that has no game wins its next card
   const fcExpAcc = {};
   function cardTick(dtSec) {
@@ -5235,6 +5526,81 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   }
   renderAlbum();
   $('fcBack').innerHTML = fcBackArt; fcReady = true;
+
+  // ---------- challenges: once all six cards of a game are collected, five harder levels; a star opens the next; no tips ----------
+  const LADDER = 5, AF_LEVELS = [8, 16, 24, 32, 40]; // antifreeze per ice challenge: following the green path gives about 53, 45, 44, 40 and 36% ice (one star at 35%)
+  const deckDone = (g) => { const own = fcOwned(); return FC_ALL.filter((c) => c.deck.game === g.id).every((c) => own.includes(c.id)); };
+  const ladGet = (g) => { try { return JSON.parse(localStorage.getItem('mdlab-ladder-' + g.id) || '{}') || {}; } catch (e) { return {}; } }; // level -> best stars
+  const ladSet = (g, k, st) => { const o = ladGet(g); o[k] = Math.max(o[k] || 0, st); try { localStorage.setItem('mdlab-ladder-' + g.id, JSON.stringify(o)); } catch (e) {} };
+  const ladOpen = (g, k) => k === 1 || (ladGet(g)[k - 1] || 0) >= 1;
+  function ladTwist(g, k) { // what makes level k harder
+    if (g.id === 'ice') return { af: AF_LEVELS[k - 1], txt: ['Antifreeze particles appear one by one during the run: {n} by the end.', { n: AF_LEVELS[k - 1] }] };
+    if (g.id === 'demix') return { waveAmp: 0.04 + 0.04 * k, txt: ['Heat waves hit the box every few seconds. Get quieter when one comes.', {}] };
+    if (g.id === 'drug') return { bandK: 1 - 0.06 * k, flowK: 1 + 0.08 * k, txt: ['The tumour is narrower and the blood flows faster.', {}] };
+    return { conc: 35 - 2 * k, txt: ['Fewer proteins: {n}.', { n: 35 - 2 * k }] };
+  }
+  function twistTick(G, s) {
+    if (G.af) { const want = Math.round(G.af * Math.min(1, s / 25)), ty = eng.type; let have = 0; for (let i = 0; i < eng.N; i++) if (ty[i] === 3) have++;
+      for (let guard = 0; have < want && guard < 50 * eng.N; guard++) { const j = Math.floor(Math.random() * eng.N); if (ty[j] === 7) { ty[j] = 3; have++; } } }
+    if (G.waves) { const w = G.waves.find(([a, b]) => s >= a && s < b), bump = w ? w[2] : 0;
+      if (bump !== G.bump) { G.bump = bump; eng.p.T = tset + bump; if (bump) coachSay('Heat wave!', 'bad'); else coachHide(); } }
+  }
+  function renderLadder() {
+    const games = GAMES.filter((g) => deckDone(g));
+    $('ladder').innerHTML = games.length ? `<h3>${T('Challenges')}</h3>` + games.map((g) => { const o = ladGet(g);
+      return `<div class="ladrow"><span>${T(g.title)}</span><div class="ladbtns">` + Array.from({ length: LADDER }, (_, i) => { const k = i + 1, open = ladOpen(g, k), st = o[k] || 0;
+        return `<button data-lad="${g.id}:${k}" ${open ? '' : 'disabled'} aria-pressed="${gameSel === g && gameLevel === k}" title="${T('Challenge {k}', { k })}">${open ? k : '🔒'}<small>${st ? '★'.repeat(st) : ''}</small></button>`; }).join('') + '</div></div>'; }).join('')
+      : '';
+  }
+  function selectLevel(id, k) {
+    const g = GAMES.find((x) => x.id === id); if (!g || !ladOpen(g, k)) return;
+    selectGame(id); gameLevel = k; const tw = ladTwist(g, k);
+    $('ggoal').innerHTML = `<b>${T('Challenge {k}', { k })}.</b> ${T(tw.txt[0], tw.txt[1])} ${T(g.goal)} ${T('No tips in challenges.')}`;
+    gstartKey = 'Start'; $('gstart').textContent = T('Start'); prepGame(g); renderLadder();
+  }
+  document.addEventListener('click', (e) => { const b = e.target.closest('[data-lad]'); if (!b || b.disabled) return; const [id, k] = b.dataset.lad.split(':'); selectLevel(id, +k);
+    if (b.closest('#gres')) startGame(); else if (typeof sheet === 'function' && phoneUI()) sheet(false); });
+  function ladderEnd(G) {
+    const g = G.g, st = starsFor(g, G.peak), k = G.level, was = ladGet(g)[k] || 0; ladSet(g, k, st);
+    $('hudGoal').textContent = $('hudTip').textContent = ''; $('gagain').hidden = false;
+    if (G.snap) { restoreSnap(G.snap); running = false; $('pause').textContent = T('Resume'); showReport(report()); }
+    const cleared = st >= 1, next = cleared && k < LADDER;
+    $('gres').innerHTML = `<span class="big">${starStr(st)}</span> <b>${T('Challenge {k}', { k })}: ${T('Score {s}', { s: g.fmt(G.peak) })}</b>. ` +
+      (cleared ? (k < LADDER ? T('Cleared! Challenge {n} is open.', { n: k + 1 }) : T('All five challenges cleared!')) : T('Not cleared: you need at least one star.')) +
+      (st > was && was ? ' ' + T('New best for this challenge.') : '') + (next ? ` <button class="btn primary" data-lad="${g.id}:${k + 1}">${T('Next challenge')}</button>` : '');
+    renderLadder(); drawReplay(G);
+  }
+  renderLadder();
+
+  // ---------- class battle: teams take turns on the same game from the same start; highest score wins ----------
+  function battleShow(msg, cls, go, stop) { coachSay(msg, cls); const b = $('coachBtn'), k = $('coachSkip'); b.hidden = false; b.textContent = go; k.hidden = false; k.textContent = stop; }
+  function battleTable() {
+    const b = battle, best = Math.max(...b.scores.map((x) => x.v));
+    return '<table class="btable"><tbody>' + b.scores.map((x, i) => `<tr class="${b.done && x.v === best ? 'win' : ''}"><td>${b.done && x.v === best ? '🏆 ' : ''}${T('Team {n}', { n: i + 1 })}</td><td>${b.g.fmt(x.v)}</td><td>${starStr(x.st)}</td></tr>`).join('') +
+      Array.from({ length: b.n - b.scores.length }, (_, i) => `<tr class="todo"><td>${T('Team {n}', { n: b.scores.length + i + 1 })}</td><td>–</td><td></td></tr>`).join('') + '</tbody></table>';
+  }
+  function battleStart() {
+    if (!gameSel) return; if (game) endGame(null);
+    gameLevel = 0; battle = { n: +$('bTeams').value, g: gameSel, seed: 1 + ((Math.random() * 1e9) | 0), scores: [], k: 0, done: false };
+    if (typeof sheet === 'function') sheet(false); $('greplay').hidden = true; $('gres').innerHTML = ''; $('ghud').hidden = true;
+    battleShow(T('Class battle: {n} teams. Team 1, get ready!', { n: battle.n }), 'guide', T('Start'), T('End battle')); syncBoxStart();
+  }
+  function battleGo() {
+    if (battle.done) { const n = battle.n; battle = null; $('bTeams').value = n; battleStart(); return; }
+    coachHide(); battle.keep = true; startGame(); battle.keep = false;
+  }
+  function battleEnd(G) {
+    const g = G.g, st = starsFor(g, G.peak); battle.scores.push({ v: G.peak, st }); battle.k++;
+    $('hudGoal').textContent = $('hudTip').textContent = ''; $('gagain').hidden = true;
+    if (G.snap) { restoreSnap(G.snap); running = false; $('pause').textContent = T('Resume'); showReport(report()); }
+    if (battle.k >= battle.n) { battle.done = true; const best = Math.max(...battle.scores.map((x) => x.v)), w = battle.scores.map((x, i) => (x.v === best ? i + 1 : 0)).filter(Boolean);
+      $('gres').innerHTML = battleTable();
+      battleShow(w.length > 1 ? T('A draw between {t}!', { t: w.map((n) => T('Team {n}', { n })).join(', ') }) : T('Team {n} wins!', { n: w[0] }), 'good', T('New battle'), T('Close')); }
+    else { $('gres').innerHTML = battleTable(); battleShow(T('Team {n}, get ready!', { n: battle.k + 1 }), 'guide', T('Start'), T('End battle')); }
+    drawReplay(G);
+  }
+  function battleStop() { battle = null; coachHide(); syncBoxStart(); }
+  $('bStart').addEventListener('click', battleStart);
 
   // ---------- thermodynamics: temperature scans ----------
   const NB = 30; let scan = null, thermo = null;
@@ -5456,7 +5822,15 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   cv.addEventListener('click', pickAt);
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && follow && tourI < 0) follow = null; });
   function drawDrug() {
-    const s = cv.width / eng.L, type = eng.type;
+    const s = cv.width / eng.L, type = eng.type, hb = eng.p.hotBand;
+    if (hb) { // the tumour: a red band; in the barostat-free game box the view is one box, so draw it and its periodic copy
+      ctx.save(); ctx.fillStyle = colors.hot; ctx.globalAlpha = 0.13; const x0 = ((hb.x0 % eng.L) + eng.L) % eng.L;
+      for (const off of [0, -eng.L]) ctx.fillRect((x0 + off) * s, 0, hb.w * s, cv.height);
+      ctx.globalAlpha = 0.7; ctx.strokeStyle = colors.hot; ctx.lineWidth = 2 * dpr; ctx.setLineDash([6 * dpr, 5 * dpr]);
+      for (const xe of [x0, x0 + hb.w]) { const X = (xe % eng.L) * s; ctx.beginPath(); ctx.moveTo(X, 0); ctx.lineTo(X, cv.height); ctx.stroke(); }
+      ctx.setLineDash([]); ctx.globalAlpha = 1; ctx.font = `700 ${13 * dpr}px ${css('--f-body') || 'sans-serif'}`; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.fillStyle = colors.hot;
+      ctx.fillText(T('Tumour'), ((x0 + hb.w / 2) % eng.L) * s, cv.height - 8 * dpr);
+      ctx.textAlign = 'left'; ctx.fillStyle = colors.muted; ctx.fillText(T('Blood flow') + ' →', 8 * dpr, cv.height - 8 * dpr); ctx.restore(); }
     // drug as stars (drawn over everything, in all periodic copies near the edges) so it stands out from the beads
     const star = (col, t, R) => { ctx.fillStyle = col; ctx.strokeStyle = colors.ink; ctx.lineWidth = Math.max(1, 0.08 * s); ctx.beginPath();
       for (let i = 0; i < eng.N; i++) { if (type[i] !== t) continue; const X = eng.x[i] * s, Y = eng.y[i] * s;
@@ -5522,12 +5896,13 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
         disks(colors.solv, 0.35 * s, ic ? (i) => type[i] === 7 && !ic[i] : (i) => type[i] === 7, 0, N);
         if (ic) disks(colors.cold, 0.35 * s, (i) => ic[i] === 1, 0, N);
         disks(colors.tail, 0.68 * s, (i) => type[i] === 3, 0, N); // antifreeze particles, drawn at their size (σ = 1.4)
+        disks(colors.cryst, 0.5 * s, (i) => type[i] === 4, 0, N); // ice wall
       }
       if (sys === 'ice' || ($('showSolv').checked && qLevel < 3)) {
         if (sys !== 'ice') { const sm = $('showShell').checked && shellMask && (sys === 'mbpoly' || sys === 'plates') ? shellMask : null;
           disks(colors.solv, 0.35 * s, sm ? (i) => !sm[i] : () => true, nCh, N); if (sm) disks(colors.cold, 0.35 * s, (i) => sm[i] === 1, nCh, N); }
         if (qLevel < 2) { ctx.strokeStyle = colors.bond; ctx.lineWidth = Math.max(1, 0.08 * s); ctx.beginPath(); const arm = eng.arm, al = 0.5 * s;
-        for (let i = nCh; i < N; i++) { const X = x[i] * s, Y = y[i] * s, o = 6 * i;
+        for (let i = nCh; i < N; i++) { if (sys === 'ice' && type[i] === 3) continue; const X = x[i] * s, Y = y[i] * s, o = 6 * i;
           for (let a = 0; a < 6; a += 2) { ctx.moveTo(X, Y); ctx.lineTo(X + al * arm[o + a], Y + al * arm[o + a + 1]); } }
         ctx.stroke(); } // arms skipped on slow devices
       }
@@ -5595,6 +5970,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   let last = performance.now(), stepCount = 0, perfT = last, sps = 0, tkinAvg = null;
   // ---------- hidden debug line: add ?debug=1 to the address (or #debug) ----------
   const dbgOn = /[?&]debug(=1)?\b/.test(location.search) || location.hash === '#debug';
+  if (dbgOn) document.documentElement.classList.add('debug'); // also shows test tools such as the ice wall
   let dbg = dbgOn ? { t: performance.now(), frames: 0, frameSum: 0, frameMax: 0, sim: 0, draw: 0, ana: 0, steps: 0 } : null;
   if (dbgOn) { const d = document.createElement('div'); d.id = 'dbgLine'; d.className = 'dbgline'; $('sim').insertAdjacentElement('afterend', d); }
   function debugTick(now, frameMs) {
@@ -5662,7 +6038,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (gameSel && !game) { $('ggoal').textContent = T(gameSel.goal);
       $('ghint').innerHTML = `${T('Stars:')} ${gameSel.stars.map((s, k) => '★'.repeat(k + 1) + ' ' + gameSel.fmt(s)).join(' · ')}`; }
     $('gstart').textContent = T(gstartKey); $('gstartBox').textContent = T(gstartKey);
-    if (game) { const g = game.g; $('gvalLab').textContent = T(g.lab); $('hudTitle').textContent = T(g.title) + ':'; $('hudGoal').textContent = T(phoneUI() ? g.short : g.goal); $('hudTip').textContent = ''; $('gquit').textContent = T('Give up'); }
+    if (game) { const g = game.g; $('gvalLab').textContent = T(g.lab); $('hudTitle').textContent = T(g.title) + (game.level ? ' · ' + T('Challenge {k}', { k: game.level }) : '') + ':'; $('hudGoal').textContent = T(phoneUI() ? g.short : g.goal); $('hudTip').textContent = ''; $('gquit').textContent = T('Give up'); }
     else { $('gquit').textContent = T($('ghud').hidden ? 'Give up' : 'Close'); }
     drawThermo();
   }
@@ -5670,7 +6046,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     LANG = I18N[l] || l === 'en' ? l : 'en'; $('lang').value = LANG;
     applyStatic(); refreshTexts(); document.title = T('Shut Up and Get Structured'); barLabels();
     if (typeof tourI !== 'undefined' && tourI >= 0) tourShow(tourI); // an open help tour follows the language
-    if (fcReady) { renderAlbum(); $('fcBack').innerHTML = fcBackArt; if (fcShown) { $('fcFront').innerHTML = fcFace(fcShown[0]); $('fcClose').textContent = T(fcShown[1] ? 'Add to my cards' : 'Close'); } }
+    if (classOn && typeof clsModeUI === 'function') clsModeUI();
+    if (fcReady) { renderAlbum(); renderLadder(); $('fcBack').innerHTML = fcBackArt; if (fcShown) { $('fcFront').innerHTML = fcFace(fcShown[0]); $('fcClose').textContent = T(fcShown[1] ? 'Add to my cards' : 'Close'); } }
     if (coachReady) { tWordShow(); unlockLabel(); renderPick(); if (guide) guideShow(); else if (coachMsg) coachSay(coachMsg[0], coachMsg[2], coachMsg[1]); const rp = $('greplay'); if (!rp.hidden && rp._run) drawReplay(rp._run); }
   }
   // short labels for the phone's bottom bar: a quarter of a narrow screen fits about 10 letters

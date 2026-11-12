@@ -52,7 +52,7 @@ Made by [Dmitry Tolmachev](https://scholar.google.com/citations?user=OQtj-R4AAAA
 | **Legend** (under the box) | Names the colours of the current system and shows the box size. |
 | **Click a molecule** (Explore and Energy scan) | Rings it and draws its path over the last few seconds. Click it again or press Esc to stop. For chains the whole chain is followed. |
 | **Mode switch** (right) | **Game**, **Explore** and **Energy scan**. |
-| **In everyday life** (bottom) | Short real-world examples for the current system. |
+| **My cards** (bottom) | The album of fact cards won on this device, with the current system's deck first. Click a card to open it. |
 
 **On phones** the box and the temperature bar stay at the top of the screen. The mode switch moves to a bar at the bottom (**Game**, **Explore**, **Energy scan**, **Options**), and all panels open in a sheet that slides up from the bottom. **Game** and **Explore** open their options; **Energy scan** goes straight to the scan buttons and graphs under the box; **Options** in Explore opens at the current system's settings. Picking a game or a system, pressing Start, tapping outside the sheet or ✕ closes the sheet again.
 
@@ -66,7 +66,7 @@ Four 30-second games. Each one shows its goal, a short description, and up to th
 |---|---|---|---|
 | **Grow the biggest ice crystal** | Ice | Turn as much water into ice as possible. | 35%, 47%, 56% ice |
 | **Separate the liquids** | Two liquids | Separate two mixed liquids as far as possible. | s = 0.40, 0.48, 0.54 |
-| **Deliver the drug** | Soap molecules carrying drug | Heat only during the red target windows, so the micelles release their drug at the right moment. Drug released at other times is lost. | 35%, 65%, 85% delivered |
+| **Deliver the drug** | Soap molecules carrying drug | Blood flow carries four drug-loaded micelles through a red tumour zone. Noise heats the tumour (a quarter of the heat leaks outside it); drug released in the tumour is delivered, drug released elsewhere is lost. | 25%, 45%, 65% delivered |
 | **Grow the longest gel strand** | Proteins | Unfold the proteins with heat, then cool them so they link into the longest possible network. | 80, 130, 170 σ path |
 
 How a game runs:
@@ -78,7 +78,7 @@ How a game runs:
 - During the game, the bar shows the score now, the star levels and the time left. When a new star is reached, the stars pop up over the box.
 - **A coach line on the box** says what the molecules are doing and what to try, for example *Too warm: the ice cannot grow. Get quieter!* or *Red window: make noise now!* It follows the temperature and how the score is changing, and changes at most every 1.5 s.
 - **Temperature in words.** During games the number under the box is replaced by a symbol: ❄️❄️ cold, ❄️ cool, ☀️ warm, 🔥 hot (the word shows as a tooltip). Symbols keep the bar the same width in every language. A green band on the slider and on the **Your noise** bar (the microphone level, shown big when the microphone is on) marks the temperatures to aim for. For the two liquids it is fixed (*cool*, where the blobs grow fastest). For ice it is a **green path** that moves down during the game: start warm, cool slowly, and stay quiet for the last seconds (annealing). If the ice stops growing, the coach suggests a short burst of noise to melt badly packed bits, then cooling again.
-- At the end, the box shows the best moment of the run (press **Resume** to let it continue from there). The text gives the score, **one sentence about this run** (for example how much of the game was spent too warm, too cold or in the green band, how many drug windows were heated, or whether the proteins were ever heated enough), and one random fact related to the game. Students who get 0 or 1 star also get a tip.
+- At the end, the box shows the best moment of the run (press **Resume** to let it continue from there). The text gives the score, **one sentence about this run** (for example how much of the game was spent too warm, too cold or in the green band, how many drug windows were heated, or whether the proteins were ever heated enough). Students who get 0 or 1 star also get a tip.
 - **A replay graph** under the text shows the student's temperature over the 30 s (red line), the score (teal line, dot at the best moment) and the star levels, with the green band (ice, liquids) or the red drug windows shaded. It shows at a glance whether the student was too loud, too quiet, or late.
 - **Statistics on this device** lists games played, average and best score for each game. They are stored only in this browser. **Reset statistics** clears them.
 - **Give up** ends a game early; **Play again** restarts it.
@@ -89,8 +89,40 @@ Each game needs a different strategy, which is what makes them good discussion s
 
 - **Ice** rewards slow cooling from warm (annealing), then staying cold: going silent at once freezes a disordered jumble, and holding one temperature grows too little. A short reheating can melt defects so they regrow in order.
 - **Separate the liquids** rewards a temperature that is cold enough to separate but warm enough for molecules to move: too cold and everything freezes in place.
-- **Deliver the drug** rewards timing: the micelles need a moment to open, so start the noise just before each window and stop just before it ends.
+- **Deliver the drug** rewards aim: the micelles need a few seconds of heat to open, so heat while a micelle passes through the tumour and keep quiet in between, because the heat that leaks out opens micelles in healthy tissue. A steady medium noise often beats shouting. (Test runs: silent 0%, always loud 25–33%, steady medium 33–53%, heating only while a micelle is in the tumour about 50%; individual runs vary a lot with only 12 drug molecules.)
 - **Gel strand** rewards heat-then-cool: folded proteins cannot link, and too much heat breaks the links.
+
+### Challenges
+
+When all six cards of a game's deck are collected, that game opens five **challenges** (listed under the game picker). Each level is harder than the one before; a star clears a level and opens the next, and cleared levels can be replayed at any time. Challenges show no tips, coach line or diagnosis, and do not change the statistics.
+
+| Game | What makes each level harder |
+|---|---|
+| Ice | Antifreeze particles appear one by one during the run: 8, 16, 24, 32 and 40 by the end. Test runs following the green path reached about 53, 45, 44, 40 and 36% ice (one star at 35%). |
+| Two liquids | Heat waves of growing strength (+0.08 to +0.24 T*) hit the box for 2 s every 5–8 s; the box shows "Heat wave!". |
+| Deliver the drug | The tumour gets narrower (6% per level) and the blood flows faster (8% per level). |
+| Gel strand | Fewer proteins: 33, 31, 29, 27, 25. |
+
+### Class battle
+
+Under the games, **Class battle** lets 2–6 teams play the selected game in turn. Every team starts from exactly the same starting arrangement of molecules. A prompt on the box calls each team ("Team 2, get ready!"), the table under the scores fills in, and after the last team the winner (or a draw) is announced. **New battle** starts again with a fresh start; **End battle** stops. Battles do not change the statistics or win cards. Tips follow the **Show tips** setting.
+
+## Fact cards
+
+Thirty collectible cards, each with one real-world fact and a sketch, in five decks of six: **Ice**, **Two liquids**, **Soap molecules**, **Proteins** and **Explore**.
+
+- **Three stars** in a game win a random card from that game's deck, shown over the page with a flip and a burst of stars. When a deck is complete, three stars win nothing new (the result says so).
+- **Explore cards** (Plastic, Polymer chains, Oily particles) are won in Explore mode: each minute of running with one of these systems wins one of its two cards.
+- **My cards** under the box shows the album: won cards open in full, the rest are face down. **Reset cards** (two clicks) clears the album on this device, for example before a class uses a shared computer.
+- Cards are stored only in this browser.
+
+| Deck | Cards |
+|---|---|
+| Ice | Six arms · Ice floats · Liquid below zero · Frost needs a start · Salt on the road · Slow ice, big crystals |
+| Two liquids | Mayonnaise · Rooms without walls · Salad dressing · Cloudy ouzo · Mixes only when warm · Glass full of pores |
+| Soap molecules | The first nano-medicine · Release on heat · How soap cleans · Bile digests fat · Every cell's skin · Milk |
+| Proteins | Boiled egg · Jelly melts in your mouth · Tofu · Skin on hot milk · Clumps that make us ill · Ricotta |
+| Explore | Why milk bottles look milky · Candle wax (Plastic) · Swelling gloves · Smart gel (Polymer chains) · Oil on soup · Unfolded by cold (Oily particles) |
 
 ## Explore mode
 
@@ -129,6 +161,8 @@ Only the controls that apply to the current system are shown.
 | Control | System | What it changes |
 |---|---|---|
 | **Antifreeze particles** | Ice | 0–100 particles, twice the size of a water molecule, that attract water but have no hydrogen-bond arms (the box rebuilds). They lower the melting point and stop the water from freezing; about 80 keep most of the water liquid. |
+| **Voice pitch sets the pressure** | Ice | With the microphone on, loudness sets the temperature and the pitch of a sung or hummed note (about 110–700 Hz) sets the barostat's target pressure from 0 to 0.35; the barostat switches on with it. Higher pressure lowers the freezing point here, as in real water: at pressure 0.3 the water stays liquid at T* 0.15–0.16, where at zero pressure it partly freezes. The pitch shows under the option. Explore only. |
+| **Ice-like wall** (debug mode only, `?debug=1`) | Ice | A test tool: a pinned strip of 44 molecules over the middle 60% of the box, laid out as the ice honeycomb and binding water twice as strongly as water binds water (gold). It keeps its own lattice spacing when the barostat changes the box. Switches on and off live; not used in games. Water next to it lines up with the honeycomb, but in this 2D model it does not speed up freezing: in 300 τ runs at constant pressure (P* 0.1 and 0.3) the ice fraction was the same with and without the wall, within noise. Ice grows slowly from any surface here. |
 | **Concentration** / **Number of …** | all | How many molecules of the solute there are. Changes are applied live: molecules are added or removed. |
 | **Tail–tail attraction ε_BB** | Soap molecules | How strongly the oily tails stick together. Lower acts like heating. |
 | **Head–solvent attraction ε_AS** | Soap molecules | How strongly the heads like the solvent. |
@@ -182,7 +216,9 @@ Controls: **Heating scan**, **Cooling scan**, **Stop**, and the scan duration (F
 
 For a projector. The page goes full screen with the box on the left and, on the right, large readouts: the system's main score, the temperature, and a room-noise bar. The microphone switches on automatically.
 
-- **System menu**: Ice, Two liquids, Soap molecules, Plastic, Polymer chains, Proteins, Oily particles.
+- **Explore / Game** switch at the top. Class mode opens in the mode you were in.
+- **Explore**: the **System menu** (Ice, Two liquids, Soap molecules, Plastic, Polymer chains, Proteins, Oily particles) and **Pause**.
+- **Game**: a menu of the open games, **Team play** with 2–6 teams, and **Start**. The big readouts show the game's score with its stars and the time left. With Team play on, the teams play in turn from the same start (a class battle, see Game mode): a prompt on the box calls each team, and the table under the readouts fills in until the winner is announced. Without it, Start plays one ordinary game. The guided first game is skipped in class mode.
 - **Set quiet level**: press it once with the class silent.
 - **Pause** and **Exit class mode** (or Esc).
 
@@ -333,7 +369,7 @@ Cold, the particles are attracted to water, so they dissolve. Warm, that attract
 
 ## Hidden systems
 
-Three systems are still in the code but hidden from the menu, because they need more work:
+Three systems are still in the code but hidden from the menu, because they need more work. They appear in the System menu in debug mode (add `?debug=1` to the address, or `#debug`), together with the ice-like wall:
 
 - **Diblock copolymer:** chains of an A block and a B block that dislike each other, forming microphase-separated domains about one chain size wide. Works, but the change with temperature is gradual and slow in 2D.
 - **Brush + droplet:** a polymer brush grafted on a surface with a liquid droplet on top, whose wetting should switch with temperature. The change in surface chemistry is real, but the contact angle of a droplet this small fluctuates too much to show it.
