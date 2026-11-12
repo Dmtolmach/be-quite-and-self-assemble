@@ -271,6 +271,26 @@ header .sub { font-size: 15px; line-height: 1.45 } header .sub b { color: var(--
 .gfx .cd.go { color: var(--hot) }
 .gfx .sp { grid-area: 1 / 1; font-size: clamp(54px, 16vmin, 120px); line-height: 1; color: var(--cryst); letter-spacing: 4px;
   -webkit-text-stroke: 2px color-mix(in srgb, var(--ink) 55%, var(--cryst)); paint-order: stroke fill; animation: starpop 1.3s cubic-bezier(.2,.9,.3,1.2) both }
+.gfx .sptxt { grid-area: 1 / 1; align-self: end; margin-bottom: 14%; font-family: var(--f-display); font-weight: 700; font-size: clamp(22px, 5vmin, 40px); color: var(--ink);
+  -webkit-text-stroke: 4px var(--panel); paint-order: stroke fill; animation: starpop 1.6s cubic-bezier(.2,.9,.3,1.2) both }
+.ghud.flash { animation: hudflash 0.9s ease-out } @keyframes hudflash { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--cryst) 70%, transparent) } 100% { box-shadow: 0 0 0 18px transparent } }
+.sndbtn { min-width: 40px; padding-inline: 8px }
+.gend { position: absolute; z-index: 7; display: grid; place-items: center; background: color-mix(in srgb, var(--bg) 35%, transparent); border-radius: 6px; padding: 10px; overflow: auto }
+.gendcard { position: relative; width: min(440px, 100%); background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px 16px; text-align: center;
+  box-shadow: 0 18px 50px color-mix(in srgb, var(--ink) 25%, transparent); animation: gendin .35s cubic-bezier(.2,.9,.3,1.1) both }
+@keyframes gendin { 0% { transform: translateY(14px) scale(.96); opacity: 0 } 100% { transform: none; opacity: 1 } }
+.gendx { position: absolute; top: 8px; right: 10px; border: 0; background: none; font-size: 16px; color: var(--muted); cursor: pointer; padding: 4px }
+.gendh { margin: 0; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600 }
+.gendstars { display: flex; justify-content: center; gap: 10px; margin: 8px 0 2px }
+.gendstars .gs { font-size: clamp(40px, 9vmin, 62px); line-height: 1; color: color-mix(in srgb, var(--line) 80%, var(--panel)); transition: color .2s }
+.gendstars .gs.on { color: var(--cryst); -webkit-text-stroke: 2px color-mix(in srgb, var(--ink) 45%, var(--cryst)); animation: slotpop .5s cubic-bezier(.2,.9,.3,1.4) both }
+@keyframes slotpop { 0% { transform: scale(.3) rotate(-30deg) } 60% { transform: scale(1.3) rotate(8deg) } 100% { transform: none } }
+.gendmsg { margin: 4px 0 0; font-family: var(--f-display); font-size: 22px; font-weight: 700 }
+.gendscore { margin: 2px 0 6px; display: flex; gap: 10px; justify-content: center; align-items: baseline; flex-wrap: wrap } .gendscore b { font-family: var(--f-mono); font-size: 30px; font-weight: 500 }
+.gendscore small { color: var(--muted); font-size: 13px } .gendscore .pb { background: var(--cryst); color: #3a2600; font-weight: 700; font-size: 12.5px; padding: 3px 9px; border-radius: 999px; animation: slotpop .5s .9s both }
+.gendnote, .gendtip { margin: 4px 0; font-size: 13.5px; color: var(--ink) } .gendtip { color: var(--muted); font-size: 13px }
+.gendbtns { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 12px } .gendbtns .btn { font-size: 14px; padding: 8px 14px } .btn.ghost { background: transparent }
+@media (prefers-reduced-motion: reduce) { .gendcard, .gendstars .gs.on, .gendscore .pb, .gfx .sptxt { animation: none } }
 .gfx .bit { grid-area: 1 / 1; font-size: 22px; color: var(--cryst); animation: burst 1.1s ease-out both }
 @keyframes cdpop { 0% { transform: scale(1.9); opacity: 0 } 18% { transform: scale(1); opacity: 1 } 78% { opacity: 1 } 100% { transform: scale(0.85); opacity: 0 } }
 @keyframes starpop { 0% { transform: scale(0.2) rotate(-25deg); opacity: 0 } 30% { transform: scale(1.25) rotate(6deg); opacity: 1 } 50% { transform: scale(1) rotate(0) } 82% { opacity: 1 } 100% { transform: translateY(-24px) scale(1.05); opacity: 0 } }
@@ -406,6 +426,7 @@ button { touch-action: manipulation }
       </div>
       <canvas id="sim" aria-label="Simulation box"></canvas>
       <div class="gfx" id="gfx" aria-live="assertive" hidden></div>
+      <div class="gend" id="gend" role="dialog" aria-live="polite" hidden></div>
       <div class="coach" id="coach" hidden aria-live="polite"><span id="coachTxt"></span><button class="btn primary" id="coachBtn" hidden></button><button class="btn" id="coachSkip" hidden>Skip</button></div>
       <button class="btn primary boxstart" id="gstartBox" hidden>Start</button>
       <div class="clspanel" id="clsPanel" hidden>
@@ -430,7 +451,7 @@ button { touch-action: manipulation }
       <div class="mbar">
         <div class="mbar-t"><b id="tsetM">2.00</b><small><span class="tlab">T*</span><span class="kinlab"> · kin <span id="tkinM">–</span></span></small></div>
         <div class="trange"><s class="zone" id="szone"></s><input type="range" id="tsliderM" min="0.30" max="2.50" step="0.01" value="2.00" aria-label="Temperature set point"><div class="ticks" id="ticks"></div></div>
-        <div class="mbtns"><button class="btn" id="micM" aria-pressed="false">Mic</button><button class="btn" id="pause">Pause</button></div>
+        <div class="mbtns"><button class="btn" id="micM" aria-pressed="false">Mic</button><button class="btn" id="pause">Pause</button><button class="btn sndbtn" id="sndM" aria-pressed="true" aria-label="Sound effects" title="Sound effects">🔊</button></div>
         <div class="mnoise" id="mmeter" hidden><span class="mlab">Your noise</span><div class="meter"><s class="zone" id="nzone"></s><i id="micbarM"></i></div></div>
         <div class="mpitch" id="mpitch" hidden><div class="mpnote"><b id="pbNote">–</b><small id="pbHz">sing a note</small></div>
           <div class="mptrack"><div class="meter"><i id="pbFill"></i><s id="pbNow"></s></div><div class="mpends"><span id="pbLo"></span><span>pressure</span><span id="pbHi"></span></div></div>
@@ -1919,6 +1940,22 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // text written by the script goes through T(), with {name} placeholders for numbers.
   const I18N = {
  "fi": {
+  "First star!": "Ensimmäinen tähti!",
+  "Second star!": "Toinen tähti!",
+  "Three stars!": "Kolme tähteä!",
+  "Sound effects on": "Äänitehosteet päällä",
+  "Sound effects off": "Äänitehosteet pois",
+  "Sound effects": "Äänitehosteet",
+  "Brilliant!": "Loistavaa!",
+  "Great run!": "Hieno peli!",
+  "Good start!": "Hyvä alku!",
+  "So close: try again!": "Melkein: yritä uudelleen!",
+  "New personal best!": "Uusi oma ennätys!",
+  "best ever {b}": "paras koskaan {b}",
+  "Behind this card: your best moment, at {s} s.": "Kortin takana: paras hetkesi, {s} s kohdalla.",
+  "Try again": "Yritä uudelleen",
+  "Next: {g}": "Seuraava: {g}",
+  "Look at the box": "Katso laatikkoa",
   "Lowest note: pressure 0": "Matalin sävel: paine 0",
   "Highest note: top pressure": "Korkein sävel: suurin paine",
   "Sing it": "Laula se",
@@ -2763,6 +2800,22 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Microphone": "Mikrofoni"
  },
  "sv": {
+  "First star!": "Första stjärnan!",
+  "Second star!": "Andra stjärnan!",
+  "Three stars!": "Tre stjärnor!",
+  "Sound effects on": "Ljudeffekter på",
+  "Sound effects off": "Ljudeffekter av",
+  "Sound effects": "Ljudeffekter",
+  "Brilliant!": "Lysande!",
+  "Great run!": "Snyggt spelat!",
+  "Good start!": "Bra början!",
+  "So close: try again!": "Nära: försök igen!",
+  "New personal best!": "Nytt personbästa!",
+  "best ever {b}": "bästa hittills {b}",
+  "Behind this card: your best moment, at {s} s.": "Bakom kortet: ditt bästa ögonblick, vid {s} s.",
+  "Try again": "Försök igen",
+  "Next: {g}": "Nästa: {g}",
+  "Look at the box": "Titta på lådan",
   "Lowest note: pressure 0": "Lägsta ton: tryck 0",
   "Highest note: top pressure": "Högsta ton: högsta tryck",
   "Sing it": "Sjung den",
@@ -3607,6 +3660,22 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Microphone": "Mikrofon"
  },
  "ru": {
+  "First star!": "Первая звезда!",
+  "Second star!": "Вторая звезда!",
+  "Three stars!": "Три звезды!",
+  "Sound effects on": "Звуковые эффекты включены",
+  "Sound effects off": "Звуковые эффекты выключены",
+  "Sound effects": "Звуковые эффекты",
+  "Brilliant!": "Блестяще!",
+  "Great run!": "Отличная игра!",
+  "Good start!": "Хорошее начало!",
+  "So close: try again!": "Почти: попробуйте ещё раз!",
+  "New personal best!": "Новый личный рекорд!",
+  "best ever {b}": "лучший результат {b}",
+  "Behind this card: your best moment, at {s} s.": "За этой карточкой — ваш лучший момент, на {s} с.",
+  "Try again": "Ещё раз",
+  "Next: {g}": "Дальше: {g}",
+  "Look at the box": "Посмотреть на ячейку",
   "Lowest note: pressure 0": "Самая низкая нота: давление 0",
   "Highest note: top pressure": "Самая высокая нота: максимальное давление",
   "Sing it": "Спеть",
@@ -4684,11 +4753,49 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       return false;
     }
   }
+  // ---------- sound effects: synthesised, short, soft. While one plays (and 150 ms after) the microphone reading is held, so the game never hears itself ----------
+  const SFX = (() => {
+    let ac = null, out = null, on = true; try { on = localStorage.getItem('mdlab-sound') !== '0'; } catch (e) {}
+    const api = { busyUntil: 0, get on() { return on; } };
+    function ctx() { if (!on) return null; try { if (!ac) { ac = new (window.AudioContext || window.webkitAudioContext)(); out = ac.createGain(); out.gain.value = 0.55;
+        const comp = ac.createDynamicsCompressor(); out.connect(comp); comp.connect(ac.destination); } if (ac.state === 'suspended') ac.resume(); } catch (e) { return null; } return ac; }
+    // one note: frequency f (Hz), start in s from now, length, wave, volume, optional glide to f2
+    function note(f, at, dur, o = {}) { const a = ctx(); if (!a) return; const t0 = a.currentTime + at, os = a.createOscillator(), gn = a.createGain();
+      os.type = o.type || 'sine'; os.frequency.setValueAtTime(f, t0); if (o.to) os.frequency.exponentialRampToValueAtTime(o.to, t0 + dur);
+      const v = o.vol || 0.16; gn.gain.setValueAtTime(0.0001, t0); gn.gain.exponentialRampToValueAtTime(v, t0 + (o.att || 0.006)); gn.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      os.connect(gn); gn.connect(out); os.start(t0); os.stop(t0 + dur + 0.02);
+      api.busyUntil = Math.max(api.busyUntil, performance.now() + 1000 * (at + dur) + 150); }
+    const hz = (m) => 440 * Math.pow(2, (m - 69) / 12), PENTA = [0, 2, 4, 7, 9];
+    let lastAt = 0; const gap = (ms) => { const n = performance.now(); if (n - lastAt < ms) return false; lastAt = n; return true; };
+    api.set = (v) => { on = v; try { localStorage.setItem('mdlab-sound', v ? '1' : '0'); } catch (e) {} if (on) ctx(); };
+    // ice: a glassy tink, higher as more of the box freezes
+    api.crystal = (x) => { if (!gap(220)) return; const k = Math.floor(Math.max(0, Math.min(0.999, x)) * 10), m = 79 + 12 * Math.floor(k / 5) + PENTA[k % 5];
+      note(hz(m), 0, 0.32, { type: 'sine', vol: 0.12 }); note(hz(m + 19), 0, 0.18, { type: 'sine', vol: 0.04 }); };
+    // two liquids: a chord every couple of seconds, from a clash (mixed) to a bright major chord (separated)
+    api.harmony = (q) => { const r = 60, ch = q < 0.3 ? [0, 1, 6] : q < 0.6 ? [0, 5, 7] : q < 1 ? [0, 4, 7] : [0, 4, 7, 12, 16];
+      const type = q < 0.3 ? 'sawtooth' : q < 0.6 ? 'triangle' : 'sine', vol = q < 0.3 ? 0.035 : 0.07;
+      ch.forEach((d, i) => note(hz(r + d), 0.03 * i * (q >= 1 ? 1 : 0), 0.42, { type, vol })); };
+    // drug: released in the right place, a rising two-note bloop; lost, a low falling buzz
+    api.release = (n) => { if (!gap(140)) return; note(hz(72), 0, 0.12, { vol: 0.14 }); note(hz(79), 0.09, 0.2, { vol: 0.14 }); if (n > 2) note(hz(84), 0.18, 0.2, { vol: 0.1 }); };
+    api.miss = () => { if (!gap(140)) return; note(170, 0, 0.28, { type: 'square', vol: 0.05, to: 90 }); };
+    // gel: a marimba-like step up the scale each time the path grows
+    api.grow = (x) => { if (!gap(200)) return; const k = Math.floor(Math.max(0, Math.min(1.4, x)) * 10), m = 60 + 12 * Math.floor(k / 5) + PENTA[k % 5];
+      note(hz(m), 0, 0.22, { type: 'triangle', vol: 0.16 }); note(hz(m + 12), 0, 0.1, { type: 'sine', vol: 0.05 }); };
+    // a star: a quick arpeggio, longer for more stars
+    api.star = (k) => { [72, 76, 79, 84].slice(0, k + 1).forEach((m, i) => note(hz(m), 0.08 * i, 0.3, { type: 'triangle', vol: 0.13 })); note(hz(96), 0.08 * (k + 1), 0.4, { vol: 0.06 }); };
+    api.slot = (k) => { note(hz([76, 79, 84][k] || 84), 0, 0.35, { type: 'triangle', vol: 0.14 }); note(hz(([76, 79, 84][k] || 84) + 12), 0.02, 0.25, { vol: 0.05 }); };
+    api.none = () => { note(hz(64), 0, 0.25, { type: 'triangle', vol: 0.1 }); note(hz(60), 0.2, 0.4, { type: 'triangle', vol: 0.1 }); };
+    api.best = () => { [79, 84, 88, 91].forEach((m, i) => note(hz(m), 0.07 * i, 0.25, { vol: 0.09 })); };
+    return api;
+  })();
+  window.__sfx = SFX; // for tests
+  let lastDb = null;
   function levelDb() {
     if (!analyser) return null;
+    if (performance.now() < SFX.busyUntil && lastDb !== null) return lastDb; // our own sound is playing: keep the last reading
     analyser.getFloatTimeDomainData(buf);
     let s = 0; for (let i = 0; i < buf.length; i++) s += buf[i] * buf[i];
-    return 20 * Math.log10(Math.sqrt(s / buf.length) + 1e-9);
+    return (lastDb = 20 * Math.log10(Math.sqrt(s / buf.length) + 1e-9));
   }
   function calibrate() { const samples = []; let k = 0;
     const id = setInterval(() => { const d = levelDb(); if (d !== null) samples.push(d); if (++k >= 15) { clearInterval(id); if (samples.length) { samples.sort((a, b) => a - b); quietDb = samples[Math.floor(samples.length / 2)] + 3; } } }, 40); }
@@ -5072,7 +5179,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const g = gameCfg(); if (!g) return;
     if (guide) { guide = null; coachHide(); }
     if (needGuide(g) && !battle && !gameLevel && !classOn) { guideStart(g); return; }
-    prepGame(g); coachHide(); $('greplay').hidden = true;
+    prepGame(g); coachHide(); $('greplay').hidden = true; gendClose(); postGame = null;
     game = { g, t0: eng.time, last: eng.time, ema: null, rate: g.D / GAME_SEC, peak: -Infinity, peakSec: 0, snap: null, rec: [], level: gameLevel, bump: 0 };
     if (battle) game.battle = battle.k;
     if (g.setup) g.setup(game);
@@ -5108,10 +5215,11 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   }
   function starBurst(st) { // a new star level reached during a run
     const o = gfxShow(); clearTimeout(cdTimer);
-    let h = `<span class="sp">${'★'.repeat(st)}</span>`;
-    for (let i = 0; i < 10; i++) h += `<span class="bit" style="--a:${i * 36 + 8 * Math.random()}deg;--d:${32 + 8 * Math.random()}%">★</span>`;
+    let h = `<span class="sp">${'★'.repeat(st)}</span><span class="sptxt">${T(st === 1 ? 'First star!' : st === 2 ? 'Second star!' : 'Three stars!')}</span>`; SFX.star(st);
+    const bx = document.querySelector('.ghud'); if (bx) { bx.classList.remove('flash'); void bx.offsetWidth; bx.classList.add('flash'); }
+    for (let i = 0; i < 6 + 6 * st; i++) h += `<span class="bit" style="--a:${i * 36 + 8 * Math.random()}deg;--d:${32 + 8 * Math.random()}%">★</span>`;
     o.innerHTML = h; const gs = $('gstars'); gs.classList.remove('bump'); void gs.offsetWidth; gs.classList.add('bump');
-    cdTimer = setTimeout(() => { o.hidden = true; o.innerHTML = ''; }, 1400);
+    cdTimer = setTimeout(() => { o.hidden = true; o.innerHTML = ''; }, 1700);
   }
   function gameSteps(dtSec) { // steps this frame so that D time units take 30 s; limited by what the device can do
     const want = game.rate * dtSec / eng.p.dt + gameCarry, cap = msPerStep ? Math.max(1, Math.floor((BUDGET_MS > BUDGET0 ? 1.3 : 2) * BUDGET_MS / msPerStep)) : 30;
@@ -5136,7 +5244,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const g = G.g, v = G.peak, st = starsFor(g, v), b = getBest(g), rec = b === null || v > b, gi = GAMES.indexOf(g), wasOpen = gi + 1 < GAMES.length && isOpen(gi + 1); if (rec) setBest(g, v);
     const opened = gi + 1 < GAMES.length && !wasOpen && isOpen(gi + 1), dg = tipsOn() ? diagnose(G, st) : '';
     const card = st === 3 ? fcGive(FC_ALL.filter((c) => c.deck.game === g.id)) : null; // three stars: a new fact card, until the deck is complete
-    if (card) setTimeout(() => fcOpen(card, true), 700);
+    if (card) setTimeout(() => fcOpen(card, true), 2200); // after the stars of the end card
     const S = addStat(g, v);
     $('hudGoal').textContent = $('hudTip').textContent = ''; $('gagain').hidden = false;
     if (G.snap) { restoreSnap(G.snap); running = false; $('pause').textContent = T('Resume'); const r = report(); showReport(r);
@@ -5145,7 +5253,35 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       (opened ? '<b>' + T('New game unlocked: {g}!', { g: T(GAMES[gi + 1].title) }) + '</b> ' : '') +
       (st <= 1 && tipsOn() ? '<b>' + T('Tip:') + '</b> ' + T(g.hint) + ' ' : '') + (st === 3 ? T('Top score!') + ' ' + (card ? '<b>' + T('New card: {c}!', { c: T(card.t) }) + '</b> ' : T('You have all the cards of this game.') + ' ') : '') + T('Your average so far: {a} (games played: {n}).', { n: S.n, a: g.fmt(S.sum / S.n) });
     renderPick(); drawReplay(G);
+    const nx = gi + 1 < GAMES.length && isOpen(gi + 1) ? GAMES[gi + 1] : null;
+    endScreen({ G, g, st, v, rec, best: b, card, extra: opened ? T('New game unlocked: {g}!', { g: T(GAMES[gi + 1].title) }) : '', tip: dg,
+      next: nx ? { label: T('Next: {g}', { g: T(nx.title) }), go: () => { selectGame(nx.id); startGame(); } } : null });
   }
+  // the end of a game: a card over the box (the box behind it shows the best moment) with the stars filling in one by one, the score, and what to do next
+  let gendTimers = [], postGame = null; // postGame: the game whose best moment the box is showing, so its preview film waits
+  const gendOpen = () => !$('gend').hidden;
+  function endScreen(o) {
+    postGame = o.g.id; if (classOn || battle) return; const el = $('gend'), { G, g, st, v } = o; gendTimers.forEach(clearTimeout); gendTimers = [];
+    el.style.left = cv.offsetLeft + 'px'; el.style.top = cv.offsetTop + 'px'; el.style.width = cv.offsetWidth + 'px'; el.style.height = cv.offsetHeight + 'px';
+    const head = T(g.title) + (G.level ? ' · ' + T('Challenge {k}', { k: G.level }) : '');
+    const msg = st === 3 ? T('Brilliant!') : st === 2 ? T('Great run!') : st === 1 ? T('Good start!') : T('So close: try again!');
+    el.innerHTML = `<div class="gendcard"><button class="gendx" aria-label="${T('Close')}">✕</button><p class="gendh">${head}</p>
+      <div class="gendstars">${[0, 1, 2].map((k) => `<span class="gs" data-k="${k}">★</span>`).join('')}</div>
+      <p class="gendmsg">${msg}</p><p class="gendscore"><b data-v>${g.fmt(0)}</b>${o.rec ? `<span class="pb">${T('New personal best!')}</span>` : o.best !== null && o.best !== undefined ? `<small>${T('best ever {b}', { b: g.fmt(Math.max(o.best, v)) })}</small>` : ''}</p>
+      <p class="gendnote">${T('Behind this card: your best moment, at {s} s.', { s: Math.round(G.peakSec || 0) })}${o.extra ? ' <b>' + o.extra + '</b>' : ''}</p>
+      ${o.tip ? `<p class="gendtip">${o.tip}</p>` : ''}
+      <div class="gendbtns"><button class="btn primary" data-act="again">${T('Try again')}</button>${o.next ? `<button class="btn" data-act="next">${o.next.label} ▸</button>` : ''}<button class="btn ghost" data-act="look">${T('Look at the box')}</button></div></div>`;
+    el.hidden = false; el._next = o.next; syncBoxStart();
+    const cd = el.querySelector('.gendcard'); if (cd.scrollIntoView) setTimeout(() => cd.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }), 60);
+    const red = matchMedia('(prefers-reduced-motion: reduce)').matches, t0 = 450, bv = el.querySelector('[data-v]'), dur = red ? 0 : 900, ts = performance.now();
+    const count = () => { const u = dur ? Math.min(1, (performance.now() - ts) / dur) : 1; bv.textContent = g.fmt(v * (1 - Math.pow(1 - u, 3))); if (u < 1 && !el.hidden) requestAnimationFrame(count); };
+    requestAnimationFrame(count);
+    for (let k = 0; k < st; k++) gendTimers.push(setTimeout(() => { const s1 = el.querySelector(`.gs[data-k="${k}"]`); if (s1) s1.classList.add('on'); SFX.slot(k); }, t0 + (red ? 150 : 420) * k));
+    gendTimers.push(setTimeout(() => { if (!st) SFX.none(); else if (o.rec) SFX.best(); }, t0 + 420 * st + 150));
+  }
+  function gendClose() { $('gend').hidden = true; gendTimers.forEach(clearTimeout); syncBoxStart(); }
+  $('gend').addEventListener('click', (e) => { const b = e.target.closest('[data-act], .gendx'); if (!b) return; const act = b.dataset.act, nx = $('gend')._next; gendClose();
+    if (act === 'again') startGame(); else if (act === 'next' && nx) nx.go(); });
   function gameUpdate(v) {
     const G = game, g = G.g, now = eng.time, dt = now - G.last; G.last = now;
     G.ema = G.ema === null || g.raw ? v : G.ema + (1 - Math.exp(-dt / 2.0)) * (v - G.ema); // smooth over about 2 time units (raw: cumulative scores)
@@ -5154,6 +5290,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       $('gbest').style.display = 'block'; $('gbest').style.left = (100 * Math.max(0, Math.min(1, G.peak / (g.scale || 1)))) + '%'; }
     if (g.side) $('gpeak').textContent = g.fmt(eng.nDrug ? 100 * (G.lost || 0) / eng.nDrug : 0);
     const st = starsFor(g, G.peak); if (st > (G.stShown || 0)) { G.stShown = st; if (frac < 1) starBurst(st); }
+    if (frac < 1 && !G.cd) gameSounds(G, g);
     $('gval').textContent = g.fmt(G.ema); $('gstars').textContent = starStr(st);
     $('gtime').textContent = T('{n} s', { n: Math.ceil(GAME_SEC * (1 - frac)) });
     $('gnow').style.left = (100 * Math.max(0, Math.min(1, G.ema / (g.scale || 1)))) + '%';
@@ -5163,11 +5300,21 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (frac < 1) { coachTick(G, sNow); if (g.path || g.zoneLive) zoneMarks(sNow); if (G.level) twistTick(G, sNow); }
     if (frac >= 1) endGame('done');
   }
+  function gameSounds(G, g) { // each goal has its own sound
+    const top = g.stars[2] || g.scale || 1, now = performance.now();
+    if (g.id === 'ice' || g.id === 'gel') { const step = (g.id === 'ice' ? 0.04 : 0.07) * top; if (G.sLvl === undefined) G.sLvl = Math.max(0, G.ema);
+      if (G.ema > G.sLvl + step) { G.sLvl = G.ema; g.id === 'ice' ? SFX.crystal(G.ema / (g.scale || 1)) : SFX.grow(G.ema / top); } else if (G.ema < G.sLvl - 2 * step) G.sLvl = G.ema; }
+    if (g.id === 'demix' && now - (G.sAt || 0) > 2200) { G.sAt = now; SFX.harmony(Math.max(0, G.ema) / top); }
+    if (g.id === 'drug') { const d = G.del || 0, l = G.lost || 0; if (d > (G.sDel || 0)) SFX.release(d - (G.sDel || 0)); else if (l > (G.sLost || 0)) SFX.miss(); G.sDel = d; G.sLost = l; }
+  }
+  $('sndM').addEventListener('click', () => { SFX.set(!SFX.on); sndUI(); });
+  function sndUI() { const b = $('sndM'); b.textContent = SFX.on ? '🔊' : '🔇'; b.setAttribute('aria-pressed', String(SFX.on)); b.title = T(SFX.on ? 'Sound effects on' : 'Sound effects off'); }
+  sndUI();
   $('gpick').addEventListener('click', (e) => { const b = e.target.closest('[data-game]'); if (b) selectGame(b.dataset.game); });
   $('gstart').addEventListener('click', startGame); $('gagain').addEventListener('click', startGame);
   $('gstartBox').addEventListener('click', startGame);
   function syncBoxStart() { // a Start button on the box whenever a game is picked but not running, so it is always next to the molecules
-    if (coachReady) placeCoach(); const b = $('gstartBox'), show = appMode === 'game' && !!gameSel && !game && !(coachReady && guide) && !battle && !classOn && tourI < 0;
+    if (coachReady) placeCoach(); const b = $('gstartBox'), show = appMode === 'game' && !!gameSel && !game && !(coachReady && guide) && !battle && !classOn && tourI < 0 && $('gend').hidden;
     if (b.hidden !== !show) b.hidden = !show;
     if (!show) return;
     const t = $('gstart').textContent; if (b.textContent !== t) b.textContent = t;
@@ -5175,7 +5322,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // resuming after a game keeps the best structure as the starting point
   renderPick();
 
-  function closeHud() { $('ghud').hidden = true; if (coachReady) { coachHide(); $('greplay').hidden = true; } document.querySelector('.wrap').classList.remove('ingame'); resize(); }
+  function closeHud() { gendClose(); postGame = null; $('ghud').hidden = true; if (coachReady) { coachHide(); $('greplay').hidden = true; } document.querySelector('.wrap').classList.remove('ingame'); resize(); }
   $('gquit').addEventListener('click', () => { if (battle && coachReady) battleStop(); const was = !!game; endGame(null); if (was) { gameRange = null; applySysUI(); setT(tset); } closeHud(); });
   renderPick();
 
@@ -5410,7 +5557,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   const DEMO = { ice: { T: 0.34, ord: true, tau: 24 }, demix: { T: 2.0, ord: true, tau: 18 }, drug: { T: 2.5, ord: true, tau: 12 },
     gel: { T: 3.5, ord: true, tau: 26, heatTau: 8, coolT: 1.2 } }; // gel: a real heat-then-cool run, played forwards only
   const demoCache = {}; let demo = null, demoDrawing = false, demoHeat = 0, filmCtl = false;
-  const previewOn = () => appMode === 'game' && !!gameSel && !game && !guide && !battle && !classOn && tourI < 0 && !gameLevel && !!DEMO[gameSel.id] && !!eng;
+  const previewOn = () => appMode === 'game' && !!gameSel && !game && !(postGame && postGame === gameSel.id) && !gendOpen() && !guide && !battle && !classOn && tourI < 0 && !gameLevel && !!DEMO[gameSel.id] && !!eng;
   function demoTick(budgetMs) { // record the film in small slices of each frame, on a copy of the game's system
     if (!previewOn()) return; const id = gameSel.id, cf = DEMO[id];
     if (!demo || demo.id !== id) demo = demoCache[id] || null;
@@ -5909,6 +6056,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       (cleared ? (k < LADDER ? T('Cleared! Challenge {n} is open.', { n: k + 1 }) : T('All five challenges cleared!')) : T('Not cleared: you need at least one star.')) +
       (st > was && was ? ' ' + T('New best for this challenge.') : '') + (next ? ` <button class="btn primary" data-lad="${g.id}:${k + 1}">${T('Next challenge')}</button>` : '');
     renderLadder(); drawReplay(G);
+    endScreen({ G, g, st, v: G.peak, rec: st > was && !!was, best: null, extra: cleared ? (k < LADDER ? T('Cleared! Challenge {n} is open.', { n: k + 1 }) : T('All five challenges cleared!')) : T('Not cleared: you need at least one star.'), tip: '',
+      next: next ? { label: T('Challenge {k}', { k: k + 1 }), go: () => { selectLevel(g.id, k + 1); startGame(); } } : null });
   }
   renderLadder(); ladLabel();
 
