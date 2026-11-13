@@ -1,0 +1,28 @@
+{
+ "app": [
+  "00-start.js",
+  "01-systems.js",
+  "02-microphone-sound.js",
+  "03-controls.js",
+  "04-switch-system.js",
+  "05-games.js",
+  "06-class-mode.js",
+  "07-help-tour.js",
+  "08-phone-layout.js",
+  "09-app-modes.js",
+  "10-preview-film.js",
+  "11-coach-guide.js",
+  "12-fact-cards.js",
+  "13-challenges.js",
+  "14-class-battle.js",
+  "15-energy-scan.js",
+  "16-rendering.js",
+  "17-follow-molecule.js",
+  "18-main-loop.js"
+ ],
+ "languages": [
+  "fi",
+  "sv",
+  "ru"
+ ]
+}

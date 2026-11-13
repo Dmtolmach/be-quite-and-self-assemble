@@ -11,6 +11,7 @@ Made by [Dmitry Tolmachev](https://scholar.google.com/citations?user=OQtj-R4AAAA
 ## Contents
 
 1. [Running it](#running-it)
+   - [Privacy and offline use](#privacy-and-offline-use)
 2. [A first lesson in 10 minutes](#a-first-lesson-in-10-minutes)
 3. [The screen](#the-screen)
 4. [Game mode](#game-mode)
@@ -26,12 +27,35 @@ Made by [Dmitry Tolmachev](https://scholar.google.com/citations?user=OQtj-R4AAAA
 
 ## Running it
 
-- **Open the file** `amphiphile-assembly-lab.html` in a browser, or open the GitHub Pages link of the repository.
-- **Microphone:** the browser asks for permission the first time the microphone is used. Browsers allow the microphone only on `https://` pages or on a file opened from your own computer. Nothing is recorded or sent anywhere: the page only measures the loudness.
+- **Play online:** https://dmtolmach.github.io/be-quite-and-self-assemble/ (installable as an app).
+- **Or open the file** `docs/amphiphile-assembly-lab.html` in a browser; it needs no internet. Download and install steps: [INSTALL.md](INSTALL.md).
+- **Microphone:** the browser asks for permission the first time the microphone is used. Browsers allow the microphone only on `https://` pages or on a file opened from your own computer. Nothing is recorded or sent anywhere: the page only measures the loudness (see *Privacy and offline use* below).
 - **Speed:** a recent laptop runs every system smoothly. On slow phones the page automatically switches to simpler drawing (see *Drawing quality* in Teacher options at the bottom of the page). Phones and old tablets run the smaller boxes well. The water systems (Ice, Oily particles) are the slowest, because each water molecule also rotates.
-- **Language:** the menu in the top-right corner. The page starts in the browser's language if it is one of the four.
-- **First visit:** a welcome card plays the 15-second story (molecule → crystal → shouting face melts it → refreezes) and offers one big **▶ Play: make ice** button, which starts the guided first game with the microphone set-up. **Show me around** opens the tour instead; **Just explore** closes the card. It appears once per browser (also for browsers that saw the older tour); **Show the welcome** in Teacher options plays it again.
-- **Help:** the **? Help** button (set apart from **Class mode** by a thin divider) opens a short tour of the screen. Its first card plays a 15-second story: one water molecule (a bead with three arms), the honeycomb crystal growing around it, a shouting face with sound waves that melts it, and quiet letting it refreeze. **Microphone** or the slider on that card take over the animation.
+- **Language:** the menu in the top-right corner (and on the welcome card). Every visit starts in English.
+- **First visit:** a welcome card plays the 15-second story (molecule → crystal → shouting face melts it → refreezes) and offers one big **▶ Play: make ice** button, which starts the guided first game with the microphone set-up. **Show me around** opens the tour instead; **Just explore** closes the card. A 🌐 language switch sits in its top corner. It appears by itself once per browser, and it is also the first card of **Help**, so **? Help** always shows it again.
+- **Help:** the **? Help** button (set apart from **Class mode** by a thin divider) opens the welcome card; **Show me around** continues with the tour of the screen. Its first card plays a 15-second story: one water molecule (a bead with three arms), the honeycomb crystal growing around it, a shouting face with sound waves that melts it, and quiet letting it refreeze. **Microphone** or the slider on that card take over the animation.
+
+### Keyboard, screen readers and projectors
+
+- **Keyboard play** (for students who can't or don't want to use their voice, and for quiet lessons): **hold Space** to heat, like making noise; let go and it cools, as in silence (same speed as the microphone). **← →** step the temperature by 5% of the range (in a game also ↑ ↓). On computers the Temperature card of **Help** explains it. The microphone must be off.
+- **Screen readers:** buttons, menus and dialogs have names; stars and the result are read out as they happen ("First star!", "Game over: 2 of 3 stars, score 47%"); in games the temperature slider reads cold / cool / warm / hot. Checked automatically with axe-core against WCAG 2.1 AA (`tests/test_a11y.py`).
+- **Projector options** (Teacher options → *Projector and accessibility*, kept in this browser): **Larger text** scales the whole page by 18% (the box still fits on the screen with the temperature bar); **High contrast** switches to black on white with darker particles and lines, thicker borders and strong focus rings.
+
+### Privacy and offline use
+
+For the school's data protection officer (GDPR), in short:
+- **The microphone sound never leaves the device.** The page measures only the loudness (and, when pitch is switched on, the note), inside the browser, many times a second; each measurement is thrown away straight after. Nothing is recorded, stored or sent.
+- **The page makes no network connections of its own:** no analytics, no cookies, no accounts, no adverts, no external fonts or scripts (the fonts are built into the file). A test (`tests/test_offline_privacy.py`) checks that, opened from disk with the microphone on and a game running, the browser requests nothing but the page itself.
+- **Saved data:** stars, cards and settings are kept only in the browser's local storage on that device, under keys starting with `mdlab-`. **Delete saved data** in Teacher options removes them all.
+- **The microphone is optional:** the temperature slider does the same job.
+- The app itself therefore processes no personal data. The website that serves the page (GitHub Pages, claude.ai) may keep ordinary server logs, like any website; a copy opened from the school's own computers avoids even that. This is a description of what the software does, not legal advice: the school's own data protection officer has the final word.
+
+Students and teachers see the same in the app: a 🔒 line under the microphone panel and on the welcome card, and a **Privacy** link in the header that opens the full note.
+
+**No internet needed:**
+- **The file itself:** `amphiphile-assembly-lab.html` contains everything (code, fonts, icons). Copy it to each computer or a USB stick and open it in a browser; it never needs the internet.
+- **Download the page** (Teacher options → *Use without internet*) saves that file when the page is opened from a website. If the browser blocks it, Ctrl+S (⌘S on a Mac) does the same.
+- **Install as an app:** when the page is served from a website with the files from the build next to it (`index.html`, `manifest.webmanifest`, `sw.js`, icons — the whole `docs/` folder, served by GitHub Pages at https://dmtolmach.github.io/be-quite-and-self-assemble/), Chrome and Edge show **Install as an app** in Teacher options (and an install icon in the address bar); on an iPad or iPhone use *Share → Add to Home Screen*. The installed app opens from the home screen or app list and works with no internet; a new version is picked up the next time it is opened online.
 
 ## A first lesson in 10 minutes
 
@@ -79,9 +103,9 @@ How a game runs:
 - **Goal preview.** Before a game starts, the box plays a short film of the system (ice, two liquids and the drug game) in a loop for as long as the preview is on: 4 s of heating, where the order is lost, then the same film backwards for 4 s, where cooling brings the order back, then 2 s cold. The player's own controls under the box move with the film: the temperature slider (and the noise bar, with the microphone on) goes up and down and the temperature symbol changes, so students see what to do. A banner on the box says what is happening. The film is recorded in the background from a copy of the game's system as soon as the game is picked (a few seconds on a laptop). The gel game's film is a real heat-then-cool run played forwards: 8 s in which noise opens the proteins and then quiet lets the open proteins link into a gel, then 2 s on the final gel. In the drug film, drug that has left its micelle glows yellow. It is not shown in challenges, class mode or the guided first game.
 - Press **Start**. A 3-2-1-Go countdown runs over the box; the clock and the molecules wait for it.
 - **Use the microphone** (ticked by default) lets the room control the temperature. Untick it to use the slider instead.
-- **Show tips** (ticked by default) turns on the coach line during the game and, after it, the sentence about the run and the tip for 0–1 stars. Untick it for a plain game, for example in a competition or a test. The choice is remembered in this browser. The guided first game, the green band and the replay graph stay.
+- **Show tips** (ticked by default) turns on the green band, the coach line of the first game after the lesson and, after a game, the sentence about the run and the tip for 0–1 stars. Untick it for a plain game, for example in a competition or a test. The choice is remembered in this browser. The guided first game, the green band and the replay graph stay.
 - During the game, the bar shows the score now, the star levels and the time left. When a new star is reached, the stars pop up over the box.
-- **A coach line on the box** says what the molecules are doing and what to try, for example *Too warm: the ice cannot grow. Get quieter!* or *Red window: make noise now!* It follows the temperature and how the score is changing, and changes at most every 1.5 s.
+- **A coach line at the bottom of the box** appears only in the first game right after the guided lesson (and never in challenges); in all other games nothing is written over the box except heat-wave warnings in challenges and the star bursts. It says what the molecules are doing and what to try, for example *Too warm: the ice cannot grow. Get quieter!* or *Red window: make noise now!* It follows the temperature and how the score is changing, and changes at most every 1.5 s.
 - **The green band is a tip**: it is hidden in challenges and when **Show tips** is off. In Deliver the drug it shows the loud range while a window is open (or about to) and the quiet range otherwise; in the gel game it shows the opening range until the proteins have had about 4 s of heat, then the cool range.
 - **Temperature in words.** During games the number under the box is replaced by a symbol: ❄️❄️ cold, ❄️ cool, ☀️ warm, 🔥 hot (the word shows as a tooltip). Symbols keep the bar the same width in every language. A green band on the slider and on the **Your noise** bar (the microphone level, shown big when the microphone is on) marks the temperatures to aim for. For the two liquids it is fixed (*cool*, where the blobs grow fastest). For ice it is a **green path** that moves down during the game: start warm, cool slowly, and stay quiet for the last seconds (annealing). If the ice stops growing, the coach suggests a short burst of noise to melt badly packed bits, then cooling again.
 - At the end, the box shows the best moment of the run (press **Resume** to let it continue from there). The text gives the score, **one sentence about this run** (for example how much of the game was spent too warm, too cold or in the green band, how many drug windows were heated, or whether the proteins were ever heated enough). Students who get 0 or 1 star also get a tip.
@@ -156,6 +180,8 @@ Checked with simulated protanopia, deuteranopia and tritanopia (Machado 2009) on
 - Coach messages carry a symbol as well as a colour: ✓ good, ▲ too hot or a problem, ❄ too cold.
 - Temperature words use the ❄/♨ symbols; stars are ★ vs ☆; delivered drug glows yellow and lost drug is grey.
 
+After a game, the panel above the box keeps only one line (stars, score, *New personal best!* or *Cleared!*) over the replay graph; the full sentence, tip and unlocks are on the end card.
+
 ### Sound and celebration
 
 - **Sound effects** (🔊 / 🔇 under the box, remembered in this browser) are synthesised in the page, short and soft. While one plays and for 150 ms after, the microphone reading is held at its last value, so the game never hears its own sounds.
@@ -164,6 +190,8 @@ Checked with simulated protanopia, deuteranopia and tritanopia (Machado 2009) on
 - **End of the game**: a card over the box (the box behind it shows the best moment). The three stars fill in one by one with a note each, the score counts up, "New personal best!" when it beats the best ever, the diagnosis, and buttons **Try again**, **Next: (next game)** or **Challenge k+1**, and **Look at the box**. A new fact card opens after the stars. Not shown in class battles or class mode.
 
 ### Under the box (all modes)
+
+- **Always on screen (computer):** the box shrinks when the window is short, so the whole box and the temperature bar under it fit on the screen: with the page at the top in Explore and Energy scan, and with the game panel above it while a game runs (the game scrolls the box to the top). On phones the box stays pinned at the top while the page scrolls, and the end of the page leaves room for the bottom mode bar.
 
 - **Temperature slider**, **Mic** and **Pause / Resume** sit under the box (there is no separate Temperature panel any more).
 - Also under the box: Explore: **Live readouts**. Energy scan: the scan buttons and the four graphs. Games: the folded **Statistics on this device**.

@@ -1,0 +1,385 @@
+
+<div class="wrap notranslate" data-sys="dumbbell" translate="no">
+  <header>
+    <div class="langbox"><button class="btn" id="classBtn" title="Class mode: the whole room controls one box with its noise">Class mode</button><span class="hsep" aria-hidden="true"></span><button class="btn helpbtn" id="helpBtn" aria-label="Help: quick tour" title="Help: quick tour"><span aria-hidden="true">?</span> Help</button><label for="lang" class="sr">Language</label>
+      <select id="lang" aria-label="Language"><option value="en">English</option><option value="fi">Suomi</option><option value="sv">Svenska</option><option value="ru">Русский</option></select></div>
+    <div>
+      <div class="brand"><svg class="logo" viewBox="0 0 48 48" width="44" height="44" aria-hidden="true"><line x1="32.7" y1="29.0" x2="39.8" y2="33.1" stroke="var(--bond)" stroke-width="2.2"/><circle cx="39.8" cy="33.1" r="4.8" fill="var(--head)"/><line x1="24.0" y1="34.1" x2="24.0" y2="42.3" stroke="var(--bond)" stroke-width="2.2"/><circle cx="24.0" cy="42.3" r="4.8" fill="var(--head)"/><line x1="15.3" y1="29.0" x2="8.2" y2="33.1" stroke="var(--bond)" stroke-width="2.2"/><circle cx="8.2" cy="33.1" r="4.8" fill="var(--head)"/><line x1="15.3" y1="18.9" x2="8.2" y2="14.8" stroke="var(--bond)" stroke-width="2.2"/><circle cx="8.2" cy="14.8" r="4.8" fill="var(--head)"/><line x1="24.0" y1="13.9" x2="24.0" y2="5.7" stroke="var(--bond)" stroke-width="2.2"/><circle cx="24.0" cy="5.7" r="4.8" fill="var(--head)"/><line x1="32.7" y1="18.9" x2="39.8" y2="14.8" stroke="var(--bond)" stroke-width="2.2"/><circle cx="39.8" cy="14.8" r="4.8" fill="var(--head)"/><g stroke="#4a3000" stroke-width="1.1" stroke-linecap="round"><circle cx="24" cy="24" r="10.6" fill="var(--cryst)"/><path d="M18.59 20.39 q1.80 -1.58 3.61 0 M25.80 20.39 q1.80 -1.58 3.61 0" fill="none"/><path d="M19.94 28.51 h8.12" fill="none"/><rect x="21.89" y="24.68" width="4.22" height="12.63" rx="2.11" fill="var(--cryst)"/></g></svg><h1>Shut Up and Get Structured</h1></div>
+      <p class="sub">Control molecules with your voice. <b>Quiet</b>: they build structures. <b>Noise</b>: they fall apart.</p>
+      <p class="credit"><span>Vibe coded by</span> <a href="https://scholar.google.com/citations?user=OQtj-R4AAAAJ" target="_blank" rel="noopener">Dmitry Tolmachev</a> · <a href="https://scholar.google.com/citations?user=OQtj-R4AAAAJ" target="_blank" rel="noopener">Google Scholar</a> · <button class="linkbtn" data-privacy>Privacy</button></p>
+    </div>
+  </header>
+  <div class="tour" id="tour" hidden role="dialog" aria-modal="true" aria-labelledby="tTitle">
+    <div class="spot" id="tSpot"></div>
+    <div class="tcard" id="tCard"><button class="tx" id="tClose" aria-label="Close help">×</button>
+      <h3 id="tTitle"></h3>
+      <div class="tdemo" id="tDemo" hidden><canvas id="tCanvas" width="640" height="360"></canvas><small id="tDemoCap"></small><div class="tdctl"><button class="btn tdmic" id="tdMic" aria-pressed="false"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/></svg><span>Microphone</span></button><input type="range" id="tdT" min="0" max="1" step="0.01" value="0" aria-label="Temperature"></div></div>
+      <p id="tText"></p>
+      <div class="twel" id="tWel" hidden><label class="twlang"><span aria-hidden="true">🌐</span><select id="tLang" aria-label="Language"><option value="en">English</option><option value="fi">Suomi</option><option value="sv">Svenska</option><option value="ru">Русский</option></select></label><button class="btn primary twplay" id="tPlay">▶ Play: make ice</button><div class="twmore"><button class="btn" id="tTour">Show me around</button><button class="btn ghost" id="tFree">Just explore</button></div><p class="privline"><span aria-hidden="true">🔒</span> <span>Microphone sound is analysed here and never leaves this device.</span> <button class="linkbtn" data-privacy>Privacy</button></p></div>
+      <div class="tnav"><span class="cnt" id="tCount"></span><button class="btn" id="tBack">Back</button><button class="btn primary" id="tNext">Next</button></div>
+    </div>
+  </div>
+
+  <div class="bench">
+    <div class="cellbox">
+      <div class="ghud" id="ghud" hidden>
+        <div class="ghead"><div><b id="hudTitle"></b> <span id="hudGoal"></span> <span class="htip" id="hudTip"></span></div><div class="btns" style="flex:none;gap:6px"><button class="btn primary" id="gagain" hidden>Play again</button><button class="btn" id="gquit">Give up</button></div></div>
+        <div class="gstat">
+          <div><span id="gvalLab">Score</span><b id="gval">–</b></div>
+          <div><span>Time left</span><b id="gtime">–</b></div>
+          <div><span id="gpeakLab">Best this run</span><b id="gpeak">–</b></div>
+          <div><span>Stars</span><b id="gstars" class="gst">☆☆☆</b></div>
+        </div>
+        <div class="gband" id="gband" aria-hidden="true" title="Line: your score now. Marks: star levels"><div class="best" id="gbest"></div><div class="now" id="gnow"></div></div>
+        <div class="gbar" aria-hidden="true"><i id="gbar"></i></div>
+        <p class="gres" id="gres" aria-live="polite"></p>
+        <canvas class="greplay" id="greplay" hidden aria-label="Your run: temperature and score over time"></canvas>
+      </div>
+      <canvas id="sim" role="img" aria-label="Simulation box"></canvas>
+      <div class="sr-only" id="srLive" aria-live="polite" aria-atomic="true"></div>
+      <div class="gfx" id="gfx" aria-live="assertive" hidden></div>
+      <div class="gend" id="gend" role="dialog" aria-live="polite" hidden></div>
+      <div class="coach" id="coach" hidden aria-live="polite"><span id="coachTxt"></span><button class="btn primary" id="coachBtn" hidden></button><button class="btn" id="coachSkip" hidden>Skip</button></div>
+      <button class="btn primary boxstart" id="gstartBox" hidden>Start</button>
+      <div class="clspanel" id="clsPanel" hidden>
+        <div class="clsseg" role="group" aria-label="Mode"><button data-clsmode="explore" aria-pressed="true">Explore</button><button data-clsmode="game" aria-pressed="false">Game</button></div>
+        <div class="clshead"><select id="clsSys" aria-label="System">
+          <option value="ice">Ice</option><option value="demix">Two liquids</option><option value="dumbbell">Soap molecules</option><option value="polymer">Plastic</option>
+          <option value="lcst">Polymer chains</option><option value="crypt">Proteins</option><option value="mbpoly">Oily particles</option></select>
+          <button class="btn" id="clsExit">Exit class mode</button></div>
+        <div class="clsgame" id="clsGame" hidden>
+          <select id="clsGameSel" aria-label="Game"></select>
+          <div class="clsteam"><label><input type="checkbox" id="clsTeams"> Team play</label><label>Teams <select id="clsTeamN"><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select></label></div>
+          <button class="btn primary" id="clsStart">Start</button>
+        </div>
+        <p class="clsgoal" id="clsGoal">Everyone quiet: the box cools and structures grow. Noise heats it and breaks them.</p>
+        <div class="clsbig"><span id="clsLab">–</span><b id="clsVal">–</b><i class="clsstars" id="clsStars"></i></div>
+        <div class="clsbig"><span id="clsLab2">Temperature</span><b id="clsT">–</b></div>
+        <div class="clsres" id="clsRes"></div>
+        <div class="clsnoise"><span>Room noise</span><div class="meter"><i id="micbarC"></i></div></div>
+        <div class="btns"><button class="btn" id="clsSetup">Set up the microphone</button><button class="btn" id="clsCalib">Set quiet level</button><button class="btn" id="clsPause">Pause</button></div>
+        <p class="note" id="clsNote"></p>
+      </div>
+      <div class="mbar">
+        <div class="mbar-t"><b id="tsetM">2.00</b><small><span class="tlab">T*</span><span class="kinlab"> · kin <span id="tkinM">–</span></span></small></div>
+        <div class="trange"><s class="zone" id="szone"></s><input type="range" id="tsliderM" min="0.30" max="2.50" step="0.01" value="2.00" aria-label="Temperature set point"><div class="ticks" id="ticks"></div></div>
+        <div class="mbtns"><button class="btn" id="micM" aria-pressed="false">Mic</button><button class="btn" id="pause">Pause</button><button class="btn sndbtn" id="sndM" aria-pressed="true" aria-label="Sound effects" title="Sound effects">🔊</button></div>
+        <div class="mnoise" id="mmeter" hidden><span class="mlab">Your noise</span><div class="meter"><s class="zone" id="nzone"></s><i id="micbarM"></i></div></div>
+        <div class="mpitch" id="mpitch" hidden><div class="mpnote"><b id="pbNote">–</b><small id="pbHz">sing a note</small></div>
+          <div class="mptrack"><div class="meter"><i id="pbFill"></i><s id="pbNow"></s></div><div class="mpends"><span id="pbLo"></span><span>pressure</span><span id="pbHi"></span></div></div>
+          <div class="mpP"><small>P</small><b id="pbP">0.00</b></div></div>
+      </div>
+      <div class="legend"><span id="legendItems" style="display:contents"></span><span id="boxinfo" style="font-family:var(--f-mono)"></span><span class="zhint">Click a molecule to follow it</span></div>
+      <div class="cellsec rosec" data-mode="explore">
+        <h3>Live readouts</h3>
+        <div class="readouts">
+          <div class="ro"><span id="l0">–</span><b id="r0">–</b></div>
+          <div class="ro"><span id="l1">–</span><b id="r1">–</b></div>
+          <div class="ro"><span id="l2">–</span><b id="r2">–</b></div>
+          <div class="ro"><span id="l3">–</span><b id="r3">–</b></div>
+          <div class="ro"><span id="l4">–</span><b id="r4">–</b></div>
+          <div class="ro"><span id="l5">–</span><b id="r5">–</b></div>
+          <div class="ro"><span>U / N</span><b id="rU">–</b></div>
+          <div class="ro"><span>Time</span><b id="rTime">–</b></div>
+        </div>
+        <div>
+          <div class="plotlab"><span>Temperature</span><span><i><span class="sw" style="background:var(--muted)"></span>set</i> &nbsp; <i><span class="sw" style="background:var(--hot)"></span>kinetic</i></span></div>
+          <canvas class="plot" id="plotT"></canvas>
+        </div>
+        <div>
+          <div class="plotlab"><span id="plotFlab">–</span><span id="perf"></span></div>
+          <canvas class="plot" id="plotF"></canvas>
+        </div>
+      </div>
+        <details class="gstats gstatsbox" data-mode="game">
+          <summary>Statistics on this device</summary>
+          <table><thead><tr><th>Game</th><th>Played</th><th>Average</th><th>Best</th></tr></thead><tbody id="gstatsBody"></tbody></table>
+          <div class="btns"><button class="btn" id="gstatsReset">Reset statistics</button></div>
+        </details>
+      <div class="thermo" id="thermoPanel" data-mode="scan">
+        <div class="thhead">
+          <h2>Energy scan: find the melting point</h2>
+          <div class="btns">
+            <button class="btn hot" id="scanHeat">Heating scan</button>
+            <button class="btn cold" id="scanCool">Cooling scan</button>
+            <button class="btn" id="scanStop" disabled>Stop</button>
+            <select id="scanTau" aria-label="Scan duration"><option value="80">Fast · 80 τ</option><option value="160" selected>Normal · 160 τ</option><option value="320">Slow · 320 τ</option></select>
+          </div>
+        </div>
+        <p class="note" id="scanStatus">Press <b>Heating scan</b>: the computer starts from the ordered structure, warms it slowly and measures the energy at every temperature. Then try <b>Cooling scan</b>.</p>
+        <div class="thgraphs" id="thGraphs">
+        <div class="thgrid">
+          <figure><figcaption><b>1 · Energy U</b> <span>climbs as it breaks</span></figcaption><canvas class="thplot" id="thU"></canvas></figure>
+          <figure><figcaption><b>2 · Heat capacity C</b> <span>peak = melting point</span></figcaption><canvas class="thplot" id="thC"></canvas></figure>
+          <figure><figcaption><b>3 · Entropy S</b> <span>disorder, jumps up</span></figcaption><canvas class="thplot" id="thS"></canvas></figure>
+          <figure><figcaption><b>4 · Free energy F = U − TS</b> <span>lower wins</span></figcaption><canvas class="thplot" id="thF"></canvas></figure>
+        </div>
+        <div class="thkey">
+          <i><span class="sw" style="background:var(--hot)"></span>heating</i>
+          <i><span class="sw" style="background:var(--cold)"></span>cooling</i>
+          <i><span class="sw" style="border-top:2px dashed var(--accent);height:0"></span>if it stayed ordered</i>
+          <i><span class="sw" style="border-top:2px dashed var(--tail);height:0"></span>if it stayed broken</i>
+          <i><span class="sw" style="background:var(--ink);width:2px;height:10px"></span>melting point</i>
+        </div>
+        <p class="thsum" id="thSummary"></p>
+        <details class="thmore"><summary>What do the graphs mean?</summary>
+          <p>Why does heat break structures? Sticking together <b>lowers the energy</b>, so cold molecules build structures. Breaking free <b>increases disorder</b> (entropy): there are many more ways to be scattered than to be neatly packed. Heat makes disorder more valuable, so at some temperature disorder wins and the structure falls apart.</p>
+          <p><b>1 · Energy U</b>: how much energy the molecules hold. It climbs as the structure breaks, because broken contacts cost energy. At constant volume it plays the role of the enthalpy H.</p>
+          <p><b>2 · Heat capacity C</b>: how much heat it takes to warm up a little. The peak is the melting point: there, heat goes into breaking the structure instead of warming it.</p>
+          <p><b>3 · Entropy S</b>: the amount of disorder (how many ways the molecules can be arranged). It jumps up when the structure breaks.</p>
+          <p><b>4 · Free energy F = U − T·S</b>: energy minus the “disorder bonus”. Nature picks the state with the lower F. Where the two dashed lines cross, ordered and broken are equally good: that is the melting point.</p>
+          <p class="note" id="thUnit"></p>
+        </details>
+        </div>
+      </div>
+    </div>
+
+    <div class="rack" id="rack">
+      <div class="sheethead"><b id="sheetTitle">Options</b><button class="btn" id="sheetClose" aria-label="Close">✕</button></div>
+      <div class="seg modeseg" role="group" aria-label="Mode">
+        <button data-appmode="game" aria-pressed="true">Game</button>
+        <button data-appmode="explore" aria-pressed="false">Explore</button>
+        <button data-appmode="scan" aria-pressed="false">Energy scan</button>
+      </div>
+      <div class="panel" id="gamePanel" data-mode="game">
+        <h2>Game: steer the molecules with your voice</h2>
+        <div class="gpick" id="gpick"></div>
+        <div class="ladder" id="ladder"></div>
+        <div class="gsel" id="gsel" hidden>
+          <p class="ggoal" id="ggoal"></p>
+          <p class="ghint" id="ghint"></p>
+          <div class="btns">
+            <button class="btn primary" id="gstart">Start</button>
+            <label class="gmic"><input type="checkbox" id="guseMic" checked> Use the microphone</label>
+            <label class="gmic"><input type="checkbox" id="gtips" checked> Show tips</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="sysPanel" data-mode="explore scan">
+        <h2>System</h2>
+        <div class="syspick" role="group" aria-label="System">
+          <button data-pick="ice" aria-pressed="true"><b>Ice</b><small>Melts when heated</small></button>
+          <button data-pick="demix" aria-pressed="false"><b>Two liquids</b><small>Separate when cooled</small></button>
+          <button data-pick="dumbbell" aria-pressed="false"><b>Soap molecules</b><small>Form micelles when cooled</small></button>
+          <button data-pick="polymer" aria-pressed="false"><b>Plastic</b><small>Crystallizes when cooled</small></button>
+          <button data-pick="diblock" aria-pressed="false" class="dbgonly"><b>Diblock copolymer</b><small>Blocks segregate on cooling</small></button>
+          <button data-pick="lcst" aria-pressed="false"><b>Polymer chains</b><small>Curl up when cooled</small></button>
+          <button data-pick="crypt" aria-pressed="false"><b>Proteins</b><small>Unfold and stick when heated</small></button>
+          <button data-pick="mbpoly" aria-pressed="false"><b>Oily particles</b><small>Clump when heated</small></button>
+          <button data-pick="brush" aria-pressed="false" class="dbgonly"><b>Brush + droplet</b><small>Wetting switches with temperature</small><em class="devtag">In development</em></button>
+          <button data-pick="plates" aria-pressed="false" class="dbgonly"><b>Plates in water</b><small>Water-fearing surfaces stick</small><em class="devtag">In development</em></button>
+        </div>
+      </div>
+
+      <div class="panel micpanel" data-mode="explore game scan">
+        <h2>Microphone</h2>
+        <div class="mic" id="micbox">
+          <div class="btns"><button class="btn primary" id="micSetup">Set up the microphone</button><button class="btn" id="calib">Set quiet level</button></div>
+          <div class="meter" aria-hidden="true"><i id="micbar"></i></div>
+          <div class="row"><label for="micrange">Sensitivity</label><output id="micrangeO">Normal</output>
+            <input type="range" id="micrange" min="6" max="50" step="1" value="30" style="direction: rtl" aria-label="Sensitivity: right is more sensitive"><div class="mrlab"><span>Less sensitive</span><span>More sensitive</span></div></div>
+          <p class="note" id="micnote">Quiet room keeps the system cold. Talk, clap or play music to heat it.</p>
+        </div>
+        <p class="privline"><span aria-hidden="true">🔒</span> <span>The sound never leaves this device.</span> <button class="linkbtn" data-privacy>Privacy</button></p>
+      </div>
+      <div class="panel" data-mode="none" hidden>
+        <h2>Temperature</h2>
+        <div class="tbig tfull"><b id="tset">2.00</b><small>T* set point &nbsp;·&nbsp; kinetic <span id="tkin">–</span></small></div>
+        <div class="seg tfull" role="group" aria-label="Temperature source">
+          <button id="modeSlider" aria-pressed="true">Slider</button>
+          <button id="modeMic" aria-pressed="false">Room noise</button>
+        </div>
+        <div class="trange tfull">
+          <input type="range" id="tslider" min="0.30" max="2.50" step="0.01" value="2.00" aria-label="Temperature set point">
+        </div>
+        <div class="btns">
+          <button class="btn cold" id="quench">Cool to 0.5</button>
+          <button class="btn hot" id="melt">Heat to 2.0</button>
+        </div>
+
+      </div>
+
+      <div class="panel graphpanel" id="graphPanel" data-mode="scan" hidden></div>
+
+      <details class="panel" id="compPanel" data-mode="explore">
+        <summary><h2>Composition and interactions</h2></summary>
+        <div class="row" id="concRow"><label for="conc" id="concLab">Concentration</label><output id="concO">26%</output>
+          <input type="range" id="conc" min="2" max="60" step="1" value="26"></div>
+        <p class="note" id="concNote"></p>
+        <div class="checks dbgonly" data-show="ice"><label><input type="checkbox" id="iceWall"> Ice-like wall</label></div>
+        <p class="note dbgonly" data-show="ice">A pinned row of molecules across the box with the ice honeycomb pattern, binding water strongly, like a mineral surface. Ice can grow from its flat faces without first having to form a nucleus. Changes apply live.</p>
+
+        <div class="row" data-show="dumbbell"><label for="epsBB">Tail–tail attraction ε<sub>BB</sub></label><output id="epsBBO">2.50</output>
+          <input type="range" id="epsBB" min="0" max="4" step="0.05" value="2.5"></div>
+        <div class="row" data-show="dumbbell"><label for="epsAS">Head–solvent attraction ε<sub>AS</sub></label><output id="epsASO">0.00</output>
+          <input type="range" id="epsAS" min="0" max="1.5" step="0.05" value="0"></div>
+        <div class="row" data-show="dumbbell"><label for="sigA">Head diameter σ<sub>A</sub></label><output id="sigAO">1.00</output>
+          <input type="range" id="sigA" min="0.8" max="1.8" step="0.05" value="1"></div>
+
+        <div class="row" data-show="polymer lcst mbpoly"><label for="epsPP">Polymer–polymer attraction ε<sub>PP</sub></label><output id="epsPPO">1.75</output>
+          <input type="range" id="epsPP" min="0" max="3" step="0.05" value="1.75"></div>
+        <div class="row" data-show="mbpoly plates"><label for="epsH">Hydrophobic attraction ε<sub>h</sub> when warm (added by hand)</label><output id="epsHO">1.00</output>
+          <input type="range" id="epsH" min="0" max="2" step="0.05" value="1"></div>
+        <div class="row" data-show="mbpoly"><label for="epsW">Solute–water attraction ε<sub>w</sub> when cold (added by hand)</label><output id="epsWO">0.40</output>
+          <input type="range" id="epsW" min="0" max="1" step="0.05" value="0.4"></div>
+        <div class="row" data-show="polymer brush"><label for="kBend">Chain stiffness k<sub>bend</sub></label><output id="kBendO">6.4</output>
+          <input type="range" id="kBend" min="0" max="15" step="0.1" value="6.4"></div>
+
+        <div class="row" data-show="diblock"><label for="epsAB">A–B attraction ε<sub>AB</sub> (lower = more incompatible)</label><output id="epsABO">0.20</output>
+          <input type="range" id="epsAB" min="0" max="1" step="0.05" value="0.2"></div>
+        <div class="row" data-show="diblock"><label for="fA">A-block fraction f<sub>A</sub> (rebuilds on release)</label><output id="fAO">0.50</output>
+          <input type="range" id="fA" min="0.2" max="0.8" step="0.05" value="0.5"></div>
+
+        <div class="row" data-show="polymer diblock lcst mbpoly brush"><label for="chainLen">Chain length N<sub>c</sub>, beads (rebuilds on release)</label><output id="chainLenO">12</output>
+          <input type="range" id="chainLen" min="3" max="40" step="1" value="12"></div>
+
+        <div class="row" data-show="demix"><label for="epsSC">S–C attraction ε<sub>SC</sub> (lower = more incompatible)</label><output id="epsSCO">0.30</output>
+          <input type="range" id="epsSC" min="0" max="1" step="0.05" value="0.3"></div>
+
+        <div class="row" data-show="crypt"><label for="epsXX">Stickiness of the hidden beads ε<sub>XX</sub></label><output id="epsXXO">4.0</output>
+          <input type="range" id="epsXX" min="0" max="10" step="0.5" value="4"></div>
+        <p class="note" data-show="crypt">Set it to 0 for the control: the proteins still unfold, but nothing clumps.</p>
+        <div class="row" data-show="hp"><label for="epsHH">H–H attraction ε<sub>HH</sub></label><output id="epsHHO">3.00</output>
+          <input type="range" id="epsHH" min="0" max="4" step="0.05" value="3"></div>
+        <div class="seqbox" data-show="hp">
+          <label for="seqPreset">Sequence</label>
+          <select id="seqPreset">
+            <option value="HPHPPHHPHPPHPHHPPHPH">Benchmark 20-mer</option>
+            <option value="PPPHHPPHHPPPPPHHHHHHHPPHHPPPPHHPPHPP">Benchmark 36-mer</option>
+            <option value="HPHPHPHPHPHPHPHPHPHP">Alternating HP, 20</option>
+            <option value="HHHHHHHHHHPPPPPPPPPP">Two blocks, 20</option>
+            <option value="HHHHHHHHHHHHHHHHHHHH">All H, 20</option>
+            <option value="custom">Custom (type below)</option>
+          </select>
+          <input type="text" id="seq" value="HPHPPHHPHPPHPHHPPHPH" spellcheck="false" autocomplete="off" aria-label="H/P sequence">
+          <button class="btn" id="seqApply">Apply sequence</button>
+          <p class="note" id="seqNote">Letters H and P only, 3–60 beads. Applying rebuilds the system.</p>
+        </div>
+
+        <div class="checks" data-show="brush"><label><input type="checkbox" id="bInvert"> Swap colours: teal beads at the chain ends, orange in the middle (rebuilds)</label></div>
+        <div class="row" data-show="brush"><label for="graft">Grafting spacing, σ (larger = sparser; rebuilds on release)</label><output id="graftO">1.6</output>
+          <input type="range" id="graft" min="1.2" max="3" step="0.1" value="1.6"></div>
+        <div class="row" data-show="brush"><label for="nEnd">End beads per chain (orange, or teal when swapped; rebuilds on release)</label><output id="nEndO">2</output>
+          <input type="range" id="nEnd" min="1" max="4" step="1" value="2"></div>
+        <div class="row" data-show="brush"><label for="grav">Gravity g (pulls the droplet onto the brush)</label><output id="gravO">0.003</output>
+          <input type="range" id="grav" min="0" max="0.02" step="0.001" value="0.003"></div>
+        <div class="row" data-show="brush"><label for="epsCC">Brush beads: attraction to each other ε<sub>CC</sub></label><output id="epsCCO">0.30</output>
+          <input type="range" id="epsCC" min="0" max="1.5" step="0.05" value="0.3"></div>
+        <div class="row" data-show="brush"><label for="epsQL">Teal beads: attraction to the liquid</label><output id="epsQLO">1.20</output>
+          <input type="range" id="epsQL" min="0" max="2" step="0.05" value="1.2"></div>
+        <div class="row" data-show="brush"><label for="epsHL">Orange beads: attraction to the liquid</label><output id="epsHLO">0.20</output>
+          <input type="range" id="epsHL" min="0" max="2" step="0.05" value="0.2"></div>
+        <div class="row" data-show="plates"><label for="plateKind">Plate surface</label>
+          <select id="plateKind"><option value="0">Water-fearing (no attraction to water)</option><option value="0.3">Water-attracting (pulls on water)</option><option value="hb" selected>Hydrogen-bonding (bonds to water)</option></select></div>
+        <div class="checks" data-show="plates"><label><input type="checkbox" id="plateCompare" checked> Side by side: water-fearing plates on the left, this surface on the right</label></div>
+        <div class="checks" data-show="plates"><label><input type="checkbox" id="plateHold" checked> Hold the plates in place (untick to release them)</label></div>
+        <p class="note" data-show="plates">Watch the gap while the plates are held, then release them. The surface can be switched while it runs.</p>
+        <div class="row" data-show="plates"><label for="plateGap">Start gap</label>
+          <select id="plateGap"><option value="2.2" selected>One water layer</option><option value="3.2">Two water layers</option></select></div>
+        <div class="row" data-show="plates"><label for="plateLen">Plate length (beads)</label><output id="plateLenO">12</output>
+          <input type="range" id="plateLen" min="6" max="18" step="1" value="12"></div>
+        <div class="checks" data-show="mbpoly plates"><label><input type="checkbox" id="mbHB" checked> Water hydrogen bonds on (turn off for the control: plain LJ water)</label></div>
+        <p class="note" data-show="mbpoly">Chain length 1 (default) gives free nonpolar solutes; longer lengths give one or more chains of the same beads.</p>
+      </details>
+
+      <details class="panel" id="modelPanel" data-mode="explore">
+        <summary><h2>Model and integrator</h2></summary>
+        <div class="row"><label for="thermo">Thermostat</label>
+          <select id="thermo"><option value="langevin">Langevin (BAOAB)</option><option value="bussi">Bussi velocity rescaling</option></select></div>
+        <div class="row" id="gammaRow"><label for="gamma">Friction γ</label><output id="gammaO">1.00</output>
+          <input type="range" id="gamma" min="0.05" max="5" step="0.05" value="1"></div>
+        <div class="row" id="tauRow" hidden><label for="tau">Coupling time τ<sub>T</sub></label><output id="tauO">0.50</output>
+          <input type="range" id="tau" min="0.05" max="5" step="0.05" value="0.5"></div>
+        <div class="checks" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice"><label><input type="checkbox" id="baro"> Constant pressure (barostat): the box grows or shrinks to hold the pressure</label></div>
+        <div class="row" id="p0Row" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice" hidden><label for="p0">Target pressure P*</label><output id="p0O">1.00</output>
+          <input type="range" id="p0" min="0" max="4" step="0.01" value="1"></div>
+        <p class="note" id="baroNote" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice" hidden></p>
+        <div class="checks" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice"><label><input type="checkbox" id="pitchP"> Voice pitch sets the pressure</label></div>
+        <div class="pitchtune" id="pitchTune" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice" hidden>
+          <div class="row"><label for="pLo">Lowest note: pressure 0</label><select id="pLo"></select><button class="btn" id="pLoSing">Sing it</button></div>
+          <div class="row"><label for="pHi">Highest note: top pressure</label><select id="pHi"></select><button class="btn" id="pHiSing">Sing it</button></div>
+        </div>
+        <p class="note" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice" id="pitchNote">Loudness sets the temperature, pitch sets the pressure: a high voice squeezes the box, a low voice lets it expand.</p>
+        <p class="note" data-show="ice">In ice, higher pressure lowers the freezing point, as in real water.</p>
+        <div class="row"><label for="spf">MD steps per frame</label><output id="spfO">12</output>
+          <input type="range" id="spf" min="1" max="60" step="1" value="12"></div>
+        <div class="checks"><label><input type="checkbox" id="autoSpf" checked> Adjust steps per frame automatically to keep the animation smooth</label></div>
+      </details>
+
+      <details class="panel" data-mode="explore">
+        <summary><h2>Box and view</h2></summary>
+        <div class="row" id="sizeRow"><label for="size">Box size</label>
+          <select id="size"><option value="36">36×36 sites · 1296 beads</option><option value="48" selected>48×48 sites · 2304 beads</option><option value="64">64×64 sites · 4096 beads</option></select></div>
+        <div class="row"><label for="initState">Initial state</label>
+          <select id="initState"><option value="ordered" selected>Ordered (cold equilibrium)</option><option value="disordered">Disordered (hot)</option></select></div>
+        <div class="btns"><button class="btn primary" id="reset">Rebuild system</button></div>
+        <div class="checks">
+          <label data-show="dumbbell polymer diblock hp crypt lcst mbpoly plates"><input type="checkbox" id="showSolv" checked> Show solvent</label>
+          <label data-show="mbpoly plates"><input type="checkbox" id="showShell" checked> Highlight hydration-shell water</label>
+          <label data-show="dumbbell polymer mbpoly ice crypt"><input type="checkbox" id="byCluster"> <span id="byClusterLab">Color by micelle</span></label>
+          <label data-show="dumbbell polymer diblock hp crypt lcst mbpoly"><input type="checkbox" id="showBonds" checked> Show bonds</label>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="sheetback" id="sheetBack" hidden></div>
+  <nav class="mbnav" id="mbnav" aria-label="Mode">
+    <button data-mbmode="game" aria-pressed="true"><span data-bar="game">Game</span></button>
+    <button data-mbmode="explore" aria-pressed="false"><span data-bar="explore">Explore</span></button>
+    <button data-mbmode="scan" aria-pressed="false"><span data-bar="scan">Energy scan</span></button>
+    <button id="mbOpt" aria-expanded="false"><span data-bar="opt">Options</span></button>
+  </nav>
+  <details class="panel albumpanel">
+    <summary class="albumhead"><h2>My cards</h2><span class="albumcount" id="albumCount"></span></summary>
+    <div class="albumtools"><button class="btn" id="fcReset">Reset cards</button></div>
+    <div id="album"></div>
+  </details>
+  <div class="panel teachpanel">
+        <div class="gteach">
+          <details class="teacher"><summary>Teacher options</summary>
+            <div class="row qrow"><label for="quality">Drawing quality</label>
+          <select id="quality"><option value="auto" selected>Automatic (lighter on slow devices)</option><option value="0">Full</option><option value="1">Lighter</option><option value="2">Light</option><option value="3">Lightest</option></select></div>
+            <p class="note">For slow computers or projectors: lighter drawing keeps the simulation smooth.</p>
+            <div class="btns"><button class="btn" id="gunlock">Unlock all games</button><button class="btn" id="ladUnlock">Unlock all challenges</button></div>
+            <p class="note">For this browser only. Press again to lock.</p>
+        <div class="gdisp">
+          <h3>Projector and accessibility</h3>
+          <div class="checks"><label><input type="checkbox" id="optBig"> Larger text</label><label><input type="checkbox" id="optHi"> High contrast</label></div>
+          <p class="note">Kept in this browser. Keyboard play works everywhere: hold Space to heat, arrow keys to set the temperature.</p>
+        </div>
+        <div class="gofl">
+          <h3>Use without internet</h3>
+          <p class="note">Everything the page needs is inside it: once it has opened, it works with no internet.</p>
+          <div class="btns"><button class="btn" id="pwaInstall" hidden>Install as an app</button><button class="btn" id="dlPage">Download the page</button><button class="btn" data-privacy>Privacy</button><button class="btn" id="wipeData">Delete saved data</button></div>
+          <p class="note" id="oflNote" hidden></p>
+        </div>
+        <div class="gbattle">
+          <h3>Class battle</h3>
+          <div class="btns"><label class="gmic">Teams <select id="bTeams"><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select></label><button class="btn" id="bStart">Start a battle</button></div>
+          <p class="note">Teams take turns on the selected game, all from the same start. The highest score wins. Battles do not change statistics or cards.</p>
+        </div>
+          </details>
+        </div>
+  </div>
+  <div class="privmodal" id="privModal" role="dialog" aria-modal="true" aria-labelledby="privTitle" hidden>
+    <div class="privcard">
+      <h3 id="privTitle">Privacy</h3>
+      <ul>
+        <li>The microphone is used only to measure how loud it is (and, if pitch is switched on, which note is sung). This happens inside this browser, many times a second, and each measurement is thrown away straight after.</li>
+        <li><b>Nothing is recorded, saved or sent.</b> The page makes no network connections of its own: no analytics, no cookies, no accounts, no adverts. The fonts are built in.</li>
+        <li>Progress (stars, cards, settings) is kept only in this browser on this device. <b>Delete saved data</b> in Teacher options removes it.</li>
+        <li>The microphone is optional: the temperature slider does the same job.</li>
+        <li>So the app itself collects no personal data. The website that serves the page may keep ordinary server logs, like any website.</li>
+      </ul>
+      <button class="btn primary" id="privClose">OK</button>
+    </div>
+  </div>
+  <div class="fcmodal" id="fcModal" role="dialog" aria-modal="true" aria-label="Card" hidden>
+    <p class="fcnew" id="fcNew"></p>
+    <div class="fcstage"><div class="fcflip" id="fcFlip"><div class="fcbackface"><div class="fcback" id="fcBack"></div></div><div class="fcfront" id="fcFront"></div></div><div class="fcburst" id="fcBurst"></div></div>
+    <button class="btn primary" id="fcClose">Close</button>
+  </div>
+</div>
+
