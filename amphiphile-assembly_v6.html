@@ -37,7 +37,7 @@ h1 { font-family: var(--f-display); font-weight: 700; font-size: 1.6rem; letter-
 .bench { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 20px; align-items: start }
 @media (max-width: 960px) { .bench { grid-template-columns: minmax(0, 1fr) } }
 .cellbox { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 10px; min-width: 0 }
-#sim { width: 100%; aspect-ratio: 1 / 1; max-width: 100%; display: block; background: var(--cell); border-radius: 6px; touch-action: none }
+#sim { width: 100%; aspect-ratio: 1 / 1; max-width: 100%; margin-inline: auto; display: block; background: var(--cell); border-radius: 6px; touch-action: none }
 .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; color: var(--muted); font-size: 12.5px }
 .legend span { display: inline-flex; align-items: center; gap: 6px }
 .dot { width: 10px; height: 10px; border-radius: 50% }
@@ -101,6 +101,7 @@ table.eps th { font-weight: 500; color: var(--muted) }
 .gpick button[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--panel)) }
 .gpick button b { font-weight: 600; font-size: 14px } .gpick button small { color: var(--muted); font-size: 12px } .gpick .stars { color: var(--cryst); font-size: 12px; min-height: 1em }
 .ghud { display: grid; gap: 7px; padding: 10px 12px; border: 1px solid var(--accent); border-radius: 8px; background: color-mix(in srgb, var(--accent) 7%, var(--panel)) }
+#hudGoal:empty, #hudTip:empty { display: none }
 .ghead { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; font-size: 13.5px; line-height: 1.35 }
 .ghead b { font-weight: 650 } .ghead .btn { padding: 4px 10px }
 .htip { color: var(--muted) }
@@ -272,7 +273,7 @@ header .sub { font-size: 15px; line-height: 1.45 } header .sub b { color: var(--
 .gfx .cd.go { color: var(--hot) }
 .gfx .sp { grid-area: 1 / 1; font-size: clamp(54px, 16vmin, 120px); line-height: 1; color: var(--cryst); letter-spacing: 4px;
   -webkit-text-stroke: 2px color-mix(in srgb, var(--ink) 55%, var(--cryst)); paint-order: stroke fill; animation: starpop 1.3s cubic-bezier(.2,.9,.3,1.2) both }
-.gfx .sptxt { grid-area: 1 / 1; align-self: end; margin-bottom: 14%; font-family: var(--f-display); font-weight: 700; font-size: clamp(22px, 5vmin, 40px); color: var(--ink);
+.gfx .sptxt { grid-area: 1 / 1; align-self: start; margin-top: 12%; font-family: var(--f-display); font-weight: 700; font-size: clamp(22px, 5vmin, 40px); color: var(--ink);
   -webkit-text-stroke: 4px var(--panel); paint-order: stroke fill; animation: starpop 1.6s cubic-bezier(.2,.9,.3,1.2) both }
 .ghud.flash { animation: hudflash 0.9s ease-out } @keyframes hudflash { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--cryst) 70%, transparent) } 100% { box-shadow: 0 0 0 18px transparent } }
 .sndbtn { min-width: 40px; padding-inline: 8px }
@@ -377,7 +378,7 @@ button { touch-action: manipulation }
 }
 /* Phone: box + compact temperature bar pinned on top, controls scroll beneath */
 @media (max-width: 700px) {
-  body { padding-block: 12px 32px }
+  body { padding-block: 12px calc(96px + env(safe-area-inset-bottom, 0px)) } /* room for the bottom mode bar */
   body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg) }
   .wrap { gap: 14px }
   h1 { font-size: 1.3rem }
@@ -738,7 +739,7 @@ button { touch-action: manipulation }
             <div class="row qrow"><label for="quality">Drawing quality</label>
           <select id="quality"><option value="auto" selected>Automatic (lighter on slow devices)</option><option value="0">Full</option><option value="1">Lighter</option><option value="2">Light</option><option value="3">Lightest</option></select></div>
             <p class="note">For slow computers or projectors: lighter drawing keeps the simulation smooth.</p>
-            <div class="btns"><button class="btn" id="gunlock">Unlock all games</button><button class="btn" id="ladUnlock">Unlock all challenges</button><button class="btn" id="welAgain">Show the welcome</button></div>
+            <div class="btns"><button class="btn" id="gunlock">Unlock all games</button><button class="btn" id="ladUnlock">Unlock all challenges</button></div>
             <p class="note">For this browser only. Press again to lock.</p>
         <div class="gbattle">
           <h3>Class battle</h3>
@@ -1951,6 +1952,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // text written by the script goes through T(), with {name} placeholders for numbers.
   const I18N = {
  "fi": {
+  "Cleared!": "Läpäisty!",
+  "Not cleared": "Ei läpäisty",
   "Show the welcome": "Näytä tervetulotoivotus",
   "Loudness sets the temperature, pitch sets the pressure: a high voice squeezes the box, a low voice lets it expand.": "Äänenvoimakkuus asettaa lämpötilan, sävelkorkeus paineen: korkea ääni puristaa laatikkoa, matala antaa sen laajeta.",
   "In ice, higher pressure lowers the freezing point, as in real water.": "Jäässä suurempi paine laskee jäätymispistettä, kuten oikeassa vedessä.",
@@ -2820,6 +2823,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Microphone": "Mikrofoni"
  },
  "sv": {
+  "Cleared!": "Klarat!",
+  "Not cleared": "Inte klarat",
   "Show the welcome": "Visa välkomsten",
   "Loudness sets the temperature, pitch sets the pressure: a high voice squeezes the box, a low voice lets it expand.": "Ljudstyrkan sätter temperaturen, tonhöjden trycket: en ljus röst trycker ihop lådan, en mörk låter den växa.",
   "In ice, higher pressure lowers the freezing point, as in real water.": "I is sänker högre tryck fryspunkten, som i riktigt vatten.",
@@ -3689,6 +3694,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Microphone": "Mikrofon"
  },
  "ru": {
+  "Cleared!": "Пройдено!",
+  "Not cleared": "Не пройдено",
   "Show the welcome": "Показать приветствие",
   "Loudness sets the temperature, pitch sets the pressure: a high voice squeezes the box, a low voice lets it expand.": "Громкость задаёт температуру, высота голоса — давление: высокий голос сжимает ячейку, низкий даёт ей расшириться.",
   "In ice, higher pressure lowers the freezing point, as in real water.": "Во льду более высокое давление понижает температуру замерзания, как в настоящей воде.",
@@ -5221,7 +5228,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (guide) { guide = null; coachHide(); }
     if (needGuide(g) && !battle && !gameLevel && !classOn) { guideStart(g); return; }
     prepGame(g); coachHide(); $('greplay').hidden = true; gendClose(); postGame = null;
-    game = { g, t0: eng.time, last: eng.time, ema: null, rate: g.D / GAME_SEC, peak: -Infinity, peakSec: 0, snap: null, rec: [], level: gameLevel, bump: 0 };
+    game = { g, t0: eng.time, last: eng.time, ema: null, rate: g.D / GAME_SEC, peak: -Infinity, peakSec: 0, snap: null, rec: [], level: gameLevel, bump: 0, guided: afterGuide }; afterGuide = false;
     if (battle) game.battle = battle.k;
     if (g.setup) g.setup(game);
     if (gameLevel) { const tw = ladTwist(g, gameLevel); Object.assign(game, { af: tw.af || 0, flowK: tw.flowK || 1, bandK: tw.bandK || 1, spill: tw.spill || 0 });
@@ -5235,7 +5242,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const band = $('gband'); band.querySelectorAll('.tick').forEach((x) => x.remove());
     g.stars.forEach((s, k) => { const d = document.createElement('div'); d.className = 'tick'; d.style.left = (100 * s / (g.scale || 1)) + '%'; d.textContent = '★'.repeat(k + 1); band.appendChild(d); });
     $('gnow').style.left = '0%'; $('gbar').style.width = '0%'; $('gres').textContent = '';
-    $('hudTitle').textContent = T(g.title) + (game.level ? ' · ' + T('Challenge {k}', { k: game.level }) : '') + ':'; $('hudGoal').textContent = T(phoneUI() ? g.short : g.goal); $('hudTip').textContent = '';
+    $('hudTitle').textContent = T(g.title) + (game.level ? ' · ' + T('Challenge {k}', { k: game.level }) : '') ; $('hudGoal').textContent = ''; $('hudTip').textContent = ''; /* no goal text or tips above the box */
     $('ghud').hidden = false; document.querySelector('.wrap').classList.add('ingame'); $('gquit').textContent = T('Give up'); $('gagain').hidden = true;
     $('gstart').disabled = true; resize();
     countdown(game); if (typeof sheet === 'function') sheet(false);
@@ -5302,7 +5309,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   let gendTimers = [], postGame = null; // postGame: the game whose best moment the box is showing, so its preview film waits
   const gendOpen = () => !$('gend').hidden;
   function endScreen(o) {
-    postGame = o.g.id; if (classOn || battle) return; const el = $('gend'), { G, g, st, v } = o; gendTimers.forEach(clearTimeout); gendTimers = [];
+    postGame = o.g.id; if (classOn || battle) return; const el = $('gend'), { G, g, st, v } = o;
+    $('gres').innerHTML = `<span class="gst">${'★'.repeat(st)}${'☆'.repeat(3 - st)}</span> <b>${g.fmt(v)}</b>${o.rec ? ' · ' + T('New personal best!') : ''}${G.level ? ' · ' + (st ? T('Cleared!') : T('Not cleared')) : ''}`; // one short line over the graph; the details are on the end card gendTimers.forEach(clearTimeout); gendTimers = [];
     el.style.left = cv.offsetLeft + 'px'; el.style.top = cv.offsetTop + 'px'; el.style.width = cv.offsetWidth + 'px'; el.style.height = cv.offsetHeight + 'px';
     const head = T(g.title) + (G.level ? ' · ' + T('Challenge {k}', { k: G.level }) : '');
     const msg = st === 3 ? T('Brilliant!') : st === 2 ? T('Great run!') : st === 1 ? T('Good start!') : T('So close: try again!');
@@ -5450,7 +5458,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   }
   let welcome = false; // first visit: the story on the first card, then one big Play button
   function tourShow(i) {
-    tourI = i; const st = TOUR[i], n = TOUR.length; if (i > 0) welcome = false;
+    tourI = i; const st = TOUR[i], n = TOUR.length; welcome = i === 0; // the first card of help is the welcome card
     $('tCard').classList.toggle('welcome', welcome); $('tWel').hidden = !welcome; $('tLang').value = $('lang').value;
     $('tTitle').textContent = welcome ? T('Shut Up and Get Structured') : T(tv(st.t)); $('tText').textContent = welcome ? T('Your voice is the thermostat. Quiet cools the molecules and they build structures; noise heats them and breaks everything apart. Ready to try?') : T(tv(st.d)); $('tCount').textContent = T('{i} of {n}', { i: i + 1, n });
     $('tBack').disabled = i === 0; $('tNext').textContent = T(i === n - 1 ? 'Done' : 'Next');
@@ -5463,9 +5471,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   function tourClose() { markTour(); if (welcome || $('tCard').classList.contains('welcome')) markWel(); $('tour').hidden = true; tourI = -1; cancelAnimationFrame(tourRaf); $('helpBtn').focus(); }
   $('helpBtn').addEventListener('click', () => tourOpen(false));
   $('tLang').addEventListener('change', (e) => { $('lang').value = e.target.value; setLang(e.target.value); }); // the welcome card has its own language switch
-  $('welAgain').addEventListener('click', () => tourOpen(true)); // what a new student sees on the first visit
   $('tPlay').addEventListener('click', () => { markWel(); welcome = false; tourClose(); setAppMode('game'); selectGame('ice'); startGame(); }); // the guided first game (with the microphone set-up)
-  $('tTour').addEventListener('click', () => { markWel(); welcome = false; tourShow(0); $('tNext').focus(); });
+  $('tTour').addEventListener('click', () => { markWel(); tourShow(1); $('tNext').focus(); });
   $('tFree').addEventListener('click', () => { markWel(); welcome = false; tourClose(); });
   $('tdT').addEventListener('input', () => { demoCtl = 'slider'; $('tdMic').setAttribute('aria-pressed', 'false'); });
   $('tdMic').addEventListener('click', async () => { if (demoCtl === 'mic') { demoCtl = 'slider'; $('tdMic').setAttribute('aria-pressed', 'false'); return; }
@@ -5679,7 +5686,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   }
   // coach line on the box
   function placeCoach() { const o = $('coach'); if (o.hidden) return;
-    const l = (cv.offsetLeft + cv.offsetWidth / 2) + 'px', t = (cv.offsetTop + 8) + 'px'; if (o.style.left !== l) o.style.left = l; if (o.style.top !== t) o.style.top = t; }
+    const l = (cv.offsetLeft + cv.offsetWidth / 2) + 'px', t = (cv.offsetTop + cv.offsetHeight - o.offsetHeight - 10) + 'px'; /* at the bottom of the box, next to the slider it talks about */ if (o.style.left !== l) o.style.left = l; if (o.style.top !== t) o.style.top = t; }
   let coachMsg = null; // [key, params, class], kept so a language switch can redraw it
   function coachSay(key, cls, params) { coachMsg = [key, params, cls]; const o = $('coach'); $('coachTxt').textContent = T(key, params); o.className = 'coach ' + (cls || ''); o.hidden = false; placeCoach(); }
   function coachHide() { coachMsg = null; $('coach').hidden = true; $('coachBtn').hidden = $('coachSkip').hidden = true; }
@@ -5688,7 +5695,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   try { if (localStorage.getItem('mdlab-tips') === '0') $('gtips').checked = false; } catch (e) {}
   $('gtips').addEventListener('change', () => { try { localStorage.setItem('mdlab-tips', tipsOn() ? '1' : '0'); } catch (e) {} if (!tipsOn() && !guide) coachHide(); });
   function coachTick(G, s) {
-    const g = G.g; if (!g.coach || !tipsOn() || G.level) return;
+    const g = G.g; if (!g.coach || !tipsOn() || G.level || !G.guided) return; // in-game coach lines only in the guided first game
     const r = G.rec, back = r.find((q) => q.s >= s - 2) || r[0], tr = back ? G.ema - back.v : 0;
     const [key, cls] = g.coach(G, s, tset, tr);
     if (key !== G.cKey) { G.cKey = key; G.cCls = cls; G.cSince = s; }
@@ -5834,6 +5841,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (!guide) return; const k = guide.k, txt = GUIDE[k][guide.mic ? 'mic' : 'sl'];
     coachSay(txt, 'guide'); const b = $('coachBtn'); b.hidden = k < 2; b.textContent = T('Play'); $('coachSkip').hidden = k >= 2; $('coachSkip').textContent = T('Skip');
   }
+  let afterGuide = false; // the game right after the guided lesson still has the coach line
   function guideStart(g) {
     prepGame(g); $('initState').value = 'ordered'; build({ game: true }); // the lesson starts from a crystal, so the first thing seen is melting
     running = true; $('pause').textContent = T('Pause'); syncBoxStart();
@@ -5852,7 +5860,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   }
   function guideEnd(play) {
     if (!guide) return; guide = null; coachHide(); try { localStorage.setItem('mdlab-guided', '1'); } catch (e) {}
-    if (play) startGame();
+    if (play) { afterGuide = true; startGame(); }
   }
   $('coachBtn').addEventListener('click', () => { if (guide) guideEnd(true); else if (battle) battleGo(); });
   $('coachSkip').addEventListener('click', () => { if (guide) guideEnd(true); else if (battle) battleStop(); });
@@ -6300,6 +6308,17 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   }
   if (!isPhone) $('quality').value = '0';
   $('quality').addEventListener('change', (e) => { const v = e.target.value; qAuto = v === 'auto'; setQuality(qAuto ? 0 : +v); });
+  // on a computer the whole box and the temperature bar must fit on the screen: the box gets smaller when the window is short
+  function fitSim() {
+    if (phoneUI() || classOn) { if (cv.style.maxWidth) { cv.style.maxWidth = ''; resize(); } return; }
+    const box = cv.closest('.cellbox'), mb = document.querySelector('.mbar'), hud = $('ghud'); if (!box || !mb) return;
+    const top = box.getBoundingClientRect().top + scrollY, running = !!(coachReady && game);
+    const hudH = hud.hidden ? 0 : running ? hud.offsetHeight + 10 : Math.min(hud.offsetHeight + 10, 120); // after a game the result graph may push the box down
+    const avail = Math.max(300, Math.floor(innerHeight - (running ? 14 : top) - hudH - mb.offsetHeight - 24 - 10 - 6)); // a running game scrolls the box to the top of the screen
+    const want = avail + 'px'; if (cv.style.maxWidth !== want) { cv.style.maxWidth = want; resize(); }
+  }
+  addEventListener('resize', () => fitSim());
+  if (window.ResizeObserver) { const ro = new ResizeObserver(() => fitSim()); ['ghud'].forEach((id) => $(id) && ro.observe($(id))); document.querySelector('header') && ro.observe(document.querySelector('header')); }
   function resize() { dpr = Math.min(qLevel >= 1 ? 1 : 2, window.devicePixelRatio || 1); W = cv.clientWidth; cv.width = Math.round(W * dpr); cv.height = Math.round(W * dpr); sizePlots(); }
   window.addEventListener('resize', () => { resize(); if (coachReady) { const rp = $('greplay'); if (!rp.hidden && rp._run) drawReplay(rp._run); } });
   const CPAL = ['#e0704a', '#3a9bd6', '#9b6bd1', '#d4a72c', '#4cae6b', '#d65a9a', '#2fb5b0', '#8f8f3a'];
@@ -6587,7 +6606,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     renderPick();
     if (gameSel && !game && !gameLevel) { $('ggoal').textContent = ''; $('ghint').innerHTML = ''; }
     $('gstart').textContent = T(gstartKey); $('gstartBox').textContent = T(gstartKey);
-    if (game) { const g = game.g; $('gvalLab').textContent = T(g.lab); $('hudTitle').textContent = T(g.title) + (game.level ? ' · ' + T('Challenge {k}', { k: game.level }) : '') + ':'; $('hudGoal').textContent = T(phoneUI() ? g.short : g.goal); $('hudTip').textContent = ''; $('gquit').textContent = T('Give up'); }
+    if (game) { const g = game.g; $('gvalLab').textContent = T(g.lab); $('hudTitle').textContent = T(g.title) + (game.level ? ' · ' + T('Challenge {k}', { k: game.level }) : '') ; $('hudGoal').textContent = ''; $('hudTip').textContent = ''; /* no goal text or tips above the box */ $('gquit').textContent = T('Give up'); }
     else { $('gquit').textContent = T($('ghud').hidden ? 'Give up' : 'Close'); }
     drawThermo();
   }
@@ -6612,7 +6631,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     for (const g of GAMES) out.push(g.title, g.sub, g.goal, g.hint, g.lab, g.lesson.good, g.lesson.bad);
     for (const s of Object.keys(SYS)) { sys = s; try { build(); report().cells.forEach(([l, v]) => { out.push(l); if (typeof v === 'string') out.push(v); }); } catch (e) {} }
     return out; };
-  setT(startT()); build(); resize(); drawThermo();
+  setT(startT()); build(); resize(); fitSim(); drawThermo();
   setLang('en'); // every visit starts in English; the menu in the corner switches language
   setAppMode('game'); /* every visit opens on the games */ requestAnimationFrame((t) => { last = t; perfT = t; loop(t); });
 })();
