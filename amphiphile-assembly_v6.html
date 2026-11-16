@@ -421,6 +421,11 @@ html.hicon .note, html.hicon .privline, html.hicon .kbhint { color: #222a31 }
 html.hicon :focus-visible { outline: 3px solid #000 !important; outline-offset: 2px }
 html.hicon .fcdeck h3 { color: #000 }
 .sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0 }
+.protosec { margin-top: 14px; padding: 10px 12px 4px; border: 1px dashed color-mix(in srgb, var(--accent) 55%, var(--line)); border-radius: 10px; background: color-mix(in srgb, var(--accent) 4%, var(--panel)) }
+.protosec h3 { margin: 0 0 8px; font-size: 13px } .protosec h3 small { font-weight: 500; color: var(--muted); margin-left: 6px } .protosec .gpick { margin-bottom: 6px }
+.gproto { margin-top: 12px } .gproto h3 { margin: 0 0 4px; font-size: 13px }
+.cellbox.shake #sim { animation: boxshake .38s ease-out } @keyframes boxshake { 0%, 100% { transform: none } 20% { transform: translateX(-7px) } 40% { transform: translateX(6px) } 60% { transform: translateX(-4px) } 80% { transform: translateX(2px) } }
+@media (prefers-reduced-motion: reduce) { .cellbox.shake #sim { animation: none } }
 </style>
 
 <div class="wrap notranslate" data-sys="dumbbell" translate="no">
@@ -450,9 +455,9 @@ html.hicon .fcdeck h3 { color: #000 }
         <div class="ghead"><div><b id="hudTitle"></b> <span id="hudGoal"></span> <span class="htip" id="hudTip"></span></div><div class="btns" style="flex:none;gap:6px"><button class="btn primary" id="gagain" hidden>Play again</button><button class="btn" id="gquit">Give up</button></div></div>
         <div class="gstat">
           <div><span id="gvalLab">Score</span><b id="gval">–</b></div>
-          <div><span>Time left</span><b id="gtime">–</b></div>
+          <div><span id="gtimeLab">Time left</span><b id="gtime">–</b></div>
           <div><span id="gpeakLab">Best this run</span><b id="gpeak">–</b></div>
-          <div><span>Stars</span><b id="gstars" class="gst">☆☆☆</b></div>
+          <div><span id="gstarsLab">Stars</span><b id="gstars" class="gst">☆☆☆</b></div>
         </div>
         <div class="gband" id="gband" aria-hidden="true" title="Line: your score now. Marks: star levels"><div class="best" id="gbest"></div><div class="now" id="gnow"></div></div>
         <div class="gbar" aria-hidden="true"><i id="gbar"></i></div>
@@ -569,6 +574,7 @@ html.hicon .fcdeck h3 { color: #000 }
         <h2>Game: steer the molecules with your voice</h2>
         <div class="gpick" id="gpick"></div>
         <div class="ladder" id="ladder"></div>
+        <div class="protosec" id="protoSec" hidden><h3>Prototype games <small>for testing</small></h3><div class="gpick" id="ppick"></div><p class="note">Endless: lives, combos and levels that get faster. Same start every time.</p></div>
         <div class="gsel" id="gsel" hidden>
           <p class="ggoal" id="ggoal"></p>
           <p class="ghint" id="ghint"></p>
@@ -768,6 +774,7 @@ html.hicon .fcdeck h3 { color: #000 }
             <p class="note">For slow computers or projectors: lighter drawing keeps the simulation smooth.</p>
             <div class="btns"><button class="btn" id="gunlock">Unlock all games</button><button class="btn" id="ladUnlock">Unlock all challenges</button></div>
             <p class="note">For this browser only. Press again to lock.</p>
+        <div class="gproto"><h3>Prototype games</h3><p class="note">New game ideas to try with a class before they become real games.</p><button class="btn" id="protoToggle">Show prototype games</button></div>
         <div class="gdisp">
           <h3>Projector and accessibility</h3>
           <div class="checks"><label><input type="checkbox" id="optBig"> Larger text</label><label><input type="checkbox" id="optHi"> High contrast</label></div>
@@ -2895,7 +2902,33 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Larger text": "Suurempi teksti",
   "High contrast": "Suuri kontrasti",
   "Kept in this browser. Keyboard play works everywhere: hold Space to heat, arrow keys to set the temperature.": "Säilyy tässä selaimessa. Näppäimistöllä voi pelata aina: pidä välilyöntiä pohjassa lämmittääksesi, nuolinäppäimet säätävät lämpötilaa.",
-  "Drag the slider to cool or heat the box. Press Mic to use room noise instead: quiet cools the box, sound heats it. Keyboard: hold Space to heat, ← → to set the temperature step by step.": "Vedä liukusäädintä jäähdyttääksesi tai lämmittääksesi laatikkoa. Paina Mic käyttääksesi huoneen ääntä: hiljaisuus jäähdyttää, ääni lämmittää. Näppäimistö: pidä välilyöntiä pohjassa lämmittääksesi, ← → säätävät lämpötilaa askel kerrallaan."
+  "Drag the slider to cool or heat the box. Press Mic to use room noise instead: quiet cools the box, sound heats it. Keyboard: hold Space to heat, ← → to set the temperature step by step.": "Vedä liukusäädintä jäähdyttääksesi tai lämmittääksesi laatikkoa. Paina Mic käyttääksesi huoneen ääntä: hiljaisuus jäähdyttää, ääni lämmittää. Näppäimistö: pidä välilyöntiä pohjassa lämmittääksesi, ← → säätävät lämpötilaa askel kerrallaan.",
+  "Best ever": "Paras koskaan",
+  "Drug · dose after dose, 3 lives": "Lääke · annos annoksen perään, 3 elämää",
+  "Endless: lives, combos and levels that get faster. Same start every time.": "Loputon: elämät, kombot ja yhä nopeammat tasot. Sama alku joka kerta.",
+  "Follow the line": "Seuraa viivaa",
+  "Heat the red zone while a micelle passes: every dose delivered scores, in a row they score more. Drug freed outside the zone while you heat is wasted; every 4 wasted doses cost a life.": "Lämmitä punaista aluetta, kun miselli kulkee sen läpi: jokainen perille viety annos tuo pisteitä, peräkkäin enemmän. Alueen ulkopuolella lämmittäessä vapautunut lääke menee hukkaan; joka neljäs hukattu annos vie elämän.",
+  "Heat waves keep coming and mix the liquids. After each wave, separate them again before the time runs out: each wave survived scores, in a row they score more. Too slow costs a life.": "Lämpöaallot tulevat yhä uudelleen ja sekoittavat nesteet. Erota ne jokaisen aallon jälkeen ennen kuin aika loppuu: jokainen selvitetty aalto tuo pisteitä, peräkkäin enemmän. Liian hidas vie elämän.",
+  "Heat-wave survival": "Selviydy lämpöaalloista",
+  "Hide prototype games": "Piilota prototyyppipelit",
+  "Show prototype games": "Näytä prototyyppipelit",
+  "Ice · stay inside the moving band": "Jää · pysy liikkuvan vyöhykkeen sisällä",
+  "Keep the temperature inside the green band as it moves. Seconds inside score, more with more ice and a longer streak. Outside, the focus bar empties; when it is empty you lose a life.": "Pidä lämpötila liikkuvan vihreän vyöhykkeen sisällä. Sisällä vietetyt sekunnit tuovat pisteitä, enemmän kun jäätä on paljon ja putki on pitkä. Ulkona keskittymispalkki tyhjenee; kun se on tyhjä, menetät elämän.",
+  "Lives": "Elämät",
+  "Micelle stream": "Misellivirta",
+  "New game ideas to try with a class before they become real games.": "Uusia peli-ideoita kokeiltavaksi luokan kanssa ennen kuin niistä tulee oikeita pelejä.",
+  "Prototype games": "Prototyyppipelit",
+  "Two liquids · separate again after every wave": "Kaksi nestettä · erota uudelleen jokaisen aallon jälkeen",
+  "Wave": "Aalto",
+  "Level": "Taso",
+  "for testing": "kokeiluun",
+  "{n} lives left": "{n} elämää jäljellä",
+  "All doses used.": "Kaikki annokset käytetty.",
+  "Level {n}: faster!": "Taso {n}: nopeammin!",
+  "Reached level {n}; best multiplier ×{c}.": "Pääsit tasolle {n}; paras kerroin ×{c}.",
+  "Separate them again!": "Erota ne uudelleen!",
+  "Separate: {t} s left": "Erota: {t} s jäljellä",
+  "Prototype games ": "Prototyyppipelit "
  },
  "sv": {
   "Cleared!": "Klarat!",
@@ -3790,7 +3823,33 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Larger text": "Större text",
   "High contrast": "Hög kontrast",
   "Kept in this browser. Keyboard play works everywhere: hold Space to heat, arrow keys to set the temperature.": "Sparas i den här webbläsaren. Tangentbordet fungerar överallt: håll ned mellanslag för att värma, piltangenterna ändrar temperaturen.",
-  "Drag the slider to cool or heat the box. Press Mic to use room noise instead: quiet cools the box, sound heats it. Keyboard: hold Space to heat, ← → to set the temperature step by step.": "Dra reglaget för att kyla eller värma lådan. Tryck på Mic för att använda ljud i rummet i stället: tystnad kyler, ljud värmer. Tangentbord: håll ned mellanslag för att värma, ← → ändrar temperaturen steg för steg."
+  "Drag the slider to cool or heat the box. Press Mic to use room noise instead: quiet cools the box, sound heats it. Keyboard: hold Space to heat, ← → to set the temperature step by step.": "Dra reglaget för att kyla eller värma lådan. Tryck på Mic för att använda ljud i rummet i stället: tystnad kyler, ljud värmer. Tangentbord: håll ned mellanslag för att värma, ← → ändrar temperaturen steg för steg.",
+  "Best ever": "Bästa hittills",
+  "Drug · dose after dose, 3 lives": "Läkemedel · dos efter dos, 3 liv",
+  "Endless: lives, combos and levels that get faster. Same start every time.": "Oändligt: liv, kombinationer och nivåer som blir snabbare. Samma start varje gång.",
+  "Follow the line": "Följ linjen",
+  "Heat the red zone while a micelle passes: every dose delivered scores, in a row they score more. Drug freed outside the zone while you heat is wasted; every 4 wasted doses cost a life.": "Värm den röda zonen medan en micell passerar: varje levererad dos ger poäng, flera i rad ger mer. Läkemedel som frigörs utanför zonen medan du värmer går förlorat; var fjärde förlorad dos kostar ett liv.",
+  "Heat waves keep coming and mix the liquids. After each wave, separate them again before the time runs out: each wave survived scores, in a row they score more. Too slow costs a life.": "Värmeböljor kommer om och om igen och blandar vätskorna. Separera dem igen efter varje våg innan tiden tar slut: varje klarad våg ger poäng, flera i rad ger mer. För långsamt kostar ett liv.",
+  "Heat-wave survival": "Överlev värmeböljorna",
+  "Hide prototype games": "Dölj prototypspel",
+  "Show prototype games": "Visa prototypspel",
+  "Ice · stay inside the moving band": "Is · håll dig inom det rörliga bandet",
+  "Keep the temperature inside the green band as it moves. Seconds inside score, more with more ice and a longer streak. Outside, the focus bar empties; when it is empty you lose a life.": "Håll temperaturen inom det gröna bandet medan det rör sig. Sekunder inuti ger poäng, mer med mer is och en längre svit. Utanför töms fokusmätaren; när den är tom förlorar du ett liv.",
+  "Lives": "Liv",
+  "Micelle stream": "Micellström",
+  "New game ideas to try with a class before they become real games.": "Nya spelidéer att prova med en klass innan de blir riktiga spel.",
+  "Prototype games": "Prototypspel",
+  "Two liquids · separate again after every wave": "Två vätskor · separera igen efter varje våg",
+  "Wave": "Våg",
+  "Level": "Nivå",
+  "for testing": "för test",
+  "{n} lives left": "{n} liv kvar",
+  "All doses used.": "Alla doser använda.",
+  "Level {n}: faster!": "Nivå {n}: snabbare!",
+  "Reached level {n}; best multiplier ×{c}.": "Nådde nivå {n}; bästa multiplikator ×{c}.",
+  "Separate them again!": "Separera dem igen!",
+  "Separate: {t} s left": "Separera: {t} s kvar",
+  "Prototype games ": "Prototypspel "
  },
  "ru": {
   "Cleared!": "Пройдено!",
@@ -4685,7 +4744,33 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Larger text": "Крупный текст",
   "High contrast": "Высокий контраст",
   "Kept in this browser. Keyboard play works everywhere: hold Space to heat, arrow keys to set the temperature.": "Сохраняется в этом браузере. Клавиатура работает везде: удерживайте пробел, чтобы нагревать, стрелки меняют температуру.",
-  "Drag the slider to cool or heat the box. Press Mic to use room noise instead: quiet cools the box, sound heats it. Keyboard: hold Space to heat, ← → to set the temperature step by step.": "Двигайте ползунок, чтобы охладить или нагреть ячейку. Нажмите Mic, чтобы управлять шумом в комнате: тишина охлаждает, звук нагревает. Клавиатура: удерживайте пробел, чтобы нагревать; ← → меняют температуру по шагам."
+  "Drag the slider to cool or heat the box. Press Mic to use room noise instead: quiet cools the box, sound heats it. Keyboard: hold Space to heat, ← → to set the temperature step by step.": "Двигайте ползунок, чтобы охладить или нагреть ячейку. Нажмите Mic, чтобы управлять шумом в комнате: тишина охлаждает, звук нагревает. Клавиатура: удерживайте пробел, чтобы нагревать; ← → меняют температуру по шагам.",
+  "Best ever": "Лучший результат",
+  "Drug · dose after dose, 3 lives": "Лекарство · доза за дозой, 3 жизни",
+  "Endless: lives, combos and levels that get faster. Same start every time.": "Бесконечная игра: жизни, комбо и уровни, которые ускоряются. Каждый раз одинаковое начало.",
+  "Follow the line": "Следуй за линией",
+  "Heat the red zone while a micelle passes: every dose delivered scores, in a row they score more. Drug freed outside the zone while you heat is wasted; every 4 wasted doses cost a life.": "Нагревайте красную зону, пока через неё проходит мицелла: каждая доставленная доза приносит очки, подряд — больше. Лекарство, высвобожденное вне зоны во время нагрева, теряется; каждые 4 потерянные дозы стоят жизни.",
+  "Heat waves keep coming and mix the liquids. After each wave, separate them again before the time runs out: each wave survived scores, in a row they score more. Too slow costs a life.": "Волны жары идут одна за другой и перемешивают жидкости. После каждой волны разделите их снова, пока не вышло время: каждая пережитая волна приносит очки, подряд — больше. Слишком медленно — минус жизнь.",
+  "Heat-wave survival": "Пережить волны жары",
+  "Hide prototype games": "Скрыть прототипы игр",
+  "Show prototype games": "Показать прототипы игр",
+  "Ice · stay inside the moving band": "Лёд · оставайтесь в движущейся полосе",
+  "Keep the temperature inside the green band as it moves. Seconds inside score, more with more ice and a longer streak. Outside, the focus bar empties; when it is empty you lose a life.": "Держите температуру внутри движущейся зелёной полосы. Секунды внутри приносят очки — больше, если льда больше и серия длиннее. Снаружи шкала внимания пустеет; когда она пуста, вы теряете жизнь.",
+  "Lives": "Жизни",
+  "Micelle stream": "Поток мицелл",
+  "New game ideas to try with a class before they become real games.": "Новые идеи игр, чтобы опробовать их с классом, прежде чем они станут настоящими играми.",
+  "Prototype games": "Прототипы игр",
+  "Two liquids · separate again after every wave": "Две жидкости · разделяйте снова после каждой волны",
+  "Wave": "Волна",
+  "Level": "Уровень",
+  "for testing": "для проверки",
+  "{n} lives left": "Осталось жизней: {n}",
+  "All doses used.": "Все дозы израсходованы.",
+  "Level {n}: faster!": "Уровень {n}: быстрее!",
+  "Reached level {n}; best multiplier ×{c}.": "Достигнут уровень {n}; лучший множитель ×{c}.",
+  "Separate them again!": "Разделите их снова!",
+  "Separate: {t} s left": "Разделите: осталось {t} с",
+  "Prototype games ": "Прототипы игр "
  }
 };
   let LANG = 'en';
@@ -4854,7 +4939,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       plateLen: +$('plateLen').value, plateGap: +$('plateGap').value, plateFix: $('plateHold').checked,
       ordered: sys === 'plates' ? true : opts.ordered !== undefined ? opts.ordered : isOrdered(), demixStripes: 4, bilayerSpacing: 1.15,
       boxL: n, gravity: +$('grav').value, graftSpacing: +$('graft').value, epsCC: +$('epsCC').value, epsQL: +$('epsQL').value, epsHL: +$('epsHL').value, invert: $('bInvert').checked, nEnd: +$('nEnd').value, nWater: v,
-      thermostat: $('thermo').value, gamma: +$('gamma').value, tau: +$('tau').value, seed: (battle && battle.seed) || (Math.random() * 1e9) | 0,
+      thermostat: $('thermo').value, gamma: +$('gamma').value, tau: +$('tau').value, seed: (battle && battle.seed) || (opts.game && gameSel && gameSel.seed) || (Math.random() * 1e9) | 0,
       epsSS: 0, epsAS: +$('epsAS').value, epsBB: +$('epsBB').value, sigA: +$('sigA').value, sigB: 1,
       nSalt: sys === 'ice' ? v : 0, iceWall: sys === 'ice' && !opts.game && $('iceWall').checked, epsPP: +$('epsPP').value, epsH: (sys === 'mbpoly' || sys === 'plates') ? +$('epsH').value : 0, epsW: sys === 'mbpoly' ? +$('epsW').value : 0, kBend: sys === 'plates' ? 150 : +$('kBend').value, chainLen: +$('chainLen').value,
       fA: +$('fA').value, epsAB: +$('epsAB').value, epsSC: +$('epsSC').value, xC: v / 100,
@@ -4945,6 +5030,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       ch.forEach((d, i) => note(hz(r + d), 0.03 * i * (q >= 1 ? 1 : 0), 0.42, { type, vol })); };
     // drug: released in the right place, a rising two-note bloop; lost, a low falling buzz
     api.release = (n) => { if (!gap(140)) return; note(hz(72), 0, 0.12, { vol: 0.14 }); note(hz(79), 0.09, 0.2, { vol: 0.14 }); if (n > 2) note(hz(84), 0.18, 0.2, { vol: 0.1 }); };
+    api.combo = (n) => { if (!gap(110)) return; const k = Math.min(14, n), m = 72 + 12 * Math.floor(k / 5) + PENTA[k % 5]; note(hz(m), 0, 0.16, { type: 'triangle', vol: 0.14 }); note(hz(m + 7), 0.06, 0.2, { vol: 0.07 }); };
+    api.level = () => { [67, 72, 76, 79, 84].forEach((m, i) => note(hz(m), 0.07 * i, 0.22, { type: 'square', vol: 0.05 })); };
     api.miss = () => { if (!gap(140)) return; note(170, 0, 0.28, { type: 'square', vol: 0.05, to: 90 }); };
     // gel: a marimba-like step up the scale each time the path grows
     api.grow = (x) => { if (!gap(200)) return; const k = Math.floor(Math.max(0, Math.min(1.4, x)) * 10), m = 60 + 12 * Math.floor(k / 5) + PENTA[k % 5];
@@ -5368,6 +5455,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     $('hudTitle').textContent = T(g.title) + (game.level ? ' · ' + T('Challenge {k}', { k: game.level }) : '') ; $('hudGoal').textContent = ''; $('hudTip').textContent = ''; /* no goal text or tips above the box */
     $('ghud').hidden = false; document.querySelector('.wrap').classList.add('ingame'); $('gquit').textContent = T('Give up'); $('gagain').hidden = true;
     $('gstart').disabled = true; resize();
+    if (g.proto) protoStart(game); else { $('gtimeLab').textContent = T('Time left'); $('gstarsLab').textContent = T('Stars'); }
     countdown(game); if (typeof sheet === 'function') sheet(false);
     if ($('guseMic').checked) setMode('mic').then(() => { if (!analyser && game) { setMode('slider'); $('gres').textContent = T('No microphone here: use the temperature slider.'); } });
     else setMode('slider');
@@ -5412,6 +5500,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     $('gstart').disabled = false; gstartKey = 'Play again'; $('gstart').textContent = T(gstartKey); $('gquit').textContent = T('Close');
     if (!G || !result) { closeHud(); return; }
     if (G.battle !== undefined && battle) { battleEnd(G); return; }
+    if (G.g.proto) { protoEnd(G); return; }
     if (G.level) { ladderEnd(G); return; }
     const g = G.g, v = G.peak, st = starsFor(g, v), b = getBest(g), rec = b === null || v > b, gi = GAMES.indexOf(g), wasOpen = gi + 1 < GAMES.length && isOpen(gi + 1); if (rec) setBest(g, v);
     const opened = gi + 1 < GAMES.length && !wasOpen && isOpen(gi + 1), dg = tipsOn() ? diagnose(G, st) : '';
@@ -5442,7 +5531,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     el.innerHTML = `<div class="gendcard"><button class="gendx" aria-label="${T('Close')}">✕</button><p class="gendh">${head}</p>
       <div class="gendstars">${[0, 1, 2].map((k) => `<span class="gs" data-k="${k}">★</span>`).join('')}</div>
       <p class="gendmsg">${msg}</p><p class="gendscore"><b data-v>${g.fmt(0)}</b>${o.rec ? `<span class="pb">${T('New personal best!')}</span>` : o.best !== null && o.best !== undefined ? `<small>${T('best ever {b}', { b: g.fmt(Math.max(o.best, v)) })}</small>` : ''}</p>
-      <p class="gendnote">${T('Behind this card: your best moment, at {s} s.', { s: Math.round(G.peakSec || 0) })}${o.extra ? ' <b>' + o.extra + '</b>' : ''}</p>
+      <p class="gendnote">${g.proto ? '' : T('Behind this card: your best moment, at {s} s.', { s: Math.round(G.peakSec || 0) })}${o.extra ? ' <b>' + o.extra + '</b>' : ''}</p>
       ${o.tip ? `<p class="gendtip">${o.tip}</p>` : ''}
       <div class="gendbtns"><button class="btn primary" data-act="again">${T('Try again')}</button>${o.next ? `<button class="btn" data-act="next">${o.next.label} ▸</button>` : ''}<button class="btn ghost" data-act="look">${T('Look at the box')}</button></div></div>`;
     el.hidden = false; el._next = o.next; syncBoxStart();
@@ -5457,6 +5546,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   $('gend').addEventListener('click', (e) => { const b = e.target.closest('[data-act], .gendx'); if (!b) return; const act = b.dataset.act, nx = $('gend')._next; gendClose();
     if (act === 'again') startGame(); else if (act === 'next' && nx) nx.go(); });
   function gameUpdate(v) {
+    if (game.g.proto) { protoUpdate(game, v); return; } // prototype games keep their own score, lives and levels
     const G = game, g = G.g, now = eng.time, dt = now - G.last; G.last = now;
     G.ema = G.ema === null || g.raw ? v : G.ema + (1 - Math.exp(-dt / 2.0)) * (v - G.ema); // smooth over about 2 time units (raw: cumulative scores)
     const frac = Math.min(1, (now - G.t0) / g.D);
@@ -5803,7 +5893,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     else { if (b.className) { b.className = ''; b.removeAttribute('title'); b.removeAttribute('aria-label'); } $('tsliderM').removeAttribute('aria-valuetext'); lastWordK = -1; }
   }
   function zoneMarks(sNow) { // the green band on the noise bar and on the slider: temperatures that build the structure (for ice it moves down during the game)
-    const g = gameNow(), hide = !tipsOn() || (game ? game.level : gameLevel); // the green band is a tip: not in challenges or with tips off
+    const g = gameNow(), hide = !(g && g.alwaysZone) && (!tipsOn() || (game ? game.level : gameLevel)); // the green band is a tip: not in challenges or with tips off
     const z = !g || hide ? null : g.zoneLive ? g.zoneLive(game) : (g.zone || g.path) ? zoneOf(g, sNow || 0) : null, nz = $('nzone'), sz = $('szone');
     nz.classList.toggle('on', !!z); sz.classList.toggle('on', !!z); if (!z) return;
     const [lo, hi] = g.range, f = (Tv) => (Tv - lo) / (hi - lo), xn = (Tv) => Math.max(0, Math.min(1, (f(Tv) - 0.05) / 0.9));
@@ -6471,6 +6561,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (sys === 'dumbbell' && eng.nDrug) drawDrug();
     if (!demoDrawing && sys === 'crypt' && gelShow && gelShow.path.length > 1 && appMode === 'game' && ((game && game.g.id === 'gel') || (!game && gameSel && gameSel.id === 'gel'))) drawGel(gelShow);
     if (follow && !demoDrawing) drawFollow(false);
+    if (!demoDrawing && coachReady && game && game.g.proto) protoDraw(game);
     ctx.restore();
   }
   // ---------- follow one molecule: click or tap it to ring it and draw its recent path ----------
@@ -6661,6 +6752,132 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   }
   const push = (a, v) => { a.push(v); if (a.length > HMAX) a.shift(); };
 
+  // ---------- prototype games (switched on in Teacher options) ----------
+  // Ideas to try with a class before they become real games: many small goals instead of one 30-second score, a moving target to follow,
+  // levels that speed up during the run, lives and combos, the same start every time (fixed seed), and more feedback for every success.
+  const PROTOS = [
+    { id: 'p-stream', proto: true, seed: 20261116, title: 'Micelle stream', sub: 'Drug · dose after dose, 3 lives', sys: 'dumbbell', ordered: true, range: [0.4, 5.0], box: '48', conc: 34,
+      prm: { nDrug: 20, drugPerMic: 5, extraTails: 3, preSteps: 1000, epsDB: 2.5, epsBB: 2.5, epsAS: 0, sigA: 1.0, drugXs: [3, 18.5, 34, 49.5].map((d) => DRUG_X0 - d) },
+      flowU: 0.8, bandW: 9, spill: 0.39, hotT: 2.5, rate: 2, D: 1e9, raw: true, noSnap: true, lab: 'Score', fmt: (v) => String(Math.round(v)), stars: [20, 40, 60], scale: 90, lvlLab: 'Level',
+      how: 'Heat the red zone while a micelle passes: every dose delivered scores, in a row they score more. Drug freed outside the zone while you heat is wasted; every 4 wasted doses cost a life.',
+      pstart(G) { G.pc = new Float32Array(eng.N); G.del = 0; G.lost = 0; G.left = 20; },
+      level(G, l) { eng.p.flowU = this.flowU * (1 + 0.12 * (l - 1)); if (eng.p.hotBand) eng.p.hotBand.w = Math.max(6, this.bandW * (1 - 0.07 * (l - 1))); G.spill = this.spill + 0.03 * (l - 1); setT(tset); },
+      tick(G, s, dts) { // a drug counts once it has had fewer than 2 tail neighbours for 1 time unit
+        const r = eng.drugStats(1.5, 2), [lo, hi] = this.range, heating = tset > lo + 0.2 * (hi - lo), L = eng.L; let good = 0, gx = 0, gy = 0, bad = 0, bx = 0, by = 0, left = 0;
+        for (let i = 0; i < eng.N; i++) { if (eng.type[i] !== 4) continue; G.pc[i] = r.cnt[i] < 2 ? G.pc[i] + dts * G.rate : 0;
+          if (G.pc[i] < 1) { left++; continue; } G.pc[i] = 0; const x = eng.x[i], y = eng.y[i];
+          if (inTumour(x)) { eng.type[i] = 3; good++; gx += x; gy += y; } else { eng.type[i] = 6; if (heating) { bad++; bx += x; by += y; } } } // a leak while it is quiet is not the player's fault
+        if (good) { G.del += good; gain(G, good, 1, gx / good / L, gy / good / L); }
+        if (bad) { G.lost += bad; G.waste = (G.waste || 0) + bad; fxText(G, '−' + bad, bx / bad / L, by / bad / L, 'bad'); SFX.miss(); if (G.waste >= 4) { G.waste = 0; loseLife(G, bx / bad / L, by / bad / L); } } // every 4 doses wasted cost a life
+        G.left = left; },
+      over(G) { if (G.left === 0) { G.why = T('All doses used.'); return true; } return false; } },
+    { id: 'p-line', proto: true, seed: 20261117, title: 'Follow the line', sub: 'Ice · stay inside the moving band', sys: 'ice', ordered: false, range: [0.02, 0.30], rate: 5, D: 1e9, raw: true, noSnap: true,
+      lab: 'Score', fmt: (v) => String(Math.round(v)), stars: [400, 1200, 2500], scale: 3000, lvlLab: 'Level', alwaysZone: true, zoneLive: (G) => (G && G.band ? G.band : null),
+      how: 'Keep the temperature inside the green band as it moves. Seconds inside score, more with more ice and a longer streak. Outside, the focus bar empties; when it is empty you lose a life.',
+      pstart(G) { G.ph = 0; G.focus = 1; G.streak = 0; G.band = this.bandAt(G); },
+      bandAt(G) { const w = Math.max(0.03, 0.07 * (1 - 0.1 * (G.lvl - 1))), c = 0.15 + 0.06 * Math.sin(0.18 * G.ph) + 0.035 * Math.sin(0.45 * G.ph + 1.1); /* slow enough to follow with the voice (about 0.7 s lag) */ return [c - w / 2, c + w / 2]; },
+      tick(G, s, dts, v) {
+        G.ph += dts * (1 + 0.12 * (G.lvl - 1)); G.band = this.bandAt(G); if (G.cnt === undefined) G.cnt = 0;
+        const inside = tset >= G.band[0] && tset <= G.band[1]; G.inside = inside;
+        if (inside) { G.streak += dts; G.focus = Math.min(1, G.focus + 0.3 * dts); const k = Math.floor(G.streak / 5), mult = 1 + Math.min(3, k);
+          G.score += dts * 10 * (1 + 3 * Math.max(0, v)) * mult; G.bestCombo = Math.max(G.bestCombo, mult);
+          if (k > (G.kShown || 0)) { G.kShown = k; if (k <= 3) { fxText(G, '×' + mult, 0.5, 0.42, 'good'); SFX.combo(4 * k); } } }
+        else { G.streak = 0; G.kShown = 0; if (s > 3) { G.focus -= 0.35 * dts; if (G.focus <= 0) { G.focus = 1; loseLife(G, 0.5, 0.5); } } }
+        if (v > (G.iceLvl || 0) + 0.05) { G.iceLvl = v; SFX.crystal(v); } else if (v < (G.iceLvl || 0) - 0.1) G.iceLvl = v; },
+      draw(G, c, W, H) { // a thermometer on the right edge of the box: the band, where you are, and the focus left
+        const [lo, hi] = this.range, yOf = (Tv) => H * (1 - (Tv - lo) / (hi - lo)), x = W * 0.94, w = W * 0.035;
+        c.fillStyle = 'rgba(255,255,255,0.75)'; c.fillRect(x, 0, w, H);
+        c.fillStyle = G.inside ? 'rgba(40,160,80,0.85)' : 'rgba(230,150,30,0.85)'; c.fillRect(x, yOf(G.band[1]), w, yOf(G.band[0]) - yOf(G.band[1]));
+        c.fillStyle = colors.ink; c.fillRect(x - w * 0.35, yOf(tset) - 1.5 * dpr, w * 1.7, 3 * dpr);
+        c.fillStyle = G.focus > 0.35 ? 'rgba(40,160,80,0.9)' : 'rgba(200,50,40,0.9)'; c.fillRect(x - w * 0.8, H * (1 - G.focus), w * 0.3, H * G.focus); } },
+    { id: 'p-waves', proto: true, seed: 20261118, title: 'Heat-wave survival', sub: 'Two liquids · separate again after every wave', sys: 'demix', ordered: false, range: [0.02, 1.0], box: '36', rate: 3, D: 1e9, raw: true, noSnap: true,
+      lab: 'Score', fmt: (v) => String(Math.round(v)), stars: [1000, 2500, 5000], scale: 6000, lvlLab: 'Wave', alwaysZone: true, zone: [0.27, 0.42], zoneLive: (G) => (G && G.phase !== 'wave' ? [0.27, 0.42] : null),
+      how: 'Heat waves keep coming and mix the liquids. After each wave, separate them again before the time runs out: each wave survived scores, in a row they score more. Too slow costs a life.',
+      lvlOf: (G) => 1 + G.waveN,
+      pstart(G) { G.phase = 'calm'; G.next = 8; G.waveN = 0; G.warned = false; },
+      tick(G, s, dts, v) {
+        const k = G.waveN, amp = 0.3 * (1 + 0.25 * k), len = Math.min(4, 1.5 + 0.2 * k), gap = Math.max(4, 9 - 0.5 * k), rec = Math.max(2, 6 - 0.35 * k);
+        if (G.phase === 'calm') {
+          if (!G.warned && s >= G.next - 1.3) { G.warned = true; fxText(G, T('Heat wave coming!'), 0.5, 0.3, 'warn'); }
+          if (s >= G.next) { G.phase = 'wave'; G.waveEnd = s + len; G.before = v; G.bump = amp; setT(tset); } }
+        else if (G.phase === 'wave') { if (s >= G.waveEnd) { G.phase = 'rec'; G.bump = 0; setT(tset); G.recEnd = s + rec; G.target = Math.min(0.6, 0.38 + 0.025 * k); /* the bar rises with every wave */ fxText(G, T('Separate them again!'), 0.5, 0.3, 'warn'); } }
+        else if (v >= G.target) { G.waveN++; G.phase = 'calm'; G.next = s + gap; G.warned = false; gain(G, 1, Math.round(100 * v), 0.5, 0.45); }
+        else if (s >= G.recEnd) { G.waveN++; G.phase = 'calm'; G.next = s + gap; G.warned = false; loseLife(G, 0.5, 0.5); }
+        G.v = v; G.s = s; },
+      draw(G, c, W, H) { if (G.phase !== 'rec') return; // the separation needed, the separation now and the time left
+        const left = Math.max(0, G.recEnd - G.s), x = W * 0.2, w = W * 0.6, y = H * 0.06, h = H * 0.03;
+        c.fillStyle = 'rgba(255,255,255,0.85)'; c.fillRect(x - 6 * dpr, y - 6 * dpr, w + 12 * dpr, h + 26 * dpr);
+        c.fillStyle = 'rgba(120,130,140,0.35)'; c.fillRect(x, y, w, h); c.fillStyle = G.v >= G.target ? 'rgba(40,160,80,0.9)' : 'rgba(230,150,30,0.9)'; c.fillRect(x, y, w * Math.min(1, G.v), h);
+        c.fillStyle = colors.ink; c.fillRect(x + w * G.target - 1.5 * dpr, y - 4 * dpr, 3 * dpr, h + 8 * dpr);
+        c.font = `600 ${13 * dpr}px ${css('--f-body') || 'sans-serif'}`; c.textAlign = 'center'; c.textBaseline = 'top'; c.fillText(T('Separate: {t} s left', { t: left.toFixed(1) }), x + w / 2, y + h + 4 * dpr); } },
+  ];
+  const protoOn = () => { try { return localStorage.getItem('mdlab-proto') === '1'; } catch (e) { return false; } };
+  function renderProto() {
+    const on = protoOn(); $('protoSec').hidden = !on; $('protoToggle').textContent = T(on ? 'Hide prototype games' : 'Show prototype games'); if (!on) return;
+    $('ppick').innerHTML = PROTOS.map((g) => { const b = getBest(g);
+      return `<button data-proto="${g.id}" aria-pressed="${gameSel === g}"><b>${T(g.title)}</b><small>${T(g.sub)}</small><span class="stars">${b !== null ? starStr(starsFor(g, b)) + ' ' + T('best') + ' ' + g.fmt(b) : ''}</span></button>`; }).join('');
+  }
+  function selectProto(id) {
+    const g = PROTOS.find((p) => p.id === id); if (!g) return;
+    if (game) endGame(null); if (coachReady && guide) { guide = null; coachHide(); }
+    gameSel = g; gameLevel = 0; renderPick(); renderProto(); if (typeof renderLadder === 'function') renderLadder(); $('greplay').hidden = true;
+    $('gsel').hidden = false; $('ggoal').textContent = T(g.how); $('ghint').innerHTML = '';
+    gstartKey = 'Start'; $('gstart').textContent = T('Start');
+    if (appMode === 'game') prepGame(g);
+  }
+  $('ppick').addEventListener('click', (e) => { const b = e.target.closest('[data-proto]'); if (b) selectProto(b.dataset.proto); });
+  document.addEventListener('click', (e) => { if (e.target.closest('[data-game], [data-lad]')) setTimeout(() => { renderProto(); if (gameSel && !gameSel.proto) $('ggoal').textContent = ''; }, 0); });
+  $('protoToggle').addEventListener('click', () => { const on = !protoOn(); try { localStorage.setItem('mdlab-proto', on ? '1' : '0'); } catch (e) {} renderProto();
+    if (on) { setAppMode('game'); setTimeout(() => $('protoSec').scrollIntoView({ block: 'center', behavior: 'smooth' }), 50); } });
+  renderProto();
+
+  // the run: score, lives, combos and a level that rises every 20 seconds
+  const hearts = (G) => { const h = '♥'.repeat(Math.max(0, G.lives)) + '♡'.repeat(Math.max(0, 3 - G.lives)); $('gstars').textContent = h; $('gstars').setAttribute('aria-label', T('{n} lives left', { n: G.lives })); };
+  function protoStart(G) {
+    const g = G.g; Object.assign(G, { rate: g.rate, score: 0, lives: 3, combo: 0, bestCombo: 0, lvl: 1, fx: [], grace: 0, sPrev: 0, why: '' });
+    $('gvalLab').textContent = T('Score'); $('gtimeLab').textContent = T(g.lvlLab); $('gstarsLab').textContent = T('Lives'); $('gpeakLab').textContent = T('Best ever');
+    const b = getBest(g); $('gpeak').textContent = b !== null ? g.fmt(b) : '–'; $('gtime').textContent = '1'; hearts(G);
+    if (g.pstart) g.pstart(G);
+  }
+  function protoUpdate(G, v) {
+    const g = G.g; G.last = eng.time; if (G.cd) return;
+    const s = (eng.time - G.t0) / G.rate, dts = Math.max(0, Math.min(0.5, s - G.sPrev)); G.sPrev = s;
+    const lvl = g.lvlOf ? g.lvlOf(G) : 1 + Math.floor(s / 20);
+    if (lvl !== G.lvl) { G.lvl = lvl; if (g.level) g.level(G, lvl); if (!g.lvlOf) { fxText(G, T('Level {n}: faster!', { n: lvl }), 0.5, 0.3, 'lvl'); SFX.level(); say(T('Level {n}: faster!', { n: lvl })); } }
+    g.tick(G, s, dts, v); if (g.zoneLive) zoneMarks(s);
+    $('gval').textContent = g.fmt(G.score); $('gtime').textContent = String(G.lvl);
+    $('gbar').style.width = (g.lvlOf ? 0 : 100 * ((s % 20) / 20)) + '%';
+    $('gnow').style.left = (100 * Math.max(0, Math.min(1, G.score / g.scale))) + '%';
+    const st = starsFor(g, G.score); if (st > (G.stShown || 0)) { G.stShown = st; starBurst(st); }
+    if (G.lives <= 0 || (g.over && g.over(G))) endGame('done');
+  }
+  function gain(G, n, base, fx, fy) { // n successes at once: the combo grows with each, every 3 in a row add one to the multiplier (up to ×5)
+    G.combo += n; const mult = Math.min(5, 1 + Math.floor(G.combo / 3)), pts = n * base * mult; G.score += pts; G.bestCombo = Math.max(G.bestCombo, mult);
+    fxText(G, '+' + Math.round(pts) + (mult > 1 ? ' ×' + mult : ''), fx, fy, 'good'); G.fx.push({ k: 'ring', x: fx, y: fy, t0: performance.now() }); SFX.combo(G.combo);
+  }
+  function loseLife(G, fx, fy) { // a short grace period, so one mistake costs one life
+    if (performance.now() < G.grace) return; G.grace = performance.now() + 1800; G.lives--; G.combo = 0; hearts(G);
+    fxText(G, '−♥', fx, fy, 'bad'); SFX.miss(); say(T('{n} lives left', { n: G.lives }));
+    const box = cv.parentElement; box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake');
+    const hs = $('gstars'); hs.classList.remove('bump'); void hs.offsetWidth; hs.classList.add('bump');
+  }
+  function fxText(G, txt, x, y, kind) { G.fx.push({ k: 'text', txt, x, y, kind, t0: performance.now() }); }
+  function protoDraw(G) { // floating points, bursts where drug was delivered, and the game's own marks; all in canvas pixels
+    const W = cv.width, H = cv.height, now = performance.now(), red = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (G.g.draw) { ctx.save(); G.g.draw(G, ctx, W, H); ctx.restore(); }
+    G.fx = G.fx.filter((f) => now - f.t0 < (f.k === 'ring' ? 700 : 1100));
+    for (const f of G.fx) { const u = (now - f.t0) / (f.k === 'ring' ? 700 : 1100); ctx.save(); ctx.globalAlpha = Math.max(0, 1 - u);
+      if (f.k === 'ring') { ctx.strokeStyle = 'rgba(255,200,40,1)'; ctx.lineWidth = 4 * dpr * (1 - u) + 1; ctx.beginPath(); ctx.arc(f.x * W, f.y * H, (0.02 + 0.09 * u) * W, 0, 6.2832); ctx.stroke(); }
+      else { const col = f.kind === 'bad' ? '#c0392b' : f.kind === 'warn' ? '#b35a00' : f.kind === 'lvl' ? '#0d5f5f' : '#1c7a3a', size = (f.kind === 'lvl' || f.kind === 'warn' ? 26 : 22) * dpr;
+        ctx.font = `700 ${size}px ${css('--f-display') || 'sans-serif'}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineWidth = 5 * dpr; ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+        const yy = Math.min(H - size, Math.max(size, f.y * H - (red ? 0 : u * 0.08 * H))), xx = Math.min(W - 3 * size, Math.max(3 * size, f.x * W)); ctx.strokeText(f.txt, xx, yy); ctx.fillStyle = col; ctx.fillText(f.txt, xx, yy); }
+      ctx.restore(); }
+  }
+  function protoEnd(G) {
+    const g = G.g, v = Math.round(G.score), st = starsFor(g, v), b = getBest(g), rec = b === null || v > b; if (rec) setBest(g, v);
+    G.bump = 0; setT(tset); $('gagain').hidden = false; $('greplay').hidden = true; renderProto();
+    endScreen({ G, g, st, v, rec, best: b, extra: (G.why ? G.why + ' ' : '') + T('Reached level {n}; best multiplier ×{c}.', { n: G.lvl, c: Math.max(1, G.bestCombo) }), tip: '', next: null });
+  }
   // ---------- keyboard play, screen-reader announcements and projector options ----------
   let sayT = 0;
   function say(txt) { const el = $('srLive'); if (!el || !txt) return; el.textContent = ''; clearTimeout(sayT); sayT = setTimeout(() => { el.textContent = txt; }, 60); } // polite: read after what the reader is saying
