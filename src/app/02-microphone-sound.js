@@ -41,6 +41,8 @@
       ch.forEach((d, i) => note(hz(r + d), 0.03 * i * (q >= 1 ? 1 : 0), 0.42, { type, vol })); };
     // drug: released in the right place, a rising two-note bloop; lost, a low falling buzz
     api.release = (n) => { if (!gap(140)) return; note(hz(72), 0, 0.12, { vol: 0.14 }); note(hz(79), 0.09, 0.2, { vol: 0.14 }); if (n > 2) note(hz(84), 0.18, 0.2, { vol: 0.1 }); };
+    api.combo = (n) => { if (!gap(110)) return; const k = Math.min(14, n), m = 72 + 12 * Math.floor(k / 5) + PENTA[k % 5]; note(hz(m), 0, 0.16, { type: 'triangle', vol: 0.14 }); note(hz(m + 7), 0.06, 0.2, { vol: 0.07 }); };
+    api.level = () => { [67, 72, 76, 79, 84].forEach((m, i) => note(hz(m), 0.07 * i, 0.22, { type: 'square', vol: 0.05 })); };
     api.miss = () => { if (!gap(140)) return; note(170, 0, 0.28, { type: 'square', vol: 0.05, to: 90 }); };
     // gel: a marimba-like step up the scale each time the path grows
     api.grow = (x) => { if (!gap(200)) return; const k = Math.floor(Math.max(0, Math.min(1.4, x)) * 10), m = 60 + 12 * Math.floor(k / 5) + PENTA[k % 5];

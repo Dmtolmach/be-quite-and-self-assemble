@@ -15,6 +15,11 @@ async def main():
             if m == 'game':
                 for gid in ['ice', 'demix', 'drug', 'gel']:
                     await pg.click(f'[data-game={gid}]'); await pg.wait_for_timeout(200)
+                await pg.evaluate("document.querySelector('details.teacher').open=true; document.getElementById('protoToggle').click()"); await pg.wait_for_timeout(300)
+                for pid in ['p-stream', 'p-line', 'p-waves']:
+                    await pg.click(f'[data-proto={pid}]'); await pg.wait_for_timeout(200)
+                await pg.evaluate("document.getElementById('guseMic').checked=false; document.getElementById('gstartBox').click()"); await pg.wait_for_timeout(3500)
+                await pg.click('#gquit'); await pg.wait_for_timeout(300)
         await pg.click('#helpBtn')
         for k in range(8):
             if await pg.evaluate("document.getElementById('tour').hidden"): break

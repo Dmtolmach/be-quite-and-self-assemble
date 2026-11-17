@@ -22,7 +22,7 @@ async def main():
         for w in [320, 375]:
             pg = await page(b, (w, 700), True)
             for m in ['game', 'explore', 'scan']:
-                await pg.evaluate(f"document.querySelector('[data-mbmode={m}]').click()"); await pg.wait_for_timeout(400)
+                await pg.evaluate(f"document.querySelector('{'[data-appmode=scan]' if m == 'scan' else '[data-mbmode=' + m + ']'}').click()"); await pg.wait_for_timeout(400)
                 await pg.evaluate("document.querySelectorAll('details').forEach(d=>d.open=true)")
                 sw = await pg.evaluate("document.documentElement.scrollWidth")
                 if sw > w + 1: bad.append(f'phone {w}: page is {sw} px wide in {m} (wider than the screen)')

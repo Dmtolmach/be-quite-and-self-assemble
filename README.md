@@ -133,6 +133,24 @@ When all six cards of a game's deck are collected, that game opens five **challe
 | Deliver the drug | New rules (no time windows): blood flow carries three drug-loaded micelles, one after another, through a red tumour zone. Noise heats the zone; the heat that leaks out to the rest of the box grows with the square of the noise, so medium noise opens micelles in the zone only, while loud noise warms the whole box and opens them before they arrive. Drug counts as released once it has had fewer than 2 tail neighbours for 1 time unit; it is delivered if that happens from 3 σ before the zone to 4 σ after it. Stars at 35, 50, 65%. Each level narrows the zone by 6%, speeds the flow by 7% and lets more heat leak out, so the right volume range gets narrower. Test runs in the browser (bot with 0.4 s reaction and microphone smoothing): medium noise only while a micelle is in the zone 73–100% (3 stars) at every level; steady medium noise 67–100% at level 1 but 47% at level 5; loud noise when a micelle is in the zone 47% at level 5; always loud 27–47% (usually not cleared). |
 | Gel strand | Fewer proteins: 33, 31, 29, 27, 25. |
 
+### Prototype games (for testing)
+
+New game ideas to try with a class before they become real games. In **Teacher options**, **Show prototype games** adds a *Prototype games* list under the challenges in Game mode (**Hide prototype games** removes it again). They play differently from the four main games:
+
+- **Endless runs with 3 lives** instead of a fixed time: the run ends when the lives are gone.
+- **Many small goals**: every dose delivered, second inside the band or wave survived scores at once, with a floating number on the box. Goals in a row raise a multiplier (up to ×5); a mistake resets it.
+- **Rising tempo**: every 20 s the level goes up ("Level 2: faster!") and the game gets a little faster and tighter.
+- **No luck**: each prototype starts from the same fixed arrangement of molecules every time, so scores can be compared fairly between students.
+- **Juice**: rising sounds for combos, a level-up sound, a shake of the box when a life is lost, rings and floating scores.
+
+| Prototype | System | Goal |
+|---|---|---|
+| Micelle stream | Drug micelles in blood flow | Heat the red zone while a micelle passes. Every dose delivered scores; drug freed outside the zone while you heat is wasted, and every 4 wasted doses cost a life. 20 doses in 4 micelles; each level speeds the flow by 12% and narrows the zone. |
+| Follow the line | Ice | Keep the temperature inside a green band that moves up and down (a thermometer on the right of the box shows it). Seconds inside score, more with more ice and a longer streak. Outside, a focus bar empties; when it is empty a life is lost. Each level narrows the band and moves it faster. |
+| Heat-wave survival | Two liquids | Heat waves keep coming and mix the liquids. After each wave, separate them above the target line before the countdown ends; too slow costs a life. Waves get stronger, longer and more frequent, and the target rises. |
+
+Test runs in the browser (bot with 0.4 s reaction and microphone smoothing): Micelle stream about 45 s and level 3; Follow the line about 1 minute and level 3; Heat-wave survival about 2½ minutes and 14 waves. Best scores are kept like those of the main games. Feedback from classes decides which of these become real games.
+
 ### Class battle
 
 In **Teacher options**, **Class battle** lets 2–6 teams play the selected game in turn. Every team starts from exactly the same starting arrangement of molecules. A prompt on the box calls each team ("Team 2, get ready!"), the table under the scores fills in, and after the last team the winner (or a draw) is announced. **New battle** starts again with a fresh start; **End battle** stops. Battles do not change the statistics or win cards. Tips follow the **Show tips** setting.

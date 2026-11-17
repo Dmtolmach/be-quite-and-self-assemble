@@ -67,10 +67,13 @@
     ctx.fillRect((cv.width - tw) / 2, 10 * dpr, tw, 24 * dpr); ctx.globalAlpha = 1; ctx.fillStyle = colors.cell; ctx.fillText(msg, cv.width / 2, 14 * dpr); ctx.restore();
   }
   // longest gel path: thick red line through the centres of the linked proteins (minimum-image steps, drawn in all periodic copies)
-  function drawGel(gp) {
-    const s = cv.width / eng.L, L = eng.L, pts = [[gp.cx[gp.path[0]], gp.cy[gp.path[0]]]];
+  function gelPts(gp) { // protein centres along the path, unwrapped (minimum-image steps)
+    const L = eng.L, pts = [[gp.cx[gp.path[0]], gp.cy[gp.path[0]]]];
     for (let h = 1; h < gp.path.length; h++) { const [px, py] = pts[h - 1]; let dx = gp.cx[gp.path[h]] - px, dy = gp.cy[gp.path[h]] - py;
       dx -= L * Math.round(dx / L); dy -= L * Math.round(dy / L); pts.push([px + dx, py + dy]); }
+    return pts; }
+  function drawGel(gp) {
+    const s = cv.width / eng.L, L = eng.L, pts = gelPts(gp);
     ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     for (const ox of [-L, 0, L]) for (const oy of [-L, 0, L]) {
       ctx.strokeStyle = colors.hot; ctx.globalAlpha = 0.85; ctx.lineWidth = 4 * dpr; ctx.beginPath();

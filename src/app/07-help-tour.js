@@ -1,7 +1,8 @@
   // ---------- help: quick tour of the main controls, opened with the ? button ----------
   const TOUR = [
     { t: 'How this works', d: 'Every dot is a molecule. Cold molecules stick together and build structures; heat shakes them apart. Turn on the microphone and melt this ice with your voice, or drag the slider.', demo: true },
-    { sel: () => phoneUI() ? '.mbnav' : '.modeseg', t: 'Modes', d: 'Game: reach a goal in 30 seconds. Explore: try any system freely. Energy scan: measure where a structure melts.' },
+    { sel: () => phoneUI() ? '.mbnav' : rewardOpen('explore') ? '.modeseg' : '#gpick', t: () => rewardOpen('explore') ? 'Modes' : 'Games',
+      d: () => rewardOpen('explore') ? 'Game: reach a goal in 30 seconds. Explore: try any system freely, and measure where a structure melts with the Energy scan.' : 'Start with the first game. Every game you finish opens something new: more games, settings and Explore mode.' },
     { sel: '#sim', t: 'Simulation box', d: 'The molecules move here in real time.' },
     { sel: '.mbar', t: 'Temperature', d: () => phoneUI() ? 'Drag the slider to cool or heat the box. Press Mic to use room noise instead: quiet cools the box, sound heats it.' : 'Drag the slider to cool or heat the box. Press Mic to use room noise instead: quiet cools the box, sound heats it. Keyboard: hold Space to heat, ← → to set the temperature step by step.' },
     { sel: () => phoneUI() ? '#mbOpt' : appMode === 'game' ? '#gamePanel' : '#sysPanel', t: () => phoneUI() ? 'Options' : appMode === 'game' ? 'Games' : 'Systems',

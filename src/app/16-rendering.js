@@ -40,7 +40,29 @@
     for (let i = from; i < to; i++) { if (!test(i)) continue; const X = x[i] * s, Y = y[i] * s; ctx.moveTo(X + r, Y); ctx.arc(X, Y, r, 0, 6.2832); }
     ctx.fill();
   }
+  // ---- smooth motion: the picture follows the molecules with a short lag (about 0.07 s), so the many MD steps of one frame do not look like jumps ----
+  // drawing only: the simulation, the analysis and the scores use the true positions
+  let smX = null, smY = null, smL = 0, smE = null, smT = 0;
+  const SM_TAU = 0.07;
+  function smoothReset() { smX = null; }
+  function smoothPos() { // updates the drawn positions; false when the true ones should be drawn
+    const now = performance.now(), dt = Math.min(0.1, Math.max(0, (now - smT) / 1000)); smT = now;
+    if (!$('smooth').checked || eng2 || eng.walls || demoDrawing) { smX = null; return false; }
+    const N = eng.N, L = eng.L, x = eng.x, y = eng.y;
+    if (!smX || smE !== eng || smX.length !== N) { smX = Float64Array.from(x); smY = Float64Array.from(y); smL = L; smE = eng; return true; }
+    if (L !== smL) { const k = L / smL; for (let i = 0; i < N; i++) { smX[i] *= k; smY[i] *= k; } smL = L; } // barostat: the box grew or shrank
+    const a = 1 - Math.exp(-dt / SM_TAU);
+    for (let i = 0; i < N; i++) { let dx = x[i] - smX[i], dy = y[i] - smY[i]; dx -= L * Math.round(dx / L); dy -= L * Math.round(dy / L);
+      if (dx * dx + dy * dy > 4) { smX[i] = x[i]; smY[i] = y[i]; continue; } // a rebuild or a jump back to the best moment: no gliding
+      let nx = smX[i] + a * dx, ny = smY[i] + a * dy; if (nx < 0) nx += L; else if (nx >= L) nx -= L; if (ny < 0) ny += L; else if (ny >= L) ny -= L; smX[i] = nx; smY[i] = ny; }
+    return true;
+  }
   function draw() {
+    const rx = eng.x, ry = eng.y, E = eng;
+    if (smoothPos()) { eng.x = smX; eng.y = smY; }
+    try { drawNow(); } finally { E.x = rx; E.y = ry; }
+  }
+  function drawNow() {
     if (eng2 && sys === 'plates') { drawSplit(); return; }
     ctx.save();
     if (eng.walls) { ctx.translate(0, cv.height); ctx.scale(1, -1); } // brush: substrate at the bottom
@@ -53,5 +75,7 @@
     if (sys === 'dumbbell' && eng.nDrug) drawDrug();
     if (!demoDrawing && sys === 'crypt' && gelShow && gelShow.path.length > 1 && appMode === 'game' && ((game && game.g.id === 'gel') || (!game && gameSel && gameSel.id === 'gel'))) drawGel(gelShow);
     if (follow && !demoDrawing) drawFollow(false);
+    if (!demoDrawing && coachReady && game && game.g.proto) protoDraw(game);
+    if (!demoDrawing && appMode === 'game') fxDraw();
     ctx.restore();
   }

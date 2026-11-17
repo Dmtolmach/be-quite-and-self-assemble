@@ -11,6 +11,7 @@
   "08-phone-layout.js",
   "09-app-modes.js",
   "10-preview-film.js",
+  "10b-rewards.js",
   "11-coach-guide.js",
   "12-fact-cards.js",
   "13-challenges.js",
@@ -18,9 +19,13 @@
   "15-energy-scan.js",
   "16-rendering.js",
   "17-follow-molecule.js",
-  "18-accessibility.js",
-  "19-offline-privacy.js",
-  "20-main-loop.js"
+  "18-prototypes.js",
+  "19-accessibility.js",
+  "20-offline-privacy.js",
+  "20a-highlights.js",
+  "20b-macro-film.js",
+  "20c-explore-scan.js",
+  "21-main-loop.js"
  ],
  "languages": [
   "fi",

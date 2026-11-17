@@ -27,14 +27,19 @@ Requirements: Python 3, Node.js, Playwright for Python (`pip install playwright`
 | `src/app/07-help-tour.js` | Welcome card and help tour, including the intro story animation |
 | `src/app/08-phone-layout.js`, `09-app-modes.js` | Phone bottom sheet; Game / Explore / Energy scan switching |
 | `src/app/10-preview-film.js` | Goal preview film shown before a game |
+| `src/app/10b-rewards.js` | **Step-by-step opening**: a new player sees only the first game; each finished game opens the next item of `REWARDS` (games, Explore, Energy scan, statistics; the microphone settings are always shown). *Teacher options → Unlock everything* opens all |
 | `src/app/11-coach-guide.js` | Temperature words, green band, coach line (guided game only), guided first lesson, replay graph |
 | `src/app/12-fact-cards.js` | Fact cards (30 cards in 5 decks) and the album |
 | `src/app/13-challenges.js`, `14-class-battle.js` | Challenges (5 levels per game) and class battles |
 | `src/app/15-energy-scan.js` | Energy scan mode |
-| `src/app/16-rendering.js`, `17-follow-molecule.js` | Drawing, adaptive quality, fitting the box to the screen (`fitSim`), follow-a-molecule |
-| `src/app/18-accessibility.js` | Keyboard play (Space heats, arrows step), screen-reader announcements (`say()`), projector options (larger text, high contrast) |
-| `src/app/19-offline-privacy.js` | Privacy dialog, deleting saved data, install as app, download for offline use |
-| `src/app/20-main-loop.js` | Main loop, start-up, debug line (`?debug=1`) |
+| `src/app/16-rendering.js`, `17-follow-molecule.js` | Drawing (smooth motion: the picture follows the molecules with a 0.07 s lag; option *Smooth motion*), adaptive quality, fitting the box to the screen (`fitSim`), follow-a-molecule |
+| `src/app/18-prototypes.js` | **Prototype games** (`PROTOS`: Micelle stream, Follow the line, Heat-wave survival): lives, combos, levels that speed up every 20 s, fixed seeds, floating score texts and screen shake. Shown with *Teacher options → Show prototype games* |
+| `src/app/19-accessibility.js` | Keyboard play (Space heats, arrows step), screen-reader announcements (`say()`), projector options (larger text, high contrast) |
+| `src/app/20-offline-privacy.js` | Privacy dialog, deleting saved data, install as app, download for offline use |
+| `src/app/20a-highlights.js` | Game highlights: new ice glows only where a molecule froze together with at least 3 neighbours; a liquid domain glows only where it grows beyond its record size (not edge fluctuations); a gel path that beats its record gets a running spark |
+| `src/app/20b-macro-film.js` | After a game: zoom out from the box into a hand-drawn real-life picture chosen by the stars (ice cube, glass of liquids, patient, gel/egg); `window.__macro(id, stars)` plays it for tests |
+| `src/app/20c-explore-scan.js` | Energy scan as an option inside Explore |
+| `src/app/21-main-loop.js` | Main loop, start-up, debug line (`?debug=1`) |
 | `src/i18n/fi.json`, `sv.json`, `ru.json` | Translations: English text → translated text |
 | `src/manifest.json` | Order of the `app/*.js` parts and the list of languages |
 
@@ -42,7 +47,7 @@ The `app/*.js` parts are plain slices of one script, joined in the order of `man
 
 ## Screen readers
 
-`say(text)` (in `18-accessibility.js`) reads a short message through a polite live region: stars as they are earned, the game result, and the temperature word while the keyboard drives it. In games the slider's spoken value is the temperature word (cold / cool / warm / hot). Use `say()` for any new event a blind player needs to hear; keep it short.
+`say(text)` (in `19-accessibility.js`) reads a short message through a polite live region: stars as they are earned, the game result, and the temperature word while the keyboard drives it. In games the slider's spoken value is the temperature word (cold / cool / warm / hot). Use `say()` for any new event a blind player needs to hear; keep it short.
 
 ## Translations
 
@@ -60,7 +65,7 @@ The `app/*.js` parts are plain slices of one script, joined in the order of `man
 
 ## Saved in the browser (localStorage)
 
-`mdlab-welcome`, `mdlab-tour` (welcome / tour seen) · `mdlab-guided` (guided first game done) · `mdlab-unlock`, `mdlab-ladall` (teacher unlocks) · `mdlab-ladder-<game>` (challenge progress) · `mdlab-stats-<game>` (statistics) · `mdlab-cards` (fact cards) · `mdlab-tips`, `mdlab-sound`, `mdlab-pitch`, `mdlab-mode`, `mdlab-display` (settings). Clear them to see the app as a new student would.
+`mdlab-welcome`, `mdlab-tour` (welcome / tour seen) · `mdlab-guided` (guided first game done) · `mdlab-unlock`, `mdlab-ladall` (teacher unlocks) · `mdlab-played` (finished games: opens rewards), `mdlab-fresh` (newest reward, marked NEW) · `mdlab-ladder-<game>` (challenge progress) · `mdlab-stats-<game>` (statistics) · `mdlab-cards` (fact cards) · `mdlab-tips`, `mdlab-sound`, `mdlab-pitch`, `mdlab-mode`, `mdlab-display`, `mdlab-proto` (settings). Clear them to see the app as a new student would.
 
 ## Tests (`tests/`)
 
@@ -74,7 +79,7 @@ The `app/*.js` parts are plain slices of one script, joined in the order of `man
 | `test_offline_privacy.py` | No network requests from the page; the served copy (with `sw.js`) reloads offline |
 | `test_keyboard.py` | Holding Space heats, letting go cools, arrows step, in a game and in Explore; projector options switch on, keep the box on screen and are remembered |
 | `test_a11y.py` | axe-core (WCAG 2.1 A/AA) on every mode, phone and desktop, the welcome card; colour contrast in high-contrast mode |
-| `test_games.py` | Every game and two challenges start and stop; a full ice game played along the green path gets at least one star and shows the end card |
+| `test_games.py` | Every game, two challenges and the three prototype games start and stop; a full ice game played along the green path gets at least one star and shows the end card |
 
 Set `MDLAB_PAGE=/path/to/file.html` to run the browser tests on another build.
 
@@ -83,6 +88,7 @@ Set `MDLAB_PAGE=/path/to/file.html` to run the browser tests on another build.
 - `calibration/gamecal.js` – plays the ice, liquids or gel game headless with a fixed strategy: `node tools/calibration/gamecal.js ice path 1`.
 - `calibration/drugch.js` – the drug challenge headless, with every parameter on the command line: `node tools/calibration/drugch.js k=3 s=follow hi=5 sq=1 spill=0.39 …`.
 - `calibration/drugcal.js`, `drugrel.js` – drug zone game and micelle release kinetics vs temperature: `node tools/calibration/drugrel.js 1.5 2.5`.
+- `proto_bot.py` – plays a prototype game in the browser with a human-like lag and saves screenshots: `python3 tools/proto_bot.py p-line`.
 - `cvd_simulate.py` – colour-blindness simulation (protan, deutan, tritan) of screenshots: `python3 tools/cvd_simulate.py shot.png`.
 - `split.py` – the one-off script that cut the old single file into `src/` (kept for reference).
 

@@ -2,7 +2,7 @@
   const phoneUI = () => matchMedia('(max-width: 700px)').matches;
   function sheet(open) { const w = document.querySelector('.wrap'); if (open && !phoneUI()) return;
     w.classList.toggle('sheet-open', !!open); $('sheetBack').hidden = !open; $('mbOpt').setAttribute('aria-expanded', String(!!open));
-    $('sheetTitle').textContent = T(appMode === 'game' ? 'Game' : appMode === 'scan' ? 'Energy scan' : 'Explore');
+    $('sheetTitle').textContent = T(appMode === 'game' ? 'Game' : 'Explore');
     if (open) $('rack').scrollTop = 0; }
   document.querySelectorAll('[data-mbmode]').forEach((b) => b.addEventListener('click', () => { const m = b.dataset.mbmode; if (m !== appMode) setAppMode(m);
     if (m === 'scan') { sheet(false); requestAnimationFrame(() => { const t = $('thermoPanel'); if (t && t.scrollIntoView) t.scrollIntoView({ block: 'start', behavior: 'smooth' }); }); return; } // scan: straight to its buttons and graphs

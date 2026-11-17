@@ -8,10 +8,11 @@
     if (m !== 'scan' && scan) stopScan(false);
     appMode = m;
     if (eng && m === 'explore' && !eng.p.baro && baroOn()) { eng.p.baro = true; eng.p.P0 = null; }
-    document.querySelectorAll('[data-appmode]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.appmode === m)));
-    document.querySelectorAll('[data-mbmode]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mbmode === m)));
+    const tab = m === 'scan' ? 'explore' : m; // the energy scan lives inside Explore
+    document.querySelectorAll('[data-appmode]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.appmode === (b.closest('.subseg') ? m : tab))));
+    document.querySelectorAll('[data-mbmode]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mbmode === tab)));
     placeGraphs();
-    if ($('sheetTitle')) $('sheetTitle').textContent = T(m === 'game' ? 'Game' : m === 'scan' ? 'Energy scan' : 'Explore');
+    if ($('sheetTitle')) $('sheetTitle').textContent = T(m === 'game' ? 'Game' : 'Explore');
     document.querySelectorAll('[data-mode]').forEach((el) => el.classList.toggle('offmode', !el.dataset.mode.split(' ').includes(m)));
     const w = document.querySelector('.wrap'); w.classList.toggle('inscan', m === 'scan');
     if (m === 'game') { if (!gameSel) selectGame(GAMES[0].id); else prepGame(gameSel); }

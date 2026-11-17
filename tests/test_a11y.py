@@ -15,7 +15,7 @@ async def main():
         for vp, mob, tag in [((1280, 900), False, 'desktop'), ((375, 740), True, 'phone')]:
             pg = await page(b, vp, mob); await pg.add_script_tag(path=AXE)
             for m in ['game', 'explore', 'scan']:
-                await pg.evaluate(f"document.querySelector('[data-{'mbmode' if mob else 'appmode'}={m}]').click()"); await pg.wait_for_timeout(400)
+                await pg.evaluate(f"document.querySelector('{'[data-appmode=scan]' if m == 'scan' else '[data-' + ('mbmode' if mob else 'appmode') + '=' + m + ']'}').click()"); await pg.wait_for_timeout(400)
                 await pg.evaluate("document.querySelectorAll('details').forEach(d=>d.open=true)")
                 for v in await pg.evaluate(RUN, False): bad.append(f"{tag} {m}: {v['id']} ({v['n']}×) {v['help']} — {', '.join(v['where'])}")
             if not mob:

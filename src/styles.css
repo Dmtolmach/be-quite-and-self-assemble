@@ -212,7 +212,7 @@ header .sub { font-size: 15px; line-height: 1.45 } header .sub b { color: var(--
 .mbnav, .sheethead, .sheetback { display: none }
 @media (max-width: 700px) {
   body { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) }
-  .mbnav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 32;
+  .mbnav { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 6px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 32;
     padding: 8px max(10px, env(safe-area-inset-right, 0px)) calc(8px + env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px));
     background: var(--panel); border-top: 1px solid var(--line); box-shadow: 0 -6px 18px -12px rgba(0,0,0,.4) }
   .mbnav button { font: inherit; font-size: 13px; font-weight: 600; min-height: 44px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); padding: 4px 2px; line-height: 1.15 }
@@ -318,7 +318,7 @@ header > div:not(.langbox) { padding-right: 270px }
 .langbox select { font: inherit; font-size: 13px; padding: 4px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--ink) }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0) }
 .muted { color: var(--muted) }
-.modeseg { display: grid; grid-template-columns: repeat(3, 1fr) }
+.modeseg { display: grid; grid-template-columns: repeat(2, 1fr) }
 .modeseg button { font-weight: 600 }
 .thermo { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--line); padding-top: 10px }
 .thermo h2 { font-family: var(--f-display); font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 }
@@ -404,3 +404,26 @@ html.hicon .note, html.hicon .privline, html.hicon .kbhint { color: #222a31 }
 html.hicon :focus-visible { outline: 3px solid #000 !important; outline-offset: 2px }
 html.hicon .fcdeck h3 { color: #000 }
 .sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0 }
+.protosec { margin-top: 14px; padding: 10px 12px 4px; border: 1px dashed color-mix(in srgb, var(--accent) 55%, var(--line)); border-radius: 10px; background: color-mix(in srgb, var(--accent) 4%, var(--panel)) }
+.protosec h3 { margin: 0 0 8px; font-size: 13px } .protosec h3 small { font-weight: 500; color: var(--muted); margin-left: 6px } .protosec .gpick { margin-bottom: 6px }
+.gproto { margin-top: 12px } .gproto h3 { margin: 0 0 4px; font-size: 13px }
+.cellbox.shake #sim { animation: boxshake .38s ease-out } @keyframes boxshake { 0%, 100% { transform: none } 20% { transform: translateX(-7px) } 40% { transform: translateX(6px) } 60% { transform: translateX(-4px) } 80% { transform: translateX(2px) } }
+@media (prefers-reduced-motion: reduce) { .cellbox.shake #sim { animation: none } }
+
+/* ---- step-by-step opening: hidden until earned (Teacher options → Unlock everything shows all) ---- */
+.lock-explore .modeseg, .lock-explore [data-mbmode="explore"], .lock-scan .subseg, .lock-stats .gstatsbox, .lock-cards .albumpanel { display: none !important }
+.gpick .gnext { grid-column: 1 / -1; margin: 2px 0 0; font-size: 13px; color: var(--muted) }
+.subseg { margin-bottom: 12px } .subseg button { font-weight: 600; font-size: 14px }
+.fresh { position: relative; animation: freshpulse 1.6s ease-in-out 4 }
+.fresh::after { content: "NEW"; position: absolute; top: -8px; right: -6px; z-index: 2; background: var(--cryst); color: #3a2600; font: 700 10px/1 var(--f-body); letter-spacing: .06em; padding: 3px 6px; border-radius: 999px; pointer-events: none }
+details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
+@keyframes freshpulse { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--cryst) 0%, transparent) } 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--cryst) 70%, transparent) } }
+.gendnew { margin: 8px 0 2px; padding: 8px 10px; border-radius: 10px; background: color-mix(in srgb, var(--cryst) 22%, var(--panel)); font-weight: 700; font-size: 15px; animation: newpop .5s 1.2s both }
+@keyframes newpop { 0% { transform: scale(.6); opacity: 0 } 70% { transform: scale(1.06); opacity: 1 } 100% { transform: none } }
+.gendnew small { display: block; font-weight: 400; font-size: 12.5px; color: var(--muted) }
+.gendreal { margin: 6px 0 0; font-size: 13.5px }
+/* ---- after a game: the result in real life ---- */
+.macro { position: absolute; z-index: 8; border-radius: 6px; overflow: hidden; background: #fbf7ee; box-shadow: 0 10px 40px color-mix(in srgb, var(--ink) 25%, transparent) }
+.macro canvas { display: block; width: 100%; height: 100%; cursor: pointer }
+.macro .macrogo { position: absolute; right: 10px; bottom: 10px; font-size: 14px; padding: 7px 14px }
+@media (prefers-reduced-motion: reduce) { .fresh, .gendnew { animation: none } }

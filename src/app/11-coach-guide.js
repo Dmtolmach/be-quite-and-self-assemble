@@ -12,7 +12,7 @@
     else { if (b.className) { b.className = ''; b.removeAttribute('title'); b.removeAttribute('aria-label'); } $('tsliderM').removeAttribute('aria-valuetext'); lastWordK = -1; }
   }
   function zoneMarks(sNow) { // the green band on the noise bar and on the slider: temperatures that build the structure (for ice it moves down during the game)
-    const g = gameNow(), hide = !tipsOn() || (game ? game.level : gameLevel); // the green band is a tip: not in challenges or with tips off
+    const g = gameNow(), hide = !(g && g.alwaysZone) && (!tipsOn() || (game ? game.level : gameLevel)); // the green band is a tip: not in challenges or with tips off
     const z = !g || hide ? null : g.zoneLive ? g.zoneLive(game) : (g.zone || g.path) ? zoneOf(g, sNow || 0) : null, nz = $('nzone'), sz = $('szone');
     nz.classList.toggle('on', !!z); sz.classList.toggle('on', !!z); if (!z) return;
     const [lo, hi] = g.range, f = (Tv) => (Tv - lo) / (hi - lo), xn = (Tv) => Math.max(0, Math.min(1, (f(Tv) - 0.05) / 0.9));
@@ -158,11 +158,10 @@
     item(col('hot'), T('your temperature'), false, [5, 3]); item(col('accent'), T('score')); if (nD) item(col('muted'), T('lost drug'), false, [2, 3]);
     if (g.zone || g.path) item(col('good') + '66', T(g.path ? 'green path' : 'green zone'), true); else if (G.win) item(col('hot') + '55', T('red windows'), true); else if (g.flowU) item(col('hot') + '55', T('micelle in the tumour'), true);
   }
-  // games open one after another: a star in a game opens the next; teachers can open all
-  const unlockAll = () => { try { return localStorage.getItem('mdlab-unlock') === '1'; } catch (e) { return false; } };
-  function isOpen(i) { if (i <= 0 || unlockAll()) return true; const p = GAMES[i - 1], b = getBest(p); return b !== null && starsFor(p, b) >= 1; }
-  function unlockLabel() { $('gunlock').textContent = T(unlockAll() ? 'Lock the games again' : 'Unlock all games'); }
-  $('gunlock').addEventListener('click', () => { try { localStorage.setItem('mdlab-unlock', unlockAll() ? '0' : '1'); } catch (e) {} unlockLabel(); renderPick(); });
+  // games open one after another as rewards for finished games (see 10b-rewards.js); teachers can open everything
+  function isOpen(i) { return i <= 0 || rewardOpen(GAMES[i].id); }
+  function unlockLabel() { $('gunlock').textContent = T(unlockAll() ? 'Lock again (open step by step)' : 'Unlock everything'); }
+  $('gunlock').addEventListener('click', () => { try { localStorage.setItem('mdlab-unlock', unlockAll() ? '0' : '1'); } catch (e) {} unlockLabel(); applyLocks(); renderPick(); });
   unlockLabel();
   // guided first game: melt the ice with noise, freeze it with quiet, then play
   let guide = null;

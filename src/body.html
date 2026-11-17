@@ -26,9 +26,9 @@
         <div class="ghead"><div><b id="hudTitle"></b> <span id="hudGoal"></span> <span class="htip" id="hudTip"></span></div><div class="btns" style="flex:none;gap:6px"><button class="btn primary" id="gagain" hidden>Play again</button><button class="btn" id="gquit">Give up</button></div></div>
         <div class="gstat">
           <div><span id="gvalLab">Score</span><b id="gval">–</b></div>
-          <div><span>Time left</span><b id="gtime">–</b></div>
+          <div><span id="gtimeLab">Time left</span><b id="gtime">–</b></div>
           <div><span id="gpeakLab">Best this run</span><b id="gpeak">–</b></div>
-          <div><span>Stars</span><b id="gstars" class="gst">☆☆☆</b></div>
+          <div><span id="gstarsLab">Stars</span><b id="gstars" class="gst">☆☆☆</b></div>
         </div>
         <div class="gband" id="gband" aria-hidden="true" title="Line: your score now. Marks: star levels"><div class="best" id="gbest"></div><div class="now" id="gnow"></div></div>
         <div class="gbar" aria-hidden="true"><i id="gbar"></i></div>
@@ -39,6 +39,7 @@
       <div class="sr-only" id="srLive" aria-live="polite" aria-atomic="true"></div>
       <div class="gfx" id="gfx" aria-live="assertive" hidden></div>
       <div class="gend" id="gend" role="dialog" aria-live="polite" hidden></div>
+      <div class="macro" id="macroBox" role="dialog" aria-label="Your result in real life" hidden><canvas id="macroCv" aria-hidden="true"></canvas><button class="btn primary macrogo" id="macroGo">Continue ▸</button></div>
       <div class="coach" id="coach" hidden aria-live="polite"><span id="coachTxt"></span><button class="btn primary" id="coachBtn" hidden></button><button class="btn" id="coachSkip" hidden>Skip</button></div>
       <button class="btn primary boxstart" id="gstartBox" hidden>Start</button>
       <div class="clspanel" id="clsPanel" hidden>
@@ -91,7 +92,7 @@
           <canvas class="plot" id="plotF"></canvas>
         </div>
       </div>
-        <details class="gstats gstatsbox" data-mode="game">
+        <details class="gstats gstatsbox" data-mode="game" data-reward="stats">
           <summary>Statistics on this device</summary>
           <table><thead><tr><th>Game</th><th>Played</th><th>Average</th><th>Best</th></tr></thead><tbody id="gstatsBody"></tbody></table>
           <div class="btns"><button class="btn" id="gstatsReset">Reset statistics</button></div>
@@ -138,25 +139,26 @@
       <div class="sheethead"><b id="sheetTitle">Options</b><button class="btn" id="sheetClose" aria-label="Close">✕</button></div>
       <div class="seg modeseg" role="group" aria-label="Mode">
         <button data-appmode="game" aria-pressed="true">Game</button>
-        <button data-appmode="explore" aria-pressed="false">Explore</button>
-        <button data-appmode="scan" aria-pressed="false">Energy scan</button>
+        <button data-appmode="explore" aria-pressed="false" data-reward="explore">Explore</button>
       </div>
       <div class="panel" id="gamePanel" data-mode="game">
         <h2>Game: steer the molecules with your voice</h2>
         <div class="gpick" id="gpick"></div>
         <div class="ladder" id="ladder"></div>
+        <div class="protosec" id="protoSec" hidden><h3>Prototype games <small>for testing</small></h3><div class="gpick" id="ppick"></div><p class="note">Endless: lives, combos and levels that get faster. Same start every time.</p></div>
         <div class="gsel" id="gsel" hidden>
           <p class="ggoal" id="ggoal"></p>
           <p class="ghint" id="ghint"></p>
           <div class="btns">
             <button class="btn primary" id="gstart">Start</button>
-            <label class="gmic"><input type="checkbox" id="guseMic" checked> Use the microphone</label>
-            <label class="gmic"><input type="checkbox" id="gtips" checked> Show tips</label>
+            <label class="gmic gopt"><input type="checkbox" id="guseMic" checked> Use the microphone</label>
+            <label class="gmic gopt"><input type="checkbox" id="gtips" checked> Show tips</label>
           </div>
         </div>
       </div>
 
       <div class="panel" id="sysPanel" data-mode="explore scan">
+        <div class="seg subseg" role="group" aria-label="What to do"><button data-appmode="explore" aria-pressed="false">Watch the molecules</button><button data-appmode="scan" aria-pressed="false" data-reward="scan">Energy scan</button></div>
         <h2>System</h2>
         <div class="syspick" role="group" aria-label="System">
           <button data-pick="ice" aria-pressed="true"><b>Ice</b><small>Melts when heated</small></button>
@@ -319,6 +321,7 @@
           <label data-show="mbpoly plates"><input type="checkbox" id="showShell" checked> Highlight hydration-shell water</label>
           <label data-show="dumbbell polymer mbpoly ice crypt"><input type="checkbox" id="byCluster"> <span id="byClusterLab">Color by micelle</span></label>
           <label data-show="dumbbell polymer diblock hp crypt lcst mbpoly"><input type="checkbox" id="showBonds" checked> Show bonds</label>
+          <label><input type="checkbox" id="smooth" checked> Smooth motion</label>
         </div>
       </details>
     </div>
@@ -327,8 +330,7 @@
   <div class="sheetback" id="sheetBack" hidden></div>
   <nav class="mbnav" id="mbnav" aria-label="Mode">
     <button data-mbmode="game" aria-pressed="true"><span data-bar="game">Game</span></button>
-    <button data-mbmode="explore" aria-pressed="false"><span data-bar="explore">Explore</span></button>
-    <button data-mbmode="scan" aria-pressed="false"><span data-bar="scan">Energy scan</span></button>
+    <button data-mbmode="explore" aria-pressed="false" data-reward="explore"><span data-bar="explore">Explore</span></button>
     <button id="mbOpt" aria-expanded="false"><span data-bar="opt">Options</span></button>
   </nav>
   <details class="panel albumpanel">
@@ -344,6 +346,7 @@
             <p class="note">For slow computers or projectors: lighter drawing keeps the simulation smooth.</p>
             <div class="btns"><button class="btn" id="gunlock">Unlock all games</button><button class="btn" id="ladUnlock">Unlock all challenges</button></div>
             <p class="note">For this browser only. Press again to lock.</p>
+        <div class="gproto"><h3>Prototype games</h3><p class="note">New game ideas to try with a class before they become real games.</p><button class="btn" id="protoToggle">Show prototype games</button></div>
         <div class="gdisp">
           <h3>Projector and accessibility</h3>
           <div class="checks"><label><input type="checkbox" id="optBig"> Larger text</label><label><input type="checkbox" id="optHi"> High contrast</label></div>

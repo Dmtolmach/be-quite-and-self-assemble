@@ -27,7 +27,7 @@ async def main():
                 pg = await page(b, vp, mob); await pg.select_option('#lang', lang); await pg.wait_for_timeout(300)
                 found = set(); await scan(pg, 'start', found)
                 for m in ['game', 'explore', 'scan']:
-                    await pg.evaluate(f"document.querySelector('[data-{'mbmode' if mob else 'appmode'}={m}]').click()"); await pg.wait_for_timeout(400)
+                    await pg.evaluate(f"document.querySelector('{'[data-appmode=scan]' if m == 'scan' else '[data-' + ('mbmode' if mob else 'appmode') + '=' + m + ']'}').click()"); await pg.wait_for_timeout(400)
                     await pg.evaluate("document.querySelectorAll('details').forEach(d=>d.open=true)")
                     if m == 'game': await pg.click('[data-game=drug]'); await pg.wait_for_timeout(250)
                     if mob: await pg.evaluate("document.getElementById('mbOpt').click()"); await pg.wait_for_timeout(250)
