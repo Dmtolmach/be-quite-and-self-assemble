@@ -27,7 +27,7 @@ Requirements: Python 3, Node.js, Playwright for Python (`pip install playwright`
 | `src/app/07-help-tour.js` | Welcome card and help tour, including the intro story animation |
 | `src/app/08-phone-layout.js`, `09-app-modes.js` | Phone bottom sheet; Game / Explore / Energy scan switching |
 | `src/app/10-preview-film.js` | Goal preview film shown before a game |
-| `src/app/10b-rewards.js` | **Step-by-step opening**: a new player sees only the first game; each finished game opens the next item of `REWARDS` (games, Explore, Energy scan, statistics; the microphone settings are always shown). *Teacher options → Unlock everything* opens all |
+| `src/app/10b-rewards.js` | **Step-by-step opening**: a new player sees only the first game; each finished game opens the next item of `REWARDS` (games, Explore with Ice only, then each other Explore system one at a time, Energy scan, statistics; the microphone settings are always shown). *Teacher options → Unlock everything* opens all |
 | `src/app/11-coach-guide.js` | Temperature words, green band, coach line (guided game only), guided first lesson, replay graph |
 | `src/app/12-fact-cards.js` | Fact cards (30 cards in 5 decks) and the album |
 | `src/app/13-challenges.js`, `14-class-battle.js` | Challenges (5 levels per game) and class battles |
@@ -36,8 +36,8 @@ Requirements: Python 3, Node.js, Playwright for Python (`pip install playwright`
 | `src/app/18-prototypes.js` | **Prototype games** (`PROTOS`: Micelle stream, Follow the line, Heat-wave survival): lives, combos, levels that speed up every 20 s, fixed seeds, floating score texts and screen shake. Shown with *Teacher options → Show prototype games* |
 | `src/app/19-accessibility.js` | Keyboard play (Space heats, arrows step), screen-reader announcements (`say()`), projector options (larger text, high contrast) |
 | `src/app/20-offline-privacy.js` | Privacy dialog, deleting saved data, install as app, download for offline use |
-| `src/app/20a-highlights.js` | Game highlights: new ice glows only where a molecule froze together with at least 3 neighbours; a liquid domain glows only where it grows beyond its record size (not edge fluctuations); a gel path that beats its record gets a running spark |
-| `src/app/20b-macro-film.js` | After a game: zoom out from the box into a hand-drawn real-life picture chosen by the stars (ice cube, glass of liquids, patient, gel/egg); `window.__macro(id, stars)` plays it for tests |
+| `src/app/20a-highlights.js` | Game highlights: a new piece of ice crystal (≥5 molecules frozen for good within 2 s, joined by hydrogen-bond neighbours) glows along its own bonds; a liquid domain glows only where it grows beyond its record size (not edge fluctuations); a gel path that beats its record gets a running spark |
+| `src/app/20b-macro-film.js` | After a game: zoom out from the box into a hand-drawn real-life picture chosen by the stars (ice cube or ice cream, glass of liquids, patient, gel/egg); the end card then shows that picture with the stars and the verdict in one window and stays open; a won fact card waits behind a button; `window.__macro(id, stars)` plays it for tests |
 | `src/app/20c-explore-scan.js` | Energy scan as an option inside Explore |
 | `src/app/21-main-loop.js` | Main loop, start-up, debug line (`?debug=1`) |
 | `src/i18n/fi.json`, `sv.json`, `ru.json` | Translations: English text → translated text |

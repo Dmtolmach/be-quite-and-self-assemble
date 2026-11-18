@@ -8,7 +8,7 @@ async def main():
         b = await browser(p)
         pg = await page(b, intro=True, errors=errs); await pg.wait_for_timeout(1200)
         if not await pg.evaluate("!document.getElementById('tour').hidden"): errs.append('welcome card did not open on the first visit')
-        await pg.click('#tFree'); await pg.close()
+        await pg.click('#tPlay'); await pg.wait_for_timeout(1500); await pg.close() # a new player has only the game; Just explore opens later
         for lang in ['en', 'fi', 'sv', 'ru']:
             pg = await page(b, errors=errs); await pg.select_option('#lang', lang); await pg.wait_for_timeout(200)
             for m in ['explore', 'scan', 'game']:

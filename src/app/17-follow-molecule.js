@@ -67,6 +67,14 @@
     ctx.fillRect((cv.width - tw) / 2, 10 * dpr, tw, 24 * dpr); ctx.globalAlpha = 1; ctx.fillStyle = colors.cell; ctx.fillText(msg, cv.width / 2, 14 * dpr); ctx.restore();
   }
   // longest gel path: thick red line through the centres of the linked proteins (minimum-image steps, drawn in all periodic copies)
+  // a molecule is drawn as ice only after it has been ice for 1 s without a break, so the colour does not flicker at crystal edges
+  let iceT0 = null, iceMask = null, iceE = null;
+  function iceShown(ic) {
+    const N = eng.N, now = performance.now();
+    if (!iceT0 || iceE !== eng || iceT0.length !== N) { iceT0 = new Float64Array(N); iceMask = new Uint8Array(N); iceE = eng; }
+    for (let i = 0; i < N; i++) { if (ic[i]) { if (!iceT0[i]) iceT0[i] = now; iceMask[i] = now - iceT0[i] >= 1000 ? 1 : 0; } else { iceT0[i] = 0; iceMask[i] = 0; } }
+    return iceMask;
+  }
   function gelPts(gp) { // protein centres along the path, unwrapped (minimum-image steps)
     const L = eng.L, pts = [[gp.cx[gp.path[0]], gp.cy[gp.path[0]]]];
     for (let h = 1; h < gp.path.length; h++) { const [px, py] = pts[h - 1]; let dx = gp.cx[gp.path[h]] - px, dy = gp.cy[gp.path[h]] - py;
@@ -115,19 +123,23 @@
     const bnd = sys === 'lcst' && an && an.bound ? an.bound : null;
     if (eng.mb) {
       if (sys === 'ice') {
-        const ic = $('byCluster').checked && an && an.isIce ? an.isIce : null;
-        disks(colors.solv, 0.35 * s, ic ? (i) => type[i] === 7 && !ic[i] : (i) => type[i] === 7, 0, N);
-        if (ic) disks(colors.cold, 0.35 * s, (i) => ic[i] === 1, 0, N);
+        const ic = $('byCluster').checked && an && an.isIce ? iceShown(an.isIce) : null;
+        // more contrast: liquid water pale and small, ice molecules strong blue and a little larger (their arms are drawn blue below)
+        disks(ic ? mixHex(colors.solv, colors.cell, 0.5) : colors.solv, (ic ? 0.31 : 0.35) * s, ic ? (i) => type[i] === 7 && !ic[i] : (i) => type[i] === 7, 0, N);
+        if (ic) disks(colors.cold, 0.4 * s, (i) => ic[i] === 1, 0, N);
         disks(colors.tail, 0.68 * s, (i) => type[i] === 3, 0, N); // antifreeze particles, drawn at their size (σ = 1.4)
         disks(colors.cryst, 0.5 * s, (i) => type[i] === 4, 0, N); // ice wall
       }
       if (sys === 'ice' || ($('showSolv').checked && qLevel < 3)) {
         if (sys !== 'ice') { const sm = $('showShell').checked && shellMask && (sys === 'mbpoly' || sys === 'plates') ? shellMask : null;
           disks(colors.solv, 0.35 * s, sm ? (i) => !sm[i] : () => true, nCh, N); if (sm) disks(colors.cold, 0.35 * s, (i) => sm[i] === 1, nCh, N); }
-        if (qLevel < 2) { ctx.strokeStyle = colors.bond; ctx.lineWidth = Math.max(1, 0.08 * s); ctx.beginPath(); const arm = eng.arm, al = 0.5 * s;
-        for (let i = nCh; i < N; i++) { if (sys === 'ice' && type[i] === 3) continue; const X = x[i] * s, Y = y[i] * s, o = 6 * i;
-          for (let a = 0; a < 6; a += 2) { ctx.moveTo(X, Y); ctx.lineTo(X + al * arm[o + a], Y + al * arm[o + a + 1]); } }
-        ctx.stroke(); } // arms skipped on slow devices
+        if (qLevel < 2) { const arm = eng.arm, al = 0.5 * s, icA = sys === 'ice' && $('byCluster').checked && an && an.isIce ? iceShown(an.isIce) : null;
+          const arms = (sel, col, w, alpha) => { ctx.strokeStyle = col; ctx.lineWidth = w; ctx.globalAlpha = alpha; ctx.beginPath();
+            for (let i = nCh; i < N; i++) { if (sys === 'ice' && type[i] === 3) continue; if (!sel(i)) continue; const X = x[i] * s, Y = y[i] * s, o = 6 * i;
+              for (let a = 0; a < 6; a += 2) { ctx.moveTo(X, Y); ctx.lineTo(X + al * arm[o + a], Y + al * arm[o + a + 1]); } }
+            ctx.stroke(); ctx.globalAlpha = 1; };
+          if (icA) { arms((i) => !icA[i], colors.bond, Math.max(1, 0.07 * s), 0.45); arms((i) => icA[i] === 1, colors.cold, Math.max(1.2, 0.13 * s), 1); }
+          else arms(() => true, colors.bond, Math.max(1, 0.08 * s), 1); } // arms skipped on slow devices
       }
     } else if ($('showSolv').checked && qLevel < 3 && !eng.walls) disks(colors.solv, 0.42 * s, bnd ? (i) => !bnd[i] : eng.nDrug ? (i) => type[i] === 2 : () => true, nCh, N);
     if (bnd) disks(colors.mixS, 0.42 * s, (i) => bnd[i] === 1, nCh, N);

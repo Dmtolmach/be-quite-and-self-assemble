@@ -2,8 +2,8 @@
   // A molecule counts as new only when it changes state for good: its state is smoothed over a few readings and has to cross from below 0.15 to above 0.85,
   // so molecules that flicker at a crystal edge do not sparkle all the time.
   const FX_DUR = 1100, FX_MAX = 500;
-  const FX = { list: [], s: null, f: null, kind: '', pathMax: 0, pulse: 0, nodes: [], done: new Set(), rec: null };
-  function fxReset() { FX.list.length = 0; FX.s = null; FX.f = null; FX.rec = null; FX.done = new Set(); FX.kind = ''; FX.pathMax = 0; FX.pulse = 0; FX.nodes = []; }
+  const FX = { list: [], s: null, f: null, kind: '', pathMax: 0, pulse: 0, nodes: [], done: new Set(), rec: null, crys: [] };
+  function fxReset() { FX.crys = []; FX.list.length = 0; FX.s = null; FX.f = null; FX.rec = null; FX.done = new Set(); FX.kind = ''; FX.pathMax = 0; FX.pulse = 0; FX.nodes = []; }
   const fxCalm = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
   // hysteresis on a 0/1 state per molecule: returns the molecules that have just changed from 0 to 1 for good
   function fxCross(kind, val, n) {
@@ -15,18 +15,35 @@
     return out;
   }
   const fxAdd = (list) => { const now = performance.now(); FX.total = (FX.total || 0) + list.length; for (const i of list) if (FX.list.length < FX_MAX) FX.list.push({ i, t0: now - 120 * Math.random() }); };
-  // ice: a molecule glows only when at least 3 of its neighbours have also just frozen (within the last 1.5 s): a piece of crystal, not a single molecule
+  // ice: a new piece of crystal glows in its own shape. Molecules that have frozen for good in the last 2 s are joined by their hydrogen-bond
+  // neighbours (closer than 1.25σ); a group of at least 5 joined molecules (a ring of the 2D ice lattice is 6) lights up along its bonds.
+  const ICE_MIN = 5, ICE_R = 1.25, CRYS_DUR = 2200;
   function fxIce() {
-    const ic = an.isIce, ty = eng.type, now = performance.now(), fresh = fxCross('ice', (i) => ty[i] === 7 && ic[i] ? 1 : 0, eng.N);
+    const ic = iceShown(an.isIce), ty = eng.type, now = performance.now(), fresh = fxCross('ice', (i) => ty[i] === 7 && ic[i] ? 1 : 0, eng.N); // the same 1 s rule as the colour
     for (const i of fresh) FX.tNew[i] = now;
-    const recent = []; for (let i = 0; i < eng.N; i++) if (FX.f[i] && now - FX.tNew[i] < 1500) recent.push(i);
-    if (recent.length < 4) return;
-    const L = eng.L, x = eng.x, y = eng.y, rc2 = 1.35 * 1.35, cnt = new Map(); for (const i of recent) cnt.set(i, 0);
-    for (let a = 0; a < recent.length; a++) for (let b = a + 1; b < recent.length; b++) { const i = recent[a], j = recent[b];
-      let dx = x[i] - x[j], dy = y[i] - y[j]; dx -= L * Math.round(dx / L); dy -= L * Math.round(dy / L); if (dx * dx + dy * dy < rc2) { cnt.set(i, cnt.get(i) + 1); cnt.set(j, cnt.get(j) + 1); } }
-    const glow = []; for (const [i, c] of cnt) if (c >= 3 && !FX.done.has(i)) { glow.push(i); FX.done.add(i); }
     for (const i of FX.done) if (!FX.f[i]) FX.done.delete(i); // melted again: may glow next time it freezes into a crystal
-    fxAdd(glow);
+    const rec = []; for (let i = 0; i < eng.N; i++) if (FX.f[i] && now - FX.tNew[i] < 2000 && !FX.done.has(i)) rec.push(i);
+    if (rec.length < ICE_MIN) return;
+    const L = eng.L, x = eng.x, y = eng.y, r2 = ICE_R * ICE_R, n = rec.length, par = rec.map((_, k) => k);
+    const find = (k) => { while (par[k] !== k) { par[k] = par[par[k]]; k = par[k]; } return k; };
+    for (let a = 0; a < n; a++) for (let b = a + 1; b < n; b++) { const i = rec[a], j = rec[b];
+      let dx = x[i] - x[j], dy = y[i] - y[j]; dx -= L * Math.round(dx / L); dy -= L * Math.round(dy / L); if (dx * dx + dy * dy < r2) par[find(a)] = find(b); }
+    const groups = new Map(); for (let a = 0; a < n; a++) { const r = find(a); if (!groups.has(r)) groups.set(r, []); groups.get(r).push(rec[a]); }
+    for (const m of groups.values()) if (m.length >= ICE_MIN && FX.crys.length < 40) { FX.crys.push({ m, t0: now }); FX.total = (FX.total || 0) + 1; for (const i of m) FX.done.add(i); }
+  }
+  function fxCrystals(now, s, calm) { // glowing bonds and molecules in the shape of each new piece of crystal
+    FX.crys = FX.crys.filter((c) => now - c.t0 < CRYS_DUR); if (!FX.crys.length) return;
+    const L = eng.L, x = eng.x, y = eng.y, r2 = ICE_R * ICE_R * 1.1;
+    ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    for (const c of FX.crys) { const u = (now - c.t0) / CRYS_DUR, a = Math.min(1, u / 0.1) * (u < 0.55 ? 1 : 1 - (u - 0.55) / 0.45), m = c.m, segs = [];
+      for (let p = 0; p < m.length; p++) for (let q = p + 1; q < m.length; q++) { const i = m[p], j = m[q]; let dx = x[j] - x[i], dy = y[j] - y[i];
+        dx -= L * Math.round(dx / L); dy -= L * Math.round(dy / L); if (dx * dx + dy * dy < r2) segs.push([x[i], y[i], x[i] + dx, y[i] + dy]); }
+      const draw = (w, col, al, blur) => { ctx.globalAlpha = a * al; ctx.strokeStyle = col; ctx.lineWidth = w; ctx.shadowColor = '#4cc3ff'; ctx.shadowBlur = blur; ctx.beginPath();
+        for (const [x0, y0, x1, y1] of segs) { ctx.moveTo(x0 * s, y0 * s); ctx.lineTo(x1 * s, y1 * s); } ctx.stroke(); };
+      draw(1.05 * s, '#38b8ff', 0.75, calm ? 0 : 1.2 * s); draw(0.3 * s, '#ffffff', 1, 0);
+      ctx.shadowBlur = 0; ctx.globalAlpha = a; ctx.fillStyle = '#ffffff'; ctx.strokeStyle = '#1597dd'; ctx.lineWidth = Math.max(1, 0.08 * s);
+      for (const i of m) { ctx.beginPath(); ctx.arc(x[i] * s, y[i] * s, 0.34 * s, 0, 6.2832); ctx.fill(); ctx.stroke(); } }
+    ctx.restore();
   }
   // liquids: domains are connected beads with only their own kind around them; a domain glows only where it grows beyond its own record size
   // (by 8 % and at least 3 beads), and only the beads that have just joined it, so domains breathing at their edges stay quiet
@@ -63,6 +80,7 @@
   function fxDraw() { // in box coordinates; eng.x/eng.y are the drawn (smoothed) positions here
     if (!game || game.g.proto) { if (FX.list.length) FX.list.length = 0; return; }
     const now = performance.now(), s = cv.width / eng.L, calm = fxCalm();
+    fxCrystals(now, s, calm);
     if (FX.list.length) {
       FX.list = FX.list.filter((e) => now - e.t0 < FX_DUR && e.i < eng.N);
       ctx.save();

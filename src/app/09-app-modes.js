@@ -24,6 +24,7 @@
     resize(); if (m === 'scan') drawThermo();
     if (coachReady) { tWordShow(); zoneMarks(); }
     try { localStorage.setItem('mdlab-mode', m); } catch (e) {}
+    if (locksLive) applyLocks(); // Explore shows only the systems opened so far
   }
   document.querySelectorAll('[data-appmode]').forEach((b) => b.addEventListener('click', () => setAppMode(b.dataset.appmode)));
 

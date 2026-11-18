@@ -266,7 +266,7 @@ header .sub { font-size: 15px; line-height: 1.45 } header .sub b { color: var(--
   -webkit-text-stroke: 4px var(--panel); paint-order: stroke fill; animation: starpop 1.6s cubic-bezier(.2,.9,.3,1.2) both }
 .ghud.flash { animation: hudflash 0.9s ease-out } @keyframes hudflash { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--cryst) 70%, transparent) } 100% { box-shadow: 0 0 0 18px transparent } }
 .sndbtn { min-width: 40px; padding-inline: 8px }
-.gend { position: absolute; z-index: 7; display: grid; place-items: center; background: color-mix(in srgb, var(--bg) 35%, transparent); border-radius: 6px; padding: 10px; overflow: auto }
+.gend { container-type: size; position: absolute; z-index: 7; display: grid; place-items: center; background: color-mix(in srgb, var(--bg) 35%, transparent); border-radius: 6px; padding: 10px; overflow: auto }
 .gendcard { position: relative; width: min(440px, 100%); background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px 16px; text-align: center;
   box-shadow: 0 18px 50px color-mix(in srgb, var(--ink) 25%, transparent); animation: gendin .35s cubic-bezier(.2,.9,.3,1.1) both }
 @keyframes gendin { 0% { transform: translateY(14px) scale(.96); opacity: 0 } 100% { transform: none; opacity: 1 } }
@@ -411,7 +411,7 @@ html.hicon .fcdeck h3 { color: #000 }
 @media (prefers-reduced-motion: reduce) { .cellbox.shake #sim { animation: none } }
 
 /* ---- step-by-step opening: hidden until earned (Teacher options → Unlock everything shows all) ---- */
-.lock-explore .modeseg, .lock-explore [data-mbmode="explore"], .lock-scan .subseg, .lock-stats .gstatsbox, .lock-cards .albumpanel { display: none !important }
+.syspick .lockedsys, .lock-explore #tFree, .lock-explore .modeseg, .lock-explore [data-mbmode="explore"], .lock-scan .subseg, .lock-stats .gstatsbox, .lock-cards .albumpanel { display: none !important }
 .gpick .gnext { grid-column: 1 / -1; margin: 2px 0 0; font-size: 13px; color: var(--muted) }
 .subseg { margin-bottom: 12px } .subseg button { font-weight: 600; font-size: 14px }
 .fresh { position: relative; animation: freshpulse 1.6s ease-in-out 4 }
@@ -427,3 +427,17 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
 .macro canvas { display: block; width: 100%; height: 100%; cursor: pointer }
 .macro .macrogo { position: absolute; right: 10px; bottom: 10px; font-size: 14px; padding: 7px 14px }
 @media (prefers-reduced-motion: reduce) { .fresh, .gendnew { animation: none } }
+
+/* ---- end window with the real-life picture: picture beside the stars on a wide box, above them on a narrow one ---- */
+.gendcard.withpic { width: min(720px, 100%); display: grid; grid-template-columns: 1.05fr 1fr; gap: 6px 18px; align-items: center; padding: 14px 16px 14px }
+.gendpic { position: relative; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); background: #fbf7ee }
+.gendpic canvas { display: block; width: 100%; aspect-ratio: 1000 / 780; height: auto }
+.gendreplay { position: absolute; left: 6px; bottom: 6px; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 90%, transparent); color: var(--ink); font-size: 18px; cursor: pointer }
+.gendverdict { margin: 4px 0 6px } .gendverdict b { display: block; font-family: var(--f-display, inherit); font-size: 21px; line-height: 1.2 } .gendverdict span { display: block; font-size: 14px; color: var(--muted); margin-top: 4px; line-height: 1.35 }
+.withpic .gendstars .gs { font-size: clamp(34px, 7vmin, 52px) }
+@container (max-width: 600px) { .gendcard.withpic { grid-template-columns: 1fr; width: min(460px, 100%) } }
+@container (max-height: 520px) and (max-width: 600px) { .gendcard.withpic .gendpic { max-width: 300px; justify-self: center; width: 100% } }
+@media (max-width: 700px) { /* phones: the end window fills the screen and scrolls, so nothing is cut off */
+  .gend { position: fixed !important; left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; z-index: 200; padding: 12px 10px calc(12px + env(safe-area-inset-bottom)); place-items: start center; background: color-mix(in srgb, var(--bg) 80%, transparent) }
+  .gendcard.withpic { grid-template-columns: 1fr; margin: auto 0 } }
+.gendcard.withpic .gendx { z-index: 3; background: var(--panel); border-radius: 50%; box-shadow: 0 1px 4px color-mix(in srgb, var(--ink) 25%, transparent) }

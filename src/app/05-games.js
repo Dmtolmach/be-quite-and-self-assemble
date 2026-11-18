@@ -221,17 +221,20 @@
     $('gres').innerHTML = `<span class="gst">${'★'.repeat(st)}${'☆'.repeat(3 - st)}</span> <b>${g.fmt(v)}</b>${o.rec ? ' · ' + T('New personal best!') : ''}${G.level ? ' · ' + (st ? T('Cleared!') : T('Not cleared')) : ''}`; // one short line over the graph; the details are on the end card gendTimers.forEach(clearTimeout); gendTimers = [];
     el.style.left = cv.offsetLeft + 'px'; el.style.top = cv.offsetTop + 'px'; el.style.width = cv.offsetWidth + 'px'; el.style.height = cv.offsetHeight + 'px';
     const head = T(g.title) + (G.level ? ' · ' + T('Challenge {k}', { k: G.level }) : '');
+    const pic = MACRO[g.id] && !g.proto ? (o.macroM || macroInfo(o)) : null; // the result in real life, in the same window as the stars
+    if (pic) say(T(pic.info.t) + '. ' + T(pic.info.d));
     const msg = st === 3 ? T('Brilliant!') : st === 2 ? T('Great run!') : st === 1 ? T('Good start!') : T('So close: try again!');
-    el.innerHTML = `<div class="gendcard"><button class="gendx" aria-label="${T('Close')}">✕</button><p class="gendh">${head}</p>
+    el.innerHTML = `<div class="gendcard${pic ? ' withpic' : ''}"><button class="gendx" aria-label="${T('Close')}">✕</button>
+      ${pic ? `<div class="gendpic"><canvas aria-hidden="true"></canvas><button class="gendreplay" data-act="macro" title="${T('Replay the zoom')}" aria-label="${T('Replay the zoom')}">↻</button></div>` : ''}<div class="gendtxt"><p class="gendh">${head}</p>
       <div class="gendstars">${[0, 1, 2].map((k) => `<span class="gs" data-k="${k}">★</span>`).join('')}</div>
-      <p class="gendmsg">${msg}</p><p class="gendscore"><b data-v>${g.fmt(0)}</b>${o.rec ? `<span class="pb">${T('New personal best!')}</span>` : o.best !== null && o.best !== undefined ? `<small>${T('best ever {b}', { b: g.fmt(Math.max(o.best, v)) })}</small>` : ''}</p>
-      <p class="gendnote">${g.proto ? '' : T('Behind this card: your best moment, at {s} s.', { s: Math.round(G.peakSec || 0) })}${o.extra ? ' <b>' + o.extra + '</b>' : ''}</p>
+      ${pic ? `<p class="gendverdict"><b>${T(pic.info.t)}</b><span>${T(pic.info.d)}</span></p>` : `<p class="gendmsg">${msg}</p>`}<p class="gendscore"><b data-v>${g.fmt(0)}</b>${o.rec ? `<span class="pb">${T('New personal best!')}</span>` : o.best !== null && o.best !== undefined ? `<small>${T('best ever {b}', { b: g.fmt(Math.max(o.best, v)) })}</small>` : ''}</p>
+      ${pic ? (o.extra ? `<p class="gendnote"><b>${o.extra}</b></p>` : '') : `<p class="gendnote">${g.proto ? '' : T('Behind this card: your best moment, at {s} s.', { s: Math.round(G.peakSec || 0) })}${o.extra ? ' <b>' + o.extra + '</b>' : ''}</p>`}
       ${o.reward ? `<p class="gendnew"><span aria-hidden="true">🎁</span> ${T('New: {x}!', { x: T(o.reward.name) })} <small>${T(o.reward.where)}</small></p>` : ''}
-      ${MACRO[g.id] && !g.proto ? `<p class="gendreal"><button class="linkbtn" data-act="macro">${T('See your result in real life')} ▸</button></p>` : ''}
+      ${o.card ? `<p class="gendreal"><button class="btn" data-act="card"><span aria-hidden="true">🃏</span> ${T('You won a fact card: open it')}</button></p>` : ''}
       ${o.tip ? `<p class="gendtip">${o.tip}</p>` : ''}
-      <div class="gendbtns"><button class="btn primary" data-act="again">${T('Try again')}</button>${o.next ? `<button class="btn" data-act="next">${o.next.label} ▸</button>` : ''}<button class="btn ghost" data-act="look">${T('Look at the box')}</button></div></div>`;
+      <div class="gendbtns"><button class="btn primary" data-act="again">${T('Try again')}</button>${o.next ? `<button class="btn" data-act="next">${o.next.label} ▸</button>` : ''}<button class="btn ghost" data-act="look">${T('Look at the box')}</button></div></div></div>`;
     el.hidden = false; el._next = o.next; el._o = o; syncBoxStart();
-    if (o.card && !o.cardShown) { o.cardShown = true; const cd0 = o.card; setTimeout(() => fcOpen(cd0, true), 2200); } // a new fact card after the stars of the end card
+    if (pic) { pic.snap = pic.snap || o.snap; macroStill(el.querySelector('.gendpic canvas'), pic); } // a new fact card waits behind its button, so the card can be read first
     const cd = el.querySelector('.gendcard'); if (cd.scrollIntoView) setTimeout(() => cd.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }), 60);
     const red = matchMedia('(prefers-reduced-motion: reduce)').matches, t0 = 450, bv = el.querySelector('[data-v]'), dur = red ? 0 : 900, ts = performance.now();
     const count = () => { const u = dur ? Math.min(1, (performance.now() - ts) / dur) : 1; bv.textContent = g.fmt(v * (1 - Math.pow(1 - u, 3))); if (u < 1 && !el.hidden) requestAnimationFrame(count); };
@@ -240,7 +243,9 @@
     gendTimers.push(setTimeout(() => { if (!st) SFX.none(); else if (o.rec) SFX.best(); }, t0 + 420 * st + 150));
   }
   function gendClose() { macroStop(); $('gend').hidden = true; gendTimers.forEach(clearTimeout); syncBoxStart(); }
-  $('gend').addEventListener('click', (e) => { const b = e.target.closest('[data-act], .gendx'); if (!b) return; const act = b.dataset.act, nx = $('gend')._next; gendClose();
+  $('gend').addEventListener('click', (e) => { const b = e.target.closest('[data-act], .gendx'); if (!b) return; const act = b.dataset.act, nx = $('gend')._next;
+    if (act === 'card') { const o = $('gend')._o; if (o && o.card) { fcOpen(o.card, true); o.card = null; b.closest('p').remove(); } return; } // the end card stays open
+    gendClose();
     if (act === 'again') startGame(); else if (act === 'next' && nx) nx.go(); else if (act === 'macro' && $('gend')._o) { const o = $('gend')._o; o.reward = null; macroPlay(o, () => endCard(o)); } });
   function gameUpdate(v) {
     if (game.g.proto) { protoUpdate(game, v); return; } // prototype games keep their own score, lives and levels

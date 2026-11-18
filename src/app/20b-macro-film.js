@@ -1,6 +1,7 @@
   // ---------- after a game: a short film from the box out to everyday life ----------
   // The box (the best moment) shrinks into a hand-drawn picture of what such a result looks like in real life; the picture depends on the stars.
-  // Timeline: 0.6 s the box alone, 2.4 s zooming out, then a close-up of the box, the stars and two lines of text. Continue (or 8 s) opens the end card.
+  // Timeline: 0.6 s the box alone, 2.4 s zooming out, the close-up of the box; at 4.4 s (or Skip) the end card opens with this picture, the stars and the verdict,
+  // and stays until the player closes it, so there is time to read.
   const MACRO = {
     ice: [{ t: 'Slush, like ice cream', d: 'Tiny crystals with liquid water between them: soft and white, not a solid block.' },
       { t: 'Cloudy ice', d: 'Many small crystals and their borders scatter light, so the ice looks white.' },
@@ -26,57 +27,52 @@
   const MBOX = 34; // size of the box in the picture
   let macro = null; // { o, t0, raf, snap, info, done }
   function macroStop() { if (!macro) return; cancelAnimationFrame(macro.raf); clearTimeout(macro.auto); macro = null; $('macroBox').hidden = true; }
-  function macroPlay(o, done) {
-    macroStop(); const kind = o.g.id; if (!MACRO[kind]) { done(); return; }
-    const st = Math.max(0, Math.min(3, o.st)), G = o.G, poison = kind === 'drug' && st === 0 && (G.lost || 0) > (G.del || 0);
-    const info = st === 0 && poison ? POISON : MACRO[kind][st];
+  function macroPlay(o, done) { // the zoom-out film over the box; then done() opens the end card, which keeps the finished picture
+    macroStop(); if (!MACRO[o.g.id]) { done(); return; }
     const el = $('macroBox'), c = $('macroCv');
     el.style.left = cv.offsetLeft + 'px'; el.style.top = cv.offsetTop + 'px'; el.style.width = cv.offsetWidth + 'px'; el.style.height = cv.offsetHeight + 'px';
     const pr = Math.min(2, window.devicePixelRatio || 1); c.width = c.height = Math.round(cv.offsetWidth * pr);
-    macro = { o, kind, st, poison, info, done, t0: 0, raf: 0, snap: null };
-    const M = macro; el.hidden = false; $('macroGo').textContent = T('Continue') + ' ▸'; syncBoxStart();
-    say(T(info.t) + '. ' + T(info.d));
+    macro = Object.assign(macroInfo(o), { o, done, t0: 0, raf: 0, snap: o.snap || null }); o.macroM = macro;
+    const M = macro; el.hidden = false; $('macroGo').textContent = T('Skip') + ' ▸'; syncBoxStart();
+    if (fxCalm()) { macroDone(); return; } // reduced motion: straight to the card with the picture
     // wait two frames so the box shows the restored best moment, then copy it
     M.raf = requestAnimationFrame(() => { M.raf = requestAnimationFrame(() => { if (macro !== M) return;
-      const sn = document.createElement('canvas'); sn.width = cv.width; sn.height = cv.height; sn.getContext('2d').drawImage(cv, 0, 0); M.snap = sn;
-      M.t0 = performance.now() - (fxCalm() ? 3600 : 0); const tick = () => { if (macro !== M) return; macroFrame(M); M.raf = requestAnimationFrame(tick); }; tick();
-      M.auto = setTimeout(() => { if (macro === M) macroDone(); }, fxCalm() ? 6000 : 8500); }); });
+      if (!M.snap) { const sn = document.createElement('canvas'); sn.width = cv.width; sn.height = cv.height; sn.getContext('2d').drawImage(cv, 0, 0); M.snap = o.snap = sn; }
+      M.t0 = performance.now(); const tick = () => { if (macro !== M) return; const t = (performance.now() - M.t0) / 1000; macroFrame(M, c, t); if (t > 4.4) { macroDone(); return; } M.raf = requestAnimationFrame(tick); }; tick(); }); });
   }
-  function macroDone() { const M = macro; if (!M) return; macroStop(); M.done(); }
+  function macroDone() { const M = macro; if (!M) return;
+    if (!M.snap) { const sn = document.createElement('canvas'); sn.width = cv.width; sn.height = cv.height; sn.getContext('2d').drawImage(cv, 0, 0); M.snap = M.o.snap = sn; }
+    macroStop(); M.done(); }
   $('macroGo').addEventListener('click', macroDone);
-  $('macroCv').addEventListener('click', () => { if (macro && macro.t0 && performance.now() - macro.t0 > 3300) macroDone(); }); // a tap on the finished picture also continues
   const ease = (u) => u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2, clamp01 = (u) => Math.max(0, Math.min(1, u)), sstep = (a, b, u) => { const v = clamp01((u - a) / (b - a)); return v * v * (3 - 2 * v); };
-  function macroFrame(M) {
-    const c = $('macroCv'), x = c.getContext('2d'), W = c.width, t = (performance.now() - M.t0) / 1000, k = W / 1000;
-    const ef = ease(clamp01((t - 0.6) / 2.4)), [ax, ay] = ANCHOR[M.kind][M.st], z0 = 1000 / MBOX, z = Math.exp(Math.log(z0) * (1 - ef));
-    const sx = W / 2 + (ax * k - W / 2) * ef, sy = W / 2 + (ay * k - W / 2) * ef, sc = k * z;
-    x.setTransform(1, 0, 0, 1, 0, 0); x.fillStyle = PAPER; x.fillRect(0, 0, W, W);
+  const PIC_H = 0.78; // the picture is 1000 wide and 780 high in picture coordinates
+  function macroFrame(M, c, t) { // one frame into canvas c at time t (s); t ≥ 3.6 gives the finished picture with the close-up
+    const x = c.getContext('2d'), W = c.width, H = c.height, k = W / 1000, oy = (H - PIC_H * W) / 2;
+    const ef = ease(clamp01((t - 0.6) / 2.4)), [ax, ay] = ANCHOR[M.kind][M.st], z0 = Math.max(W, H) / (MBOX * k), z = Math.exp(Math.log(z0) * (1 - ef));
+    const sx = W / 2 + (ax * k - W / 2) * ef, sy = H / 2 + (ay * k + oy - H / 2) * ef, sc = k * z, px = W / 500;
+    x.setTransform(1, 0, 0, 1, 0, 0); x.fillStyle = PAPER; x.fillRect(0, 0, W, H);
     x.setTransform(sc, 0, 0, sc, sx - ax * sc, sy - ay * sc);
     x.globalAlpha = sstep(0.12, 0.55, ef); if (x.globalAlpha > 0) macroScene(x, M); x.globalAlpha = 1;
     const b0 = [ax - MBOX / 2, ay - MBOX / 2];
     if (M.snap) x.drawImage(M.snap, b0[0], b0[1], MBOX, MBOX);
-    x.lineWidth = 2.5 * (W / 500) / sc; x.strokeStyle = colors.hot; x.strokeRect(b0[0], b0[1], MBOX, MBOX);
+    x.lineWidth = 2.5 * px / sc; x.strokeStyle = colors.hot; x.strokeRect(b0[0], b0[1], MBOX, MBOX);
     x.setTransform(1, 0, 0, 1, 0, 0);
     if (t < 0.9) { x.globalAlpha = 1 - sstep(0.5, 0.9, t); macroLabel(x, W, T('Your box at its best moment'), W / 2, 0.06 * W); x.globalAlpha = 1; }
     const show = sstep(3.0, 3.6, t); if (show <= 0) return;
     // close-up: the box again, large, joined to its place in the picture
-    x.globalAlpha = show; const iw = 0.27 * W, right = ax < 520, ix = right ? W - iw - 0.04 * W : 0.04 * W, iy = 0.04 * W;
-    const bx = ax * k - MBOX * k / 2, by = ay * k - MBOX * k / 2, bw = MBOX * k;
-    x.strokeStyle = colors.hot; x.lineWidth = 1.5 * W / 500; x.setLineDash([5 * W / 500, 4 * W / 500]); x.beginPath();
+    x.globalAlpha = show; const iw = 0.27 * W, right = ax < 520, ix = right ? W - iw - 0.04 * W : 0.04 * W, iy = oy + 0.04 * W;
+    const bx = ax * k - MBOX * k / 2, by = oy + ay * k - MBOX * k / 2, bw = MBOX * k;
+    x.strokeStyle = colors.hot; x.lineWidth = 1.5 * px; x.setLineDash([5 * px, 4 * px]); x.beginPath();
     x.moveTo(right ? bx + bw : bx, by); x.lineTo(right ? ix : ix + iw, iy); x.moveTo(right ? bx + bw : bx, by + bw); x.lineTo(right ? ix : ix + iw, iy + iw); x.stroke(); x.setLineDash([]);
     x.fillStyle = '#ffffff'; x.fillRect(ix - 3, iy - 3, iw + 6, iw + 6); if (M.snap) x.drawImage(M.snap, ix, iy, iw, iw);
-    x.lineWidth = 3 * W / 500; x.strokeRect(ix, iy, iw, iw);
-    macroLabel(x, W, T('Your box: smaller than a virus'), ix + iw / 2, iy + iw + 0.035 * W, 0.022);
-    // caption: stars, verdict, one line of why
-    const cy = 0.755 * W; x.fillStyle = 'rgba(251,247,238,0.94)'; x.fillRect(0, cy, W, W - cy);
-    x.strokeStyle = 'rgba(58,58,58,0.25)'; x.lineWidth = 1; x.beginPath(); x.moveTo(0.05 * W, cy); x.lineTo(0.95 * W, cy); x.stroke();
-    x.textAlign = 'center'; x.textBaseline = 'middle'; const fs = 0.05 * W;
-    for (let s = 0; s < 3; s++) { const on = s < M.st, pop = on ? sstep(3.2 + 0.25 * s, 3.5 + 0.25 * s, t) : 1; x.font = `700 ${fs * (on ? 0.6 + 0.4 * pop : 1)}px ${css('--f-body') || 'sans-serif'}`;
-      x.fillStyle = on ? '#f2b705' : '#d9d2c3'; x.fillText('★', W / 2 + (s - 1) * 1.15 * fs, cy + 0.045 * W); }
-    x.fillStyle = INK; x.font = `700 ${0.043 * W}px ${css('--f-display') || css('--f-body') || 'sans-serif'}`; x.fillText(T(M.info.t), W / 2, cy + 0.11 * W);
-    x.font = `${0.028 * W}px ${css('--f-body') || 'sans-serif'}`; x.fillStyle = '#5b574f'; wrapText(x, T(M.info.d), W / 2, cy + 0.165 * W, 0.64 * W, 0.034 * W);
+    x.lineWidth = 3 * px; x.strokeRect(ix, iy, iw, iw);
+    macroLabel(x, W, T('Your box: smaller than a virus'), ix + iw / 2, iy + iw + 0.035 * W, 0.024);
     x.globalAlpha = 1;
   }
+  function macroStill(c, M) { // the finished picture for the end card
+    const w = c.clientWidth || 320, pr = Math.min(2, window.devicePixelRatio || 1); c.width = Math.round(w * pr); c.height = Math.round(w * pr * PIC_H); macroFrame(M, c, 99); }
+  const macroInfo = (o) => { const st = Math.max(0, Math.min(3, o.st)), G = o.G || {}, poison = o.g.id === 'drug' && st === 0 && (G.lost || 0) > (G.del || 0);
+    return { kind: o.g.id, st, poison, info: poison ? POISON : MACRO[o.g.id][st] }; };
   function macroLabel(x, W, txt, cxp, cyp, f) {
     x.font = `600 ${(f || 0.03) * W}px ${css('--f-body') || 'sans-serif'}`; x.textAlign = 'center'; x.textBaseline = 'middle';
     const w = x.measureText(txt).width + 0.03 * W, h = (f || 0.03) * W * 1.6; x.fillStyle = 'rgba(255,255,255,0.88)'; x.fillRect(cxp - w / 2, cyp - h / 2, w, h); x.fillStyle = INK; x.fillText(txt, cxp, cyp); }
@@ -230,4 +226,5 @@
     sk(x, blob(460, 480, 175, 5, 0.12, 100), { fill: '#ffffff', w: 4, seed: 100 });
     sk(x, ell(500, 460, 62, 58), { fill: '#f6a81c', w: 4, seed: 101 }); x.fillStyle = 'rgba(255,255,255,0.75)'; x.beginPath(); x.ellipse(482, 440, 16, 10, -0.5, 0, 6.283); x.fill();
   }
-  window.__macro = (id, st, lost) => { const g = GAMES.find((q) => q.id === id); if (g) macroPlay({ g, st, G: { lost: lost || 0, del: 0 } }, () => {}); }; // for tests
+  window.__macro = (id, st, lost, card) => { const g = GAMES.find((q) => q.id === id); if (!g) return; const o = { g, st, v: 0, G: { lost: lost || 0, del: 0, peakSec: 0 } }; postGame = id;
+    macroPlay(o, card ? () => endCard(o) : () => {}); }; // for tests
