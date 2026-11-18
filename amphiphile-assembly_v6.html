@@ -3024,7 +3024,9 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "You won a fact card: open it": "Voitit tietokortin: avaa se",
   "Try ice freely in the Explore tab; more systems open as you play.": "Kokeile jäätä vapaasti Tutki-välilehdellä; lisää järjestelmiä avautuu pelatessa.",
   "A new system to explore.": "Uusi järjestelmä tutkittavaksi.",
-  "Skip ▸": "Ohita ▸"
+  "Skip ▸": "Ohita ▸",
+  "Still liquid water": "Yhä nestemäistä vettä",
+  "It stayed too warm most of the time, so the molecules never had time to build crystals.": "Oli suurimman osan ajasta liian lämmintä, joten molekyylit eivät ehtineet rakentaa kiteitä."
  },
  "sv": {
   "Cleared!": "Klarat!",
@@ -4008,7 +4010,9 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "You won a fact card: open it": "Du vann ett faktakort: öppna det",
   "Try ice freely in the Explore tab; more systems open as you play.": "Prova is fritt under fliken Utforska; fler system öppnas medan du spelar.",
   "A new system to explore.": "Ett nytt system att utforska.",
-  "Skip ▸": "Hoppa över ▸"
+  "Skip ▸": "Hoppa över ▸",
+  "Still liquid water": "Fortfarande flytande vatten",
+  "It stayed too warm most of the time, so the molecules never had time to build crystals.": "Det var för varmt nästan hela tiden, så molekylerna hann aldrig bygga kristaller."
  },
  "ru": {
   "Cleared!": "Пройдено!",
@@ -4992,7 +4996,9 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "You won a fact card: open it": "Вы выиграли карточку с фактом: откройте её",
   "Try ice freely in the Explore tab; more systems open as you play.": "Свободно исследуйте лёд на вкладке «Исследование»; новые системы откроются по мере игры.",
   "A new system to explore.": "Новая система для исследования.",
-  "Skip ▸": "Пропустить ▸"
+  "Skip ▸": "Пропустить ▸",
+  "Still liquid water": "Всё ещё жидкая вода",
+  "It stayed too warm most of the time, so the molecules never had time to build crystals.": "Почти всё время было слишком тепло, и молекулы не успели построить кристаллы."
  }
 };
   let LANG = 'en';
@@ -5266,13 +5272,21 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     return api;
   })();
   window.__sfx = SFX; // for tests
-  let lastDb = null;
+  let lastDb = null, holdT = 0, holdDb = null;
   function levelDb() {
     if (!analyser) return null;
-    if (performance.now() < SFX.busyUntil && lastDb !== null) return lastDb; // our own sound is playing: keep the last reading
     analyser.getFloatTimeDomainData(buf);
     let s = 0; for (let i = 0; i < buf.length; i++) s += buf[i] * buf[i];
-    return (lastDb = 20 * Math.log10(Math.sqrt(s / buf.length) + 1e-9));
+    const d = 20 * Math.log10(Math.sqrt(s / buf.length) + 1e-9), now = performance.now();
+    if (now < SFX.busyUntil && lastDb !== null) { // our own sound is playing: the game must not hear itself
+      // The last reading is held, but it fades to the quiet level within about half a second. Holding it unchanged made a loop in the drug game:
+      // a short loud noise heated the box, the released drug played sounds, the sounds kept the loud reading, and the box stayed hot for seconds.
+      if (!holdT) { holdT = now; holdDb = lastDb; }
+      const span = Math.max(0.5, +$('micrange').value), held = quietDb + Math.max(0, holdDb - quietDb) * Math.exp(-(now - holdT) / 200);
+      if (d > quietDb + 0.7 * span) return (lastDb = d); // much louder than our soft notes: that is the player
+      return (lastDb = Math.min(held, Math.max(d, quietDb)));
+    }
+    holdT = 0; return (lastDb = d);
   }
   function calibrate() { const samples = []; let k = 0;
     const id = setInterval(() => { const d = levelDb(); if (d !== null) samples.push(d); if (++k >= 15) { clearInterval(id); if (samples.length) { samples.sort((a, b) => a - b); quietDb = samples[Math.floor(samples.length / 2)] + 3; } } }, 40); }
@@ -5311,7 +5325,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const d = levelDb(); if (d === null) return;
     const span = Math.max(0.5, +$('micrange').value), x = Math.max(0, Math.min(1, (d - quietDb) / span));
     $('micbar').style.width = $('micbarM').style.width = $('micbarC').style.width = (x * 100).toFixed(0) + '%';
-    const [lo, hi] = curRange(), target = lo + (0.05 + 0.9 * x) * (hi - lo);
+    const [lo, hi] = curRange(), target = lo + x * (hi - lo); // silence reaches the bottom of the range, like the slider
     const tauUp = 0.3, tauDown = 0.6;   // follows the room quickly both ways, so players keep control (cooling used to lag 2.5 s)
     const a = 1 - Math.exp(-dtSec / (target > micT ? tauUp : tauDown));
     micT += a * (target - micT); setT(micT);
@@ -5764,11 +5778,10 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       ${pic ? `<p class="gendverdict"><b>${T(pic.info.t)}</b><span>${T(pic.info.d)}</span></p>` : `<p class="gendmsg">${msg}</p>`}<p class="gendscore"><b data-v>${g.fmt(0)}</b>${o.rec ? `<span class="pb">${T('New personal best!')}</span>` : o.best !== null && o.best !== undefined ? `<small>${T('best ever {b}', { b: g.fmt(Math.max(o.best, v)) })}</small>` : ''}</p>
       ${pic ? (o.extra ? `<p class="gendnote"><b>${o.extra}</b></p>` : '') : `<p class="gendnote">${g.proto ? '' : T('Behind this card: your best moment, at {s} s.', { s: Math.round(G.peakSec || 0) })}${o.extra ? ' <b>' + o.extra + '</b>' : ''}</p>`}
       ${o.reward ? `<p class="gendnew"><span aria-hidden="true">🎁</span> ${T('New: {x}!', { x: T(o.reward.name) })} <small>${T(o.reward.where)}</small></p>` : ''}
-      ${o.card ? `<p class="gendreal"><button class="btn" data-act="card"><span aria-hidden="true">🃏</span> ${T('You won a fact card: open it')}</button></p>` : ''}
       ${o.tip ? `<p class="gendtip">${o.tip}</p>` : ''}
       <div class="gendbtns"><button class="btn primary" data-act="again">${T('Try again')}</button>${o.next ? `<button class="btn" data-act="next">${o.next.label} ▸</button>` : ''}<button class="btn ghost" data-act="look">${T('Look at the box')}</button></div></div></div>`;
     el.hidden = false; el._next = o.next; el._o = o; syncBoxStart();
-    if (pic) { pic.snap = pic.snap || o.snap; macroStill(el.querySelector('.gendpic canvas'), pic); } // a new fact card waits behind its button, so the card can be read first
+    if (pic) { pic.snap = pic.snap || o.snap; macroStill(el.querySelector('.gendpic canvas'), pic); } // a new fact card opens in its own window when the end window is left
     const cd = el.querySelector('.gendcard'); if (cd.scrollIntoView) setTimeout(() => cd.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }), 60);
     const red = matchMedia('(prefers-reduced-motion: reduce)').matches, t0 = 450, bv = el.querySelector('[data-v]'), dur = red ? 0 : 900, ts = performance.now();
     const count = () => { const u = dur ? Math.min(1, (performance.now() - ts) / dur) : 1; bv.textContent = g.fmt(v * (1 - Math.pow(1 - u, 3))); if (u < 1 && !el.hidden) requestAnimationFrame(count); };
@@ -5778,9 +5791,11 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   }
   function gendClose() { macroStop(); $('gend').hidden = true; gendTimers.forEach(clearTimeout); syncBoxStart(); }
   $('gend').addEventListener('click', (e) => { const b = e.target.closest('[data-act], .gendx'); if (!b) return; const act = b.dataset.act, nx = $('gend')._next;
-    if (act === 'card') { const o = $('gend')._o; if (o && o.card) { fcOpen(o.card, true); o.card = null; b.closest('p').remove(); } return; } // the end card stays open
-    gendClose();
-    if (act === 'again') startGame(); else if (act === 'next' && nx) nx.go(); else if (act === 'macro' && $('gend')._o) { const o = $('gend')._o; o.reward = null; macroPlay(o, () => endCard(o)); } });
+    const o0 = $('gend')._o, cardNow = act !== 'macro' && o0 && o0.card ? o0.card : null; // a won fact card comes in its own window after the end window
+    if (cardNow) { o0.card = null; gendClose(); fcOpen(cardNow, true, () => gendAct(act, nx)); return; }
+    gendClose(); gendAct(act, nx); });
+  function gendAct(act, nx) {
+    if (act === 'again') startGame(); else if (act === 'next' && nx) nx.go(); else if (act === 'macro' && $('gend')._o) { const o = $('gend')._o; o.reward = null; macroPlay(o, () => endCard(o)); } }
   function gameUpdate(v) {
     if (game.g.proto) { protoUpdate(game, v); return; } // prototype games keep their own score, lives and levels
     const G = game, g = G.g, now = eng.time, dt = now - G.last; G.last = now;
@@ -6114,7 +6129,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     ctx.globalAlpha = 1; ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(msg, W / 2, 24 * u);
     ctx.restore();
     // the player's own controls under the box show what the film does: the slider and the noise bar move, the symbol changes
-    const g = gameSel, [lo, hi] = g.range, Tf = lo + (0.05 + 0.9 * fr.f) * (hi - lo);
+    const g = gameSel, [lo, hi] = g.range, Tf = lo + fr.f * (hi - lo);
     $('tsliderM').value = Tf; $('micbarM').style.width = (100 * fr.f) + '%'; const k = tWord(g, Tf), b = $('tsetM'); b.textContent = T_SIGNS[k]; b.className = 'tw tw' + k; filmCtl = true;
   }
 
@@ -6530,8 +6545,9 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   }
   // the big card over the page: a new card flips over with stars; an album card just opens
   let fcShown = null;
-  function fcOpen(c, isNew) {
-    fcShown = [c, isNew]; const m = $('fcModal'), f = $('fcFlip'), b = $('fcBurst');
+  let fcAfter = null; // what to do when the card is closed
+  function fcOpen(c, isNew, after) {
+    fcShown = [c, isNew]; fcAfter = after || null; const m = $('fcModal'), f = $('fcFlip'), b = $('fcBurst');
     $('fcFront').innerHTML = fcFace(c); $('fcNew').textContent = isNew ? T('New card!') : ''; $('fcClose').textContent = T(isNew ? 'Add to my cards' : 'Close');
     m.hidden = false; f.classList.toggle('on', !isNew); b.innerHTML = '';
     if (isNew) setTimeout(() => { f.classList.add('on');
@@ -6539,7 +6555,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
         return `<span style="--x:${(Math.cos(a) * d).toFixed(0)}px;--y:${(Math.sin(a) * d).toFixed(0)}px;animation-delay:${(0.35 + 0.05 * Math.random()).toFixed(2)}s">★</span>`; }).join(''); }, 350);
     $('fcClose').focus();
   }
-  function fcCloseModal() { $('fcModal').hidden = true; fcShown = null; }
+  function fcCloseModal() { $('fcModal').hidden = true; fcShown = null; const f = fcAfter; fcAfter = null; if (f) f(); }
   $('fcClose').addEventListener('click', fcCloseModal);
   $('fcModal').addEventListener('click', (e) => { if (e.target === $('fcModal')) fcCloseModal(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('fcModal').hidden) fcCloseModal(); });
@@ -7221,7 +7237,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   addEventListener('blur', () => { kbHeat = false; });
   (function kbLoop(now) { // the same response as the microphone: up in about 0.3 s, down in about 0.6 s
     if (kbGlide && kbFree()) { const s = $('tsliderM'), lo = +s.min, hi = +s.max, dt = Math.min(0.5, (now - kbLast) / 1000); kbLast = now; /* slow computers draw few frames: follow real time */
-      const target = kbHeat ? lo + 0.95 * (hi - lo) : lo + 0.05 * (hi - lo), k = 1 - Math.exp(-dt / (kbHeat ? 0.3 : 0.6)), v = tset + k * (target - tset);
+      const target = kbHeat ? hi : lo, k = 1 - Math.exp(-dt / (kbHeat ? 0.3 : 0.6)), v = tset + k * (target - tset);
       if (Math.abs(v - tset) > 1e-4) kbT(v); if (!kbHeat && Math.abs(target - v) < 0.002 * (hi - lo)) kbGlide = false; }
     else kbLast = now;
     requestAnimationFrame(kbLoop); })(performance.now());
@@ -7426,7 +7442,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   const PIC_H = 0.78; // the picture is 1000 wide and 780 high in picture coordinates
   function macroFrame(M, c, t) { // one frame into canvas c at time t (s); t ≥ 3.6 gives the finished picture with the close-up
     const x = c.getContext('2d'), W = c.width, H = c.height, k = W / 1000, oy = (H - PIC_H * W) / 2;
-    const ef = ease(clamp01((t - 0.6) / 2.4)), [ax, ay] = ANCHOR[M.kind][M.st], z0 = Math.max(W, H) / (MBOX * k), z = Math.exp(Math.log(z0) * (1 - ef));
+    const ef = ease(clamp01((t - 0.6) / 2.4)), [ax, ay] = M.water ? [500, 470] : ANCHOR[M.kind][M.st], z0 = Math.max(W, H) / (MBOX * k), z = Math.exp(Math.log(z0) * (1 - ef));
     const sx = W / 2 + (ax * k - W / 2) * ef, sy = H / 2 + (ay * k + oy - H / 2) * ef, sc = k * z, px = W / 500;
     x.setTransform(1, 0, 0, 1, 0, 0); x.fillStyle = PAPER; x.fillRect(0, 0, W, H);
     x.setTransform(sc, 0, 0, sc, sx - ax * sc, sy - ay * sc);
@@ -7449,8 +7465,13 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   }
   function macroStill(c, M) { // the finished picture for the end card
     const w = c.clientWidth || 320, pr = Math.min(2, window.devicePixelRatio || 1); c.width = Math.round(w * pr); c.height = Math.round(w * pr * PIC_H); macroFrame(M, c, 99); }
+  // ice game with less than 5 % ice because the box was too warm most of the time: the result is simply liquid water
+  const WATER = { t: 'Still liquid water', d: 'It stayed too warm most of the time, so the molecules never had time to build crystals.' };
+  function iceTooWarm(o) { const G = o.G || {}, g = o.g, r = G.rec || []; if (g.id !== 'ice' || !(o.v < 0.05) || !r.length || !g.path) return !!(g.id === 'ice' && o.v < 0.05 && !r.length);
+    return r.filter((q) => q.T > g.path(q.s)[1]).length > 0.5 * r.length; }
   const macroInfo = (o) => { const st = Math.max(0, Math.min(3, o.st)), G = o.G || {}, poison = o.g.id === 'drug' && st === 0 && (G.lost || 0) > (G.del || 0);
-    return { kind: o.g.id, st, poison, info: poison ? POISON : MACRO[o.g.id][st] }; };
+    const water = st === 0 && iceTooWarm(o);
+    return { kind: o.g.id, st, poison, water, info: poison ? POISON : water ? WATER : MACRO[o.g.id][st] }; };
   function macroLabel(x, W, txt, cxp, cyp, f) {
     x.font = `600 ${(f || 0.03) * W}px ${css('--f-body') || 'sans-serif'}`; x.textAlign = 'center'; x.textBaseline = 'middle';
     const w = x.measureText(txt).width + 0.03 * W, h = (f || 0.03) * W * 1.6; x.fillStyle = 'rgba(255,255,255,0.88)'; x.fillRect(cxp - w / 2, cyp - h / 2, w, h); x.fillStyle = INK; x.fillText(txt, cxp, cyp); }
@@ -7476,7 +7497,16 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   function macroScene(x, M) {
     x.save(); ({ ice: sceneIce, demix: sceneDemix, drug: sceneDrug, gel: sceneGel })[M.kind](x, M.st, M); x.restore();
   }
-  function sceneIce(x, st) {
+  function sceneIce(x, st, M) {
+    if (M && M.water) { glass(x, () => { x.fillStyle = 'rgba(120,190,235,0.45)'; x.fillRect(300, 280, 400, 400); const r = rng(77);
+        for (let i = 0; i < 9; i++) { x.strokeStyle = 'rgba(255,255,255,0.9)'; x.lineWidth = 3; x.beginPath(); x.arc(390 + 220 * r(), 330 + 300 * r(), 5 + 6 * r(), 0, 6.283); x.stroke(); } });
+      // a striped cocktail straw (on the left, away from the close-up): in the water it looks paler, above the water it bends over the rim
+      const straw = [[425, 645], [388, 175], [300, 118]], tube = (al) => { x.beginPath(); x.moveTo(...straw[0]); x.lineTo(...straw[1]); x.quadraticCurveTo(375, 140, ...straw[2]); x.globalAlpha = al; };
+      x.save(); x.lineCap = 'round'; x.lineJoin = 'round';
+      tube(1); x.strokeStyle = INK; x.lineWidth = 26; x.stroke(); tube(1); x.strokeStyle = '#ffffff'; x.lineWidth = 20; x.stroke();
+      tube(1); x.strokeStyle = '#e4534b'; x.lineWidth = 20; x.lineCap = 'butt'; x.setLineDash([22, 22]); x.stroke(); x.setLineDash([]);
+      x.globalAlpha = 0.45; x.fillStyle = 'rgba(120,190,235,1)'; x.beginPath(); x.moveTo(400, 290); x.lineTo(445, 290); x.lineTo(445, 660); x.lineTo(410, 660); x.closePath(); x.fill(); // water in front of the straw
+      x.restore(); return; }
     table(x, st ? 662 : 690);
     if (st === 0) { // three scoops of ice cream in a cup: tiny crystals, soft and white
       shadow(x, 500, 690, 170, 18);
@@ -7604,7 +7634,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     sk(x, blob(460, 480, 175, 5, 0.12, 100), { fill: '#ffffff', w: 4, seed: 100 });
     sk(x, ell(500, 460, 62, 58), { fill: '#f6a81c', w: 4, seed: 101 }); x.fillStyle = 'rgba(255,255,255,0.75)'; x.beginPath(); x.ellipse(482, 440, 16, 10, -0.5, 0, 6.283); x.fill();
   }
-  window.__macro = (id, st, lost, card) => { const g = GAMES.find((q) => q.id === id); if (!g) return; const o = { g, st, v: 0, G: { lost: lost || 0, del: 0, peakSec: 0 } }; postGame = id;
+  window.__macro = (id, st, lost, card, v) => { const g = GAMES.find((q) => q.id === id); if (!g) return; const o = { g, st, v: v === undefined ? 0.2 : v, G: { lost: lost || 0, del: 0, peakSec: 0 } }; postGame = id; if (card === 'fc') o.card = FC_ALL[0];
     macroPlay(o, card ? () => endCard(o) : () => {}); }; // for tests
   // ---------- the energy scan is an option inside Explore; on phones it closes the sheet and shows the scan graphs ----------
   document.querySelectorAll('.subseg [data-appmode]').forEach((b) => b.addEventListener('click', () => {
@@ -7703,7 +7733,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     ru: { game: 'Игра', explore: 'Исследование', scan: 'Скан', opt: 'Настройки' } };
   function barLabels() { const t = BAR[LANG] || BAR.en; document.querySelectorAll('[data-bar]').forEach((el) => { el.textContent = t[el.dataset.bar]; }); }
   $('lang').addEventListener('change', (e) => setLang(e.target.value));
-  window.__eng = () => eng; window.__game = () => game; // for tests
+  window.__eng = () => eng; window.__game = () => game; window.__tset = () => tset; // for tests
   window.__i18nData = () => { const out = [];
     for (const S of Object.values(SYS)) { for (const k of ['concLab', 'plotLab', 'hl']) if (S[k]) out.push(S[k]); for (const [, tx] of S.legend || []) out.push(tx); }
     for (const g of GAMES) out.push(g.title, g.sub, g.goal, g.hint, g.lab, g.lesson.good, g.lesson.bad);

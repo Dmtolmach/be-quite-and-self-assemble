@@ -19,7 +19,7 @@
   addEventListener('blur', () => { kbHeat = false; });
   (function kbLoop(now) { // the same response as the microphone: up in about 0.3 s, down in about 0.6 s
     if (kbGlide && kbFree()) { const s = $('tsliderM'), lo = +s.min, hi = +s.max, dt = Math.min(0.5, (now - kbLast) / 1000); kbLast = now; /* slow computers draw few frames: follow real time */
-      const target = kbHeat ? lo + 0.95 * (hi - lo) : lo + 0.05 * (hi - lo), k = 1 - Math.exp(-dt / (kbHeat ? 0.3 : 0.6)), v = tset + k * (target - tset);
+      const target = kbHeat ? hi : lo, k = 1 - Math.exp(-dt / (kbHeat ? 0.3 : 0.6)), v = tset + k * (target - tset);
       if (Math.abs(v - tset) > 1e-4) kbT(v); if (!kbHeat && Math.abs(target - v) < 0.002 * (hi - lo)) kbGlide = false; }
     else kbLast = now;
     requestAnimationFrame(kbLoop); })(performance.now());

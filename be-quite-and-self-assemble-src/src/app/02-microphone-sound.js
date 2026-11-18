@@ -108,7 +108,7 @@
     const d = levelDb(); if (d === null) return;
     const span = Math.max(0.5, +$('micrange').value), x = Math.max(0, Math.min(1, (d - quietDb) / span));
     $('micbar').style.width = $('micbarM').style.width = $('micbarC').style.width = (x * 100).toFixed(0) + '%';
-    const [lo, hi] = curRange(), target = lo + (0.05 + 0.9 * x) * (hi - lo);
+    const [lo, hi] = curRange(), target = lo + x * (hi - lo); // silence reaches the bottom of the range, like the slider
     const tauUp = 0.3, tauDown = 0.6;   // follows the room quickly both ways, so players keep control (cooling used to lag 2.5 s)
     const a = 1 - Math.exp(-dtSec / (target > micT ? tauUp : tauDown));
     micT += a * (target - micT); setT(micT);
