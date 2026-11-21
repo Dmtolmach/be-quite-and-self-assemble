@@ -48,7 +48,7 @@
   const PIC_H = 0.78; // the picture is 1000 wide and 780 high in picture coordinates
   function macroFrame(M, c, t) { // one frame into canvas c at time t (s); t ≥ 3.6 gives the finished picture with the close-up
     const x = c.getContext('2d'), W = c.width, H = c.height, k = W / 1000, oy = (H - PIC_H * W) / 2;
-    const ef = ease(clamp01((t - 0.6) / 2.4)), [ax, ay] = ANCHOR[M.kind][M.st], z0 = Math.max(W, H) / (MBOX * k), z = Math.exp(Math.log(z0) * (1 - ef));
+    const ef = ease(clamp01((t - 0.6) / 2.4)), [ax, ay] = M.water ? [500, 470] : ANCHOR[M.kind][M.st], z0 = Math.max(W, H) / (MBOX * k), z = Math.exp(Math.log(z0) * (1 - ef));
     const sx = W / 2 + (ax * k - W / 2) * ef, sy = H / 2 + (ay * k + oy - H / 2) * ef, sc = k * z, px = W / 500;
     x.setTransform(1, 0, 0, 1, 0, 0); x.fillStyle = PAPER; x.fillRect(0, 0, W, H);
     x.setTransform(sc, 0, 0, sc, sx - ax * sc, sy - ay * sc);
@@ -66,13 +66,17 @@
     x.moveTo(right ? bx + bw : bx, by); x.lineTo(right ? ix : ix + iw, iy); x.moveTo(right ? bx + bw : bx, by + bw); x.lineTo(right ? ix : ix + iw, iy + iw); x.stroke(); x.setLineDash([]);
     x.fillStyle = '#ffffff'; x.fillRect(ix - 3, iy - 3, iw + 6, iw + 6); if (M.snap) x.drawImage(M.snap, ix, iy, iw, iw);
     x.lineWidth = 3 * px; x.strokeRect(ix, iy, iw, iw);
-    macroLabel(x, W, T('Your box: smaller than a virus'), ix + iw / 2, iy + iw + 0.035 * W, 0.024);
     x.globalAlpha = 1;
   }
   function macroStill(c, M) { // the finished picture for the end card
     const w = c.clientWidth || 320, pr = Math.min(2, window.devicePixelRatio || 1); c.width = Math.round(w * pr); c.height = Math.round(w * pr * PIC_H); macroFrame(M, c, 99); }
+  // ice game with less than 5 % ice because the box was too warm most of the time: the result is simply liquid water
+  const WATER = { t: 'Still liquid water', d: 'It stayed too warm most of the time, so the molecules never had time to build crystals.' };
+  function iceTooWarm(o) { const G = o.G || {}, g = o.g, r = G.rec || []; if (g.id !== 'ice' || !(o.v < 0.05) || !r.length || !g.path) return !!(g.id === 'ice' && o.v < 0.05 && !r.length);
+    return r.filter((q) => q.T > g.path(q.s)[1]).length > 0.5 * r.length; }
   const macroInfo = (o) => { const st = Math.max(0, Math.min(3, o.st)), G = o.G || {}, poison = o.g.id === 'drug' && st === 0 && (G.lost || 0) > (G.del || 0);
-    return { kind: o.g.id, st, poison, info: poison ? POISON : MACRO[o.g.id][st] }; };
+    const water = st === 0 && iceTooWarm(o);
+    return { kind: o.g.id, st, poison, water, info: poison ? POISON : water ? WATER : MACRO[o.g.id][st] }; };
   function macroLabel(x, W, txt, cxp, cyp, f) {
     x.font = `600 ${(f || 0.03) * W}px ${css('--f-body') || 'sans-serif'}`; x.textAlign = 'center'; x.textBaseline = 'middle';
     const w = x.measureText(txt).width + 0.03 * W, h = (f || 0.03) * W * 1.6; x.fillStyle = 'rgba(255,255,255,0.88)'; x.fillRect(cxp - w / 2, cyp - h / 2, w, h); x.fillStyle = INK; x.fillText(txt, cxp, cyp); }
@@ -98,7 +102,16 @@
   function macroScene(x, M) {
     x.save(); ({ ice: sceneIce, demix: sceneDemix, drug: sceneDrug, gel: sceneGel })[M.kind](x, M.st, M); x.restore();
   }
-  function sceneIce(x, st) {
+  function sceneIce(x, st, M) {
+    if (M && M.water) { glass(x, () => { x.fillStyle = 'rgba(120,190,235,0.45)'; x.fillRect(300, 280, 400, 400); const r = rng(77);
+        for (let i = 0; i < 9; i++) { x.strokeStyle = 'rgba(255,255,255,0.9)'; x.lineWidth = 3; x.beginPath(); x.arc(390 + 220 * r(), 330 + 300 * r(), 5 + 6 * r(), 0, 6.283); x.stroke(); } });
+      // a striped cocktail straw (on the left, away from the close-up): in the water it looks paler, above the water it bends over the rim
+      const straw = [[425, 645], [388, 175], [300, 118]], tube = (al) => { x.beginPath(); x.moveTo(...straw[0]); x.lineTo(...straw[1]); x.quadraticCurveTo(375, 140, ...straw[2]); x.globalAlpha = al; };
+      x.save(); x.lineCap = 'round'; x.lineJoin = 'round';
+      tube(1); x.strokeStyle = INK; x.lineWidth = 26; x.stroke(); tube(1); x.strokeStyle = '#ffffff'; x.lineWidth = 20; x.stroke();
+      tube(1); x.strokeStyle = '#e4534b'; x.lineWidth = 20; x.lineCap = 'butt'; x.setLineDash([22, 22]); x.stroke(); x.setLineDash([]);
+      x.globalAlpha = 0.45; x.fillStyle = 'rgba(120,190,235,1)'; x.beginPath(); x.moveTo(400, 290); x.lineTo(445, 290); x.lineTo(445, 660); x.lineTo(410, 660); x.closePath(); x.fill(); // water in front of the straw
+      x.restore(); return; }
     table(x, st ? 662 : 690);
     if (st === 0) { // three scoops of ice cream in a cup: tiny crystals, soft and white
       shadow(x, 500, 690, 170, 18);
@@ -226,5 +239,5 @@
     sk(x, blob(460, 480, 175, 5, 0.12, 100), { fill: '#ffffff', w: 4, seed: 100 });
     sk(x, ell(500, 460, 62, 58), { fill: '#f6a81c', w: 4, seed: 101 }); x.fillStyle = 'rgba(255,255,255,0.75)'; x.beginPath(); x.ellipse(482, 440, 16, 10, -0.5, 0, 6.283); x.fill();
   }
-  window.__macro = (id, st, lost, card) => { const g = GAMES.find((q) => q.id === id); if (!g) return; const o = { g, st, v: 0, G: { lost: lost || 0, del: 0, peakSec: 0 } }; postGame = id;
+  window.__macro = (id, st, lost, card, v) => { const g = GAMES.find((q) => q.id === id); if (!g) return; const o = { g, st, v: v === undefined ? 0.2 : v, G: { lost: lost || 0, del: 0, peakSec: 0 } }; postGame = id; if (card === 'fc') o.card = FC_ALL[0];
     macroPlay(o, card ? () => endCard(o) : () => {}); }; // for tests

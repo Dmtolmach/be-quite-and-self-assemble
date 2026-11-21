@@ -49,7 +49,7 @@
     ctx.globalAlpha = 1; ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(msg, W / 2, 24 * u);
     ctx.restore();
     // the player's own controls under the box show what the film does: the slider and the noise bar move, the symbol changes
-    const g = gameSel, [lo, hi] = g.range, Tf = lo + (0.05 + 0.9 * fr.f) * (hi - lo);
+    const g = gameSel, [lo, hi] = g.range, Tf = lo + fr.f * (hi - lo);
     $('tsliderM').value = Tf; $('micbarM').style.width = (100 * fr.f) + '%'; const k = tWord(g, Tf), b = $('tsetM'); b.textContent = T_SIGNS[k]; b.className = 'tw tw' + k; filmCtl = true;
   }
 

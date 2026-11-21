@@ -55,13 +55,21 @@
     return api;
   })();
   window.__sfx = SFX; // for tests
-  let lastDb = null;
+  let lastDb = null, holdT = 0, holdDb = null;
   function levelDb() {
     if (!analyser) return null;
-    if (performance.now() < SFX.busyUntil && lastDb !== null) return lastDb; // our own sound is playing: keep the last reading
     analyser.getFloatTimeDomainData(buf);
     let s = 0; for (let i = 0; i < buf.length; i++) s += buf[i] * buf[i];
-    return (lastDb = 20 * Math.log10(Math.sqrt(s / buf.length) + 1e-9));
+    const d = 20 * Math.log10(Math.sqrt(s / buf.length) + 1e-9), now = performance.now();
+    if (now < SFX.busyUntil && lastDb !== null) { // our own sound is playing: the game must not hear itself
+      // The last reading is held, but it fades to the quiet level within about half a second. Holding it unchanged made a loop in the drug game:
+      // a short loud noise heated the box, the released drug played sounds, the sounds kept the loud reading, and the box stayed hot for seconds.
+      if (!holdT) { holdT = now; holdDb = lastDb; }
+      const span = Math.max(0.5, +$('micrange').value), held = quietDb + Math.max(0, holdDb - quietDb) * Math.exp(-(now - holdT) / 200);
+      if (d > quietDb + 0.7 * span) return (lastDb = d); // much louder than our soft notes: that is the player
+      return (lastDb = Math.min(held, Math.max(d, quietDb)));
+    }
+    holdT = 0; return (lastDb = d);
   }
   function calibrate() { const samples = []; let k = 0;
     const id = setInterval(() => { const d = levelDb(); if (d !== null) samples.push(d); if (++k >= 15) { clearInterval(id); if (samples.length) { samples.sort((a, b) => a - b); quietDb = samples[Math.floor(samples.length / 2)] + 3; } } }, 40); }
@@ -100,7 +108,7 @@
     const d = levelDb(); if (d === null) return;
     const span = Math.max(0.5, +$('micrange').value), x = Math.max(0, Math.min(1, (d - quietDb) / span));
     $('micbar').style.width = $('micbarM').style.width = $('micbarC').style.width = (x * 100).toFixed(0) + '%';
-    const [lo, hi] = curRange(), target = lo + (0.05 + 0.9 * x) * (hi - lo);
+    const [lo, hi] = curRange(), target = lo + x * (hi - lo); // silence reaches the bottom of the range, like the slider
     const tauUp = 0.3, tauDown = 0.6;   // follows the room quickly both ways, so players keep control (cooling used to lag 2.5 s)
     const a = 1 - Math.exp(-dtSec / (target > micT ? tauUp : tauDown));
     micT += a * (target - micT); setT(micT);

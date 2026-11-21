@@ -54,7 +54,7 @@
     { id: 'drug', title: 'Deliver the drug', sub: 'Soap molecules · hit the target windows', sys: 'dumbbell', ordered: true, range: [0.4, 2.5], D: 60, box: '48', conc: 34,
       prm: { nDrug: 90, drugPerMic: 3, extraTails: 3, preSteps: 1000, epsDB: 2.5, epsBB: 2.5, epsAS: 0, sigA: 1.0 }, raw: true, noSnap: true, side: 'Lost',
       lab: 'Delivered', fmt: (v) => v.toFixed(0) + '%', stars: [30, 45, 70], scale: 100, hotT: 1.35,
-      setup: (G) => { const w = []; let a = 6 + 4 * Math.random(); const W = 8 / 2.25; /* windows ≈ 1.8 s of play each */ while (a + W <= 58) { w.push([a, a + W]); a += W + 5 + 4 * Math.random(); } G.win = w; G.del = 0; G.lost = 0; },
+      setup: (G) => { const w = []; let a = 6 + 4 * Math.random(); const W = 8 / 2.25, end = G.speed ? 60 * 600 / GAME_SEC : 58; /* windows ≈ 1.8 s of play each; a speed run gets them for 10 minutes */ while (a + W <= end) { w.push([a, a + W]); a += W + 5 + 4 * Math.random(); } G.win = w; G.del = 0; G.lost = 0; },
       value: () => drugTick(),
       // challenges use a tumour zone instead: blood flow (flowU) carries three micelles through a heated band; some heat (spill) leaks outside
       tumour: { sub: 'Soap molecules · heat the tumour', range: [0.4, 5.0], prm: { nDrug: 15, drugPerMic: 5, extraTails: 3, preSteps: 1000, epsDB: 2.5, epsBB: 2.5, epsAS: 0, sigA: 1.0, drugXs: [2, 18, 34].map((d) => DRUG_X0 - d) },
@@ -96,6 +96,7 @@
       if (coachReady && !isOpen(i)) return ''; // not opened yet: not shown at all
       return `<button data-game="${g.id}" aria-pressed="${gameSel === g}"><b>${T(g.title)}</b><small>${T(g.sub)}</small><span class="stars">${b !== null ? starStr(starsFor(g, b)) + ' ' + T('best') + ' ' + g.fmt(b) : ''}</span></button>`; }).join('')
       + (coachReady && GAMES.some((g, i) => !isOpen(i)) ? `<p class="gnext"><span aria-hidden="true">🎁</span> ${T('Every game you finish opens something new.')}</p>` : '');
+    if (coachReady) speedSeg();
     if (coachReady && typeof applyLocks === 'function') applyLocks();
   }
   function selectGame(id) {
@@ -128,13 +129,13 @@
     if (guide) { guide = null; coachHide(); }
     if (needGuide(g) && !battle && !gameLevel && !classOn) { guideStart(g); return; }
     prepGame(g); coachHide(); $('greplay').hidden = true; gendClose(); postGame = null;
-    game = { g, t0: eng.time, last: eng.time, ema: null, rate: g.D / GAME_SEC, peak: -Infinity, peakSec: 0, snap: null, rec: [], level: gameLevel, bump: 0, guided: afterGuide }; afterGuide = false;
+    game = { g, t0: eng.time, last: eng.time, ema: null, rate: g.D / GAME_SEC, peak: -Infinity, peakSec: 0, snap: null, rec: [], level: gameLevel, bump: 0, guided: afterGuide }; afterGuide = false; game.ghost = gameLevel || battle || classOn ? null : ghostLoad(g); game.speed = speedMode && !gameLevel && !battle && !classOn && speedOpen(g) ? SPEED[g.id] : null; if (game.speed) game.ghost = null;
     if (battle) game.battle = battle.k; fxReset();
     if (g.setup) g.setup(game);
     if (gameLevel) { const tw = ladTwist(g, gameLevel); Object.assign(game, { af: tw.af || 0, flowK: tw.flowK || 1, bandK: tw.bandK || 1, spill: tw.spill || 0 });
       if (tw.waveAmp) { game.waves = []; let a = 2.5 + 1.5 * Math.random(); while (a < 28) { game.waves.push([a, a + tw.waveLen, tw.waveAmp]); a += tw.waveLen + tw.waveGap * (0.7 + 0.6 * Math.random()); } } }
     const gb = document.querySelector('.gbar'); gb.querySelectorAll('.win').forEach((x) => x.remove());
-    for (const [w0, w1] of game.win || []) { const d = document.createElement('div'); d.className = 'win'; d.style.left = (100 * w0 / g.D) + '%'; d.style.width = (100 * (w1 - w0) / g.D) + '%'; gb.appendChild(d); }
+    const DD = game.speed ? g.D * SPEED_BAR / GAME_SEC : g.D; for (const [w0, w1] of game.win || []) { if (w0 >= DD) continue; const d = document.createElement('div'); d.className = 'win'; d.style.left = (100 * w0 / DD) + '%'; d.style.width = (100 * (w1 - w0) / DD) + '%'; gb.appendChild(d); }
     $('gpeakLab').textContent = T(g.side || 'Best this run');
     $('gpeak').textContent = '–'; $('gbest').style.display = 'none';
     gameCarry = 0; running = true; $('pause').textContent = T('Pause');
@@ -143,9 +144,11 @@
     g.stars.forEach((s, k) => { const d = document.createElement('div'); d.className = 'tick'; d.style.left = (100 * s / (g.scale || 1)) + '%'; d.textContent = '★'.repeat(k + 1); band.appendChild(d); });
     $('gnow').style.left = '0%'; $('gbar').style.width = '0%'; $('gres').textContent = '';
     $('hudTitle').textContent = T(g.title) + (game.level ? ' · ' + T('Challenge {k}', { k: game.level }) : '') ; $('hudGoal').textContent = ''; $('hudTip').textContent = ''; /* no goal text or tips above the box */
+    document.querySelector('.wrap').classList.toggle('speedrun', !!game.speed); if (game.speed) { $('hudGoal').textContent = T(game.speed.goal); $('hudTitle').textContent += ' · ⏱ ' + T('Speed run'); }
     $('ghud').hidden = false; document.querySelector('.wrap').classList.add('ingame'); $('gquit').textContent = T('Give up'); $('gagain').hidden = true;
     $('gstart').disabled = true; resize();
-    if (g.proto) protoStart(game); else { $('gtimeLab').textContent = T('Time left'); $('gstarsLab').textContent = T('Stars'); }
+    if (g.proto) protoStart(game); else { $('gtimeLab').textContent = T(game.speed ? 'Time' : 'Time left'); $('gstarsLab').textContent = T('Stars'); }
+    if (game.speed) speedHud(game); else $('gstars').className = 'gst';
     countdown(game); if (typeof sheet === 'function') sheet(false);
     if ($('guseMic').checked) setMode('mic').then(() => { if (!analyser && game) { setMode('slider'); $('gres').textContent = T('No microphone here: use the temperature slider.'); } });
     else setMode('slider');
@@ -192,9 +195,11 @@
     if (G.battle !== undefined && battle) { battleEnd(G); return; }
     if (G.g.proto) { protoEnd(G); return; }
     rewardStep(); // every finished game opens one more thing
+    if (G.speed) { speedEnd(G); return; }
     if (G.level) { ladderEnd(G); return; }
-    const g = G.g, v = G.peak, st = starsFor(g, v), b = getBest(g), rec = b === null || v > b, gi = GAMES.indexOf(g), wasOpen = gi + 1 < GAMES.length && isOpen(gi + 1); if (rec) setBest(g, v);
-    const opened = false, dg = tipsOn() ? diagnose(G, st) : '';
+    const g = G.g, v = G.peak, st = starsFor(g, v), b = getBest(g), rec = b === null || v > b, gi = GAMES.indexOf(g), wasOpen = gi + 1 < GAMES.length && isOpen(gi + 1); if (rec) { setBest(g, v); ghostSave(G); } /* the new best run becomes the ghost for next time */
+    const opened = false, dg = tipsOn() ? diagnose(G, st) : '', speedNew = SPEED[g.id] && st === 3 && !(b !== null && starsFor(g, b) === 3) && !unlockAll();
+    if (speedNew) { speedMode = false; try { localStorage.setItem('mdlab-fresh', 'speed'); } catch (e) {} }
     const card = st === 3 ? fcGive(FC_ALL.filter((c) => c.deck.game === g.id)) : null; // three stars: a new fact card, until the deck is complete
     const S = addStat(g, v);
     $('hudGoal').textContent = $('hudTip').textContent = ''; $('gagain').hidden = false;
@@ -205,7 +210,7 @@
       (st <= 1 && tipsOn() ? '<b>' + T('Tip:') + '</b> ' + T(g.hint) + ' ' : '') + (st === 3 ? T('Top score!') + ' ' + (card ? '<b>' + T('New card: {c}!', { c: T(card.t) }) + '</b> ' : T('You have all the cards of this game.') + ' ') : '') + T('Your average so far: {a} (games played: {n}).', { n: S.n, a: g.fmt(S.sum / S.n) });
     renderPick(); drawReplay(G);
     const nx = gi + 1 < GAMES.length && isOpen(gi + 1) ? GAMES[gi + 1] : null;
-    endScreen({ G, g, st, v, rec, best: b, card, extra: opened ? T('New game unlocked: {g}!', { g: T(GAMES[gi + 1].title) }) : '', tip: dg,
+    endScreen({ G, g, st, v, rec, best: b, card, extra: speedNew ? '⏱ ' + T('New: Speed run for this game! Reach the structure as fast as you can, with the numbers hidden.') : '', tip: dg,
       next: nx ? { label: T('Next: {g}', { g: T(nx.title) }), go: () => { selectGame(nx.id); startGame(); } } : null });
   }
   // the end of a game: a card over the box (the box behind it shows the best moment) with the stars filling in one by one, the score, and what to do next
@@ -213,15 +218,15 @@
   const gendOpen = () => !$('gend').hidden;
   function endScreen(o) {
     postGame = o.g.id; if (o.reward === undefined) { o.reward = lastReward; lastReward = null; } if (classOn || battle) { if (o.card) setTimeout(() => fcOpen(o.card, true), 2200); return; }
-    if (!o.g.proto && MACRO[o.g.id]) macroPlay(o, () => endCard(o)); else endCard(o); // first the result in real life, then the card
+    if (!o.g.proto && !o.noPic && MACRO[o.g.id]) macroPlay(o, () => endCard(o)); else endCard(o); // first the result in real life, then the card
   }
   function endCard(o) {
     if (classOn || battle || postGame !== o.g.id || game) return; const el = $('gend'), { G, g, st, v } = o;
     say(T('Game over: {n} of 3 stars, score {v}.', { n: st, v: g.fmt(v) }));
     $('gres').innerHTML = `<span class="gst">${'★'.repeat(st)}${'☆'.repeat(3 - st)}</span> <b>${g.fmt(v)}</b>${o.rec ? ' · ' + T('New personal best!') : ''}${G.level ? ' · ' + (st ? T('Cleared!') : T('Not cleared')) : ''}`; // one short line over the graph; the details are on the end card gendTimers.forEach(clearTimeout); gendTimers = [];
     el.style.left = cv.offsetLeft + 'px'; el.style.top = cv.offsetTop + 'px'; el.style.width = cv.offsetWidth + 'px'; el.style.height = cv.offsetHeight + 'px';
-    const head = T(g.title) + (G.level ? ' · ' + T('Challenge {k}', { k: G.level }) : '');
-    const pic = MACRO[g.id] && !g.proto ? (o.macroM || macroInfo(o)) : null; // the result in real life, in the same window as the stars
+    const head = T(g.title) + (G.level ? ' · ' + T('Challenge {k}', { k: G.level }) : '') + (o.speedRun ? ' · ⏱ ' + T('Speed run') : '');
+    const pic = MACRO[g.id] && !g.proto && !o.noPic ? (o.macroM || macroInfo(o)) : null; // the result in real life, in the same window as the stars
     if (pic) say(T(pic.info.t) + '. ' + T(pic.info.d));
     const msg = st === 3 ? T('Brilliant!') : st === 2 ? T('Great run!') : st === 1 ? T('Good start!') : T('So close: try again!');
     el.innerHTML = `<div class="gendcard${pic ? ' withpic' : ''}"><button class="gendx" aria-label="${T('Close')}">✕</button>
@@ -230,11 +235,10 @@
       ${pic ? `<p class="gendverdict"><b>${T(pic.info.t)}</b><span>${T(pic.info.d)}</span></p>` : `<p class="gendmsg">${msg}</p>`}<p class="gendscore"><b data-v>${g.fmt(0)}</b>${o.rec ? `<span class="pb">${T('New personal best!')}</span>` : o.best !== null && o.best !== undefined ? `<small>${T('best ever {b}', { b: g.fmt(Math.max(o.best, v)) })}</small>` : ''}</p>
       ${pic ? (o.extra ? `<p class="gendnote"><b>${o.extra}</b></p>` : '') : `<p class="gendnote">${g.proto ? '' : T('Behind this card: your best moment, at {s} s.', { s: Math.round(G.peakSec || 0) })}${o.extra ? ' <b>' + o.extra + '</b>' : ''}</p>`}
       ${o.reward ? `<p class="gendnew"><span aria-hidden="true">🎁</span> ${T('New: {x}!', { x: T(o.reward.name) })} <small>${T(o.reward.where)}</small></p>` : ''}
-      ${o.card ? `<p class="gendreal"><button class="btn" data-act="card"><span aria-hidden="true">🃏</span> ${T('You won a fact card: open it')}</button></p>` : ''}
       ${o.tip ? `<p class="gendtip">${o.tip}</p>` : ''}
       <div class="gendbtns"><button class="btn primary" data-act="again">${T('Try again')}</button>${o.next ? `<button class="btn" data-act="next">${o.next.label} ▸</button>` : ''}<button class="btn ghost" data-act="look">${T('Look at the box')}</button></div></div></div>`;
     el.hidden = false; el._next = o.next; el._o = o; syncBoxStart();
-    if (pic) { pic.snap = pic.snap || o.snap; macroStill(el.querySelector('.gendpic canvas'), pic); } // a new fact card waits behind its button, so the card can be read first
+    if (pic) { pic.snap = pic.snap || o.snap; macroStill(el.querySelector('.gendpic canvas'), pic); } // a new fact card opens in its own window when the end window is left
     const cd = el.querySelector('.gendcard'); if (cd.scrollIntoView) setTimeout(() => cd.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }), 60);
     const red = matchMedia('(prefers-reduced-motion: reduce)').matches, t0 = 450, bv = el.querySelector('[data-v]'), dur = red ? 0 : 900, ts = performance.now();
     const count = () => { const u = dur ? Math.min(1, (performance.now() - ts) / dur) : 1; bv.textContent = g.fmt(v * (1 - Math.pow(1 - u, 3))); if (u < 1 && !el.hidden) requestAnimationFrame(count); };
@@ -244,11 +248,14 @@
   }
   function gendClose() { macroStop(); $('gend').hidden = true; gendTimers.forEach(clearTimeout); syncBoxStart(); }
   $('gend').addEventListener('click', (e) => { const b = e.target.closest('[data-act], .gendx'); if (!b) return; const act = b.dataset.act, nx = $('gend')._next;
-    if (act === 'card') { const o = $('gend')._o; if (o && o.card) { fcOpen(o.card, true); o.card = null; b.closest('p').remove(); } return; } // the end card stays open
-    gendClose();
-    if (act === 'again') startGame(); else if (act === 'next' && nx) nx.go(); else if (act === 'macro' && $('gend')._o) { const o = $('gend')._o; o.reward = null; macroPlay(o, () => endCard(o)); } });
+    const o0 = $('gend')._o, cardNow = act !== 'macro' && o0 && o0.card ? o0.card : null; // a won fact card comes in its own window after the end window
+    if (cardNow) { o0.card = null; gendClose(); fcOpen(cardNow, true, () => gendAct(act, nx)); return; }
+    gendClose(); gendAct(act, nx); });
+  function gendAct(act, nx) {
+    if (act === 'again') startGame(); else if (act === 'next' && nx) nx.go(); else if (act === 'macro' && $('gend')._o) { const o = $('gend')._o; o.reward = null; macroPlay(o, () => endCard(o)); } }
   function gameUpdate(v) {
     if (game.g.proto) { protoUpdate(game, v); return; } // prototype games keep their own score, lives and levels
+    if (game.speed) { speedUpdate(game, v); return; } // speed run: only the clock and the molecules
     const G = game, g = G.g, now = eng.time, dt = now - G.last; G.last = now;
     G.ema = G.ema === null || g.raw ? v : G.ema + (1 - Math.exp(-dt / 2.0)) * (v - G.ema); // smooth over about 2 time units (raw: cumulative scores)
     const frac = Math.min(1, (now - G.t0) / g.D);
@@ -288,7 +295,7 @@
   // resuming after a game keeps the best structure as the starting point
   renderPick();
 
-  function closeHud() { gendClose(); postGame = null; $('ghud').hidden = true; if (coachReady) { coachHide(); $('greplay').hidden = true; } document.querySelector('.wrap').classList.remove('ingame'); resize(); }
+  function closeHud() { gendClose(); postGame = null; $('ghud').hidden = true; document.querySelector('.wrap').classList.remove('speedrun'); if (coachReady) { coachHide(); $('greplay').hidden = true; } document.querySelector('.wrap').classList.remove('ingame'); resize(); }
   $('gquit').addEventListener('click', () => { if (battle && coachReady) battleStop(); const was = !!game; endGame(null); if (was) { gameRange = null; applySysUI(); setT(tset); } closeHud(); });
   renderPick();
 

@@ -23,22 +23,24 @@ Requirements: Python 3, Node.js, Playwright for Python (`pip install playwright`
 | `src/app/02-microphone-sound.js` | Microphone level, set-up wizard, pitch → pressure, **sound effects** (`SFX`) |
 | `src/app/03-controls.js`, `04-switch-system.js` | Sliders, options, switching systems |
 | `src/app/05-games.js` | **The four games** (`GAMES`: goal, range, stars, scoring), game loop, end card, statistics |
+| `src/app/05b-speed-run.js` | **Speed run** for all four games, opened by 3 stars in that game: reach a target (`SPEED`: ice 75 %, separation 0.95, drug 80 %, gel 200 σ) as fast as possible, no time limit (the drug run ends early if the target can no longer be reached). The HUD shows the score now, the goal, the clock and the fastest time; the star band and green path are hidden. Finished when the score stays at the target for 1.5 s; best time `mdlab-speed-<game>`; 3 stars win a card from that game's speed deck |
 | `src/app/06-class-mode.js` | Class mode (projector) |
 | `src/app/07-help-tour.js` | Welcome card and help tour, including the intro story animation |
 | `src/app/08-phone-layout.js`, `09-app-modes.js` | Phone bottom sheet; Game / Explore / Energy scan switching |
 | `src/app/10-preview-film.js` | Goal preview film shown before a game |
 | `src/app/10b-rewards.js` | **Step-by-step opening**: a new player sees only the first game; each finished game opens the next item of `REWARDS` (games, Explore with Ice only, then each other Explore system one at a time, Energy scan, statistics; the microphone settings are always shown). *Teacher options → Unlock everything* opens all |
 | `src/app/11-coach-guide.js` | Temperature words, green band, coach line (guided game only), guided first lesson, replay graph |
-| `src/app/12-fact-cards.js` | Fact cards (30 cards in 5 decks) and the album |
+| `src/app/12-fact-cards.js` | Fact cards (54 cards in 9 decks: one per game, one per game's speed run, Explore) and the album |
 | `src/app/13-challenges.js`, `14-class-battle.js` | Challenges (5 levels per game) and class battles |
 | `src/app/15-energy-scan.js` | Energy scan mode |
-| `src/app/16-rendering.js`, `17-follow-molecule.js` | Drawing (smooth motion: the picture follows the molecules with a 0.07 s lag; option *Smooth motion*), adaptive quality, fitting the box to the screen (`fitSim`), follow-a-molecule |
+| `src/app/16-rendering.js`, `17-follow-molecule.js` | Drawing (smooth motion: the picture follows the molecules with a 0.07 s lag; option *Teacher options → Smooth motion*, kept as `mdlab-smooth`), adaptive quality, fitting the box to the screen (`fitSim`), follow-a-molecule |
 | `src/app/18-prototypes.js` | **Prototype games** (`PROTOS`: Micelle stream, Follow the line, Heat-wave survival): lives, combos, levels that speed up every 20 s, fixed seeds, floating score texts and screen shake. Shown with *Teacher options → Show prototype games* |
 | `src/app/19-accessibility.js` | Keyboard play (Space heats, arrows step), screen-reader announcements (`say()`), projector options (larger text, high contrast) |
 | `src/app/20-offline-privacy.js` | Privacy dialog, deleting saved data, install as app, download for offline use |
 | `src/app/20a-highlights.js` | Game highlights: a new piece of ice crystal (≥5 molecules frozen for good within 2 s, joined by hydrogen-bond neighbours) glows along its own bonds; a liquid domain glows only where it grows beyond its record size (not edge fluctuations); a gel path that beats its record gets a running spark |
 | `src/app/20b-macro-film.js` | After a game: zoom out from the box into a hand-drawn real-life picture chosen by the stars (ice cube or ice cream, glass of liquids, patient, gel/egg); the end card then shows that picture with the stars and the verdict in one window and stays open; a won fact card waits behind a button; `window.__macro(id, stars)` plays it for tests |
 | `src/app/20c-explore-scan.js` | Energy scan as an option inside Explore |
+| `src/app/20d-live-ghost.js` | The **ghost**: your best run in ice, liquids and gel (saved at a new personal best as `mdlab-ghost-<game>`) shown as 👻 on the score band at the same second. Off with *Race my best run* in the game options |
 | `src/app/21-main-loop.js` | Main loop, start-up, debug line (`?debug=1`) |
 | `src/i18n/fi.json`, `sv.json`, `ru.json` | Translations: English text → translated text |
 | `src/manifest.json` | Order of the `app/*.js` parts and the list of languages |
@@ -57,6 +59,8 @@ The `app/*.js` parts are plain slices of one script, joined in the order of `man
 - The Finnish and Swedish texts have not yet been reviewed by a native speaker.
 
 ## Things that have bitten before
+
+- **Browser form restoring.** On reload the browser may put back old checkbox states and shuffle them when new checkboxes are added; every checkbox has `autocomplete="off"` for this reason.
 
 - **`//` comments in one-line code.** Many lines hold several statements. A `// comment` added in the middle of such a line silently turns the rest of the line into a comment (this broke the heat-wave background and the challenge setup). Inside a line use `/* … */`; put `//` only at the true end of a line.
 - **Order of declarations.** Several parts read variables declared in later parts (`coachReady`, `game`, `battle` are declared early with `var` for this reason). Calling such a function during start-up before its `let`/`const` is reached gives a "Cannot access … before initialization" error; `tests/test_startup.py` catches it.
@@ -86,6 +90,7 @@ Set `MDLAB_PAGE=/path/to/file.html` to run the browser tests on another build.
 ## Tools (`tools/`)
 
 - `calibration/gamecal.js` – plays the ice, liquids or gel game headless with a fixed strategy: `node tools/calibration/gamecal.js ice path 1`.
+- `calibration/speedcal.js` – game seconds to reach a speed-run target with a fixed strategy (cX constant, rA_B_D ramp): `node tools/calibration/speedcal.js ice 0.47 r0.4_0_10 1`.
 - `calibration/drugch.js` – the drug challenge headless, with every parameter on the command line: `node tools/calibration/drugch.js k=3 s=follow hi=5 sq=1 spill=0.39 …`.
 - `calibration/drugcal.js`, `drugrel.js` – drug zone game and micelle release kinetics vs temperature: `node tools/calibration/drugrel.js 1.5 2.5`.
 - `proto_bot.py` – plays a prototype game in the browser with a human-like lag and saves screenshots: `python3 tools/proto_bot.py p-line`.

@@ -37,6 +37,7 @@
     const dots = (n, x0, y0, w, h, f, r = 3, seed = 3) => { let s = ''; for (let k = 0; k < n; k++) { const x = x0 + ((k * 73.13 + seed * 17) % w), y = y0 + ((k * 41.7 + seed * 29) % h); s += C(+x.toFixed(1), +y.toFixed(1), r, f); } return s; };
 
     // ---------- the cards ----------
+    const watch = (x, y, r) => R(x - 4, y - r - 7, 8, 6, 2, 'f-ink') + C(x, y, r, 'f-panel', '') + C(x, y, r, 'f-none', 'ln') + P(`M${x} ${y}L${x} ${y - r * 0.72}M${x} ${y}L${x + r * 0.5} ${y + r * 0.2}`, ''); // stopwatch, for the speed-run decks
     const DECKS = [
      { id: 'ice', cls: 'd-ice', name: 'Ice', game: 'ice', cards: [
       { t: 'Six arms', d: 'Almost every snowflake has six arms. The six-fold shape comes from the honeycomb that water molecules build in ice.',
@@ -139,6 +140,63 @@
           chain(coil(120, 62, 14, 10, 2)) + TX(120, 104, 'folded', 'mu') + arrow(140, 64, 154, 64) +
           chain([[170,60],[184,50],[196,62],[208,50],[220,64]], 'po') + P('M196 112c-10 -10 0 -22 0 -30c8 10 10 20 0 30z', 'ho') },
      ]},
+     // speed-run decks: won with three stars in the speed run of a game (field speed: game id)
+     { id: 'fice', cls: 'd-ice', name: 'Fast ice', speed: 'ice', cards: [
+      { t: 'Frozen in a flash', d: 'Berries and peas are frozen in a blast of very cold air. Fast freezing makes small ice crystals that tear the food’s cells less, so it keeps its shape.',
+        s: () => watch(40, 70, 22) + arrow(70, 70, 96, 70) + dots(18, 110, 40, 110, 60, 'f-ice', 4, 4) + TX(166, 124, 'many small crystals', 'mu') },
+      { t: 'Hailstones have rings', d: 'Cut a hailstone and you see clear and cloudy rings. Storm winds carry it up and down; it freezes slowly into clear ice and fast into cloudy ice.',
+        s: () => C(120, 70, 52, 'f-ice', 'co') + C(120, 70, 38, 'f-panel', 'mu') + C(120, 70, 24, 'f-ice', 'co') + C(120, 70, 11, 'f-panel', 'mu') + arrow(200, 110, 200, 30) + arrow(222, 30, 222, 110) },
+      { t: 'Ice in a second', d: 'Very still, pure water can be cooled below 0 °C without freezing. Knock the bottle and ice shoots through it in a second or two.',
+        s: () => R(40, 30, 50, 96, 10, 'f-w', 'co') + R(150, 30, 50, 96, 10, 'f-ice', 'co') + hexIce(156, 44, 3, 5, 12) + arrow(100, 78, 140, 78) + TX(120, 70, 'knock!', 'b') + thermo(18, 40, 60, 0.15, false, '') },
+      { t: 'Bacteria that make snow', d: 'Some bacteria carry proteins that help ice start at about −2 °C, much warmer than pure water needs. Snow cannons use them to make snow.',
+        s: () => blob(70, 72, 26, 'f-soft', 2, 'mu') + flake(70, 72, 14) + arrow(104, 72, 130, 72) + flake(170, 50, 18) + flake(204, 92, 14) + flake(156, 104, 10) },
+      { t: 'Freezing rain', d: 'Rain can fall through freezing air and stay liquid. It turns to ice the moment it hits a branch or a road, and covers everything in glassy ice.',
+        s: () => [[40,20],[70,34],[100,16],[130,30],[160,18],[190,32]].map(([x,y]) => P(`M${x} ${y - 7}q6 8 0 11q-6 -3 0 -11z`, 'co')).join('') + P('M20 96q60 -30 120 -6t100 -10', '') + P('M20 102q60 -30 120 -6t100 -10', 'co th') },
+      { t: 'Faster than crystals', d: 'Cool water fast enough, with a little antifreeze, and it becomes a glass instead of ice. Doctors freeze egg cells this way, so no crystals harm them.',
+        s: () => watch(40, 70, 22) + arrow(68, 70, 92, 70) + R(104, 34, 96, 72, 10, 'f-ice', 'co') + dots(30, 110, 40, 84, 60, 'f-w', 3, 7) + TX(152, 126, 'no crystals', 'mu') },
+     ]},
+     { id: 'fliq', cls: 'd-liq', name: 'Fast separation', speed: 'demix', cards: [
+      { t: 'Cream in seconds', d: 'Left alone, cream rises out of fresh milk in hours. A spinning separator does it in seconds: the spin pulls far harder than gravity.',
+        s: () => C(80, 70, 44, 'f-w', 'mu') + C(80, 70, 20, 'f-oil', '') + P('M80 18a52 52 0 0 1 46 28', 'mu') + arrow(118, 34, 126, 46) + watch(190, 70, 22) },
+      { t: 'Why homogenised milk stays mixed', d: 'Homogenised milk is pushed through tiny gaps that break its fat into very small droplets. Small droplets rise so slowly that cream hardly forms.',
+        s: () => R(30, 30, 70, 90, 8, 'f-w', 'mu') + C(50, 50, 10, 'f-oil') + C(76, 62, 13, 'f-oil') + arrow(108, 75, 132, 75) + R(140, 30, 70, 90, 8, 'f-w', 'mu') + dots(40, 146, 36, 58, 78, 'f-oil', 2.2, 5) },
+      { t: 'Twice as big takes eight times longer', d: 'When two liquids separate, the regions keep growing, but slower and slower. To make them twice as big you wait about eight times longer.',
+        s: () => [[40,14],[110,24],[190,36]].map(([x,r],k) => blob(x, 64, r, 'f-oil', k + 2, 'mu')).join('') + TX(40, 124, '1 s', 'mu') + TX(110, 124, '8 s', 'mu') + TX(190, 124, '64 s', 'mu') },
+      { t: 'Big drops eat small ones', d: 'In an emulsion, molecules slowly move from small drops to big ones, so the big drops grow and the small ones vanish. It is called Ostwald ripening.',
+        s: () => C(70, 70, 34, 'f-oil', 'mu') + C(150, 52, 10, 'f-oil', 'mu') + C(170, 96, 7, 'f-oil', 'mu') + arrow(140, 60, 108, 66) + arrow(162, 92, 104, 80) },
+      { t: 'Mayonnaise can break', d: 'Pour the oil into mayonnaise too fast and it breaks: the droplets merge and the oil separates. Added slowly, each drop is coated before the next one comes.',
+        s: () => C(70, 76, 40, 'f-soft', 'mu') + dots(22, 40, 48, 60, 56, 'f-oil', 3, 2) + arrow(118, 76, 140, 76) + C(180, 76, 40, 'f-soft', 'mu') + P('M142 66h76', 'mu') + R(142, 40, 76, 26, 6, 'f-oil') },
+      { t: 'Droplets in minutes', d: 'When a cell is stressed, for example by heat, some of its proteins and RNA separate into droplets within minutes. When the stress ends, the droplets dissolve.',
+        s: () => blob(120, 70, 58, 'f-w', 3, 'mu') + C(98, 60, 9, 'f-oil') + C(134, 86, 7, 'f-oil') + C(146, 52, 6, 'f-oil') + heat(196, 112, 3) },
+     ]},
+     { id: 'fsoap', cls: 'd-soap', name: 'Fast delivery', speed: 'drug', cards: [
+      { t: 'Round the body in a minute', d: 'At rest, your blood travels once round your whole body in about a minute. A drug carrier in the blood passes the tumour again and again.',
+        s: () => P('M120 26c-40 0 -70 20 -70 44s30 44 70 44s70 -20 70 -44s-30 -44 -70 -44z', 'ho') + arrow(186, 64, 188, 78, 'ho') + watch(120, 70, 20) },
+      { t: 'An invisibility coat', d: 'The immune system quickly removes foreign particles from the blood. A coat of a polymer called PEG hides drug carriers, so they circulate for days instead of hours.',
+        s: () => micelle(80, 70, 28, 12) + [0,30,60,90,120,150,180,210,240,270,300,330].map((a) => { const [x1,y1] = pt(80,70,30,a), [x2,y2] = pt(80,70,44,a); return P(`M${x1} ${y1}L${x2} ${y2}`, 'po'); }).join('') + TX(180, 74, 'days', 'b') },
+      { t: 'Leaky tumour vessels', d: 'Blood vessels in many tumours grow in a hurry and are leaky. Nanoparticles slip out there more easily than through the tight walls of healthy vessels.',
+        s: () => R(10, 50, 220, 40, 4, 'f-soft') + P('M10 50H90M120 50H150M180 50H230M10 90H230', '') + micelle(104, 70, 12, 8) + arrow(104, 46, 104, 22) + blob(104, 16, 12, 'f-hot', 2) },
+      { t: 'Too small gets lost', d: 'The kidneys quickly filter out particles smaller than about 5 nanometres. Drug carriers are made larger, so they stay in the blood longer.',
+        s: () => blob(70, 70, 40, 'f-soft', 4, 'mu') + dots(10, 50, 50, 40, 40, 'f-ink', 1.6, 3) + arrow(116, 70, 150, 70) + micelle(190, 70, 24, 10) },
+      { t: 'Released in seconds', d: 'Some heat-sensitive lipid bubbles release most of their drug within seconds when warmed to about 41–42 °C, so the drug comes out right where the tumour is heated.',
+        s: () => vesicle(70, 70, 34, 12) + heat(120, 92, 3) + arrow(160, 70, 186, 70) + dots(14, 194, 46, 36, 48, 'f-hot', 3, 6) },
+      { t: 'Diluted micelles fall apart', d: 'Micelles exist only above a certain concentration of soap molecules. Diluted in the blood, weak ones fall apart and lose their drug too early.',
+        s: () => micelle(60, 70, 26, 10) + arrow(98, 70, 126, 70) + [[150,40,30],[190,60,200],[160,100,120],[206,104,300],[214,32,60]].map(([x,y,a]) => amph(x, y, a, 10, 3)).join('') },
+     ]},
+     { id: 'fprot', cls: 'd-prot', name: 'Fast gel', speed: 'gel', cards: [
+      { t: 'White first, yolk later', d: 'Egg white starts to set at about 62 °C, the yolk at about 65 °C. A few degrees and a few minutes decide between runny and hard.',
+        s: () => blob(110, 74, 56, 'f-w', 5, 'mu') + C(120, 70, 22, 'f-oil', '') + thermo(206, 30, 70, 0.62, true, '') },
+      { t: 'A clot in minutes', d: 'When you cut yourself, a blood protein called fibrinogen is turned into fibrin, which forms a gel network within a few minutes. The clot plugs the wound.',
+        s: () => P('M20 60H220M20 90H220', '') + chain([[70,64],[96,84],[122,66],[146,86],[172,68]], 'po') + chain([[80,86],[110,66],[140,84],[166,64]], 'po') + watch(206, 34, 14) },
+      { t: 'Jelly needs hours', d: 'Gelatin jelly needs a few hours in the fridge to set firmly. The protein strands find their partners slowly, and the network keeps getting stronger.',
+        s: () => R(40, 40, 90, 80, 10, 'f-soft', 'mu') + chain(coil(85, 80, 28, 10, 2)) + watch(190, 70, 26) },
+      { t: 'Agar sets fast and melts late', d: 'Agar from seaweed sets into a gel at about 35 °C, but melts again only at about 85 °C. Cooks and laboratories like it for this reason.',
+        s: () => R(40, 46, 70, 60, 8, 'f-soft', 'mu') + thermo(150, 26, 70, 0.35, false, '35 °C') + thermo(206, 26, 70, 0.85, true, '') },
+      { t: 'Cheese in half an hour', d: 'Cheese makers add an enzyme called rennet to warm milk. It cuts the milk proteins so they link into a soft gel, the curd, in about half an hour.',
+        s: () => R(30, 40, 110, 80, 10, 'f-w', 'mu') + dots(20, 40, 60, 90, 50, 'f-soft', 6, 3) + arrow(150, 80, 176, 80) + watch(206, 80, 20) },
+      { t: 'Silk in an instant', d: 'Inside a spider, silk is a liquid protein solution. As the spider pulls it out, the proteins line up and link, and a solid thread forms in a fraction of a second.',
+        s: () => blob(60, 60, 30, 'f-soft', 3, 'mu') + P('M86 72Q140 90 230 120', 'po') + P('M100 80l8 -6M130 90l8 -6M160 100l8 -6', 'mu') },
+     ]},
     ];
 
     DECKS.forEach((dk) => dk.cards.forEach((c, i) => { c.id = dk.id + (i + 1); c.deck = dk; c.i = i; }));
@@ -153,6 +211,7 @@
     '<text x="50" y="59" text-anchor="middle" font-size="26" font-weight="700" fill="white" font-family="Instrument Sans, sans-serif">?</text></svg>';
   function fcHow(dk) {
     if (dk.game) return T('Three stars in “{g}” win a card.', { g: T(GAMES.find((g) => g.id === dk.game).title) });
+    if (dk.speed) return T('Three stars in the speed run of “{g}” win a card.', { g: T(GAMES.find((g) => g.id === dk.speed).title) });
     return T('In Explore, each minute with Plastic, Polymer chains or Oily particles wins a card of that system.');
   }
   function fcGive(pool) { // a random card from the pool that this browser does not have yet; null when the pool is complete
@@ -161,8 +220,9 @@
   }
   // the big card over the page: a new card flips over with stars; an album card just opens
   let fcShown = null;
-  function fcOpen(c, isNew) {
-    fcShown = [c, isNew]; const m = $('fcModal'), f = $('fcFlip'), b = $('fcBurst');
+  let fcAfter = null; // what to do when the card is closed
+  function fcOpen(c, isNew, after) {
+    fcShown = [c, isNew]; fcAfter = after || null; const m = $('fcModal'), f = $('fcFlip'), b = $('fcBurst');
     $('fcFront').innerHTML = fcFace(c); $('fcNew').textContent = isNew ? T('New card!') : ''; $('fcClose').textContent = T(isNew ? 'Add to my cards' : 'Close');
     m.hidden = false; f.classList.toggle('on', !isNew); b.innerHTML = '';
     if (isNew) setTimeout(() => { f.classList.add('on');
@@ -170,13 +230,13 @@
         return `<span style="--x:${(Math.cos(a) * d).toFixed(0)}px;--y:${(Math.sin(a) * d).toFixed(0)}px;animation-delay:${(0.35 + 0.05 * Math.random()).toFixed(2)}s">★</span>`; }).join(''); }, 350);
     $('fcClose').focus();
   }
-  function fcCloseModal() { $('fcModal').hidden = true; fcShown = null; }
+  function fcCloseModal() { $('fcModal').hidden = true; fcShown = null; const f = fcAfter; fcAfter = null; if (f) f(); }
   $('fcClose').addEventListener('click', fcCloseModal);
   $('fcModal').addEventListener('click', (e) => { if (e.target === $('fcModal')) fcCloseModal(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('fcModal').hidden) fcCloseModal(); });
   // the album, in place of the old "In everyday life" texts: the current system's deck first
   function renderAlbum() {
-    const own = fcOwned(), deckOf = (dk) => (dk.game ? GAMES.find((g) => g.id === dk.game).sys === sys : dk.cards.some((c) => c.sys === sys));
+    const own = fcOwned(), deckOf = (dk) => (dk.game || dk.speed ? GAMES.find((g) => g.id === (dk.game || dk.speed)).sys === sys : dk.cards.some((c) => c.sys === sys));
     const decks = FC.DECKS.slice().sort((a, b) => deckOf(b) - deckOf(a));
     $('albumCount').textContent = `${own.filter((id) => FC_ALL.some((c) => c.id === id)).length} / ${FC_ALL.length}`;
     $('album').innerHTML = decks.map((dk) => { const n = dk.cards.filter((c) => own.includes(c.id)).length;

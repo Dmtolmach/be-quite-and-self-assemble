@@ -90,7 +90,7 @@
     ru: { game: 'Игра', explore: 'Исследование', scan: 'Скан', opt: 'Настройки' } };
   function barLabels() { const t = BAR[LANG] || BAR.en; document.querySelectorAll('[data-bar]').forEach((el) => { el.textContent = t[el.dataset.bar]; }); }
   $('lang').addEventListener('change', (e) => setLang(e.target.value));
-  window.__eng = () => eng; window.__game = () => game; // for tests
+  window.__eng = () => eng; window.__game = () => game; window.__tset = () => tset; // for tests
   window.__i18nData = () => { const out = [];
     for (const S of Object.values(SYS)) { for (const k of ['concLab', 'plotLab', 'hl']) if (S[k]) out.push(S[k]); for (const [, tx] of S.legend || []) out.push(tx); }
     for (const g of GAMES) out.push(g.title, g.sub, g.goal, g.hint, g.lab, g.lesson.good, g.lesson.bad);

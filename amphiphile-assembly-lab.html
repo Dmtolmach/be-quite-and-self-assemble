@@ -458,6 +458,16 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
   .gend { position: fixed !important; left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; z-index: 200; padding: 12px 10px calc(12px + env(safe-area-inset-bottom)); place-items: start center; background: color-mix(in srgb, var(--bg) 80%, transparent) }
   .gendcard.withpic { grid-template-columns: 1fr; margin: auto 0 } }
 .gendcard.withpic .gendx { z-index: 3; background: var(--panel); border-radius: 50%; box-shadow: 0 1px 4px color-mix(in srgb, var(--ink) 25%, transparent) }
+
+/* ---- the ghost: your best run ---- */
+.ghostmark { position: absolute; z-index: 3; transform: translateX(-50%); pointer-events: none; text-decoration: none; line-height: 1 }
+.gband { position: relative } .gband .ghostmark { top: 50%; margin-top: -9px; font-size: 15px; opacity: .85 }
+
+/* ---- speed run: only the goal, the clock and the molecules ---- */
+.speedrun #szone, .speedrun .coach, .speedrun .gres, .speedrun #gbest { display: none !important }
+.speedrun .gband .tick.goal { white-space: nowrap; font-weight: 700; color: var(--ink) }
+.speedrun #hudGoal { display: block; margin-top: 4px; font-weight: 600 }
+.speedseg { margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr } .speedseg button small { display: block; font-weight: 400; font-size: 11.5px; color: var(--muted) }
 </style>
 
 <div class="wrap notranslate" data-sys="dumbbell" translate="no">
@@ -491,7 +501,7 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
           <div><span id="gpeakLab">Best this run</span><b id="gpeak">–</b></div>
           <div><span id="gstarsLab">Stars</span><b id="gstars" class="gst">☆☆☆</b></div>
         </div>
-        <div class="gband" id="gband" aria-hidden="true" title="Line: your score now. Marks: star levels"><div class="best" id="gbest"></div><div class="now" id="gnow"></div></div>
+        <div class="gband" id="gband" aria-hidden="true" title="Line: your score now. Marks: star levels"><div class="best" id="gbest"></div><div class="now" id="gnow"></div><div class="ghostmark" id="ghostS" hidden>👻</div></div>
         <div class="gbar" aria-hidden="true"><i id="gbar"></i></div>
         <p class="gres" id="gres" aria-live="polite"></p>
         <canvas class="greplay" id="greplay" hidden aria-label="Your run: temperature and score over time"></canvas>
@@ -511,7 +521,7 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
           <button class="btn" id="clsExit">Exit class mode</button></div>
         <div class="clsgame" id="clsGame" hidden>
           <select id="clsGameSel" aria-label="Game"></select>
-          <div class="clsteam"><label><input type="checkbox" id="clsTeams"> Team play</label><label>Teams <select id="clsTeamN"><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select></label></div>
+          <div class="clsteam"><label><input type="checkbox" autocomplete="off" id="clsTeams"> Team play</label><label>Teams <select id="clsTeamN"><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select></label></div>
           <button class="btn primary" id="clsStart">Start</button>
         </div>
         <p class="clsgoal" id="clsGoal">Everyone quiet: the box cools and structures grow. Noise heats it and breaks them.</p>
@@ -605,6 +615,7 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
       <div class="panel" id="gamePanel" data-mode="game">
         <h2>Game: steer the molecules with your voice</h2>
         <div class="gpick" id="gpick"></div>
+        <div class="seg speedseg" id="gspeed" role="group" aria-label="Kind of game" hidden></div>
         <div class="ladder" id="ladder"></div>
         <div class="protosec" id="protoSec" hidden><h3>Prototype games <small>for testing</small></h3><div class="gpick" id="ppick"></div><p class="note">Endless: lives, combos and levels that get faster. Same start every time.</p></div>
         <div class="gsel" id="gsel" hidden>
@@ -612,8 +623,9 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
           <p class="ghint" id="ghint"></p>
           <div class="btns">
             <button class="btn primary" id="gstart">Start</button>
-            <label class="gmic gopt"><input type="checkbox" id="guseMic" checked> Use the microphone</label>
-            <label class="gmic gopt"><input type="checkbox" id="gtips" checked> Show tips</label>
+            <label class="gmic gopt"><input type="checkbox" autocomplete="off" id="guseMic" checked> Use the microphone</label>
+            <label class="gmic gopt"><input type="checkbox" autocomplete="off" id="gtips" checked> Show tips</label>
+            <label class="gmic gopt"><input type="checkbox" autocomplete="off" id="gghostOn" checked> Race my best run</label>
           </div>
         </div>
       </div>
@@ -670,7 +682,7 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
         <div class="row" id="concRow"><label for="conc" id="concLab">Concentration</label><output id="concO">26%</output>
           <input type="range" id="conc" min="2" max="60" step="1" value="26"></div>
         <p class="note" id="concNote"></p>
-        <div class="checks dbgonly" data-show="ice"><label><input type="checkbox" id="iceWall"> Ice-like wall</label></div>
+        <div class="checks dbgonly" data-show="ice"><label><input type="checkbox" autocomplete="off" id="iceWall"> Ice-like wall</label></div>
         <p class="note dbgonly" data-show="ice">A pinned row of molecules across the box with the ice honeycomb pattern, binding water strongly, like a mineral surface. Ice can grow from its flat faces without first having to form a nucleus. Changes apply live.</p>
 
         <div class="row" data-show="dumbbell"><label for="epsBB">Tail–tail attraction ε<sub>BB</sub></label><output id="epsBBO">2.50</output>
@@ -720,7 +732,7 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
           <p class="note" id="seqNote">Letters H and P only, 3–60 beads. Applying rebuilds the system.</p>
         </div>
 
-        <div class="checks" data-show="brush"><label><input type="checkbox" id="bInvert"> Swap colours: teal beads at the chain ends, orange in the middle (rebuilds)</label></div>
+        <div class="checks" data-show="brush"><label><input type="checkbox" autocomplete="off" id="bInvert"> Swap colours: teal beads at the chain ends, orange in the middle (rebuilds)</label></div>
         <div class="row" data-show="brush"><label for="graft">Grafting spacing, σ (larger = sparser; rebuilds on release)</label><output id="graftO">1.6</output>
           <input type="range" id="graft" min="1.2" max="3" step="0.1" value="1.6"></div>
         <div class="row" data-show="brush"><label for="nEnd">End beads per chain (orange, or teal when swapped; rebuilds on release)</label><output id="nEndO">2</output>
@@ -735,14 +747,14 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
           <input type="range" id="epsHL" min="0" max="2" step="0.05" value="0.2"></div>
         <div class="row" data-show="plates"><label for="plateKind">Plate surface</label>
           <select id="plateKind"><option value="0">Water-fearing (no attraction to water)</option><option value="0.3">Water-attracting (pulls on water)</option><option value="hb" selected>Hydrogen-bonding (bonds to water)</option></select></div>
-        <div class="checks" data-show="plates"><label><input type="checkbox" id="plateCompare" checked> Side by side: water-fearing plates on the left, this surface on the right</label></div>
-        <div class="checks" data-show="plates"><label><input type="checkbox" id="plateHold" checked> Hold the plates in place (untick to release them)</label></div>
+        <div class="checks" data-show="plates"><label><input type="checkbox" autocomplete="off" id="plateCompare" checked> Side by side: water-fearing plates on the left, this surface on the right</label></div>
+        <div class="checks" data-show="plates"><label><input type="checkbox" autocomplete="off" id="plateHold" checked> Hold the plates in place (untick to release them)</label></div>
         <p class="note" data-show="plates">Watch the gap while the plates are held, then release them. The surface can be switched while it runs.</p>
         <div class="row" data-show="plates"><label for="plateGap">Start gap</label>
           <select id="plateGap"><option value="2.2" selected>One water layer</option><option value="3.2">Two water layers</option></select></div>
         <div class="row" data-show="plates"><label for="plateLen">Plate length (beads)</label><output id="plateLenO">12</output>
           <input type="range" id="plateLen" min="6" max="18" step="1" value="12"></div>
-        <div class="checks" data-show="mbpoly plates"><label><input type="checkbox" id="mbHB" checked> Water hydrogen bonds on (turn off for the control: plain LJ water)</label></div>
+        <div class="checks" data-show="mbpoly plates"><label><input type="checkbox" autocomplete="off" id="mbHB" checked> Water hydrogen bonds on (turn off for the control: plain LJ water)</label></div>
         <p class="note" data-show="mbpoly">Chain length 1 (default) gives free nonpolar solutes; longer lengths give one or more chains of the same beads.</p>
       </details>
 
@@ -754,11 +766,11 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
           <input type="range" id="gamma" min="0.05" max="5" step="0.05" value="1"></div>
         <div class="row" id="tauRow" hidden><label for="tau">Coupling time τ<sub>T</sub></label><output id="tauO">0.50</output>
           <input type="range" id="tau" min="0.05" max="5" step="0.05" value="0.5"></div>
-        <div class="checks" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice"><label><input type="checkbox" id="baro"> Constant pressure (barostat): the box grows or shrinks to hold the pressure</label></div>
+        <div class="checks" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice"><label><input type="checkbox" autocomplete="off" id="baro"> Constant pressure (barostat): the box grows or shrinks to hold the pressure</label></div>
         <div class="row" id="p0Row" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice" hidden><label for="p0">Target pressure P*</label><output id="p0O">1.00</output>
           <input type="range" id="p0" min="0" max="4" step="0.01" value="1"></div>
         <p class="note" id="baroNote" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice" hidden></p>
-        <div class="checks" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice"><label><input type="checkbox" id="pitchP"> Voice pitch sets the pressure</label></div>
+        <div class="checks" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice"><label><input type="checkbox" autocomplete="off" id="pitchP"> Voice pitch sets the pressure</label></div>
         <div class="pitchtune" id="pitchTune" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice" hidden>
           <div class="row"><label for="pLo">Lowest note: pressure 0</label><select id="pLo"></select><button class="btn" id="pLoSing">Sing it</button></div>
           <div class="row"><label for="pHi">Highest note: top pressure</label><select id="pHi"></select><button class="btn" id="pHiSing">Sing it</button></div>
@@ -767,7 +779,7 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
         <p class="note" data-show="ice">In ice, higher pressure lowers the freezing point, as in real water.</p>
         <div class="row"><label for="spf">MD steps per frame</label><output id="spfO">12</output>
           <input type="range" id="spf" min="1" max="60" step="1" value="12"></div>
-        <div class="checks"><label><input type="checkbox" id="autoSpf" checked> Adjust steps per frame automatically to keep the animation smooth</label></div>
+        <div class="checks"><label><input type="checkbox" autocomplete="off" id="autoSpf" checked> Adjust steps per frame automatically to keep the animation smooth</label></div>
       </details>
 
       <details class="panel" data-mode="explore">
@@ -778,11 +790,10 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
           <select id="initState"><option value="ordered" selected>Ordered (cold equilibrium)</option><option value="disordered">Disordered (hot)</option></select></div>
         <div class="btns"><button class="btn primary" id="reset">Rebuild system</button></div>
         <div class="checks">
-          <label data-show="dumbbell polymer diblock hp crypt lcst mbpoly plates"><input type="checkbox" id="showSolv" checked> Show solvent</label>
-          <label data-show="mbpoly plates"><input type="checkbox" id="showShell" checked> Highlight hydration-shell water</label>
-          <label data-show="dumbbell polymer mbpoly ice crypt"><input type="checkbox" id="byCluster"> <span id="byClusterLab">Color by micelle</span></label>
-          <label data-show="dumbbell polymer diblock hp crypt lcst mbpoly"><input type="checkbox" id="showBonds" checked> Show bonds</label>
-          <label><input type="checkbox" id="smooth" checked> Smooth motion</label>
+          <label data-show="dumbbell polymer diblock hp crypt lcst mbpoly plates"><input type="checkbox" autocomplete="off" id="showSolv" checked> Show solvent</label>
+          <label data-show="mbpoly plates"><input type="checkbox" autocomplete="off" id="showShell" checked> Highlight hydration-shell water</label>
+          <label data-show="dumbbell polymer mbpoly ice crypt"><input type="checkbox" autocomplete="off" id="byCluster"> <span id="byClusterLab">Color by micelle</span></label>
+          <label data-show="dumbbell polymer diblock hp crypt lcst mbpoly"><input type="checkbox" autocomplete="off" id="showBonds" checked> Show bonds</label>
         </div>
       </details>
     </div>
@@ -805,12 +816,14 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
             <div class="row qrow"><label for="quality">Drawing quality</label>
           <select id="quality"><option value="auto" selected>Automatic (lighter on slow devices)</option><option value="0">Full</option><option value="1">Lighter</option><option value="2">Light</option><option value="3">Lightest</option></select></div>
             <p class="note">For slow computers or projectors: lighter drawing keeps the simulation smooth.</p>
+            <div class="checks"><label><input type="checkbox" autocomplete="off" id="smooth" checked> Smooth motion</label></div>
+            <p class="note">Molecules glide between frames instead of jumping. Only the picture changes, not the simulation. Kept in this browser.</p>
             <div class="btns"><button class="btn" id="gunlock">Unlock all games</button><button class="btn" id="ladUnlock">Unlock all challenges</button></div>
             <p class="note">For this browser only. Press again to lock.</p>
         <div class="gproto"><h3>Prototype games</h3><p class="note">New game ideas to try with a class before they become real games.</p><button class="btn" id="protoToggle">Show prototype games</button></div>
         <div class="gdisp">
           <h3>Projector and accessibility</h3>
-          <div class="checks"><label><input type="checkbox" id="optBig"> Larger text</label><label><input type="checkbox" id="optHi"> High contrast</label></div>
+          <div class="checks"><label><input type="checkbox" autocomplete="off" id="optBig"> Larger text</label><label><input type="checkbox" autocomplete="off" id="optHi"> High contrast</label></div>
           <p class="note">Kept in this browser. Keyboard play works everywhere: hold Space to heat, arrow keys to set the temperature.</p>
         </div>
         <div class="gofl">
@@ -3024,7 +3037,98 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "You won a fact card: open it": "Voitit tietokortin: avaa se",
   "Try ice freely in the Explore tab; more systems open as you play.": "Kokeile jäätä vapaasti Tutki-välilehdellä; lisää järjestelmiä avautuu pelatessa.",
   "A new system to explore.": "Uusi järjestelmä tutkittavaksi.",
-  "Skip ▸": "Ohita ▸"
+  "Skip ▸": "Ohita ▸",
+  "Still liquid water": "Yhä nestemäistä vettä",
+  "It stayed too warm most of the time, so the molecules never had time to build crystals.": "Oli suurimman osan ajasta liian lämmintä, joten molekyylit eivät ehtineet rakentaa kiteitä.",
+  "Molecules glide between frames instead of jumping. Only the picture changes, not the simulation. Kept in this browser.": "Molekyylit liukuvat kuvien välillä hyppimättä. Vain kuva muuttuu, ei simulaatio. Säilyy tässä selaimessa.",
+  "Real-life picture": "Kuva oikeasta elämästä",
+  "Race my best run": "Kilpaile parasta peliäsi vastaan",
+  "Race your best run": "Kilpaile parasta peliäsi vastaan",
+  "The ghost 👻 shows your best game ({v}): its temperature on the temperature bar and its score on the score bar. Beat it!": "Haamu 👻 näyttää parhaan pelisi ({v}): sen lämpötilan lämpötilapalkissa ja pisteet pistepalkissa. Voita se!",
+  "Ahead of your best run by {d}": "Edellä parasta peliäsi {d}",
+  "Behind your best run by {d}": "Jäljessä parhaasta pelistäsi {d}",
+  "Level with your best run": "Tasoissa parhaan pelisi kanssa",
+  "best run: temperature {t} now": "paras peli: lämpötila nyt {t}",
+  "best run": "paras peli",
+  "👻 best run": "👻 paras peli",
+  "Waiting for the drug": "Odottaa lääkettä",
+  "Your result in real life, right now. Tap to fold.": "Tuloksesi oikeassa elämässä juuri nyt. Napauta pienentääksesi.",
+  "Your best run": "Paras pelisi",
+  "<b>👻 best run</b>": "<b>👻 paras peli</b>",
+  "Freeze about half of the water into ice: it turns blue. As fast as you can!": "Jäädytä noin puolet vedestä jääksi: se muuttuu siniseksi. Niin nopeasti kuin voit!",
+  "Separate the two liquids into big regions of their own colour. As fast as you can!": "Erota kaksi nestettä suuriksi omanvärisiksi alueiksi. Niin nopeasti kuin voit!",
+  "Link the proteins into one long gel strand (the red line). As fast as you can!": "Liitä proteiinit yhdeksi pitkäksi geeliketjuksi (punainen viiva). Niin nopeasti kuin voit!",
+  "Classic: 30 s": "Klassinen: 30 s",
+  "Speed run": "Nopeusajo",
+  "fastest {t}": "nopein {t}",
+  "Not reached in {n} s: watch the molecules and steer them there.": "Ei saavutettu {n} sekunnissa: katso molekyylejä ja ohjaa ne perille.",
+  "Your fastest: {t}": "Nopein aikasi: {t}",
+  "Stars: under {a} s ★★★, under {b} s ★★.": "Tähdet: alle {a} s ★★★, alle {b} s ★★.",
+  "New: Speed run for this game! Reach the structure as fast as you can, with the numbers hidden.": "Uutta: nopeusajo tähän peliin! Saavuta rakenne niin nopeasti kuin voit, numerot piilotettuina.",
+  "Kind of game": "Pelin tyyppi",
+  "Fast ice": "Nopea jää",
+  "Fast separation": "Nopea erottuminen",
+  "Fast delivery": "Nopea kuljetus",
+  "Fast gel": "Nopea geeli",
+  "Three stars in the speed run of “{g}” win a card.": "Kolme tähteä pelin ”{g}” nopeusajossa voittaa kortin.",
+  "now": "nyt",
+  "Goal": "Tavoite",
+  "Fastest": "Nopein",
+  "Freeze the water into ice: it turns blue. As fast as you can!": "Jäädytä vesi jääksi: se muuttuu siniseksi. Niin nopeasti kuin voit!",
+  "Release the drug only in the red windows. As fast as you can!": "Vapauta lääke vain punaisissa ikkunoissa. Niin nopeasti kuin voit!",
+  "many small crystals": "monta pientä kidettä",
+  "knock!": "kop!",
+  "no crystals": "ei kiteitä",
+  "days": "päiviä",
+  "Frozen in a flash": "Jäädytetty hetkessä",
+  "Berries and peas are frozen in a blast of very cold air. Fast freezing makes small ice crystals that tear the food’s cells less, so it keeps its shape.": "Marjat ja herneet jäädytetään erittäin kylmällä ilmapuhalluksella. Nopea jäätyminen tekee pieniä jääkiteitä, jotka rikkovat ruoan soluja vähemmän, joten se säilyttää muotonsa.",
+  "Hailstones have rings": "Rakeissa on renkaita",
+  "Cut a hailstone and you see clear and cloudy rings. Storm winds carry it up and down; it freezes slowly into clear ice and fast into cloudy ice.": "Leikkaa rae, niin näet kirkkaita ja sameita renkaita. Myrskytuulet kuljettavat sitä ylös ja alas; hitaasti se jäätyy kirkkaaksi jääksi, nopeasti sameaksi.",
+  "Ice in a second": "Jäätä sekunnissa",
+  "Very still, pure water can be cooled below 0 °C without freezing. Knock the bottle and ice shoots through it in a second or two.": "Hyvin liikkumaton, puhdas vesi voidaan jäähdyttää alle 0 °C:n jäätymättä. Kopauta pulloa, niin jää leviää sen läpi sekunnissa tai kahdessa.",
+  "Bacteria that make snow": "Bakteerit, jotka tekevät lunta",
+  "Some bacteria carry proteins that help ice start at about −2 °C, much warmer than pure water needs. Snow cannons use them to make snow.": "Joillakin bakteereilla on proteiineja, jotka auttavat jäätä syntymään noin −2 °C:ssa, paljon lämpimämmässä kuin puhdas vesi vaatii. Lumitykit käyttävät niitä lumen tekemiseen.",
+  "Freezing rain": "Jäätävä sade",
+  "Rain can fall through freezing air and stay liquid. It turns to ice the moment it hits a branch or a road, and covers everything in glassy ice.": "Sade voi pudota pakkasilman läpi ja pysyä nestemäisenä. Se muuttuu jääksi heti osuessaan oksaan tai tiehen ja peittää kaiken lasimaiseen jäähän.",
+  "Faster than crystals": "Nopeammin kuin kiteet",
+  "Cool water fast enough, with a little antifreeze, and it becomes a glass instead of ice. Doctors freeze egg cells this way, so no crystals harm them.": "Jäähdytä vesi tarpeeksi nopeasti pienen pakkasnesteen kanssa, niin siitä tulee lasia eikä jäätä. Lääkärit pakastavat munasoluja näin, jotta kiteet eivät vahingoita niitä.",
+  "Cream in seconds": "Kermaa sekunneissa",
+  "Left alone, cream rises out of fresh milk in hours. A spinning separator does it in seconds: the spin pulls far harder than gravity.": "Itsekseen kerma nousee tuoreesta maidosta tunneissa. Pyörivä separaattori tekee sen sekunneissa: pyöriminen vetää paljon painovoimaa voimakkaammin.",
+  "Why homogenised milk stays mixed": "Miksi homogenoitu maito pysyy sekoittuneena",
+  "Homogenised milk is pushed through tiny gaps that break its fat into very small droplets. Small droplets rise so slowly that cream hardly forms.": "Homogenoitu maito puristetaan pienten rakojen läpi, jotka hajottavat sen rasvan hyvin pieniksi pisaroiksi. Pienet pisarat nousevat niin hitaasti, että kermaa tuskin muodostuu.",
+  "Twice as big takes eight times longer": "Kaksi kertaa isompi vie kahdeksan kertaa kauemmin",
+  "When two liquids separate, the regions keep growing, but slower and slower. To make them twice as big you wait about eight times longer.": "Kun kaksi nestettä erottuu, alueet kasvavat yhä, mutta yhä hitaammin. Jotta ne kasvaisivat kaksi kertaa isommiksi, pitää odottaa noin kahdeksan kertaa kauemmin.",
+  "Big drops eat small ones": "Isot pisarat syövät pienet",
+  "In an emulsion, molecules slowly move from small drops to big ones, so the big drops grow and the small ones vanish. It is called Ostwald ripening.": "Emulsiossa molekyylit siirtyvät hitaasti pienistä pisaroista isoihin, joten isot kasvavat ja pienet katoavat. Ilmiötä kutsutaan Ostwald-kypsymiseksi.",
+  "Mayonnaise can break": "Majoneesi voi juoksettua",
+  "Pour the oil into mayonnaise too fast and it breaks: the droplets merge and the oil separates. Added slowly, each drop is coated before the next one comes.": "Kaada öljy majoneesiin liian nopeasti, niin se juoksettuu: pisarat yhdistyvät ja öljy erottuu. Hitaasti lisättynä jokainen pisara päällystyy ennen seuraavaa.",
+  "Droplets in minutes": "Pisaroita minuuteissa",
+  "When a cell is stressed, for example by heat, some of its proteins and RNA separate into droplets within minutes. When the stress ends, the droplets dissolve.": "Kun solu joutuu stressiin, esimerkiksi kuumuuden takia, osa sen proteiineista ja RNA:sta erottuu pisaroiksi minuuteissa. Kun stressi päättyy, pisarat liukenevat.",
+  "Round the body in a minute": "Kehon ympäri minuutissa",
+  "At rest, your blood travels once round your whole body in about a minute. A drug carrier in the blood passes the tumour again and again.": "Levossa veresi kiertää koko kehon ympäri noin minuutissa. Veressä oleva lääkkeen kuljettaja ohittaa kasvaimen yhä uudelleen.",
+  "An invisibility coat": "Näkymättömyysviitta",
+  "The immune system quickly removes foreign particles from the blood. A coat of a polymer called PEG hides drug carriers, so they circulate for days instead of hours.": "Immuunijärjestelmä poistaa vieraat hiukkaset verestä nopeasti. PEG-nimisen polymeerin kuori piilottaa lääkkeen kuljettajat, joten ne kiertävät päiviä eivätkä tunteja.",
+  "Leaky tumour vessels": "Vuotavat kasvainsuonet",
+  "Blood vessels in many tumours grow in a hurry and are leaky. Nanoparticles slip out there more easily than through the tight walls of healthy vessels.": "Monien kasvainten verisuonet kasvavat kiireessä ja vuotavat. Nanohiukkaset pääsevät niistä ulos helpommin kuin terveiden suonten tiiviiden seinämien läpi.",
+  "Too small gets lost": "Liian pieni katoaa",
+  "The kidneys quickly filter out particles smaller than about 5 nanometres. Drug carriers are made larger, so they stay in the blood longer.": "Munuaiset suodattavat nopeasti pois alle noin 5 nanometrin hiukkaset. Lääkkeen kuljettajat tehdään isommiksi, jotta ne pysyvät veressä kauemmin.",
+  "Released in seconds": "Vapautuu sekunneissa",
+  "Some heat-sensitive lipid bubbles release most of their drug within seconds when warmed to about 41–42 °C, so the drug comes out right where the tumour is heated.": "Jotkin lämpöherkät lipidikuplat vapauttavat suurimman osan lääkkeestään sekunneissa, kun ne lämmitetään noin 41–42 °C:seen, joten lääke tulee ulos juuri siellä, missä kasvainta lämmitetään.",
+  "Diluted micelles fall apart": "Laimennetut misellit hajoavat",
+  "Micelles exist only above a certain concentration of soap molecules. Diluted in the blood, weak ones fall apart and lose their drug too early.": "Misellejä on vain tietyn saippuamolekyylipitoisuuden yläpuolella. Veressä laimentuneina heikot misellit hajoavat ja menettävät lääkkeensä liian aikaisin.",
+  "White first, yolk later": "Ensin valkuainen, sitten keltuainen",
+  "Egg white starts to set at about 62 °C, the yolk at about 65 °C. A few degrees and a few minutes decide between runny and hard.": "Munanvalkuainen alkaa hyytyä noin 62 °C:ssa, keltuainen noin 65 °C:ssa. Muutama aste ja muutama minuutti ratkaisevat, onko muna löysä vai kova.",
+  "A clot in minutes": "Hyytymä minuuteissa",
+  "When you cut yourself, a blood protein called fibrinogen is turned into fibrin, which forms a gel network within a few minutes. The clot plugs the wound.": "Kun haavoitat itsesi, fibrinogeeni-niminen veren proteiini muuttuu fibriiniksi, joka muodostaa geeliverkon muutamassa minuutissa. Hyytymä tukkii haavan.",
+  "Jelly needs hours": "Hyytelö vaatii tunteja",
+  "Gelatin jelly needs a few hours in the fridge to set firmly. The protein strands find their partners slowly, and the network keeps getting stronger.": "Liivatehyytelö tarvitsee jääkaapissa muutaman tunnin hyytyäkseen kunnolla. Proteiiniketjut löytävät parinsa hitaasti, ja verkko vahvistuu koko ajan.",
+  "Agar sets fast and melts late": "Agar hyytyy nopeasti ja sulaa myöhään",
+  "Agar from seaweed sets into a gel at about 35 °C, but melts again only at about 85 °C. Cooks and laboratories like it for this reason.": "Merilevästä saatava agar hyytyy geeliksi noin 35 °C:ssa, mutta sulaa uudelleen vasta noin 85 °C:ssa. Siksi kokit ja laboratoriot pitävät siitä.",
+  "Cheese in half an hour": "Juustoa puolessa tunnissa",
+  "Cheese makers add an enzyme called rennet to warm milk. It cuts the milk proteins so they link into a soft gel, the curd, in about half an hour.": "Juustontekijät lisäävät lämpimään maitoon juoksete-nimistä entsyymiä. Se pilkkoo maidon proteiineja niin, että ne liittyvät pehmeäksi geeliksi, juustomassaksi, noin puolessa tunnissa.",
+  "Silk in an instant": "Silkkiä hetkessä",
+  "Inside a spider, silk is a liquid protein solution. As the spider pulls it out, the proteins line up and link, and a solid thread forms in a fraction of a second.": "Hämähäkin sisällä silkki on nestemäistä proteiiniliuosta. Kun hämähäkki vetää sen ulos, proteiinit asettuvat riviin ja liittyvät yhteen, ja kiinteä lanka syntyy sekunnin murto-osassa.",
+  "Too much drug was released outside the red windows: {n} can no longer be reached.": "Liikaa lääkettä vapautui punaisten ikkunoiden ulkopuolella: tavoitetta {n} ei voi enää saavuttaa."
  },
  "sv": {
   "Cleared!": "Klarat!",
@@ -4008,7 +4112,98 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "You won a fact card: open it": "Du vann ett faktakort: öppna det",
   "Try ice freely in the Explore tab; more systems open as you play.": "Prova is fritt under fliken Utforska; fler system öppnas medan du spelar.",
   "A new system to explore.": "Ett nytt system att utforska.",
-  "Skip ▸": "Hoppa över ▸"
+  "Skip ▸": "Hoppa över ▸",
+  "Still liquid water": "Fortfarande flytande vatten",
+  "It stayed too warm most of the time, so the molecules never had time to build crystals.": "Det var för varmt nästan hela tiden, så molekylerna hann aldrig bygga kristaller.",
+  "Molecules glide between frames instead of jumping. Only the picture changes, not the simulation. Kept in this browser.": "Molekylerna glider mellan bilderna i stället för att hoppa. Bara bilden ändras, inte simuleringen. Sparas i den här webbläsaren.",
+  "Real-life picture": "Bild från verkligheten",
+  "Race my best run": "Tävla mot ditt bästa spel",
+  "Race your best run": "Tävla mot ditt bästa spel",
+  "The ghost 👻 shows your best game ({v}): its temperature on the temperature bar and its score on the score bar. Beat it!": "Spöket 👻 visar ditt bästa spel ({v}): dess temperatur på temperaturreglaget och dess poäng på poängstapeln. Slå det!",
+  "Ahead of your best run by {d}": "Före ditt bästa spel med {d}",
+  "Behind your best run by {d}": "Efter ditt bästa spel med {d}",
+  "Level with your best run": "Lika med ditt bästa spel",
+  "best run: temperature {t} now": "bästa spelet: temperatur {t} nu",
+  "best run": "bästa spelet",
+  "👻 best run": "👻 bästa spelet",
+  "Waiting for the drug": "Väntar på läkemedlet",
+  "Your result in real life, right now. Tap to fold.": "Ditt resultat i verkligheten just nu. Tryck för att fälla ihop.",
+  "Your best run": "Ditt bästa spel",
+  "<b>👻 best run</b>": "<b>👻 bästa spelet</b>",
+  "Freeze about half of the water into ice: it turns blue. As fast as you can!": "Frys ungefär hälften av vattnet till is: den blir blå. Så snabbt du kan!",
+  "Separate the two liquids into big regions of their own colour. As fast as you can!": "Dela upp de två vätskorna i stora områden med sin egen färg. Så snabbt du kan!",
+  "Link the proteins into one long gel strand (the red line). As fast as you can!": "Länka proteinerna till en lång gelsträng (den röda linjen). Så snabbt du kan!",
+  "Classic: 30 s": "Klassiskt: 30 s",
+  "Speed run": "Speedrun",
+  "fastest {t}": "snabbast {t}",
+  "Not reached in {n} s: watch the molecules and steer them there.": "Nåddes inte på {n} s: titta på molekylerna och styr dem dit.",
+  "Your fastest: {t}": "Din snabbaste: {t}",
+  "Stars: under {a} s ★★★, under {b} s ★★.": "Stjärnor: under {a} s ★★★, under {b} s ★★.",
+  "New: Speed run for this game! Reach the structure as fast as you can, with the numbers hidden.": "Nytt: speedrun för det här spelet! Nå strukturen så snabbt du kan, med siffrorna dolda.",
+  "Kind of game": "Typ av spel",
+  "Fast ice": "Snabb is",
+  "Fast separation": "Snabb separation",
+  "Fast delivery": "Snabb leverans",
+  "Fast gel": "Snabb gel",
+  "Three stars in the speed run of “{g}” win a card.": "Tre stjärnor i speedrun av ”{g}” vinner ett kort.",
+  "now": "nu",
+  "Goal": "Mål",
+  "Fastest": "Snabbast",
+  "Freeze the water into ice: it turns blue. As fast as you can!": "Frys vattnet till is: den blir blå. Så snabbt du kan!",
+  "Release the drug only in the red windows. As fast as you can!": "Släpp ut läkemedlet bara i de röda fönstren. Så snabbt du kan!",
+  "many small crystals": "många små kristaller",
+  "knock!": "knack!",
+  "no crystals": "inga kristaller",
+  "days": "dagar",
+  "Frozen in a flash": "Fryst på ett ögonblick",
+  "Berries and peas are frozen in a blast of very cold air. Fast freezing makes small ice crystals that tear the food’s cells less, so it keeps its shape.": "Bär och ärter fryses i en ström av mycket kall luft. Snabb frysning ger små iskristaller som skadar matens celler mindre, så den behåller formen.",
+  "Hailstones have rings": "Hagelkorn har ringar",
+  "Cut a hailstone and you see clear and cloudy rings. Storm winds carry it up and down; it freezes slowly into clear ice and fast into cloudy ice.": "Skär itu ett hagelkorn så ser du klara och grumliga ringar. Stormvindar bär det upp och ner; långsamt fryser det till klar is och snabbt till grumlig is.",
+  "Ice in a second": "Is på en sekund",
+  "Very still, pure water can be cooled below 0 °C without freezing. Knock the bottle and ice shoots through it in a second or two.": "Mycket stilla, rent vatten kan kylas under 0 °C utan att frysa. Knacka på flaskan så skjuter isen genom den på en sekund eller två.",
+  "Bacteria that make snow": "Bakterier som gör snö",
+  "Some bacteria carry proteins that help ice start at about −2 °C, much warmer than pure water needs. Snow cannons use them to make snow.": "Vissa bakterier har proteiner som hjälper isen att börja bildas vid cirka −2 °C, mycket varmare än rent vatten behöver. Snökanoner använder dem för att göra snö.",
+  "Freezing rain": "Underkylt regn",
+  "Rain can fall through freezing air and stay liquid. It turns to ice the moment it hits a branch or a road, and covers everything in glassy ice.": "Regn kan falla genom minusgrader och förbli flytande. Det blir is i samma stund som det träffar en gren eller en väg och täcker allt med glasartad is.",
+  "Faster than crystals": "Snabbare än kristaller",
+  "Cool water fast enough, with a little antifreeze, and it becomes a glass instead of ice. Doctors freeze egg cells this way, so no crystals harm them.": "Kyl vatten tillräckligt snabbt, med lite frysskydd, så blir det glas i stället för is. Läkare fryser äggceller så, så att inga kristaller skadar dem.",
+  "Cream in seconds": "Grädde på sekunder",
+  "Left alone, cream rises out of fresh milk in hours. A spinning separator does it in seconds: the spin pulls far harder than gravity.": "Av sig själv stiger grädden ur färsk mjölk på några timmar. En snurrande separator gör det på sekunder: snurrandet drar mycket hårdare än tyngdkraften.",
+  "Why homogenised milk stays mixed": "Varför homogeniserad mjölk förblir blandad",
+  "Homogenised milk is pushed through tiny gaps that break its fat into very small droplets. Small droplets rise so slowly that cream hardly forms.": "Homogeniserad mjölk pressas genom små springor som delar fettet i mycket små droppar. Små droppar stiger så långsamt att det knappt bildas någon grädde.",
+  "Twice as big takes eight times longer": "Dubbelt så stort tar åtta gånger längre",
+  "When two liquids separate, the regions keep growing, but slower and slower. To make them twice as big you wait about eight times longer.": "När två vätskor separerar fortsätter områdena att växa, men allt långsammare. För att de ska bli dubbelt så stora får du vänta ungefär åtta gånger längre.",
+  "Big drops eat small ones": "Stora droppar äter små",
+  "In an emulsion, molecules slowly move from small drops to big ones, so the big drops grow and the small ones vanish. It is called Ostwald ripening.": "I en emulsion flyttar molekyler långsamt från små droppar till stora, så de stora växer och de små försvinner. Det kallas Ostwaldmognad.",
+  "Mayonnaise can break": "Majonnäs kan skära sig",
+  "Pour the oil into mayonnaise too fast and it breaks: the droplets merge and the oil separates. Added slowly, each drop is coated before the next one comes.": "Häll oljan i majonnäsen för snabbt så skär den sig: dropparna flyter ihop och oljan skiljs av. Tillsatt långsamt hinner varje droppe täckas innan nästa kommer.",
+  "Droplets in minutes": "Droppar på minuter",
+  "When a cell is stressed, for example by heat, some of its proteins and RNA separate into droplets within minutes. When the stress ends, the droplets dissolve.": "När en cell utsätts för stress, till exempel värme, separerar en del av dess proteiner och RNA till droppar inom några minuter. När stressen upphör löses dropparna upp.",
+  "Round the body in a minute": "Runt kroppen på en minut",
+  "At rest, your blood travels once round your whole body in about a minute. A drug carrier in the blood passes the tumour again and again.": "I vila färdas blodet ett varv runt hela kroppen på ungefär en minut. En läkemedelsbärare i blodet passerar tumören om och om igen.",
+  "An invisibility coat": "En osynlighetsmantel",
+  "The immune system quickly removes foreign particles from the blood. A coat of a polymer called PEG hides drug carriers, so they circulate for days instead of hours.": "Immunförsvaret tar snabbt bort främmande partiklar ur blodet. Ett skal av polymeren PEG döljer läkemedelsbärarna, så de cirkulerar i dagar i stället för timmar.",
+  "Leaky tumour vessels": "Läckande tumörkärl",
+  "Blood vessels in many tumours grow in a hurry and are leaky. Nanoparticles slip out there more easily than through the tight walls of healthy vessels.": "Blodkärlen i många tumörer växer i all hast och läcker. Nanopartiklar slinker ut där lättare än genom friska kärls täta väggar.",
+  "Too small gets lost": "För litet försvinner",
+  "The kidneys quickly filter out particles smaller than about 5 nanometres. Drug carriers are made larger, so they stay in the blood longer.": "Njurarna filtrerar snabbt bort partiklar som är mindre än cirka 5 nanometer. Läkemedelsbärare görs större, så att de stannar längre i blodet.",
+  "Released in seconds": "Frisläppt på sekunder",
+  "Some heat-sensitive lipid bubbles release most of their drug within seconds when warmed to about 41–42 °C, so the drug comes out right where the tumour is heated.": "Vissa värmekänsliga lipidbubblor släpper ut det mesta av sitt läkemedel inom några sekunder när de värms till cirka 41–42 °C, så läkemedlet kommer ut precis där tumören värms.",
+  "Diluted micelles fall apart": "Utspädda miceller faller isär",
+  "Micelles exist only above a certain concentration of soap molecules. Diluted in the blood, weak ones fall apart and lose their drug too early.": "Miceller finns bara över en viss koncentration av tvålmolekyler. Utspädda i blodet faller svaga miceller isär och förlorar sitt läkemedel för tidigt.",
+  "White first, yolk later": "Vitan först, gulan sen",
+  "Egg white starts to set at about 62 °C, the yolk at about 65 °C. A few degrees and a few minutes decide between runny and hard.": "Äggvitan börjar stelna vid cirka 62 °C, gulan vid cirka 65 °C. Några grader och några minuter avgör om ägget blir löst eller hårt.",
+  "A clot in minutes": "En propp på minuter",
+  "When you cut yourself, a blood protein called fibrinogen is turned into fibrin, which forms a gel network within a few minutes. The clot plugs the wound.": "När du skär dig omvandlas blodproteinet fibrinogen till fibrin, som bildar ett gelnätverk inom några minuter. Proppen täpper till såret.",
+  "Jelly needs hours": "Gelé behöver timmar",
+  "Gelatin jelly needs a few hours in the fridge to set firmly. The protein strands find their partners slowly, and the network keeps getting stronger.": "Gelatingelé behöver några timmar i kylen för att stelna ordentligt. Proteinsträngarna hittar sina partner långsamt, och nätverket blir allt starkare.",
+  "Agar sets fast and melts late": "Agar stelnar snabbt och smälter sent",
+  "Agar from seaweed sets into a gel at about 35 °C, but melts again only at about 85 °C. Cooks and laboratories like it for this reason.": "Agar från tång stelnar till gel vid cirka 35 °C men smälter igen först vid cirka 85 °C. Därför gillar kockar och laboratorier det.",
+  "Cheese in half an hour": "Ost på en halvtimme",
+  "Cheese makers add an enzyme called rennet to warm milk. It cuts the milk proteins so they link into a soft gel, the curd, in about half an hour.": "Ostmakare tillsätter enzymet löpe till varm mjölk. Det klipper mjölkproteinerna så att de länkas till en mjuk gel, ostmassan, på ungefär en halvtimme.",
+  "Silk in an instant": "Silke på ett ögonblick",
+  "Inside a spider, silk is a liquid protein solution. As the spider pulls it out, the proteins line up and link, and a solid thread forms in a fraction of a second.": "Inuti en spindel är silket en flytande proteinlösning. När spindeln drar ut det ställer proteinerna upp sig och länkas, och en fast tråd bildas på en bråkdel av en sekund.",
+  "Too much drug was released outside the red windows: {n} can no longer be reached.": "För mycket läkemedel släpptes utanför de röda fönstren: {n} kan inte längre nås."
  },
  "ru": {
   "Cleared!": "Пройдено!",
@@ -4992,7 +5187,98 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "You won a fact card: open it": "Вы выиграли карточку с фактом: откройте её",
   "Try ice freely in the Explore tab; more systems open as you play.": "Свободно исследуйте лёд на вкладке «Исследование»; новые системы откроются по мере игры.",
   "A new system to explore.": "Новая система для исследования.",
-  "Skip ▸": "Пропустить ▸"
+  "Skip ▸": "Пропустить ▸",
+  "Still liquid water": "Всё ещё жидкая вода",
+  "It stayed too warm most of the time, so the molecules never had time to build crystals.": "Почти всё время было слишком тепло, и молекулы не успели построить кристаллы.",
+  "Molecules glide between frames instead of jumping. Only the picture changes, not the simulation. Kept in this browser.": "Молекулы плавно движутся между кадрами, а не прыгают. Меняется только изображение, не моделирование. Сохраняется в этом браузере.",
+  "Real-life picture": "Картинка из жизни",
+  "Race my best run": "Гонка с моим лучшим забегом",
+  "Race your best run": "Обгони свой лучший забег",
+  "The ghost 👻 shows your best game ({v}): its temperature on the temperature bar and its score on the score bar. Beat it!": "Призрак 👻 показывает вашу лучшую игру ({v}): её температуру на шкале температуры и её счёт на шкале очков. Обгоните его!",
+  "Ahead of your best run by {d}": "Впереди лучшего забега на {d}",
+  "Behind your best run by {d}": "Отстаёте от лучшего забега на {d}",
+  "Level with your best run": "Наравне с лучшим забегом",
+  "best run: temperature {t} now": "лучший забег: температура сейчас {t}",
+  "best run": "лучший забег",
+  "👻 best run": "👻 лучший забег",
+  "Waiting for the drug": "Ждёт лекарство",
+  "Your result in real life, right now. Tap to fold.": "Ваш результат в реальной жизни прямо сейчас. Нажмите, чтобы свернуть.",
+  "Your best run": "Ваш лучший забег",
+  "<b>👻 best run</b>": "<b>👻 лучший забег</b>",
+  "Freeze about half of the water into ice: it turns blue. As fast as you can!": "Заморозьте примерно половину воды в лёд: он становится синим. Как можно быстрее!",
+  "Separate the two liquids into big regions of their own colour. As fast as you can!": "Разделите две жидкости на большие области своего цвета. Как можно быстрее!",
+  "Link the proteins into one long gel strand (the red line). As fast as you can!": "Свяжите белки в одну длинную нить геля (красная линия). Как можно быстрее!",
+  "Classic: 30 s": "Классика: 30 с",
+  "Speed run": "На скорость",
+  "fastest {t}": "лучшее {t}",
+  "Not reached in {n} s: watch the molecules and steer them there.": "Не достигнуто за {n} с: следите за молекулами и ведите их к цели.",
+  "Your fastest: {t}": "Ваш рекорд: {t}",
+  "Stars: under {a} s ★★★, under {b} s ★★.": "Звёзды: быстрее {a} с ★★★, быстрее {b} с ★★.",
+  "New: Speed run for this game! Reach the structure as fast as you can, with the numbers hidden.": "Новое: игра на скорость! Получите структуру как можно быстрее — числа скрыты.",
+  "Kind of game": "Вид игры",
+  "Fast ice": "Быстрый лёд",
+  "Fast separation": "Быстрое разделение",
+  "Fast delivery": "Быстрая доставка",
+  "Fast gel": "Быстрый гель",
+  "Three stars in the speed run of “{g}” win a card.": "Три звезды в игре на скорость «{g}» дают карточку.",
+  "now": "сейчас",
+  "Goal": "Цель",
+  "Fastest": "Рекорд",
+  "Freeze the water into ice: it turns blue. As fast as you can!": "Заморозьте воду в лёд: он становится синим. Как можно быстрее!",
+  "Release the drug only in the red windows. As fast as you can!": "Высвобождайте лекарство только в красных окнах. Как можно быстрее!",
+  "many small crystals": "много мелких кристаллов",
+  "knock!": "тук!",
+  "no crystals": "без кристаллов",
+  "days": "дни",
+  "Frozen in a flash": "Заморожено мгновенно",
+  "Berries and peas are frozen in a blast of very cold air. Fast freezing makes small ice crystals that tear the food’s cells less, so it keeps its shape.": "Ягоды и горошек замораживают потоком очень холодного воздуха. Быстрая заморозка даёт мелкие кристаллы льда, которые меньше рвут клетки продукта, и он сохраняет форму.",
+  "Hailstones have rings": "У градин есть кольца",
+  "Cut a hailstone and you see clear and cloudy rings. Storm winds carry it up and down; it freezes slowly into clear ice and fast into cloudy ice.": "Разрежьте градину — и увидите прозрачные и мутные кольца. Ветер в грозе носит её вверх и вниз: медленно она намерзает прозрачным льдом, быстро — мутным.",
+  "Ice in a second": "Лёд за секунду",
+  "Very still, pure water can be cooled below 0 °C without freezing. Knock the bottle and ice shoots through it in a second or two.": "Очень спокойную чистую воду можно охладить ниже 0 °C, и она не замёрзнет. Стукните по бутылке — и лёд пронесётся по ней за секунду-две.",
+  "Bacteria that make snow": "Бактерии, которые делают снег",
+  "Some bacteria carry proteins that help ice start at about −2 °C, much warmer than pure water needs. Snow cannons use them to make snow.": "У некоторых бактерий есть белки, которые помогают льду появиться уже около −2 °C — намного теплее, чем нужно чистой воде. Их используют снежные пушки.",
+  "Freezing rain": "Ледяной дождь",
+  "Rain can fall through freezing air and stay liquid. It turns to ice the moment it hits a branch or a road, and covers everything in glassy ice.": "Дождь может падать сквозь морозный воздух и оставаться жидким. Он превращается в лёд в момент удара о ветку или дорогу и покрывает всё стеклянной коркой.",
+  "Faster than crystals": "Быстрее кристаллов",
+  "Cool water fast enough, with a little antifreeze, and it becomes a glass instead of ice. Doctors freeze egg cells this way, so no crystals harm them.": "Охладите воду достаточно быстро, добавив немного антифриза, и она станет стеклом, а не льдом. Так врачи замораживают яйцеклетки, чтобы кристаллы их не повредили.",
+  "Cream in seconds": "Сливки за секунды",
+  "Left alone, cream rises out of fresh milk in hours. A spinning separator does it in seconds: the spin pulls far harder than gravity.": "Сами по себе сливки поднимаются в свежем молоке за часы. Вращающийся сепаратор делает это за секунды: вращение тянет намного сильнее силы тяжести.",
+  "Why homogenised milk stays mixed": "Почему гомогенизированное молоко не расслаивается",
+  "Homogenised milk is pushed through tiny gaps that break its fat into very small droplets. Small droplets rise so slowly that cream hardly forms.": "Гомогенизированное молоко продавливают через крошечные щели, и жир дробится на очень мелкие капли. Мелкие капли всплывают так медленно, что сливки почти не образуются.",
+  "Twice as big takes eight times longer": "Вдвое больше — в восемь раз дольше",
+  "When two liquids separate, the regions keep growing, but slower and slower. To make them twice as big you wait about eight times longer.": "Когда две жидкости разделяются, области продолжают расти, но всё медленнее. Чтобы они стали вдвое больше, ждать приходится примерно в восемь раз дольше.",
+  "Big drops eat small ones": "Большие капли съедают маленькие",
+  "In an emulsion, molecules slowly move from small drops to big ones, so the big drops grow and the small ones vanish. It is called Ostwald ripening.": "В эмульсии молекулы медленно переходят из мелких капель в крупные: крупные растут, мелкие исчезают. Это называется оствальдовым созреванием.",
+  "Mayonnaise can break": "Майонез может расслоиться",
+  "Pour the oil into mayonnaise too fast and it breaks: the droplets merge and the oil separates. Added slowly, each drop is coated before the next one comes.": "Если влить масло в майонез слишком быстро, он расслоится: капли сольются, и масло отделится. Если лить медленно, каждая капля успевает покрыться оболочкой до прихода следующей.",
+  "Droplets in minutes": "Капли за минуты",
+  "When a cell is stressed, for example by heat, some of its proteins and RNA separate into droplets within minutes. When the stress ends, the droplets dissolve.": "Когда клетка в стрессе, например от жары, часть её белков и РНК за минуты собирается в капли. Когда стресс проходит, капли растворяются.",
+  "Round the body in a minute": "Вокруг тела за минуту",
+  "At rest, your blood travels once round your whole body in about a minute. A drug carrier in the blood passes the tumour again and again.": "В покое кровь обходит всё тело примерно за минуту. Переносчик лекарства в крови снова и снова проходит мимо опухоли.",
+  "An invisibility coat": "Плащ-невидимка",
+  "The immune system quickly removes foreign particles from the blood. A coat of a polymer called PEG hides drug carriers, so they circulate for days instead of hours.": "Иммунная система быстро убирает из крови чужие частицы. Оболочка из полимера ПЭГ прячет переносчики лекарства, и они циркулируют днями, а не часами.",
+  "Leaky tumour vessels": "Дырявые сосуды опухоли",
+  "Blood vessels in many tumours grow in a hurry and are leaky. Nanoparticles slip out there more easily than through the tight walls of healthy vessels.": "Сосуды многих опухолей растут в спешке и протекают. Наночастицы выходят из них легче, чем через плотные стенки здоровых сосудов.",
+  "Too small gets lost": "Слишком мелкое теряется",
+  "The kidneys quickly filter out particles smaller than about 5 nanometres. Drug carriers are made larger, so they stay in the blood longer.": "Почки быстро отфильтровывают частицы мельче примерно 5 нанометров. Переносчики лекарства делают крупнее, чтобы они дольше оставались в крови.",
+  "Released in seconds": "Выход за секунды",
+  "Some heat-sensitive lipid bubbles release most of their drug within seconds when warmed to about 41–42 °C, so the drug comes out right where the tumour is heated.": "Некоторые термочувствительные липидные пузырьки при нагреве до 41–42 °C за секунды выпускают большую часть лекарства — прямо там, где нагревают опухоль.",
+  "Diluted micelles fall apart": "Разбавленные мицеллы распадаются",
+  "Micelles exist only above a certain concentration of soap molecules. Diluted in the blood, weak ones fall apart and lose their drug too early.": "Мицеллы существуют только выше определённой концентрации молекул мыла. Разбавленные в крови слабые мицеллы распадаются и теряют лекарство слишком рано.",
+  "White first, yolk later": "Сначала белок, потом желток",
+  "Egg white starts to set at about 62 °C, the yolk at about 65 °C. A few degrees and a few minutes decide between runny and hard.": "Яичный белок начинает схватываться примерно при 62 °C, желток — около 65 °C. Несколько градусов и несколько минут решают, будет яйцо жидким или крутым.",
+  "A clot in minutes": "Сгусток за минуты",
+  "When you cut yourself, a blood protein called fibrinogen is turned into fibrin, which forms a gel network within a few minutes. The clot plugs the wound.": "Когда вы порежетесь, белок крови фибриноген превращается в фибрин, который за несколько минут образует гелевую сеть. Сгусток закупоривает рану.",
+  "Jelly needs hours": "Желе нужны часы",
+  "Gelatin jelly needs a few hours in the fridge to set firmly. The protein strands find their partners slowly, and the network keeps getting stronger.": "Желатиновому желе нужно несколько часов в холодильнике, чтобы застыть. Белковые нити медленно находят партнёров, и сеть становится всё прочнее.",
+  "Agar sets fast and melts late": "Агар быстро застывает и поздно плавится",
+  "Agar from seaweed sets into a gel at about 35 °C, but melts again only at about 85 °C. Cooks and laboratories like it for this reason.": "Агар из водорослей застывает в гель около 35 °C, а плавится снова только около 85 °C. За это его любят повара и лаборатории.",
+  "Cheese in half an hour": "Сыр за полчаса",
+  "Cheese makers add an enzyme called rennet to warm milk. It cuts the milk proteins so they link into a soft gel, the curd, in about half an hour.": "Сыроделы добавляют в тёплое молоко фермент сычуг. Он разрезает белки молока, и они примерно за полчаса сцепляются в мягкий гель — сгусток.",
+  "Silk in an instant": "Шёлк в одно мгновение",
+  "Inside a spider, silk is a liquid protein solution. As the spider pulls it out, the proteins line up and link, and a solid thread forms in a fraction of a second.": "Внутри паука шёлк — жидкий раствор белка. Когда паук вытягивает его, белки выстраиваются и сцепляются, и за долю секунды образуется твёрдая нить.",
+  "Too much drug was released outside the red windows: {n} can no longer be reached.": "Слишком много лекарства вышло вне красных окон: {n} уже не достичь."
  }
 };
   let LANG = 'en';
@@ -5266,13 +5552,21 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     return api;
   })();
   window.__sfx = SFX; // for tests
-  let lastDb = null;
+  let lastDb = null, holdT = 0, holdDb = null;
   function levelDb() {
     if (!analyser) return null;
-    if (performance.now() < SFX.busyUntil && lastDb !== null) return lastDb; // our own sound is playing: keep the last reading
     analyser.getFloatTimeDomainData(buf);
     let s = 0; for (let i = 0; i < buf.length; i++) s += buf[i] * buf[i];
-    return (lastDb = 20 * Math.log10(Math.sqrt(s / buf.length) + 1e-9));
+    const d = 20 * Math.log10(Math.sqrt(s / buf.length) + 1e-9), now = performance.now();
+    if (now < SFX.busyUntil && lastDb !== null) { // our own sound is playing: the game must not hear itself
+      // The last reading is held, but it fades to the quiet level within about half a second. Holding it unchanged made a loop in the drug game:
+      // a short loud noise heated the box, the released drug played sounds, the sounds kept the loud reading, and the box stayed hot for seconds.
+      if (!holdT) { holdT = now; holdDb = lastDb; }
+      const span = Math.max(0.5, +$('micrange').value), held = quietDb + Math.max(0, holdDb - quietDb) * Math.exp(-(now - holdT) / 200);
+      if (d > quietDb + 0.7 * span) return (lastDb = d); // much louder than our soft notes: that is the player
+      return (lastDb = Math.min(held, Math.max(d, quietDb)));
+    }
+    holdT = 0; return (lastDb = d);
   }
   function calibrate() { const samples = []; let k = 0;
     const id = setInterval(() => { const d = levelDb(); if (d !== null) samples.push(d); if (++k >= 15) { clearInterval(id); if (samples.length) { samples.sort((a, b) => a - b); quietDb = samples[Math.floor(samples.length / 2)] + 3; } } }, 40); }
@@ -5311,7 +5605,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const d = levelDb(); if (d === null) return;
     const span = Math.max(0.5, +$('micrange').value), x = Math.max(0, Math.min(1, (d - quietDb) / span));
     $('micbar').style.width = $('micbarM').style.width = $('micbarC').style.width = (x * 100).toFixed(0) + '%';
-    const [lo, hi] = curRange(), target = lo + (0.05 + 0.9 * x) * (hi - lo);
+    const [lo, hi] = curRange(), target = lo + x * (hi - lo); // silence reaches the bottom of the range, like the slider
     const tauUp = 0.3, tauDown = 0.6;   // follows the room quickly both ways, so players keep control (cooling used to lag 2.5 s)
     const a = 1 - Math.exp(-dtSec / (target > micT ? tauUp : tauDown));
     micT += a * (target - micT); setT(micT);
@@ -5588,7 +5882,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     { id: 'drug', title: 'Deliver the drug', sub: 'Soap molecules · hit the target windows', sys: 'dumbbell', ordered: true, range: [0.4, 2.5], D: 60, box: '48', conc: 34,
       prm: { nDrug: 90, drugPerMic: 3, extraTails: 3, preSteps: 1000, epsDB: 2.5, epsBB: 2.5, epsAS: 0, sigA: 1.0 }, raw: true, noSnap: true, side: 'Lost',
       lab: 'Delivered', fmt: (v) => v.toFixed(0) + '%', stars: [30, 45, 70], scale: 100, hotT: 1.35,
-      setup: (G) => { const w = []; let a = 6 + 4 * Math.random(); const W = 8 / 2.25; /* windows ≈ 1.8 s of play each */ while (a + W <= 58) { w.push([a, a + W]); a += W + 5 + 4 * Math.random(); } G.win = w; G.del = 0; G.lost = 0; },
+      setup: (G) => { const w = []; let a = 6 + 4 * Math.random(); const W = 8 / 2.25, end = G.speed ? 60 * 600 / GAME_SEC : 58; /* windows ≈ 1.8 s of play each; a speed run gets them for 10 minutes */ while (a + W <= end) { w.push([a, a + W]); a += W + 5 + 4 * Math.random(); } G.win = w; G.del = 0; G.lost = 0; },
       value: () => drugTick(),
       // challenges use a tumour zone instead: blood flow (flowU) carries three micelles through a heated band; some heat (spill) leaks outside
       tumour: { sub: 'Soap molecules · heat the tumour', range: [0.4, 5.0], prm: { nDrug: 15, drugPerMic: 5, extraTails: 3, preSteps: 1000, epsDB: 2.5, epsBB: 2.5, epsAS: 0, sigA: 1.0, drugXs: [2, 18, 34].map((d) => DRUG_X0 - d) },
@@ -5630,6 +5924,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       if (coachReady && !isOpen(i)) return ''; // not opened yet: not shown at all
       return `<button data-game="${g.id}" aria-pressed="${gameSel === g}"><b>${T(g.title)}</b><small>${T(g.sub)}</small><span class="stars">${b !== null ? starStr(starsFor(g, b)) + ' ' + T('best') + ' ' + g.fmt(b) : ''}</span></button>`; }).join('')
       + (coachReady && GAMES.some((g, i) => !isOpen(i)) ? `<p class="gnext"><span aria-hidden="true">🎁</span> ${T('Every game you finish opens something new.')}</p>` : '');
+    if (coachReady) speedSeg();
     if (coachReady && typeof applyLocks === 'function') applyLocks();
   }
   function selectGame(id) {
@@ -5662,13 +5957,13 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (guide) { guide = null; coachHide(); }
     if (needGuide(g) && !battle && !gameLevel && !classOn) { guideStart(g); return; }
     prepGame(g); coachHide(); $('greplay').hidden = true; gendClose(); postGame = null;
-    game = { g, t0: eng.time, last: eng.time, ema: null, rate: g.D / GAME_SEC, peak: -Infinity, peakSec: 0, snap: null, rec: [], level: gameLevel, bump: 0, guided: afterGuide }; afterGuide = false;
+    game = { g, t0: eng.time, last: eng.time, ema: null, rate: g.D / GAME_SEC, peak: -Infinity, peakSec: 0, snap: null, rec: [], level: gameLevel, bump: 0, guided: afterGuide }; afterGuide = false; game.ghost = gameLevel || battle || classOn ? null : ghostLoad(g); game.speed = speedMode && !gameLevel && !battle && !classOn && speedOpen(g) ? SPEED[g.id] : null; if (game.speed) game.ghost = null;
     if (battle) game.battle = battle.k; fxReset();
     if (g.setup) g.setup(game);
     if (gameLevel) { const tw = ladTwist(g, gameLevel); Object.assign(game, { af: tw.af || 0, flowK: tw.flowK || 1, bandK: tw.bandK || 1, spill: tw.spill || 0 });
       if (tw.waveAmp) { game.waves = []; let a = 2.5 + 1.5 * Math.random(); while (a < 28) { game.waves.push([a, a + tw.waveLen, tw.waveAmp]); a += tw.waveLen + tw.waveGap * (0.7 + 0.6 * Math.random()); } } }
     const gb = document.querySelector('.gbar'); gb.querySelectorAll('.win').forEach((x) => x.remove());
-    for (const [w0, w1] of game.win || []) { const d = document.createElement('div'); d.className = 'win'; d.style.left = (100 * w0 / g.D) + '%'; d.style.width = (100 * (w1 - w0) / g.D) + '%'; gb.appendChild(d); }
+    const DD = game.speed ? g.D * SPEED_BAR / GAME_SEC : g.D; for (const [w0, w1] of game.win || []) { if (w0 >= DD) continue; const d = document.createElement('div'); d.className = 'win'; d.style.left = (100 * w0 / DD) + '%'; d.style.width = (100 * (w1 - w0) / DD) + '%'; gb.appendChild(d); }
     $('gpeakLab').textContent = T(g.side || 'Best this run');
     $('gpeak').textContent = '–'; $('gbest').style.display = 'none';
     gameCarry = 0; running = true; $('pause').textContent = T('Pause');
@@ -5677,9 +5972,11 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     g.stars.forEach((s, k) => { const d = document.createElement('div'); d.className = 'tick'; d.style.left = (100 * s / (g.scale || 1)) + '%'; d.textContent = '★'.repeat(k + 1); band.appendChild(d); });
     $('gnow').style.left = '0%'; $('gbar').style.width = '0%'; $('gres').textContent = '';
     $('hudTitle').textContent = T(g.title) + (game.level ? ' · ' + T('Challenge {k}', { k: game.level }) : '') ; $('hudGoal').textContent = ''; $('hudTip').textContent = ''; /* no goal text or tips above the box */
+    document.querySelector('.wrap').classList.toggle('speedrun', !!game.speed); if (game.speed) { $('hudGoal').textContent = T(game.speed.goal); $('hudTitle').textContent += ' · ⏱ ' + T('Speed run'); }
     $('ghud').hidden = false; document.querySelector('.wrap').classList.add('ingame'); $('gquit').textContent = T('Give up'); $('gagain').hidden = true;
     $('gstart').disabled = true; resize();
-    if (g.proto) protoStart(game); else { $('gtimeLab').textContent = T('Time left'); $('gstarsLab').textContent = T('Stars'); }
+    if (g.proto) protoStart(game); else { $('gtimeLab').textContent = T(game.speed ? 'Time' : 'Time left'); $('gstarsLab').textContent = T('Stars'); }
+    if (game.speed) speedHud(game); else $('gstars').className = 'gst';
     countdown(game); if (typeof sheet === 'function') sheet(false);
     if ($('guseMic').checked) setMode('mic').then(() => { if (!analyser && game) { setMode('slider'); $('gres').textContent = T('No microphone here: use the temperature slider.'); } });
     else setMode('slider');
@@ -5726,9 +6023,11 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (G.battle !== undefined && battle) { battleEnd(G); return; }
     if (G.g.proto) { protoEnd(G); return; }
     rewardStep(); // every finished game opens one more thing
+    if (G.speed) { speedEnd(G); return; }
     if (G.level) { ladderEnd(G); return; }
-    const g = G.g, v = G.peak, st = starsFor(g, v), b = getBest(g), rec = b === null || v > b, gi = GAMES.indexOf(g), wasOpen = gi + 1 < GAMES.length && isOpen(gi + 1); if (rec) setBest(g, v);
-    const opened = false, dg = tipsOn() ? diagnose(G, st) : '';
+    const g = G.g, v = G.peak, st = starsFor(g, v), b = getBest(g), rec = b === null || v > b, gi = GAMES.indexOf(g), wasOpen = gi + 1 < GAMES.length && isOpen(gi + 1); if (rec) { setBest(g, v); ghostSave(G); } /* the new best run becomes the ghost for next time */
+    const opened = false, dg = tipsOn() ? diagnose(G, st) : '', speedNew = SPEED[g.id] && st === 3 && !(b !== null && starsFor(g, b) === 3) && !unlockAll();
+    if (speedNew) { speedMode = false; try { localStorage.setItem('mdlab-fresh', 'speed'); } catch (e) {} }
     const card = st === 3 ? fcGive(FC_ALL.filter((c) => c.deck.game === g.id)) : null; // three stars: a new fact card, until the deck is complete
     const S = addStat(g, v);
     $('hudGoal').textContent = $('hudTip').textContent = ''; $('gagain').hidden = false;
@@ -5739,7 +6038,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       (st <= 1 && tipsOn() ? '<b>' + T('Tip:') + '</b> ' + T(g.hint) + ' ' : '') + (st === 3 ? T('Top score!') + ' ' + (card ? '<b>' + T('New card: {c}!', { c: T(card.t) }) + '</b> ' : T('You have all the cards of this game.') + ' ') : '') + T('Your average so far: {a} (games played: {n}).', { n: S.n, a: g.fmt(S.sum / S.n) });
     renderPick(); drawReplay(G);
     const nx = gi + 1 < GAMES.length && isOpen(gi + 1) ? GAMES[gi + 1] : null;
-    endScreen({ G, g, st, v, rec, best: b, card, extra: opened ? T('New game unlocked: {g}!', { g: T(GAMES[gi + 1].title) }) : '', tip: dg,
+    endScreen({ G, g, st, v, rec, best: b, card, extra: speedNew ? '⏱ ' + T('New: Speed run for this game! Reach the structure as fast as you can, with the numbers hidden.') : '', tip: dg,
       next: nx ? { label: T('Next: {g}', { g: T(nx.title) }), go: () => { selectGame(nx.id); startGame(); } } : null });
   }
   // the end of a game: a card over the box (the box behind it shows the best moment) with the stars filling in one by one, the score, and what to do next
@@ -5747,15 +6046,15 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   const gendOpen = () => !$('gend').hidden;
   function endScreen(o) {
     postGame = o.g.id; if (o.reward === undefined) { o.reward = lastReward; lastReward = null; } if (classOn || battle) { if (o.card) setTimeout(() => fcOpen(o.card, true), 2200); return; }
-    if (!o.g.proto && MACRO[o.g.id]) macroPlay(o, () => endCard(o)); else endCard(o); // first the result in real life, then the card
+    if (!o.g.proto && !o.noPic && MACRO[o.g.id]) macroPlay(o, () => endCard(o)); else endCard(o); // first the result in real life, then the card
   }
   function endCard(o) {
     if (classOn || battle || postGame !== o.g.id || game) return; const el = $('gend'), { G, g, st, v } = o;
     say(T('Game over: {n} of 3 stars, score {v}.', { n: st, v: g.fmt(v) }));
     $('gres').innerHTML = `<span class="gst">${'★'.repeat(st)}${'☆'.repeat(3 - st)}</span> <b>${g.fmt(v)}</b>${o.rec ? ' · ' + T('New personal best!') : ''}${G.level ? ' · ' + (st ? T('Cleared!') : T('Not cleared')) : ''}`; // one short line over the graph; the details are on the end card gendTimers.forEach(clearTimeout); gendTimers = [];
     el.style.left = cv.offsetLeft + 'px'; el.style.top = cv.offsetTop + 'px'; el.style.width = cv.offsetWidth + 'px'; el.style.height = cv.offsetHeight + 'px';
-    const head = T(g.title) + (G.level ? ' · ' + T('Challenge {k}', { k: G.level }) : '');
-    const pic = MACRO[g.id] && !g.proto ? (o.macroM || macroInfo(o)) : null; // the result in real life, in the same window as the stars
+    const head = T(g.title) + (G.level ? ' · ' + T('Challenge {k}', { k: G.level }) : '') + (o.speedRun ? ' · ⏱ ' + T('Speed run') : '');
+    const pic = MACRO[g.id] && !g.proto && !o.noPic ? (o.macroM || macroInfo(o)) : null; // the result in real life, in the same window as the stars
     if (pic) say(T(pic.info.t) + '. ' + T(pic.info.d));
     const msg = st === 3 ? T('Brilliant!') : st === 2 ? T('Great run!') : st === 1 ? T('Good start!') : T('So close: try again!');
     el.innerHTML = `<div class="gendcard${pic ? ' withpic' : ''}"><button class="gendx" aria-label="${T('Close')}">✕</button>
@@ -5764,11 +6063,10 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       ${pic ? `<p class="gendverdict"><b>${T(pic.info.t)}</b><span>${T(pic.info.d)}</span></p>` : `<p class="gendmsg">${msg}</p>`}<p class="gendscore"><b data-v>${g.fmt(0)}</b>${o.rec ? `<span class="pb">${T('New personal best!')}</span>` : o.best !== null && o.best !== undefined ? `<small>${T('best ever {b}', { b: g.fmt(Math.max(o.best, v)) })}</small>` : ''}</p>
       ${pic ? (o.extra ? `<p class="gendnote"><b>${o.extra}</b></p>` : '') : `<p class="gendnote">${g.proto ? '' : T('Behind this card: your best moment, at {s} s.', { s: Math.round(G.peakSec || 0) })}${o.extra ? ' <b>' + o.extra + '</b>' : ''}</p>`}
       ${o.reward ? `<p class="gendnew"><span aria-hidden="true">🎁</span> ${T('New: {x}!', { x: T(o.reward.name) })} <small>${T(o.reward.where)}</small></p>` : ''}
-      ${o.card ? `<p class="gendreal"><button class="btn" data-act="card"><span aria-hidden="true">🃏</span> ${T('You won a fact card: open it')}</button></p>` : ''}
       ${o.tip ? `<p class="gendtip">${o.tip}</p>` : ''}
       <div class="gendbtns"><button class="btn primary" data-act="again">${T('Try again')}</button>${o.next ? `<button class="btn" data-act="next">${o.next.label} ▸</button>` : ''}<button class="btn ghost" data-act="look">${T('Look at the box')}</button></div></div></div>`;
     el.hidden = false; el._next = o.next; el._o = o; syncBoxStart();
-    if (pic) { pic.snap = pic.snap || o.snap; macroStill(el.querySelector('.gendpic canvas'), pic); } // a new fact card waits behind its button, so the card can be read first
+    if (pic) { pic.snap = pic.snap || o.snap; macroStill(el.querySelector('.gendpic canvas'), pic); } // a new fact card opens in its own window when the end window is left
     const cd = el.querySelector('.gendcard'); if (cd.scrollIntoView) setTimeout(() => cd.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }), 60);
     const red = matchMedia('(prefers-reduced-motion: reduce)').matches, t0 = 450, bv = el.querySelector('[data-v]'), dur = red ? 0 : 900, ts = performance.now();
     const count = () => { const u = dur ? Math.min(1, (performance.now() - ts) / dur) : 1; bv.textContent = g.fmt(v * (1 - Math.pow(1 - u, 3))); if (u < 1 && !el.hidden) requestAnimationFrame(count); };
@@ -5778,11 +6076,14 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   }
   function gendClose() { macroStop(); $('gend').hidden = true; gendTimers.forEach(clearTimeout); syncBoxStart(); }
   $('gend').addEventListener('click', (e) => { const b = e.target.closest('[data-act], .gendx'); if (!b) return; const act = b.dataset.act, nx = $('gend')._next;
-    if (act === 'card') { const o = $('gend')._o; if (o && o.card) { fcOpen(o.card, true); o.card = null; b.closest('p').remove(); } return; } // the end card stays open
-    gendClose();
-    if (act === 'again') startGame(); else if (act === 'next' && nx) nx.go(); else if (act === 'macro' && $('gend')._o) { const o = $('gend')._o; o.reward = null; macroPlay(o, () => endCard(o)); } });
+    const o0 = $('gend')._o, cardNow = act !== 'macro' && o0 && o0.card ? o0.card : null; // a won fact card comes in its own window after the end window
+    if (cardNow) { o0.card = null; gendClose(); fcOpen(cardNow, true, () => gendAct(act, nx)); return; }
+    gendClose(); gendAct(act, nx); });
+  function gendAct(act, nx) {
+    if (act === 'again') startGame(); else if (act === 'next' && nx) nx.go(); else if (act === 'macro' && $('gend')._o) { const o = $('gend')._o; o.reward = null; macroPlay(o, () => endCard(o)); } }
   function gameUpdate(v) {
     if (game.g.proto) { protoUpdate(game, v); return; } // prototype games keep their own score, lives and levels
+    if (game.speed) { speedUpdate(game, v); return; } // speed run: only the clock and the molecules
     const G = game, g = G.g, now = eng.time, dt = now - G.last; G.last = now;
     G.ema = G.ema === null || g.raw ? v : G.ema + (1 - Math.exp(-dt / 2.0)) * (v - G.ema); // smooth over about 2 time units (raw: cumulative scores)
     const frac = Math.min(1, (now - G.t0) / g.D);
@@ -5822,10 +6123,66 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // resuming after a game keeps the best structure as the starting point
   renderPick();
 
-  function closeHud() { gendClose(); postGame = null; $('ghud').hidden = true; if (coachReady) { coachHide(); $('greplay').hidden = true; } document.querySelector('.wrap').classList.remove('ingame'); resize(); }
+  function closeHud() { gendClose(); postGame = null; $('ghud').hidden = true; document.querySelector('.wrap').classList.remove('speedrun'); if (coachReady) { coachHide(); $('greplay').hidden = true; } document.querySelector('.wrap').classList.remove('ingame'); resize(); }
   $('gquit').addEventListener('click', () => { if (battle && coachReady) battleStop(); const was = !!game; endGame(null); if (was) { gameRange = null; applySysUI(); setT(tset); } closeHud(); });
   renderPick();
 
+  // ---------- speed run: reach a structure as fast as you can, with the numbers hidden, so the eyes stay on the molecules ----------
+  // Opens for a game once it has 3 stars (or with Teacher options → Unlock everything). The run ends when the smoothed score has stayed at the
+  // target for SPEED_HOLD s; the time is when it first got there. Targets and star times from tools/calibration/speedcal.js (good play: ice ~10–15 s,
+  // liquids ~24–30 s, gel ~17–20 s; silence alone never gets there in ice and liquids, and in gel only slowly).
+  const SPEED_HOLD = 1.5, SPEED_BAR = 120; // no time limit; the time bar (with the drug's red windows) spans the first 2 minutes
+  // Targets as set by the author. With fixed strategies (speedcal.js, up to 400 s): ice 0.75 in 104–217 s; liquids peak ~0.80 and gel ~186 σ,
+  // so 0.95 and 200 σ need better play than any fixed strategy tried; their star times are guesses until real players set records. A run ends only at the goal, with Give up, or (drug) when too much drug is lost.
+  const SPEED = {
+    ice: { target: 0.75, t: [Infinity, 200, 120], goal: 'Freeze the water into ice: it turns blue. As fast as you can!' },
+    demix: { target: 0.95, t: [Infinity, 500, 300], goal: 'Separate the two liquids into big regions of their own colour. As fast as you can!' },
+    drug: { target: 80, t: [Infinity, 40, 25], goal: 'Release the drug only in the red windows. As fast as you can!' },
+    gel: { target: 200, t: [Infinity, 240, 120], goal: 'Link the proteins into one long gel strand (the red line). As fast as you can!' },
+  };
+  let speedMode = false;
+  function speedOpen(g) { if (!g || !SPEED[g.id]) return false; if (unlockAll()) return true; const b = getBest(g); return b !== null && starsFor(g, b) === 3; }
+  function speedBest(g) { try { const x = localStorage.getItem('mdlab-speed-' + g.id); return x === null ? null : +x; } catch (e) { return null; } }
+  function speedSeg() { // Classic | ⏱ Speed run, under the games, for a game that has it
+    const el = $('gspeed'), g = gameSel, on = speedOpen(g); el.hidden = !on; if (!on) return;
+    const b = speedBest(g);
+    el.innerHTML = `<button data-speed="0" aria-pressed="${!speedMode}">${T('Classic: 30 s')}</button><button data-speed="1" data-reward="speed" aria-pressed="${speedMode}">⏱ ${T('Speed run')}${b !== null ? ` <small>${T('fastest {t}', { t: b.toFixed(1) + ' s' })}</small>` : ''}</button>`;
+  }
+  $('gspeed').addEventListener('click', (e) => { const b = e.target.closest('[data-speed]'); if (!b || game) return; speedMode = b.dataset.speed === '1'; speedSeg(); if (typeof applyLocks === 'function') applyLocks(); });
+  function speedUpdate(G, v) {
+    const g = G.g, sp = G.speed, now = eng.time, dt = now - G.last; G.last = now;
+    G.ema = G.ema === null || g.raw ? v : G.ema + (1 - Math.exp(-dt / 2.0)) * (v - G.ema);
+    const s = GAME_SEC * (now - G.t0) / g.D;
+    if (!G.cd) gameSounds(G, g);
+    $('gtime').textContent = T('{n} s', { n: s.toFixed(1) }); $('gval').textContent = g.fmt(Math.max(0, G.ema));
+    $('gnow').style.left = (100 * Math.max(0, Math.min(1, G.ema / (g.scale || 1)))) + '%'; $('gbar').style.width = (100 * Math.min(1, s / SPEED_BAR)) + '%';
+    if (!G.rec.length || s - G.rec[G.rec.length - 1].s >= 0.25) G.rec.push({ s, T: tset, v: G.ema, d: 0, l: 0, z: false });
+    if (G.ema >= sp.target) { if (G.since === undefined) { G.since = s; G.snap = takeSnap(); }
+      if (s - G.since >= SPEED_HOLD) { G.doneAt = G.since; G.peakSec = G.since; endGame('done'); return; } }
+    else G.since = undefined;
+    if (g.id === 'drug' && eng.nDrug && G.lost > (1 - sp.target / 100) * eng.nDrug) { G.failLost = true; endGame('done'); } // the goal can no longer be reached
+  }
+  function speedEnd(G) {
+    const g = G.g, sp = G.speed, t = G.doneAt, st = t === undefined ? 0 : t <= sp.t[2] ? 3 : t <= sp.t[1] ? 2 : 1, b = speedBest(g), rec = t !== undefined && (b === null || t < b);
+    if (rec) { try { localStorage.setItem('mdlab-speed-' + g.id, t.toFixed(2)); } catch (e) {} }
+    $('hudGoal').textContent = ''; $('gagain').hidden = false; $('greplay').hidden = true;
+    if (G.snap) { restoreSnap(G.snap); running = false; $('pause').textContent = T('Resume'); showReport(report()); }
+    $('gres').textContent = ''; $('gtime').textContent = t === undefined ? '–' : T('{n} s', { n: t.toFixed(1) }); // the clock shows the result, not the end of the 1.5 s check
+    const card = st === 3 ? fcGive(FC_ALL.filter((c) => c.deck.speed === g.id)) : null; // three stars: a card from this game's speed-run deck
+    renderPick();
+    const gs = Object.assign({}, g, { fmt: (x) => x.toFixed(1) + ' s' });
+    endScreen({ G, g: gs, st, v: t === undefined ? 0 : t, rec, best: null, noPic: true, speedRun: true, tip: '', card,
+      extra: t === undefined ? T('Too much drug was released outside the red windows: {n} can no longer be reached.', { n: g.fmt(sp.target) }) : b !== null && !rec ? T('Your fastest: {t}', { t: b.toFixed(1) + ' s' }) : T('Stars: under {a} s ★★★, under {b} s ★★.', { a: sp.t[2], b: sp.t[1] }) });
+  }
+  function speedHud(G) { // the score now, the goal, the clock and your fastest time: all written out
+    const g = G.g, sp = G.speed, b = speedBest(g);
+    $('gvalLab').textContent = T(g.lab) + ' ' + T('now'); $('gval').textContent = g.fmt(0);
+    $('gpeakLab').textContent = T('Goal'); $('gpeak').textContent = g.fmt(sp.target);
+    $('gtimeLab').textContent = T('Time'); $('gtime').textContent = T('{n} s', { n: '0.0' });
+    $('gstarsLab').textContent = T('Fastest'); $('gstars').textContent = b === null ? '–' : T('{n} s', { n: b.toFixed(1) }); $('gstars').className = '';
+    const band = $('gband'); band.querySelectorAll('.tick').forEach((x) => x.remove());
+    const d = document.createElement('div'); d.className = 'tick goal'; d.style.left = (100 * sp.target / (g.scale || 1)) + '%'; d.textContent = '🏁 ' + g.fmt(sp.target); band.appendChild(d);
+  }
   // ---------- class mode: one big box on the projector, the whole room's noise sets the temperature ----------
   let classOn = false;
   async function classEnter() {
@@ -6114,7 +6471,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     ctx.globalAlpha = 1; ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(msg, W / 2, 24 * u);
     ctx.restore();
     // the player's own controls under the box show what the film does: the slider and the noise bar move, the symbol changes
-    const g = gameSel, [lo, hi] = g.range, Tf = lo + (0.05 + 0.9 * fr.f) * (hi - lo);
+    const g = gameSel, [lo, hi] = g.range, Tf = lo + fr.f * (hi - lo);
     $('tsliderM').value = Tf; $('micbarM').style.width = (100 * fr.f) + '%'; const k = tWord(g, Tf), b = $('tsetM'); b.textContent = T_SIGNS[k]; b.className = 'tw tw' + k; filmCtl = true;
   }
 
@@ -6406,6 +6763,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const dots = (n, x0, y0, w, h, f, r = 3, seed = 3) => { let s = ''; for (let k = 0; k < n; k++) { const x = x0 + ((k * 73.13 + seed * 17) % w), y = y0 + ((k * 41.7 + seed * 29) % h); s += C(+x.toFixed(1), +y.toFixed(1), r, f); } return s; };
 
     // ---------- the cards ----------
+    const watch = (x, y, r) => R(x - 4, y - r - 7, 8, 6, 2, 'f-ink') + C(x, y, r, 'f-panel', '') + C(x, y, r, 'f-none', 'ln') + P(`M${x} ${y}L${x} ${y - r * 0.72}M${x} ${y}L${x + r * 0.5} ${y + r * 0.2}`, ''); // stopwatch, for the speed-run decks
     const DECKS = [
      { id: 'ice', cls: 'd-ice', name: 'Ice', game: 'ice', cards: [
       { t: 'Six arms', d: 'Almost every snowflake has six arms. The six-fold shape comes from the honeycomb that water molecules build in ice.',
@@ -6508,6 +6866,63 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
           chain(coil(120, 62, 14, 10, 2)) + TX(120, 104, 'folded', 'mu') + arrow(140, 64, 154, 64) +
           chain([[170,60],[184,50],[196,62],[208,50],[220,64]], 'po') + P('M196 112c-10 -10 0 -22 0 -30c8 10 10 20 0 30z', 'ho') },
      ]},
+     // speed-run decks: won with three stars in the speed run of a game (field speed: game id)
+     { id: 'fice', cls: 'd-ice', name: 'Fast ice', speed: 'ice', cards: [
+      { t: 'Frozen in a flash', d: 'Berries and peas are frozen in a blast of very cold air. Fast freezing makes small ice crystals that tear the food’s cells less, so it keeps its shape.',
+        s: () => watch(40, 70, 22) + arrow(70, 70, 96, 70) + dots(18, 110, 40, 110, 60, 'f-ice', 4, 4) + TX(166, 124, 'many small crystals', 'mu') },
+      { t: 'Hailstones have rings', d: 'Cut a hailstone and you see clear and cloudy rings. Storm winds carry it up and down; it freezes slowly into clear ice and fast into cloudy ice.',
+        s: () => C(120, 70, 52, 'f-ice', 'co') + C(120, 70, 38, 'f-panel', 'mu') + C(120, 70, 24, 'f-ice', 'co') + C(120, 70, 11, 'f-panel', 'mu') + arrow(200, 110, 200, 30) + arrow(222, 30, 222, 110) },
+      { t: 'Ice in a second', d: 'Very still, pure water can be cooled below 0 °C without freezing. Knock the bottle and ice shoots through it in a second or two.',
+        s: () => R(40, 30, 50, 96, 10, 'f-w', 'co') + R(150, 30, 50, 96, 10, 'f-ice', 'co') + hexIce(156, 44, 3, 5, 12) + arrow(100, 78, 140, 78) + TX(120, 70, 'knock!', 'b') + thermo(18, 40, 60, 0.15, false, '') },
+      { t: 'Bacteria that make snow', d: 'Some bacteria carry proteins that help ice start at about −2 °C, much warmer than pure water needs. Snow cannons use them to make snow.',
+        s: () => blob(70, 72, 26, 'f-soft', 2, 'mu') + flake(70, 72, 14) + arrow(104, 72, 130, 72) + flake(170, 50, 18) + flake(204, 92, 14) + flake(156, 104, 10) },
+      { t: 'Freezing rain', d: 'Rain can fall through freezing air and stay liquid. It turns to ice the moment it hits a branch or a road, and covers everything in glassy ice.',
+        s: () => [[40,20],[70,34],[100,16],[130,30],[160,18],[190,32]].map(([x,y]) => P(`M${x} ${y - 7}q6 8 0 11q-6 -3 0 -11z`, 'co')).join('') + P('M20 96q60 -30 120 -6t100 -10', '') + P('M20 102q60 -30 120 -6t100 -10', 'co th') },
+      { t: 'Faster than crystals', d: 'Cool water fast enough, with a little antifreeze, and it becomes a glass instead of ice. Doctors freeze egg cells this way, so no crystals harm them.',
+        s: () => watch(40, 70, 22) + arrow(68, 70, 92, 70) + R(104, 34, 96, 72, 10, 'f-ice', 'co') + dots(30, 110, 40, 84, 60, 'f-w', 3, 7) + TX(152, 126, 'no crystals', 'mu') },
+     ]},
+     { id: 'fliq', cls: 'd-liq', name: 'Fast separation', speed: 'demix', cards: [
+      { t: 'Cream in seconds', d: 'Left alone, cream rises out of fresh milk in hours. A spinning separator does it in seconds: the spin pulls far harder than gravity.',
+        s: () => C(80, 70, 44, 'f-w', 'mu') + C(80, 70, 20, 'f-oil', '') + P('M80 18a52 52 0 0 1 46 28', 'mu') + arrow(118, 34, 126, 46) + watch(190, 70, 22) },
+      { t: 'Why homogenised milk stays mixed', d: 'Homogenised milk is pushed through tiny gaps that break its fat into very small droplets. Small droplets rise so slowly that cream hardly forms.',
+        s: () => R(30, 30, 70, 90, 8, 'f-w', 'mu') + C(50, 50, 10, 'f-oil') + C(76, 62, 13, 'f-oil') + arrow(108, 75, 132, 75) + R(140, 30, 70, 90, 8, 'f-w', 'mu') + dots(40, 146, 36, 58, 78, 'f-oil', 2.2, 5) },
+      { t: 'Twice as big takes eight times longer', d: 'When two liquids separate, the regions keep growing, but slower and slower. To make them twice as big you wait about eight times longer.',
+        s: () => [[40,14],[110,24],[190,36]].map(([x,r],k) => blob(x, 64, r, 'f-oil', k + 2, 'mu')).join('') + TX(40, 124, '1 s', 'mu') + TX(110, 124, '8 s', 'mu') + TX(190, 124, '64 s', 'mu') },
+      { t: 'Big drops eat small ones', d: 'In an emulsion, molecules slowly move from small drops to big ones, so the big drops grow and the small ones vanish. It is called Ostwald ripening.',
+        s: () => C(70, 70, 34, 'f-oil', 'mu') + C(150, 52, 10, 'f-oil', 'mu') + C(170, 96, 7, 'f-oil', 'mu') + arrow(140, 60, 108, 66) + arrow(162, 92, 104, 80) },
+      { t: 'Mayonnaise can break', d: 'Pour the oil into mayonnaise too fast and it breaks: the droplets merge and the oil separates. Added slowly, each drop is coated before the next one comes.',
+        s: () => C(70, 76, 40, 'f-soft', 'mu') + dots(22, 40, 48, 60, 56, 'f-oil', 3, 2) + arrow(118, 76, 140, 76) + C(180, 76, 40, 'f-soft', 'mu') + P('M142 66h76', 'mu') + R(142, 40, 76, 26, 6, 'f-oil') },
+      { t: 'Droplets in minutes', d: 'When a cell is stressed, for example by heat, some of its proteins and RNA separate into droplets within minutes. When the stress ends, the droplets dissolve.',
+        s: () => blob(120, 70, 58, 'f-w', 3, 'mu') + C(98, 60, 9, 'f-oil') + C(134, 86, 7, 'f-oil') + C(146, 52, 6, 'f-oil') + heat(196, 112, 3) },
+     ]},
+     { id: 'fsoap', cls: 'd-soap', name: 'Fast delivery', speed: 'drug', cards: [
+      { t: 'Round the body in a minute', d: 'At rest, your blood travels once round your whole body in about a minute. A drug carrier in the blood passes the tumour again and again.',
+        s: () => P('M120 26c-40 0 -70 20 -70 44s30 44 70 44s70 -20 70 -44s-30 -44 -70 -44z', 'ho') + arrow(186, 64, 188, 78, 'ho') + watch(120, 70, 20) },
+      { t: 'An invisibility coat', d: 'The immune system quickly removes foreign particles from the blood. A coat of a polymer called PEG hides drug carriers, so they circulate for days instead of hours.',
+        s: () => micelle(80, 70, 28, 12) + [0,30,60,90,120,150,180,210,240,270,300,330].map((a) => { const [x1,y1] = pt(80,70,30,a), [x2,y2] = pt(80,70,44,a); return P(`M${x1} ${y1}L${x2} ${y2}`, 'po'); }).join('') + TX(180, 74, 'days', 'b') },
+      { t: 'Leaky tumour vessels', d: 'Blood vessels in many tumours grow in a hurry and are leaky. Nanoparticles slip out there more easily than through the tight walls of healthy vessels.',
+        s: () => R(10, 50, 220, 40, 4, 'f-soft') + P('M10 50H90M120 50H150M180 50H230M10 90H230', '') + micelle(104, 70, 12, 8) + arrow(104, 46, 104, 22) + blob(104, 16, 12, 'f-hot', 2) },
+      { t: 'Too small gets lost', d: 'The kidneys quickly filter out particles smaller than about 5 nanometres. Drug carriers are made larger, so they stay in the blood longer.',
+        s: () => blob(70, 70, 40, 'f-soft', 4, 'mu') + dots(10, 50, 50, 40, 40, 'f-ink', 1.6, 3) + arrow(116, 70, 150, 70) + micelle(190, 70, 24, 10) },
+      { t: 'Released in seconds', d: 'Some heat-sensitive lipid bubbles release most of their drug within seconds when warmed to about 41–42 °C, so the drug comes out right where the tumour is heated.',
+        s: () => vesicle(70, 70, 34, 12) + heat(120, 92, 3) + arrow(160, 70, 186, 70) + dots(14, 194, 46, 36, 48, 'f-hot', 3, 6) },
+      { t: 'Diluted micelles fall apart', d: 'Micelles exist only above a certain concentration of soap molecules. Diluted in the blood, weak ones fall apart and lose their drug too early.',
+        s: () => micelle(60, 70, 26, 10) + arrow(98, 70, 126, 70) + [[150,40,30],[190,60,200],[160,100,120],[206,104,300],[214,32,60]].map(([x,y,a]) => amph(x, y, a, 10, 3)).join('') },
+     ]},
+     { id: 'fprot', cls: 'd-prot', name: 'Fast gel', speed: 'gel', cards: [
+      { t: 'White first, yolk later', d: 'Egg white starts to set at about 62 °C, the yolk at about 65 °C. A few degrees and a few minutes decide between runny and hard.',
+        s: () => blob(110, 74, 56, 'f-w', 5, 'mu') + C(120, 70, 22, 'f-oil', '') + thermo(206, 30, 70, 0.62, true, '') },
+      { t: 'A clot in minutes', d: 'When you cut yourself, a blood protein called fibrinogen is turned into fibrin, which forms a gel network within a few minutes. The clot plugs the wound.',
+        s: () => P('M20 60H220M20 90H220', '') + chain([[70,64],[96,84],[122,66],[146,86],[172,68]], 'po') + chain([[80,86],[110,66],[140,84],[166,64]], 'po') + watch(206, 34, 14) },
+      { t: 'Jelly needs hours', d: 'Gelatin jelly needs a few hours in the fridge to set firmly. The protein strands find their partners slowly, and the network keeps getting stronger.',
+        s: () => R(40, 40, 90, 80, 10, 'f-soft', 'mu') + chain(coil(85, 80, 28, 10, 2)) + watch(190, 70, 26) },
+      { t: 'Agar sets fast and melts late', d: 'Agar from seaweed sets into a gel at about 35 °C, but melts again only at about 85 °C. Cooks and laboratories like it for this reason.',
+        s: () => R(40, 46, 70, 60, 8, 'f-soft', 'mu') + thermo(150, 26, 70, 0.35, false, '35 °C') + thermo(206, 26, 70, 0.85, true, '') },
+      { t: 'Cheese in half an hour', d: 'Cheese makers add an enzyme called rennet to warm milk. It cuts the milk proteins so they link into a soft gel, the curd, in about half an hour.',
+        s: () => R(30, 40, 110, 80, 10, 'f-w', 'mu') + dots(20, 40, 60, 90, 50, 'f-soft', 6, 3) + arrow(150, 80, 176, 80) + watch(206, 80, 20) },
+      { t: 'Silk in an instant', d: 'Inside a spider, silk is a liquid protein solution. As the spider pulls it out, the proteins line up and link, and a solid thread forms in a fraction of a second.',
+        s: () => blob(60, 60, 30, 'f-soft', 3, 'mu') + P('M86 72Q140 90 230 120', 'po') + P('M100 80l8 -6M130 90l8 -6M160 100l8 -6', 'mu') },
+     ]},
     ];
 
     DECKS.forEach((dk) => dk.cards.forEach((c, i) => { c.id = dk.id + (i + 1); c.deck = dk; c.i = i; }));
@@ -6522,6 +6937,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     '<text x="50" y="59" text-anchor="middle" font-size="26" font-weight="700" fill="white" font-family="Instrument Sans, sans-serif">?</text></svg>';
   function fcHow(dk) {
     if (dk.game) return T('Three stars in “{g}” win a card.', { g: T(GAMES.find((g) => g.id === dk.game).title) });
+    if (dk.speed) return T('Three stars in the speed run of “{g}” win a card.', { g: T(GAMES.find((g) => g.id === dk.speed).title) });
     return T('In Explore, each minute with Plastic, Polymer chains or Oily particles wins a card of that system.');
   }
   function fcGive(pool) { // a random card from the pool that this browser does not have yet; null when the pool is complete
@@ -6530,8 +6946,9 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   }
   // the big card over the page: a new card flips over with stars; an album card just opens
   let fcShown = null;
-  function fcOpen(c, isNew) {
-    fcShown = [c, isNew]; const m = $('fcModal'), f = $('fcFlip'), b = $('fcBurst');
+  let fcAfter = null; // what to do when the card is closed
+  function fcOpen(c, isNew, after) {
+    fcShown = [c, isNew]; fcAfter = after || null; const m = $('fcModal'), f = $('fcFlip'), b = $('fcBurst');
     $('fcFront').innerHTML = fcFace(c); $('fcNew').textContent = isNew ? T('New card!') : ''; $('fcClose').textContent = T(isNew ? 'Add to my cards' : 'Close');
     m.hidden = false; f.classList.toggle('on', !isNew); b.innerHTML = '';
     if (isNew) setTimeout(() => { f.classList.add('on');
@@ -6539,13 +6956,13 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
         return `<span style="--x:${(Math.cos(a) * d).toFixed(0)}px;--y:${(Math.sin(a) * d).toFixed(0)}px;animation-delay:${(0.35 + 0.05 * Math.random()).toFixed(2)}s">★</span>`; }).join(''); }, 350);
     $('fcClose').focus();
   }
-  function fcCloseModal() { $('fcModal').hidden = true; fcShown = null; }
+  function fcCloseModal() { $('fcModal').hidden = true; fcShown = null; const f = fcAfter; fcAfter = null; if (f) f(); }
   $('fcClose').addEventListener('click', fcCloseModal);
   $('fcModal').addEventListener('click', (e) => { if (e.target === $('fcModal')) fcCloseModal(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('fcModal').hidden) fcCloseModal(); });
   // the album, in place of the old "In everyday life" texts: the current system's deck first
   function renderAlbum() {
-    const own = fcOwned(), deckOf = (dk) => (dk.game ? GAMES.find((g) => g.id === dk.game).sys === sys : dk.cards.some((c) => c.sys === sys));
+    const own = fcOwned(), deckOf = (dk) => (dk.game || dk.speed ? GAMES.find((g) => g.id === (dk.game || dk.speed)).sys === sys : dk.cards.some((c) => c.sys === sys));
     const decks = FC.DECKS.slice().sort((a, b) => deckOf(b) - deckOf(a));
     $('albumCount').textContent = `${own.filter((id) => FC_ALL.some((c) => c.id === id)).length} / ${FC_ALL.length}`;
     $('album').innerHTML = decks.map((dk) => { const n = dk.cards.filter((c) => own.includes(c.id)).length;
@@ -6837,6 +7254,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   let smX = null, smY = null, smL = 0, smE = null, smT = 0;
   const SM_TAU = 0.07;
   function smoothReset() { smX = null; }
+  try { if (localStorage.getItem('mdlab-smooth') === '0') $('smooth').checked = false; } catch (e) {} // a teacher option, kept in this browser
+  $('smooth').addEventListener('change', () => { try { localStorage.setItem('mdlab-smooth', $('smooth').checked ? '1' : '0'); } catch (e) {} });
   function smoothPos() { // updates the drawn positions; false when the true ones should be drawn
     const now = performance.now(), dt = Math.min(0.1, Math.max(0, (now - smT) / 1000)); smT = now;
     if (!$('smooth').checked || eng2 || eng.walls || demoDrawing) { smX = null; return false; }
@@ -7221,7 +7640,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   addEventListener('blur', () => { kbHeat = false; });
   (function kbLoop(now) { // the same response as the microphone: up in about 0.3 s, down in about 0.6 s
     if (kbGlide && kbFree()) { const s = $('tsliderM'), lo = +s.min, hi = +s.max, dt = Math.min(0.5, (now - kbLast) / 1000); kbLast = now; /* slow computers draw few frames: follow real time */
-      const target = kbHeat ? lo + 0.95 * (hi - lo) : lo + 0.05 * (hi - lo), k = 1 - Math.exp(-dt / (kbHeat ? 0.3 : 0.6)), v = tset + k * (target - tset);
+      const target = kbHeat ? hi : lo, k = 1 - Math.exp(-dt / (kbHeat ? 0.3 : 0.6)), v = tset + k * (target - tset);
       if (Math.abs(v - tset) > 1e-4) kbT(v); if (!kbHeat && Math.abs(target - v) < 0.002 * (hi - lo)) kbGlide = false; }
     else kbLast = now;
     requestAnimationFrame(kbLoop); })(performance.now());
@@ -7426,7 +7845,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   const PIC_H = 0.78; // the picture is 1000 wide and 780 high in picture coordinates
   function macroFrame(M, c, t) { // one frame into canvas c at time t (s); t ≥ 3.6 gives the finished picture with the close-up
     const x = c.getContext('2d'), W = c.width, H = c.height, k = W / 1000, oy = (H - PIC_H * W) / 2;
-    const ef = ease(clamp01((t - 0.6) / 2.4)), [ax, ay] = ANCHOR[M.kind][M.st], z0 = Math.max(W, H) / (MBOX * k), z = Math.exp(Math.log(z0) * (1 - ef));
+    const ef = ease(clamp01((t - 0.6) / 2.4)), [ax, ay] = M.water ? [500, 470] : ANCHOR[M.kind][M.st], z0 = Math.max(W, H) / (MBOX * k), z = Math.exp(Math.log(z0) * (1 - ef));
     const sx = W / 2 + (ax * k - W / 2) * ef, sy = H / 2 + (ay * k + oy - H / 2) * ef, sc = k * z, px = W / 500;
     x.setTransform(1, 0, 0, 1, 0, 0); x.fillStyle = PAPER; x.fillRect(0, 0, W, H);
     x.setTransform(sc, 0, 0, sc, sx - ax * sc, sy - ay * sc);
@@ -7444,13 +7863,17 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     x.moveTo(right ? bx + bw : bx, by); x.lineTo(right ? ix : ix + iw, iy); x.moveTo(right ? bx + bw : bx, by + bw); x.lineTo(right ? ix : ix + iw, iy + iw); x.stroke(); x.setLineDash([]);
     x.fillStyle = '#ffffff'; x.fillRect(ix - 3, iy - 3, iw + 6, iw + 6); if (M.snap) x.drawImage(M.snap, ix, iy, iw, iw);
     x.lineWidth = 3 * px; x.strokeRect(ix, iy, iw, iw);
-    macroLabel(x, W, T('Your box: smaller than a virus'), ix + iw / 2, iy + iw + 0.035 * W, 0.024);
     x.globalAlpha = 1;
   }
   function macroStill(c, M) { // the finished picture for the end card
     const w = c.clientWidth || 320, pr = Math.min(2, window.devicePixelRatio || 1); c.width = Math.round(w * pr); c.height = Math.round(w * pr * PIC_H); macroFrame(M, c, 99); }
+  // ice game with less than 5 % ice because the box was too warm most of the time: the result is simply liquid water
+  const WATER = { t: 'Still liquid water', d: 'It stayed too warm most of the time, so the molecules never had time to build crystals.' };
+  function iceTooWarm(o) { const G = o.G || {}, g = o.g, r = G.rec || []; if (g.id !== 'ice' || !(o.v < 0.05) || !r.length || !g.path) return !!(g.id === 'ice' && o.v < 0.05 && !r.length);
+    return r.filter((q) => q.T > g.path(q.s)[1]).length > 0.5 * r.length; }
   const macroInfo = (o) => { const st = Math.max(0, Math.min(3, o.st)), G = o.G || {}, poison = o.g.id === 'drug' && st === 0 && (G.lost || 0) > (G.del || 0);
-    return { kind: o.g.id, st, poison, info: poison ? POISON : MACRO[o.g.id][st] }; };
+    const water = st === 0 && iceTooWarm(o);
+    return { kind: o.g.id, st, poison, water, info: poison ? POISON : water ? WATER : MACRO[o.g.id][st] }; };
   function macroLabel(x, W, txt, cxp, cyp, f) {
     x.font = `600 ${(f || 0.03) * W}px ${css('--f-body') || 'sans-serif'}`; x.textAlign = 'center'; x.textBaseline = 'middle';
     const w = x.measureText(txt).width + 0.03 * W, h = (f || 0.03) * W * 1.6; x.fillStyle = 'rgba(255,255,255,0.88)'; x.fillRect(cxp - w / 2, cyp - h / 2, w, h); x.fillStyle = INK; x.fillText(txt, cxp, cyp); }
@@ -7476,7 +7899,16 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   function macroScene(x, M) {
     x.save(); ({ ice: sceneIce, demix: sceneDemix, drug: sceneDrug, gel: sceneGel })[M.kind](x, M.st, M); x.restore();
   }
-  function sceneIce(x, st) {
+  function sceneIce(x, st, M) {
+    if (M && M.water) { glass(x, () => { x.fillStyle = 'rgba(120,190,235,0.45)'; x.fillRect(300, 280, 400, 400); const r = rng(77);
+        for (let i = 0; i < 9; i++) { x.strokeStyle = 'rgba(255,255,255,0.9)'; x.lineWidth = 3; x.beginPath(); x.arc(390 + 220 * r(), 330 + 300 * r(), 5 + 6 * r(), 0, 6.283); x.stroke(); } });
+      // a striped cocktail straw (on the left, away from the close-up): in the water it looks paler, above the water it bends over the rim
+      const straw = [[425, 645], [388, 175], [300, 118]], tube = (al) => { x.beginPath(); x.moveTo(...straw[0]); x.lineTo(...straw[1]); x.quadraticCurveTo(375, 140, ...straw[2]); x.globalAlpha = al; };
+      x.save(); x.lineCap = 'round'; x.lineJoin = 'round';
+      tube(1); x.strokeStyle = INK; x.lineWidth = 26; x.stroke(); tube(1); x.strokeStyle = '#ffffff'; x.lineWidth = 20; x.stroke();
+      tube(1); x.strokeStyle = '#e4534b'; x.lineWidth = 20; x.lineCap = 'butt'; x.setLineDash([22, 22]); x.stroke(); x.setLineDash([]);
+      x.globalAlpha = 0.45; x.fillStyle = 'rgba(120,190,235,1)'; x.beginPath(); x.moveTo(400, 290); x.lineTo(445, 290); x.lineTo(445, 660); x.lineTo(410, 660); x.closePath(); x.fill(); // water in front of the straw
+      x.restore(); return; }
     table(x, st ? 662 : 690);
     if (st === 0) { // three scoops of ice cream in a cup: tiny crystals, soft and white
       shadow(x, 500, 690, 170, 18);
@@ -7604,13 +8036,31 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     sk(x, blob(460, 480, 175, 5, 0.12, 100), { fill: '#ffffff', w: 4, seed: 100 });
     sk(x, ell(500, 460, 62, 58), { fill: '#f6a81c', w: 4, seed: 101 }); x.fillStyle = 'rgba(255,255,255,0.75)'; x.beginPath(); x.ellipse(482, 440, 16, 10, -0.5, 0, 6.283); x.fill();
   }
-  window.__macro = (id, st, lost, card) => { const g = GAMES.find((q) => q.id === id); if (!g) return; const o = { g, st, v: 0, G: { lost: lost || 0, del: 0, peakSec: 0 } }; postGame = id;
+  window.__macro = (id, st, lost, card, v) => { const g = GAMES.find((q) => q.id === id); if (!g) return; const o = { g, st, v: v === undefined ? 0.2 : v, G: { lost: lost || 0, del: 0, peakSec: 0 } }; postGame = id; if (card === 'fc') o.card = FC_ALL[0];
     macroPlay(o, card ? () => endCard(o) : () => {}); }; // for tests
   // ---------- the energy scan is an option inside Explore; on phones it closes the sheet and shows the scan graphs ----------
   document.querySelectorAll('.subseg [data-appmode]').forEach((b) => b.addEventListener('click', () => {
     if (b.dataset.appmode !== 'scan' || !phoneUI()) return;
     sheet(false); requestAnimationFrame(() => { const t = $('thermoPanel'); if (t && t.scrollIntoView) t.scrollIntoView({ block: 'start', behavior: 'smooth' }); }); }));
   applyLocks(); locksLive = true; // start-up itself opens the games
+  // ---------- during a game: race against your own best run (the ghost 👻 on the score band) ----------
+
+  // (2) the ghost: your best run in this game, replayed beside you. Saved when you set a new personal best.
+  // Only games whose goal is the same every time (ice, liquids, gel): the drug game draws new red windows each time.
+  const GHOST_GAMES = ['ice', 'demix', 'gel'];
+  function ghostLoad(g) { if (!GHOST_GAMES.includes(g.id)) return null;
+    try { const o = JSON.parse(localStorage.getItem('mdlab-ghost-' + g.id) || 'null'); return o && o.r && o.r.length > 8 ? o : null; } catch (e) { return null; } }
+  function ghostSave(G) { const g = G.g; if (!GHOST_GAMES.includes(g.id) || !G.rec || G.rec.length < 8) return;
+    try { localStorage.setItem('mdlab-ghost-' + g.id, JSON.stringify({ v: G.peak, st: starsFor(g, G.peak), r: G.rec.map((q) => [+q.s.toFixed(2), +q.T.toFixed(3), +q.v.toFixed(4)]) })); } catch (e) {} }
+  function ghostAt(gh, s) { const r = gh.r; let i = 0; while (i < r.length - 1 && r[i + 1][0] <= s) i++; return r[i]; }
+  function ghostTick() {
+    const G = game, sm = $('ghostS');
+    const gh = G && !G.g.proto && !G.speed && !G.level && !battle && !classOn && !G.guided && $('gghostOn').checked ? G.ghost : null;
+    if (!gh) { if (!sm.hidden) sm.hidden = true; return; }
+    const g = G.g, s = G.cd ? 0 : GAME_SEC * Math.min(1, (eng.time - G.t0) / g.D), vg = ghostAt(gh, s)[2];
+    sm.hidden = false; sm.style.left = (100 * Math.max(0, Math.min(1, vg / (g.scale || 1)))) + '%'; // your best run's score at this second
+  }
+  setInterval(ghostTick, 120);
   // ---- main loop ----
   let last = performance.now(), stepCount = 0, perfT = last, sps = 0, tkinAvg = null;
   // ---------- hidden debug line: add ?debug=1 to the address (or #debug) ----------
@@ -7703,7 +8153,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     ru: { game: 'Игра', explore: 'Исследование', scan: 'Скан', opt: 'Настройки' } };
   function barLabels() { const t = BAR[LANG] || BAR.en; document.querySelectorAll('[data-bar]').forEach((el) => { el.textContent = t[el.dataset.bar]; }); }
   $('lang').addEventListener('change', (e) => setLang(e.target.value));
-  window.__eng = () => eng; window.__game = () => game; // for tests
+  window.__eng = () => eng; window.__game = () => game; window.__tset = () => tset; // for tests
   window.__i18nData = () => { const out = [];
     for (const S of Object.values(SYS)) { for (const k of ['concLab', 'plotLab', 'hl']) if (S[k]) out.push(S[k]); for (const [, tx] of S.legend || []) out.push(tx); }
     for (const g of GAMES) out.push(g.title, g.sub, g.goal, g.hint, g.lab, g.lesson.good, g.lesson.bad);

@@ -45,6 +45,8 @@
   let smX = null, smY = null, smL = 0, smE = null, smT = 0;
   const SM_TAU = 0.07;
   function smoothReset() { smX = null; }
+  try { if (localStorage.getItem('mdlab-smooth') === '0') $('smooth').checked = false; } catch (e) {} // a teacher option, kept in this browser
+  $('smooth').addEventListener('change', () => { try { localStorage.setItem('mdlab-smooth', $('smooth').checked ? '1' : '0'); } catch (e) {} });
   function smoothPos() { // updates the drawn positions; false when the true ones should be drawn
     const now = performance.now(), dt = Math.min(0.1, Math.max(0, (now - smT) / 1000)); smT = now;
     if (!$('smooth').checked || eng2 || eng.walls || demoDrawing) { smX = null; return false; }

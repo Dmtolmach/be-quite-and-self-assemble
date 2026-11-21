@@ -6,6 +6,7 @@
   "03-controls.js",
   "04-switch-system.js",
   "05-games.js",
+  "05b-speed-run.js",
   "06-class-mode.js",
   "07-help-tour.js",
   "08-phone-layout.js",
@@ -25,6 +26,7 @@
   "20a-highlights.js",
   "20b-macro-film.js",
   "20c-explore-scan.js",
+  "20d-live-ghost.js",
   "21-main-loop.js"
  ],
  "languages": [

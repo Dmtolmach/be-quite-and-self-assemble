@@ -30,7 +30,7 @@
           <div><span id="gpeakLab">Best this run</span><b id="gpeak">–</b></div>
           <div><span id="gstarsLab">Stars</span><b id="gstars" class="gst">☆☆☆</b></div>
         </div>
-        <div class="gband" id="gband" aria-hidden="true" title="Line: your score now. Marks: star levels"><div class="best" id="gbest"></div><div class="now" id="gnow"></div></div>
+        <div class="gband" id="gband" aria-hidden="true" title="Line: your score now. Marks: star levels"><div class="best" id="gbest"></div><div class="now" id="gnow"></div><div class="ghostmark" id="ghostS" hidden>👻</div></div>
         <div class="gbar" aria-hidden="true"><i id="gbar"></i></div>
         <p class="gres" id="gres" aria-live="polite"></p>
         <canvas class="greplay" id="greplay" hidden aria-label="Your run: temperature and score over time"></canvas>
@@ -50,7 +50,7 @@
           <button class="btn" id="clsExit">Exit class mode</button></div>
         <div class="clsgame" id="clsGame" hidden>
           <select id="clsGameSel" aria-label="Game"></select>
-          <div class="clsteam"><label><input type="checkbox" id="clsTeams"> Team play</label><label>Teams <select id="clsTeamN"><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select></label></div>
+          <div class="clsteam"><label><input type="checkbox" autocomplete="off" id="clsTeams"> Team play</label><label>Teams <select id="clsTeamN"><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select></label></div>
           <button class="btn primary" id="clsStart">Start</button>
         </div>
         <p class="clsgoal" id="clsGoal">Everyone quiet: the box cools and structures grow. Noise heats it and breaks them.</p>
@@ -144,6 +144,7 @@
       <div class="panel" id="gamePanel" data-mode="game">
         <h2>Game: steer the molecules with your voice</h2>
         <div class="gpick" id="gpick"></div>
+        <div class="seg speedseg" id="gspeed" role="group" aria-label="Kind of game" hidden></div>
         <div class="ladder" id="ladder"></div>
         <div class="protosec" id="protoSec" hidden><h3>Prototype games <small>for testing</small></h3><div class="gpick" id="ppick"></div><p class="note">Endless: lives, combos and levels that get faster. Same start every time.</p></div>
         <div class="gsel" id="gsel" hidden>
@@ -151,8 +152,9 @@
           <p class="ghint" id="ghint"></p>
           <div class="btns">
             <button class="btn primary" id="gstart">Start</button>
-            <label class="gmic gopt"><input type="checkbox" id="guseMic" checked> Use the microphone</label>
-            <label class="gmic gopt"><input type="checkbox" id="gtips" checked> Show tips</label>
+            <label class="gmic gopt"><input type="checkbox" autocomplete="off" id="guseMic" checked> Use the microphone</label>
+            <label class="gmic gopt"><input type="checkbox" autocomplete="off" id="gtips" checked> Show tips</label>
+            <label class="gmic gopt"><input type="checkbox" autocomplete="off" id="gghostOn" checked> Race my best run</label>
           </div>
         </div>
       </div>
@@ -209,7 +211,7 @@
         <div class="row" id="concRow"><label for="conc" id="concLab">Concentration</label><output id="concO">26%</output>
           <input type="range" id="conc" min="2" max="60" step="1" value="26"></div>
         <p class="note" id="concNote"></p>
-        <div class="checks dbgonly" data-show="ice"><label><input type="checkbox" id="iceWall"> Ice-like wall</label></div>
+        <div class="checks dbgonly" data-show="ice"><label><input type="checkbox" autocomplete="off" id="iceWall"> Ice-like wall</label></div>
         <p class="note dbgonly" data-show="ice">A pinned row of molecules across the box with the ice honeycomb pattern, binding water strongly, like a mineral surface. Ice can grow from its flat faces without first having to form a nucleus. Changes apply live.</p>
 
         <div class="row" data-show="dumbbell"><label for="epsBB">Tail–tail attraction ε<sub>BB</sub></label><output id="epsBBO">2.50</output>
@@ -259,7 +261,7 @@
           <p class="note" id="seqNote">Letters H and P only, 3–60 beads. Applying rebuilds the system.</p>
         </div>
 
-        <div class="checks" data-show="brush"><label><input type="checkbox" id="bInvert"> Swap colours: teal beads at the chain ends, orange in the middle (rebuilds)</label></div>
+        <div class="checks" data-show="brush"><label><input type="checkbox" autocomplete="off" id="bInvert"> Swap colours: teal beads at the chain ends, orange in the middle (rebuilds)</label></div>
         <div class="row" data-show="brush"><label for="graft">Grafting spacing, σ (larger = sparser; rebuilds on release)</label><output id="graftO">1.6</output>
           <input type="range" id="graft" min="1.2" max="3" step="0.1" value="1.6"></div>
         <div class="row" data-show="brush"><label for="nEnd">End beads per chain (orange, or teal when swapped; rebuilds on release)</label><output id="nEndO">2</output>
@@ -274,14 +276,14 @@
           <input type="range" id="epsHL" min="0" max="2" step="0.05" value="0.2"></div>
         <div class="row" data-show="plates"><label for="plateKind">Plate surface</label>
           <select id="plateKind"><option value="0">Water-fearing (no attraction to water)</option><option value="0.3">Water-attracting (pulls on water)</option><option value="hb" selected>Hydrogen-bonding (bonds to water)</option></select></div>
-        <div class="checks" data-show="plates"><label><input type="checkbox" id="plateCompare" checked> Side by side: water-fearing plates on the left, this surface on the right</label></div>
-        <div class="checks" data-show="plates"><label><input type="checkbox" id="plateHold" checked> Hold the plates in place (untick to release them)</label></div>
+        <div class="checks" data-show="plates"><label><input type="checkbox" autocomplete="off" id="plateCompare" checked> Side by side: water-fearing plates on the left, this surface on the right</label></div>
+        <div class="checks" data-show="plates"><label><input type="checkbox" autocomplete="off" id="plateHold" checked> Hold the plates in place (untick to release them)</label></div>
         <p class="note" data-show="plates">Watch the gap while the plates are held, then release them. The surface can be switched while it runs.</p>
         <div class="row" data-show="plates"><label for="plateGap">Start gap</label>
           <select id="plateGap"><option value="2.2" selected>One water layer</option><option value="3.2">Two water layers</option></select></div>
         <div class="row" data-show="plates"><label for="plateLen">Plate length (beads)</label><output id="plateLenO">12</output>
           <input type="range" id="plateLen" min="6" max="18" step="1" value="12"></div>
-        <div class="checks" data-show="mbpoly plates"><label><input type="checkbox" id="mbHB" checked> Water hydrogen bonds on (turn off for the control: plain LJ water)</label></div>
+        <div class="checks" data-show="mbpoly plates"><label><input type="checkbox" autocomplete="off" id="mbHB" checked> Water hydrogen bonds on (turn off for the control: plain LJ water)</label></div>
         <p class="note" data-show="mbpoly">Chain length 1 (default) gives free nonpolar solutes; longer lengths give one or more chains of the same beads.</p>
       </details>
 
@@ -293,11 +295,11 @@
           <input type="range" id="gamma" min="0.05" max="5" step="0.05" value="1"></div>
         <div class="row" id="tauRow" hidden><label for="tau">Coupling time τ<sub>T</sub></label><output id="tauO">0.50</output>
           <input type="range" id="tau" min="0.05" max="5" step="0.05" value="0.5"></div>
-        <div class="checks" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice"><label><input type="checkbox" id="baro"> Constant pressure (barostat): the box grows or shrinks to hold the pressure</label></div>
+        <div class="checks" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice"><label><input type="checkbox" autocomplete="off" id="baro"> Constant pressure (barostat): the box grows or shrinks to hold the pressure</label></div>
         <div class="row" id="p0Row" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice" hidden><label for="p0">Target pressure P*</label><output id="p0O">1.00</output>
           <input type="range" id="p0" min="0" max="4" step="0.01" value="1"></div>
         <p class="note" id="baroNote" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice" hidden></p>
-        <div class="checks" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice"><label><input type="checkbox" id="pitchP"> Voice pitch sets the pressure</label></div>
+        <div class="checks" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice"><label><input type="checkbox" autocomplete="off" id="pitchP"> Voice pitch sets the pressure</label></div>
         <div class="pitchtune" id="pitchTune" data-show="dumbbell polymer diblock demix crypt hp lcst mbpoly ice" hidden>
           <div class="row"><label for="pLo">Lowest note: pressure 0</label><select id="pLo"></select><button class="btn" id="pLoSing">Sing it</button></div>
           <div class="row"><label for="pHi">Highest note: top pressure</label><select id="pHi"></select><button class="btn" id="pHiSing">Sing it</button></div>
@@ -306,7 +308,7 @@
         <p class="note" data-show="ice">In ice, higher pressure lowers the freezing point, as in real water.</p>
         <div class="row"><label for="spf">MD steps per frame</label><output id="spfO">12</output>
           <input type="range" id="spf" min="1" max="60" step="1" value="12"></div>
-        <div class="checks"><label><input type="checkbox" id="autoSpf" checked> Adjust steps per frame automatically to keep the animation smooth</label></div>
+        <div class="checks"><label><input type="checkbox" autocomplete="off" id="autoSpf" checked> Adjust steps per frame automatically to keep the animation smooth</label></div>
       </details>
 
       <details class="panel" data-mode="explore">
@@ -317,11 +319,10 @@
           <select id="initState"><option value="ordered" selected>Ordered (cold equilibrium)</option><option value="disordered">Disordered (hot)</option></select></div>
         <div class="btns"><button class="btn primary" id="reset">Rebuild system</button></div>
         <div class="checks">
-          <label data-show="dumbbell polymer diblock hp crypt lcst mbpoly plates"><input type="checkbox" id="showSolv" checked> Show solvent</label>
-          <label data-show="mbpoly plates"><input type="checkbox" id="showShell" checked> Highlight hydration-shell water</label>
-          <label data-show="dumbbell polymer mbpoly ice crypt"><input type="checkbox" id="byCluster"> <span id="byClusterLab">Color by micelle</span></label>
-          <label data-show="dumbbell polymer diblock hp crypt lcst mbpoly"><input type="checkbox" id="showBonds" checked> Show bonds</label>
-          <label><input type="checkbox" id="smooth" checked> Smooth motion</label>
+          <label data-show="dumbbell polymer diblock hp crypt lcst mbpoly plates"><input type="checkbox" autocomplete="off" id="showSolv" checked> Show solvent</label>
+          <label data-show="mbpoly plates"><input type="checkbox" autocomplete="off" id="showShell" checked> Highlight hydration-shell water</label>
+          <label data-show="dumbbell polymer mbpoly ice crypt"><input type="checkbox" autocomplete="off" id="byCluster"> <span id="byClusterLab">Color by micelle</span></label>
+          <label data-show="dumbbell polymer diblock hp crypt lcst mbpoly"><input type="checkbox" autocomplete="off" id="showBonds" checked> Show bonds</label>
         </div>
       </details>
     </div>
@@ -344,12 +345,14 @@
             <div class="row qrow"><label for="quality">Drawing quality</label>
           <select id="quality"><option value="auto" selected>Automatic (lighter on slow devices)</option><option value="0">Full</option><option value="1">Lighter</option><option value="2">Light</option><option value="3">Lightest</option></select></div>
             <p class="note">For slow computers or projectors: lighter drawing keeps the simulation smooth.</p>
+            <div class="checks"><label><input type="checkbox" autocomplete="off" id="smooth" checked> Smooth motion</label></div>
+            <p class="note">Molecules glide between frames instead of jumping. Only the picture changes, not the simulation. Kept in this browser.</p>
             <div class="btns"><button class="btn" id="gunlock">Unlock all games</button><button class="btn" id="ladUnlock">Unlock all challenges</button></div>
             <p class="note">For this browser only. Press again to lock.</p>
         <div class="gproto"><h3>Prototype games</h3><p class="note">New game ideas to try with a class before they become real games.</p><button class="btn" id="protoToggle">Show prototype games</button></div>
         <div class="gdisp">
           <h3>Projector and accessibility</h3>
-          <div class="checks"><label><input type="checkbox" id="optBig"> Larger text</label><label><input type="checkbox" id="optHi"> High contrast</label></div>
+          <div class="checks"><label><input type="checkbox" autocomplete="off" id="optBig"> Larger text</label><label><input type="checkbox" autocomplete="off" id="optHi"> High contrast</label></div>
           <p class="note">Kept in this browser. Keyboard play works everywhere: hold Space to heat, arrow keys to set the temperature.</p>
         </div>
         <div class="gofl">
