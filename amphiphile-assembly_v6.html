@@ -464,7 +464,7 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
 .gband { position: relative } .gband .ghostmark { top: 50%; margin-top: -9px; font-size: 15px; opacity: .85 }
 
 /* ---- speed run: only the goal, the clock and the molecules ---- */
-.speedrun #szone, .speedrun .coach, .speedrun .gres, .speedrun #gbest { display: none !important }
+.speedrun #szone, .speedrun .coach, .speedrun .gres, .speedrun #gbest, .speedrun:not(.speeddrug) .gbar { display: none !important } /* no time bar in a speed run; the drug game keeps it for its red windows */
 .speedrun .gband .tick.goal { white-space: nowrap; font-weight: 700; color: var(--ink) }
 .speedrun #hudGoal { display: block; margin-top: 4px; font-weight: 600 }
 .speedseg { margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr } .speedseg button small { display: block; font-weight: 400; font-size: 11.5px; color: var(--muted) }
@@ -5972,7 +5972,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     g.stars.forEach((s, k) => { const d = document.createElement('div'); d.className = 'tick'; d.style.left = (100 * s / (g.scale || 1)) + '%'; d.textContent = '★'.repeat(k + 1); band.appendChild(d); });
     $('gnow').style.left = '0%'; $('gbar').style.width = '0%'; $('gres').textContent = '';
     $('hudTitle').textContent = T(g.title) + (game.level ? ' · ' + T('Challenge {k}', { k: game.level }) : '') ; $('hudGoal').textContent = ''; $('hudTip').textContent = ''; /* no goal text or tips above the box */
-    document.querySelector('.wrap').classList.toggle('speedrun', !!game.speed); if (game.speed) { $('hudGoal').textContent = T(game.speed.goal); $('hudTitle').textContent += ' · ⏱ ' + T('Speed run'); }
+    document.querySelector('.wrap').classList.toggle('speedrun', !!game.speed); document.querySelector('.wrap').classList.toggle('speeddrug', !!game.speed && g.id === 'drug'); if (game.speed) { $('hudGoal').textContent = T(game.speed.goal); $('hudTitle').textContent += ' · ⏱ ' + T('Speed run'); }
     $('ghud').hidden = false; document.querySelector('.wrap').classList.add('ingame'); $('gquit').textContent = T('Give up'); $('gagain').hidden = true;
     $('gstart').disabled = true; resize();
     if (g.proto) protoStart(game); else { $('gtimeLab').textContent = T(game.speed ? 'Time' : 'Time left'); $('gstarsLab').textContent = T('Stars'); }
@@ -6123,7 +6123,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // resuming after a game keeps the best structure as the starting point
   renderPick();
 
-  function closeHud() { gendClose(); postGame = null; $('ghud').hidden = true; document.querySelector('.wrap').classList.remove('speedrun'); if (coachReady) { coachHide(); $('greplay').hidden = true; } document.querySelector('.wrap').classList.remove('ingame'); resize(); }
+  function closeHud() { gendClose(); postGame = null; $('ghud').hidden = true; document.querySelector('.wrap').classList.remove('speedrun', 'speeddrug'); if (coachReady) { coachHide(); $('greplay').hidden = true; } document.querySelector('.wrap').classList.remove('ingame'); resize(); }
   $('gquit').addEventListener('click', () => { if (battle && coachReady) battleStop(); const was = !!game; endGame(null); if (was) { gameRange = null; applySysUI(); setT(tset); } closeHud(); });
   renderPick();
 
@@ -6132,13 +6132,13 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // target for SPEED_HOLD s; the time is when it first got there. Targets and star times from tools/calibration/speedcal.js (good play: ice ~10–15 s,
   // liquids ~24–30 s, gel ~17–20 s; silence alone never gets there in ice and liquids, and in gel only slowly).
   const SPEED_HOLD = 1.5, SPEED_BAR = 120; // no time limit; the time bar (with the drug's red windows) spans the first 2 minutes
-  // Targets as set by the author. With fixed strategies (speedcal.js, up to 400 s): ice 0.75 in 104–217 s; liquids peak ~0.80 and gel ~186 σ,
-  // so 0.95 and 200 σ need better play than any fixed strategy tried; their star times are guesses until real players set records. A run ends only at the goal, with Give up, or (drug) when too much drug is lost.
+  // Targets as set by the author. With fixed strategies (speedcal.js, up to 400 s): ice 0.75 in 104–217 s; liquids peak ~0.80 with fixed
+  // strategies, but the author reached 0.95 by hand; gel 170 σ: one fixed run in 78 s, others touch 170–186 σ without holding it 1.5 s. Liquids and gel star times are estimates. A run ends only at the goal, with Give up, or (drug) when too much drug is lost.
   const SPEED = {
     ice: { target: 0.75, t: [Infinity, 200, 120], goal: 'Freeze the water into ice: it turns blue. As fast as you can!' },
     demix: { target: 0.95, t: [Infinity, 500, 300], goal: 'Separate the two liquids into big regions of their own colour. As fast as you can!' },
     drug: { target: 80, t: [Infinity, 40, 25], goal: 'Release the drug only in the red windows. As fast as you can!' },
-    gel: { target: 200, t: [Infinity, 240, 120], goal: 'Link the proteins into one long gel strand (the red line). As fast as you can!' },
+    gel: { target: 170, t: [Infinity, 180, 90], goal: 'Link the proteins into one long gel strand (the red line). As fast as you can!' },
   };
   let speedMode = false;
   function speedOpen(g) { if (!g || !SPEED[g.id]) return false; if (unlockAll()) return true; const b = getBest(g); return b !== null && starsFor(g, b) === 3; }
