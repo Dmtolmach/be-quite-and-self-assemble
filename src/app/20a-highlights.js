@@ -95,7 +95,7 @@
     }
     if (FX.pulse && gelShow && gelShow.path.length > 1) { const u = (now - FX.pulse) / 1500; if (u >= 1) { FX.pulse = 0; return; } fxGel(gelShow, u, s, calm); }
   }
-  function fxGel(gp, u, s, calm) { // the path glows, a bright spark runs along it and the newly joined proteins ring
+  function fxGel(gp, u, s, calm) { // the path glows, a bright spark runs along it through the beads, and the beads it has passed glow
     const pts = gelPts(gp), L = eng.L, seg = [0]; for (let h = 1; h < pts.length; h++) seg.push(seg[h - 1] + Math.hypot(pts[h][0] - pts[h - 1][0], pts[h][1] - pts[h - 1][1]));
     const tot = seg[seg.length - 1] || 1, head = (calm ? 1 : Math.min(1, u / 0.65)) * tot, fade = Math.pow(1 - u, 1.2);
     const at = (d) => { let h = 1; while (h < seg.length - 1 && seg[h] < d) h++; const f = (d - seg[h - 1]) / Math.max(1e-6, seg[h] - seg[h - 1]); return [pts[h - 1][0] + f * (pts[h][0] - pts[h - 1][0]), pts[h - 1][1] + f * (pts[h][1] - pts[h - 1][1])]; };
@@ -105,8 +105,8 @@
       for (let h = 0; h < pts.length && seg[h] <= head; h++) { const X = (pts[h][0] + ox) * s, Y = (pts[h][1] + oy) * s; h ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); }
       const [hx, hy] = at(head); ctx.lineTo((hx + ox) * s, (hy + oy) * s); ctx.stroke();
       if (!calm && u < 0.7) { ctx.globalAlpha = 1; const sp = fxSprite('#ffe680'), r = 3.2 * s; ctx.drawImage(sp, (hx + ox) * s - r, (hy + oy) * s - r, 2 * r, 2 * r); }
-      ctx.lineWidth = 2.5 * dpr; ctx.strokeStyle = '#e09a00';
-      for (const m of FX.newNodes || []) { const X = (gp.cx[m] + ox) * s, Y = (gp.cy[m] + oy) * s; ctx.globalAlpha = 0.9 * fade; ctx.beginPath(); ctx.arc(X, Y, (calm ? 2 : 1 + 3 * u) * s, 0, 6.2832); ctx.stroke(); } }
+      if (!calm) { const sp = fxSprite('#ffd34d'), r = 0.9 * s; ctx.globalAlpha = 0.8 * fade; // the beads the light has passed glow for a moment
+        for (let h = 0; h < pts.length && seg[h] <= head; h++) ctx.drawImage(sp, (pts[h][0] + ox) * s - r, (pts[h][1] + oy) * s - r, 2 * r, 2 * r); } }
     ctx.restore();
   }
   window.__fx = () => FX.total || 0; // for tests

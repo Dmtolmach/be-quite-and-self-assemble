@@ -447,7 +447,11 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
 .gband { position: relative } .gband .ghostmark { top: 50%; margin-top: -9px; font-size: 15px; opacity: .85 }
 
 /* ---- speed run: only the goal, the clock and the molecules ---- */
-.speedrun #szone, .speedrun .coach, .speedrun .gres, .speedrun #gbest { display: none !important }
-.speedrun .gband .tick.goal { white-space: nowrap; font-weight: 700; color: var(--ink) }
+.speedrun #szone, .speedrun #nzone, .speedrun .coach, .speedrun .gres, .speedrun #gbest, .speedrun:not(.speeddrug) .gbar { display: none !important } /* no time bar in a speed run; the drug game keeps it for its red windows */
+.speedrun .gband .tick.goal { white-space: nowrap; font-weight: 700; color: var(--ink); z-index: 2 }
 .speedrun #hudGoal { display: block; margin-top: 4px; font-weight: 600 }
 .speedseg { margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr } .speedseg button small { display: block; font-weight: 400; font-size: 11.5px; color: var(--muted) }
+.gband .glost { position: absolute; right: 0; top: 0; bottom: 0; background: repeating-linear-gradient(-45deg, color-mix(in srgb, var(--hot) 55%, transparent) 0 6px, color-mix(in srgb, var(--hot) 30%, transparent) 6px 12px); border-left: 2px solid var(--hot); transition: width .3s; pointer-events: none }
+.gband .glost span { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); font: 700 11px/1 var(--f-body); color: var(--ink); white-space: nowrap }
+.gband .glost.near { animation: lostpulse 1s ease-in-out infinite } @keyframes lostpulse { 50% { background-color: color-mix(in srgb, var(--hot) 35%, transparent) } }
+@media (prefers-reduced-motion: reduce) { .gband .glost.near { animation: none } }

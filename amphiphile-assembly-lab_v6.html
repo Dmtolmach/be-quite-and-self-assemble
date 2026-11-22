@@ -464,10 +464,14 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
 .gband { position: relative } .gband .ghostmark { top: 50%; margin-top: -9px; font-size: 15px; opacity: .85 }
 
 /* ---- speed run: only the goal, the clock and the molecules ---- */
-.speedrun #szone, .speedrun .coach, .speedrun .gres, .speedrun #gbest { display: none !important }
-.speedrun .gband .tick.goal { white-space: nowrap; font-weight: 700; color: var(--ink) }
+.speedrun #szone, .speedrun #nzone, .speedrun .coach, .speedrun .gres, .speedrun #gbest, .speedrun:not(.speeddrug) .gbar { display: none !important } /* no time bar in a speed run; the drug game keeps it for its red windows */
+.speedrun .gband .tick.goal { white-space: nowrap; font-weight: 700; color: var(--ink); z-index: 2 }
 .speedrun #hudGoal { display: block; margin-top: 4px; font-weight: 600 }
 .speedseg { margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr } .speedseg button small { display: block; font-weight: 400; font-size: 11.5px; color: var(--muted) }
+.gband .glost { position: absolute; right: 0; top: 0; bottom: 0; background: repeating-linear-gradient(-45deg, color-mix(in srgb, var(--hot) 55%, transparent) 0 6px, color-mix(in srgb, var(--hot) 30%, transparent) 6px 12px); border-left: 2px solid var(--hot); transition: width .3s; pointer-events: none }
+.gband .glost span { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); font: 700 11px/1 var(--f-body); color: var(--ink); white-space: nowrap }
+.gband .glost.near { animation: lostpulse 1s ease-in-out infinite } @keyframes lostpulse { 50% { background-color: color-mix(in srgb, var(--hot) 35%, transparent) } }
+@media (prefers-reduced-motion: reduce) { .gband .glost.near { animation: none } }
 </style>
 
 <div class="wrap notranslate" data-sys="dumbbell" translate="no">
@@ -494,14 +498,14 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
   <div class="bench">
     <div class="cellbox">
       <div class="ghud" id="ghud" hidden>
-        <div class="ghead"><div><b id="hudTitle"></b> <span id="hudGoal"></span> <span class="htip" id="hudTip"></span></div><div class="btns" style="flex:none;gap:6px"><button class="btn primary" id="gagain" hidden>Play again</button><button class="btn" id="gquit">Give up</button></div></div>
+        <div class="ghead"><div><b id="hudTitle"></b> <span id="hudGoal"></span> <span class="htip" id="hudTip"></span></div><div class="btns" style="flex:none;gap:6px"><button class="btn primary" id="gagain" hidden>Play again</button><button class="btn" id="grestart" hidden>Start again</button><button class="btn" id="gquit">Give up</button></div></div>
         <div class="gstat">
           <div><span id="gvalLab">Score</span><b id="gval">–</b></div>
           <div><span id="gtimeLab">Time left</span><b id="gtime">–</b></div>
           <div><span id="gpeakLab">Best this run</span><b id="gpeak">–</b></div>
           <div><span id="gstarsLab">Stars</span><b id="gstars" class="gst">☆☆☆</b></div>
         </div>
-        <div class="gband" id="gband" aria-hidden="true" title="Line: your score now. Marks: star levels"><div class="best" id="gbest"></div><div class="now" id="gnow"></div><div class="ghostmark" id="ghostS" hidden>👻</div></div>
+        <div class="gband" id="gband" aria-hidden="true" title="Line: your score now. Marks: star levels"><div class="best" id="gbest"></div><div class="now" id="gnow"></div><div class="ghostmark" id="ghostS" hidden>👻</div><div class="glost" id="glost" hidden><span></span></div></div>
         <div class="gbar" aria-hidden="true"><i id="gbar"></i></div>
         <p class="gres" id="gres" aria-live="polite"></p>
         <canvas class="greplay" id="greplay" hidden aria-label="Your run: temperature and score over time"></canvas>
@@ -3128,7 +3132,11 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Cheese makers add an enzyme called rennet to warm milk. It cuts the milk proteins so they link into a soft gel, the curd, in about half an hour.": "Juustontekijät lisäävät lämpimään maitoon juoksete-nimistä entsyymiä. Se pilkkoo maidon proteiineja niin, että ne liittyvät pehmeäksi geeliksi, juustomassaksi, noin puolessa tunnissa.",
   "Silk in an instant": "Silkkiä hetkessä",
   "Inside a spider, silk is a liquid protein solution. As the spider pulls it out, the proteins line up and link, and a solid thread forms in a fraction of a second.": "Hämähäkin sisällä silkki on nestemäistä proteiiniliuosta. Kun hämähäkki vetää sen ulos, proteiinit asettuvat riviin ja liittyvät yhteen, ja kiinteä lanka syntyy sekunnin murto-osassa.",
-  "Too much drug was released outside the red windows: {n} can no longer be reached.": "Liikaa lääkettä vapautui punaisten ikkunoiden ulkopuolella: tavoitetta {n} ei voi enää saavuttaa."
+  "Too much drug was released outside the red windows: {n} can no longer be reached.": "Liikaa lääkettä vapautui punaisten ikkunoiden ulkopuolella: tavoitetta {n} ei voi enää saavuttaa.",
+  "Start again": "Aloita alusta",
+  "lost {n}": "hukassa {n}",
+  "36 proteins": "36 proteiinia",
+  "Protein unfolding · 36 proteins": "Proteiinin avautuminen · 36 proteiinia"
  },
  "sv": {
   "Cleared!": "Klarat!",
@@ -4203,7 +4211,11 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Cheese makers add an enzyme called rennet to warm milk. It cuts the milk proteins so they link into a soft gel, the curd, in about half an hour.": "Ostmakare tillsätter enzymet löpe till varm mjölk. Det klipper mjölkproteinerna så att de länkas till en mjuk gel, ostmassan, på ungefär en halvtimme.",
   "Silk in an instant": "Silke på ett ögonblick",
   "Inside a spider, silk is a liquid protein solution. As the spider pulls it out, the proteins line up and link, and a solid thread forms in a fraction of a second.": "Inuti en spindel är silket en flytande proteinlösning. När spindeln drar ut det ställer proteinerna upp sig och länkas, och en fast tråd bildas på en bråkdel av en sekund.",
-  "Too much drug was released outside the red windows: {n} can no longer be reached.": "För mycket läkemedel släpptes utanför de röda fönstren: {n} kan inte längre nås."
+  "Too much drug was released outside the red windows: {n} can no longer be reached.": "För mycket läkemedel släpptes utanför de röda fönstren: {n} kan inte längre nås.",
+  "Start again": "Börja om",
+  "lost {n}": "förlorat {n}",
+  "36 proteins": "36 proteiner",
+  "Protein unfolding · 36 proteins": "Proteindenaturering · 36 proteiner"
  },
  "ru": {
   "Cleared!": "Пройдено!",
@@ -5278,7 +5290,11 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Cheese makers add an enzyme called rennet to warm milk. It cuts the milk proteins so they link into a soft gel, the curd, in about half an hour.": "Сыроделы добавляют в тёплое молоко фермент сычуг. Он разрезает белки молока, и они примерно за полчаса сцепляются в мягкий гель — сгусток.",
   "Silk in an instant": "Шёлк в одно мгновение",
   "Inside a spider, silk is a liquid protein solution. As the spider pulls it out, the proteins line up and link, and a solid thread forms in a fraction of a second.": "Внутри паука шёлк — жидкий раствор белка. Когда паук вытягивает его, белки выстраиваются и сцепляются, и за долю секунды образуется твёрдая нить.",
-  "Too much drug was released outside the red windows: {n} can no longer be reached.": "Слишком много лекарства вышло вне красных окон: {n} уже не достичь."
+  "Too much drug was released outside the red windows: {n} can no longer be reached.": "Слишком много лекарства вышло вне красных окон: {n} уже не достичь.",
+  "Start again": "Начать заново",
+  "lost {n}": "потеряно {n}",
+  "36 proteins": "36 белков",
+  "Protein unfolding · 36 proteins": "Разворачивание белка · 36 белков"
  }
 };
   let LANG = 'en';
@@ -5893,7 +5909,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       hint: 'The micelles need a moment to open, so start the noise just before a window and stop just before it ends. Stay quiet between windows so the micelles hold on to the rest.',
       lesson: { good: 'Short, well-timed bursts of heat opened the micelles exactly when the drug was needed, and the cold kept it locked inside the rest of the time. Temperature-sensitive carriers are designed to do just this at a warmed tumour.',
         bad: 'Heat frees the drug a little after it starts and keeps freeing it for a moment after it stops, so late or long bursts waste it. Watch the windows on the time bar and start a little early.' } },
-    { id: 'gel', title: 'Grow the longest gel strand', sub: '35 proteins', sys: 'crypt', ordered: true, range: [0.6, 7.0], D: 90, box: '48', conc: 35, epsXX: 5,
+    { id: 'gel', title: 'Grow the longest gel strand', sub: '36 proteins', sys: 'crypt', ordered: true, range: [0.6, 7.0], D: 90, box: '48', conc: 36, epsXX: 5,
       lab: 'Gel path', fmt: (v) => v.toFixed(0) + ' σ', stars: [50, 75, 130], scale: 200, openT: 2.2, tooHot: 4.5, openSec: 4, rise: 3, words: [1.4, 2.2, 4.5], value: () => { gelShow = eng.gelPath(1.5, 2); return gelShow.len; },
       short: "Link the proteins into the longest gel strand you can within 30 seconds.", goal: 'Link the proteins into the longest gel strand you can. Your score is the longest path through the gel, from protein to protein (red line); the box is 62 σ wide. The proteins start folded, with their sticky beads hidden inside. Two proteins are linked when they share at least two sticky contacts.', facts: ["Boiling an egg turns the clear egg white solid: heat unfolds its proteins, and they stick together into a gel.", "Gelatin jelly melts at about 30–35 °C, a little below body temperature. That is why it melts in your mouth.", "Tofu is a protein gel: soy milk is heated, then salts such as magnesium chloride make the soy proteins clump together."],
       hint: 'Folded proteins cannot link, and boiling breaks the links. Heat to open the folds, then cool well down so the links hold and the network grows.',
@@ -5972,8 +5988,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     g.stars.forEach((s, k) => { const d = document.createElement('div'); d.className = 'tick'; d.style.left = (100 * s / (g.scale || 1)) + '%'; d.textContent = '★'.repeat(k + 1); band.appendChild(d); });
     $('gnow').style.left = '0%'; $('gbar').style.width = '0%'; $('gres').textContent = '';
     $('hudTitle').textContent = T(g.title) + (game.level ? ' · ' + T('Challenge {k}', { k: game.level }) : '') ; $('hudGoal').textContent = ''; $('hudTip').textContent = ''; /* no goal text or tips above the box */
-    document.querySelector('.wrap').classList.toggle('speedrun', !!game.speed); if (game.speed) { $('hudGoal').textContent = T(game.speed.goal); $('hudTitle').textContent += ' · ⏱ ' + T('Speed run'); }
-    $('ghud').hidden = false; document.querySelector('.wrap').classList.add('ingame'); $('gquit').textContent = T('Give up'); $('gagain').hidden = true;
+    document.querySelector('.wrap').classList.toggle('speedrun', !!game.speed); document.querySelector('.wrap').classList.toggle('speeddrug', !!game.speed && g.id === 'drug'); if (game.speed) { $('hudGoal').textContent = T(game.speed.goal); $('hudTitle').textContent += ' · ⏱ ' + T('Speed run'); }
+    $('ghud').hidden = false; document.querySelector('.wrap').classList.add('ingame'); $('gquit').textContent = T('Give up'); $('gagain').hidden = true; $('grestart').hidden = !game.speed; $('glost').hidden = true;
     $('gstart').disabled = true; resize();
     if (g.proto) protoStart(game); else { $('gtimeLab').textContent = T(game.speed ? 'Time' : 'Time left'); $('gstarsLab').textContent = T('Stars'); }
     if (game.speed) speedHud(game); else $('gstars').className = 'gst';
@@ -6094,7 +6110,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (frac < 1 && !G.cd) gameSounds(G, g);
     $('gval').textContent = g.fmt(G.ema); $('gstars').textContent = starStr(st);
     $('gtime').textContent = T('{n} s', { n: Math.ceil(GAME_SEC * (1 - frac)) });
-    $('gnow').style.left = (100 * Math.max(0, Math.min(1, G.ema / (g.scale || 1)))) + '%';
+    $('gnow').style.left = (100 * Math.max(0, Math.min(1, G.ema / (g.scale || 1)))) + '%'; lostBar(G, g.stars[2]); /* drug games: lost drug from the right; pulses near the 3-star level */
     $('gbar').style.width = (100 * frac) + '%';
     const sNow = GAME_SEC * frac; // the run, kept for the replay and the diagnosis after the game
     if (!G.rec.length || sNow - G.rec[G.rec.length - 1].s >= 0.25) G.rec.push({ s: sNow, T: tset, v: G.ema, d: G.del || 0, l: G.lost || 0, z: g.flowU ? micInBand(0) : false });
@@ -6123,7 +6139,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // resuming after a game keeps the best structure as the starting point
   renderPick();
 
-  function closeHud() { gendClose(); postGame = null; $('ghud').hidden = true; document.querySelector('.wrap').classList.remove('speedrun'); if (coachReady) { coachHide(); $('greplay').hidden = true; } document.querySelector('.wrap').classList.remove('ingame'); resize(); }
+  function closeHud() { gendClose(); postGame = null; $('ghud').hidden = true; $('grestart').hidden = true; document.querySelector('.wrap').classList.remove('speedrun', 'speeddrug'); if (coachReady) { coachHide(); $('greplay').hidden = true; } document.querySelector('.wrap').classList.remove('ingame'); resize(); }
   $('gquit').addEventListener('click', () => { if (battle && coachReady) battleStop(); const was = !!game; endGame(null); if (was) { gameRange = null; applySysUI(); setT(tset); } closeHud(); });
   renderPick();
 
@@ -6132,13 +6148,13 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // target for SPEED_HOLD s; the time is when it first got there. Targets and star times from tools/calibration/speedcal.js (good play: ice ~10–15 s,
   // liquids ~24–30 s, gel ~17–20 s; silence alone never gets there in ice and liquids, and in gel only slowly).
   const SPEED_HOLD = 1.5, SPEED_BAR = 120; // no time limit; the time bar (with the drug's red windows) spans the first 2 minutes
-  // Targets as set by the author. With fixed strategies (speedcal.js, up to 400 s): ice 0.75 in 104–217 s; liquids peak ~0.80 and gel ~186 σ,
-  // so 0.95 and 200 σ need better play than any fixed strategy tried; their star times are guesses until real players set records. A run ends only at the goal, with Give up, or (drug) when too much drug is lost.
+  // Targets as set by the author. With fixed strategies (speedcal.js, up to 400 s): ice 0.75 in 104–217 s; liquids peak ~0.80 with fixed
+  // strategies, but the author reached 0.95 by hand in 189 s (stars: 200 s / 300 s); gel 170 σ: one fixed run in 78 s, others touch 170–186 σ without holding it 1.5 s. Liquids and gel star times are estimates. A run ends only at the goal, with Give up, or (drug) when too much drug is lost.
   const SPEED = {
     ice: { target: 0.75, t: [Infinity, 200, 120], goal: 'Freeze the water into ice: it turns blue. As fast as you can!' },
-    demix: { target: 0.95, t: [Infinity, 500, 300], goal: 'Separate the two liquids into big regions of their own colour. As fast as you can!' },
-    drug: { target: 80, t: [Infinity, 40, 25], goal: 'Release the drug only in the red windows. As fast as you can!' },
-    gel: { target: 200, t: [Infinity, 240, 120], goal: 'Link the proteins into one long gel strand (the red line). As fast as you can!' },
+    demix: { target: 0.9, t: [Infinity, 300, 200], goal: 'Separate the two liquids into big regions of their own colour. As fast as you can!' },
+    drug: { target: 75, t: [Infinity, 40, 25], goal: 'Release the drug only in the red windows. As fast as you can!' },
+    gel: { target: 160, hold: 0, t: [Infinity, 180, 90], goal: 'Link the proteins into one long gel strand (the red line). As fast as you can!' },
   };
   let speedMode = false;
   function speedOpen(g) { if (!g || !SPEED[g.id]) return false; if (unlockAll()) return true; const b = getBest(g); return b !== null && starsFor(g, b) === 3; }
@@ -6148,24 +6164,25 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const b = speedBest(g);
     el.innerHTML = `<button data-speed="0" aria-pressed="${!speedMode}">${T('Classic: 30 s')}</button><button data-speed="1" data-reward="speed" aria-pressed="${speedMode}">⏱ ${T('Speed run')}${b !== null ? ` <small>${T('fastest {t}', { t: b.toFixed(1) + ' s' })}</small>` : ''}</button>`;
   }
-  $('gspeed').addEventListener('click', (e) => { const b = e.target.closest('[data-speed]'); if (!b || game) return; speedMode = b.dataset.speed === '1'; speedSeg(); if (typeof applyLocks === 'function') applyLocks(); });
+  $('gspeed').addEventListener('click', (e) => { const b = e.target.closest('[data-speed]'); if (!b || game) return; speedMode = b.dataset.speed === '1'; speedSeg(); zoneMarks(0); if (typeof applyLocks === 'function') applyLocks(); });
   function speedUpdate(G, v) {
     const g = G.g, sp = G.speed, now = eng.time, dt = now - G.last; G.last = now;
     G.ema = G.ema === null || g.raw ? v : G.ema + (1 - Math.exp(-dt / 2.0)) * (v - G.ema);
     const s = GAME_SEC * (now - G.t0) / g.D;
     if (!G.cd) gameSounds(G, g);
     $('gtime').textContent = T('{n} s', { n: s.toFixed(1) }); $('gval').textContent = g.fmt(Math.max(0, G.ema));
-    $('gnow').style.left = (100 * Math.max(0, Math.min(1, G.ema / (g.scale || 1)))) + '%'; $('gbar').style.width = (100 * Math.min(1, s / SPEED_BAR)) + '%';
+    $('gnow').style.left = (100 * Math.max(0, Math.min(1, G.ema / (g.scale || 1)))) + '%';
+    lostBar(G, sp.target); $('gbar').style.width = (100 * Math.min(1, s / SPEED_BAR)) + '%';
     if (!G.rec.length || s - G.rec[G.rec.length - 1].s >= 0.25) G.rec.push({ s, T: tset, v: G.ema, d: 0, l: 0, z: false });
     if (G.ema >= sp.target) { if (G.since === undefined) { G.since = s; G.snap = takeSnap(); }
-      if (s - G.since >= SPEED_HOLD) { G.doneAt = G.since; G.peakSec = G.since; endGame('done'); return; } }
+      if (s - G.since >= (sp.hold === undefined ? SPEED_HOLD : sp.hold)) { /* gel: won the moment the strand reaches the goal (its length flickers too much to hold) */ G.doneAt = G.since; G.peakSec = G.since; endGame('done'); return; } }
     else G.since = undefined;
     if (g.id === 'drug' && eng.nDrug && G.lost > (1 - sp.target / 100) * eng.nDrug) { G.failLost = true; endGame('done'); } // the goal can no longer be reached
   }
   function speedEnd(G) {
     const g = G.g, sp = G.speed, t = G.doneAt, st = t === undefined ? 0 : t <= sp.t[2] ? 3 : t <= sp.t[1] ? 2 : 1, b = speedBest(g), rec = t !== undefined && (b === null || t < b);
     if (rec) { try { localStorage.setItem('mdlab-speed-' + g.id, t.toFixed(2)); } catch (e) {} }
-    $('hudGoal').textContent = ''; $('gagain').hidden = false; $('greplay').hidden = true;
+    $('hudGoal').textContent = ''; $('gagain').hidden = false; $('grestart').hidden = true; $('greplay').hidden = true;
     if (G.snap) { restoreSnap(G.snap); running = false; $('pause').textContent = T('Resume'); showReport(report()); }
     $('gres').textContent = ''; $('gtime').textContent = t === undefined ? '–' : T('{n} s', { n: t.toFixed(1) }); // the clock shows the result, not the end of the 1.5 s check
     const card = st === 3 ? fcGive(FC_ALL.filter((c) => c.deck.speed === g.id)) : null; // three stars: a card from this game's speed-run deck
@@ -6182,6 +6199,13 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     $('gstarsLab').textContent = T('Fastest'); $('gstars').textContent = b === null ? '–' : T('{n} s', { n: b.toFixed(1) }); $('gstars').className = '';
     const band = $('gband'); band.querySelectorAll('.tick').forEach((x) => x.remove());
     const d = document.createElement('div'); d.className = 'tick goal'; d.style.left = (100 * sp.target / (g.scale || 1)) + '%'; d.textContent = '🏁 ' + g.fmt(sp.target); band.appendChild(d);
+  }
+  $('grestart').addEventListener('click', () => { if (!game || !game.speed) return; endGame(null); startGame(); }); // a speed run that went wrong: start again at once, without an end card
+  // lost drug eats the score band from the right: the part it covers can no longer be delivered (all drug games: classic, challenges, speed run)
+  function lostBar(G, goal) {
+    const el = $('glost'); if (G.g.id !== 'drug' || !eng.nDrug) { if (!el.hidden) el.hidden = true; return; }
+    const lp = 100 * (G.lost || 0) / eng.nDrug; el.hidden = false; el.style.width = Math.min(100, lp) + '%';
+    el.querySelector('span').textContent = T('lost {n}', { n: Math.round(lp) + '%' }); el.classList.toggle('near', 100 - lp < goal + 8); // close to cutting off the goal
   }
   // ---------- class mode: one big box on the projector, the whole room's noise sets the temperature ----------
   let classOn = false;
@@ -6535,10 +6559,10 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     else { if (b.className) { b.className = ''; b.removeAttribute('title'); b.removeAttribute('aria-label'); } $('tsliderM').removeAttribute('aria-valuetext'); lastWordK = -1; }
   }
   function zoneMarks(sNow) { // the green band on the noise bar and on the slider: temperatures that build the structure (for ice it moves down during the game)
-    const g = gameNow(), hide = !(g && g.alwaysZone) && (!tipsOn() || (game ? game.level : gameLevel)); // the green band is a tip: not in challenges or with tips off
+    const g = gameNow(), hide = (game ? !!game.speed : speedMode && speedOpen(g)) || (!(g && g.alwaysZone) && (!tipsOn() || (game ? game.level : gameLevel))); // the green band is a tip: not in speed runs, challenges or with tips off
     const z = !g || hide ? null : g.zoneLive ? g.zoneLive(game) : (g.zone || g.path) ? zoneOf(g, sNow || 0) : null, nz = $('nzone'), sz = $('szone');
     nz.classList.toggle('on', !!z); sz.classList.toggle('on', !!z); if (!z) return;
-    const [lo, hi] = g.range, f = (Tv) => (Tv - lo) / (hi - lo), xn = (Tv) => Math.max(0, Math.min(1, (f(Tv) - 0.05) / 0.9));
+    const [lo, hi] = g.range, f = (Tv) => (Tv - lo) / (hi - lo), xn = (Tv) => Math.max(0, Math.min(1, f(Tv))); // the noise bar maps to the whole temperature range
     nz.style.left = 100 * xn(z[0]) + '%'; nz.style.width = 100 * (xn(z[1]) - xn(z[0])) + '%';
     const a = f(z[0]), b = f(z[1]); // the slider thumb (about 22 px) travels a little less than the full width
     sz.style.left = `calc(${100 * a}% + ${(11 - 22 * a).toFixed(1)}px)`; sz.style.width = `calc(${100 * (b - a)}% - ${(22 * (b - a)).toFixed(1)}px)`;
@@ -6999,7 +7023,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     if (g.id === 'ice') return { af: AF_LEVELS[k - 1], txt: ['Antifreeze particles appear one by one during the run: {n} by the end.', { n: AF_LEVELS[k - 1] }] };
     if (g.id === 'demix') return { waveAmp: 0.12 * (k + 1), waveGap: 7.5 - 0.9 * k, waveLen: 1.5 + 0.4 * k, txt: ['Heat waves hit the box: level {k} of 5, stronger and more often each level. Get quieter when one comes.', { k }] };
     if (g.id === 'drug') return { bandK: 1 - 0.06 * (k - 1), flowK: 1 + 0.07 * (k - 1), spill: 0.39 + 0.04 * (k - 1), txt: [k === 1 ? 'New rules: blood flow carries the micelles through a red tumour zone. Heat while a micelle is in the zone.' : 'The tumour is narrower, the blood flows faster and more heat leaks out.', {}] };
-    return { conc: 35 - 2 * k, txt: ['Fewer proteins: {n}.', { n: 35 - 2 * k }] };
+    return { conc: 36 - 2 * k, txt: ['Fewer proteins: {n}.', { n: 36 - 2 * k }] };
   }
   function twistTick(G, s) {
     if (G.af) { const want = Math.round(G.af * Math.min(1, s / 25)), ty = eng.type; let have = 0; for (let i = 0; i < eng.N; i++) if (ty[i] === 3) have++;
@@ -7367,18 +7391,37 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     for (let i = 0; i < N; i++) { if (ic[i]) { if (!iceT0[i]) iceT0[i] = now; iceMask[i] = now - iceT0[i] >= 1000 ? 1 : 0; } else { iceT0[i] = 0; iceMask[i] = 0; } }
     return iceMask;
   }
-  function gelPts(gp) { // protein centres along the path, unwrapped (minimum-image steps)
-    const L = eng.L, pts = [[gp.cx[gp.path[0]], gp.cy[gp.path[0]]]];
-    for (let h = 1; h < gp.path.length; h++) { const [px, py] = pts[h - 1]; let dx = gp.cx[gp.path[h]] - px, dy = gp.cy[gp.path[h]] - py;
+  // the path through the beads: along each protein's chain, and from one protein to the next only through a pair of touching stickers (type 5)
+  function gelBeads(gp) {
+    if (gp._beads && gp._beadsN === gp.path.length) return gp._beads;
+    const Lc = eng.Lc, L = eng.L, x = eng.x, y = eng.y, ty = eng.type, P = gp.path, links = [];
+    for (let h = 1; h < P.length; h++) { const A = P[h - 1], B = P[h]; let best = null, bd = Infinity; // the closest sticker pair between the two proteins
+      for (let qa = 0; qa < Lc; qa++) { const i = A * Lc + qa; if (ty[i] !== 5) continue;
+        for (let qb = 0; qb < Lc; qb++) { const j = B * Lc + qb; if (ty[j] !== 5) continue; let dx = x[i] - x[j], dy = y[i] - y[j]; dx -= L * Math.round(dx / L); dy -= L * Math.round(dy / L); const d = dx * dx + dy * dy; if (d < bd) { bd = d; best = [i, j]; } } }
+      links.push(best || [A * Lc + (Lc >> 1), B * Lc + (Lc >> 1)]); }
+    const out = [], run = (from, to) => { const st = from <= to ? 1 : -1; for (let i = from; i !== to + st; i += st) out.push(i); };
+    for (let h = 0; h < P.length; h++) { const m = P[h], m0 = m * Lc, m1 = m0 + Lc - 1, inB = h ? links[h - 1][1] : null, outB = h < P.length - 1 ? links[h][0] : null;
+      if (inB === null && outB === null) run(m0, m1);
+      else if (inB === null) run(Math.abs(outB - m0) > Math.abs(outB - m1) ? m0 : m1, outB); // the first protein: from its far chain end to the sticker that leads on
+      else if (outB === null) run(inB, Math.abs(inB - m0) > Math.abs(inB - m1) ? m0 : m1); // the last protein: on to its far chain end
+      else run(inB, outB); }
+    gp._beads = out; gp._beadsN = P.length; return out;
+  }
+  function gelPts(gp) { // positions of the path beads, unwrapped (minimum-image steps)
+    const L = eng.L, bs = gelBeads(gp), pts = [[eng.x[bs[0]], eng.y[bs[0]]]];
+    for (let h = 1; h < bs.length; h++) { const [px, py] = pts[h - 1]; let dx = eng.x[bs[h]] - px, dy = eng.y[bs[h]] - py;
       dx -= L * Math.round(dx / L); dy -= L * Math.round(dy / L); pts.push([px + dx, py + dy]); }
     return pts; }
+  const GEL_INK = '#c4122f'; // a deep red, clear against both kinds of protein beads
   function drawGel(gp) {
-    const s = cv.width / eng.L, L = eng.L, pts = gelPts(gp);
+    const s = cv.width / eng.L, L = eng.L, pts = gelPts(gp), bs = gelBeads(gp);
     ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     for (const ox of [-L, 0, L]) for (const oy of [-L, 0, L]) {
-      ctx.strokeStyle = colors.hot; ctx.globalAlpha = 0.85; ctx.lineWidth = 4 * dpr; ctx.beginPath();
+      ctx.strokeStyle = GEL_INK; ctx.globalAlpha = 0.85; ctx.lineWidth = 3 * dpr; ctx.beginPath();
       pts.forEach(([px, py], h) => { const X = (px + ox) * s, Y = (py + oy) * s; h ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); }); ctx.stroke();
-      ctx.fillStyle = colors.hot; ctx.globalAlpha = 1; for (const [px, py] of pts) { ctx.beginPath(); ctx.arc((px + ox) * s, (py + oy) * s, 4.5 * dpr, 0, 6.2832); ctx.fill(); } }
+      ctx.globalAlpha = 1; ctx.lineWidth = Math.max(1.5, 0.13 * s); ctx.strokeStyle = GEL_INK; // the beads on the path get a ring; stickers that carry the path a filled dot
+      pts.forEach(([px, py], h) => { const X = (px + ox) * s, Y = (py + oy) * s; ctx.beginPath(); ctx.arc(X, Y, 0.55 * s, 0, 6.2832); ctx.stroke();
+        if (eng.type[bs[h]] === 5) { ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(X, Y, 0.26 * s, 0, 6.2832); ctx.fill(); } }); }
     ctx.restore();
   }
   // side-by-side plates: the central half of each box (plates kept centred), water-fearing reference on the left
@@ -7780,7 +7823,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     }
     if (FX.pulse && gelShow && gelShow.path.length > 1) { const u = (now - FX.pulse) / 1500; if (u >= 1) { FX.pulse = 0; return; } fxGel(gelShow, u, s, calm); }
   }
-  function fxGel(gp, u, s, calm) { // the path glows, a bright spark runs along it and the newly joined proteins ring
+  function fxGel(gp, u, s, calm) { // the path glows, a bright spark runs along it through the beads, and the beads it has passed glow
     const pts = gelPts(gp), L = eng.L, seg = [0]; for (let h = 1; h < pts.length; h++) seg.push(seg[h - 1] + Math.hypot(pts[h][0] - pts[h - 1][0], pts[h][1] - pts[h - 1][1]));
     const tot = seg[seg.length - 1] || 1, head = (calm ? 1 : Math.min(1, u / 0.65)) * tot, fade = Math.pow(1 - u, 1.2);
     const at = (d) => { let h = 1; while (h < seg.length - 1 && seg[h] < d) h++; const f = (d - seg[h - 1]) / Math.max(1e-6, seg[h] - seg[h - 1]); return [pts[h - 1][0] + f * (pts[h][0] - pts[h - 1][0]), pts[h - 1][1] + f * (pts[h][1] - pts[h - 1][1])]; };
@@ -7790,8 +7833,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
       for (let h = 0; h < pts.length && seg[h] <= head; h++) { const X = (pts[h][0] + ox) * s, Y = (pts[h][1] + oy) * s; h ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); }
       const [hx, hy] = at(head); ctx.lineTo((hx + ox) * s, (hy + oy) * s); ctx.stroke();
       if (!calm && u < 0.7) { ctx.globalAlpha = 1; const sp = fxSprite('#ffe680'), r = 3.2 * s; ctx.drawImage(sp, (hx + ox) * s - r, (hy + oy) * s - r, 2 * r, 2 * r); }
-      ctx.lineWidth = 2.5 * dpr; ctx.strokeStyle = '#e09a00';
-      for (const m of FX.newNodes || []) { const X = (gp.cx[m] + ox) * s, Y = (gp.cy[m] + oy) * s; ctx.globalAlpha = 0.9 * fade; ctx.beginPath(); ctx.arc(X, Y, (calm ? 2 : 1 + 3 * u) * s, 0, 6.2832); ctx.stroke(); } }
+      if (!calm) { const sp = fxSprite('#ffd34d'), r = 0.9 * s; ctx.globalAlpha = 0.8 * fade; // the beads the light has passed glow for a moment
+        for (let h = 0; h < pts.length && seg[h] <= head; h++) ctx.drawImage(sp, (pts[h][0] + ox) * s - r, (pts[h][1] + oy) * s - r, 2 * r, 2 * r); } }
     ctx.restore();
   }
   window.__fx = () => FX.total || 0; // for tests

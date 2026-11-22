@@ -23,14 +23,14 @@
   <div class="bench">
     <div class="cellbox">
       <div class="ghud" id="ghud" hidden>
-        <div class="ghead"><div><b id="hudTitle"></b> <span id="hudGoal"></span> <span class="htip" id="hudTip"></span></div><div class="btns" style="flex:none;gap:6px"><button class="btn primary" id="gagain" hidden>Play again</button><button class="btn" id="gquit">Give up</button></div></div>
+        <div class="ghead"><div><b id="hudTitle"></b> <span id="hudGoal"></span> <span class="htip" id="hudTip"></span></div><div class="btns" style="flex:none;gap:6px"><button class="btn primary" id="gagain" hidden>Play again</button><button class="btn" id="grestart" hidden>Start again</button><button class="btn" id="gquit">Give up</button></div></div>
         <div class="gstat">
           <div><span id="gvalLab">Score</span><b id="gval">–</b></div>
           <div><span id="gtimeLab">Time left</span><b id="gtime">–</b></div>
           <div><span id="gpeakLab">Best this run</span><b id="gpeak">–</b></div>
           <div><span id="gstarsLab">Stars</span><b id="gstars" class="gst">☆☆☆</b></div>
         </div>
-        <div class="gband" id="gband" aria-hidden="true" title="Line: your score now. Marks: star levels"><div class="best" id="gbest"></div><div class="now" id="gnow"></div><div class="ghostmark" id="ghostS" hidden>👻</div></div>
+        <div class="gband" id="gband" aria-hidden="true" title="Line: your score now. Marks: star levels"><div class="best" id="gbest"></div><div class="now" id="gnow"></div><div class="ghostmark" id="ghostS" hidden>👻</div><div class="glost" id="glost" hidden><span></span></div></div>
         <div class="gbar" aria-hidden="true"><i id="gbar"></i></div>
         <p class="gres" id="gres" aria-live="polite"></p>
         <canvas class="greplay" id="greplay" hidden aria-label="Your run: temperature and score over time"></canvas>

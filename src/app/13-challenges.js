@@ -11,7 +11,7 @@
     if (g.id === 'ice') return { af: AF_LEVELS[k - 1], txt: ['Antifreeze particles appear one by one during the run: {n} by the end.', { n: AF_LEVELS[k - 1] }] };
     if (g.id === 'demix') return { waveAmp: 0.12 * (k + 1), waveGap: 7.5 - 0.9 * k, waveLen: 1.5 + 0.4 * k, txt: ['Heat waves hit the box: level {k} of 5, stronger and more often each level. Get quieter when one comes.', { k }] };
     if (g.id === 'drug') return { bandK: 1 - 0.06 * (k - 1), flowK: 1 + 0.07 * (k - 1), spill: 0.39 + 0.04 * (k - 1), txt: [k === 1 ? 'New rules: blood flow carries the micelles through a red tumour zone. Heat while a micelle is in the zone.' : 'The tumour is narrower, the blood flows faster and more heat leaks out.', {}] };
-    return { conc: 35 - 2 * k, txt: ['Fewer proteins: {n}.', { n: 35 - 2 * k }] };
+    return { conc: 36 - 2 * k, txt: ['Fewer proteins: {n}.', { n: 36 - 2 * k }] };
   }
   function twistTick(G, s) {
     if (G.af) { const want = Math.round(G.af * Math.min(1, s / 25)), ty = eng.type; let have = 0; for (let i = 0; i < eng.N; i++) if (ty[i] === 3) have++;

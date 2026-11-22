@@ -65,7 +65,7 @@
       hint: 'The micelles need a moment to open, so start the noise just before a window and stop just before it ends. Stay quiet between windows so the micelles hold on to the rest.',
       lesson: { good: 'Short, well-timed bursts of heat opened the micelles exactly when the drug was needed, and the cold kept it locked inside the rest of the time. Temperature-sensitive carriers are designed to do just this at a warmed tumour.',
         bad: 'Heat frees the drug a little after it starts and keeps freeing it for a moment after it stops, so late or long bursts waste it. Watch the windows on the time bar and start a little early.' } },
-    { id: 'gel', title: 'Grow the longest gel strand', sub: '35 proteins', sys: 'crypt', ordered: true, range: [0.6, 7.0], D: 90, box: '48', conc: 35, epsXX: 5,
+    { id: 'gel', title: 'Grow the longest gel strand', sub: '36 proteins', sys: 'crypt', ordered: true, range: [0.6, 7.0], D: 90, box: '48', conc: 36, epsXX: 5,
       lab: 'Gel path', fmt: (v) => v.toFixed(0) + ' σ', stars: [50, 75, 130], scale: 200, openT: 2.2, tooHot: 4.5, openSec: 4, rise: 3, words: [1.4, 2.2, 4.5], value: () => { gelShow = eng.gelPath(1.5, 2); return gelShow.len; },
       short: "Link the proteins into the longest gel strand you can within 30 seconds.", goal: 'Link the proteins into the longest gel strand you can. Your score is the longest path through the gel, from protein to protein (red line); the box is 62 σ wide. The proteins start folded, with their sticky beads hidden inside. Two proteins are linked when they share at least two sticky contacts.', facts: ["Boiling an egg turns the clear egg white solid: heat unfolds its proteins, and they stick together into a gel.", "Gelatin jelly melts at about 30–35 °C, a little below body temperature. That is why it melts in your mouth.", "Tofu is a protein gel: soy milk is heated, then salts such as magnesium chloride make the soy proteins clump together."],
       hint: 'Folded proteins cannot link, and boiling breaks the links. Heat to open the folds, then cool well down so the links hold and the network grows.',
@@ -144,8 +144,8 @@
     g.stars.forEach((s, k) => { const d = document.createElement('div'); d.className = 'tick'; d.style.left = (100 * s / (g.scale || 1)) + '%'; d.textContent = '★'.repeat(k + 1); band.appendChild(d); });
     $('gnow').style.left = '0%'; $('gbar').style.width = '0%'; $('gres').textContent = '';
     $('hudTitle').textContent = T(g.title) + (game.level ? ' · ' + T('Challenge {k}', { k: game.level }) : '') ; $('hudGoal').textContent = ''; $('hudTip').textContent = ''; /* no goal text or tips above the box */
-    document.querySelector('.wrap').classList.toggle('speedrun', !!game.speed); if (game.speed) { $('hudGoal').textContent = T(game.speed.goal); $('hudTitle').textContent += ' · ⏱ ' + T('Speed run'); }
-    $('ghud').hidden = false; document.querySelector('.wrap').classList.add('ingame'); $('gquit').textContent = T('Give up'); $('gagain').hidden = true;
+    document.querySelector('.wrap').classList.toggle('speedrun', !!game.speed); document.querySelector('.wrap').classList.toggle('speeddrug', !!game.speed && g.id === 'drug'); if (game.speed) { $('hudGoal').textContent = T(game.speed.goal); $('hudTitle').textContent += ' · ⏱ ' + T('Speed run'); }
+    $('ghud').hidden = false; document.querySelector('.wrap').classList.add('ingame'); $('gquit').textContent = T('Give up'); $('gagain').hidden = true; $('grestart').hidden = !game.speed; $('glost').hidden = true;
     $('gstart').disabled = true; resize();
     if (g.proto) protoStart(game); else { $('gtimeLab').textContent = T(game.speed ? 'Time' : 'Time left'); $('gstarsLab').textContent = T('Stars'); }
     if (game.speed) speedHud(game); else $('gstars').className = 'gst';
@@ -266,7 +266,7 @@
     if (frac < 1 && !G.cd) gameSounds(G, g);
     $('gval').textContent = g.fmt(G.ema); $('gstars').textContent = starStr(st);
     $('gtime').textContent = T('{n} s', { n: Math.ceil(GAME_SEC * (1 - frac)) });
-    $('gnow').style.left = (100 * Math.max(0, Math.min(1, G.ema / (g.scale || 1)))) + '%';
+    $('gnow').style.left = (100 * Math.max(0, Math.min(1, G.ema / (g.scale || 1)))) + '%'; lostBar(G, g.stars[2]); /* drug games: lost drug from the right; pulses near the 3-star level */
     $('gbar').style.width = (100 * frac) + '%';
     const sNow = GAME_SEC * frac; // the run, kept for the replay and the diagnosis after the game
     if (!G.rec.length || sNow - G.rec[G.rec.length - 1].s >= 0.25) G.rec.push({ s: sNow, T: tset, v: G.ema, d: G.del || 0, l: G.lost || 0, z: g.flowU ? micInBand(0) : false });
@@ -295,7 +295,7 @@
   // resuming after a game keeps the best structure as the starting point
   renderPick();
 
-  function closeHud() { gendClose(); postGame = null; $('ghud').hidden = true; document.querySelector('.wrap').classList.remove('speedrun'); if (coachReady) { coachHide(); $('greplay').hidden = true; } document.querySelector('.wrap').classList.remove('ingame'); resize(); }
+  function closeHud() { gendClose(); postGame = null; $('ghud').hidden = true; $('grestart').hidden = true; document.querySelector('.wrap').classList.remove('speedrun', 'speeddrug'); if (coachReady) { coachHide(); $('greplay').hidden = true; } document.querySelector('.wrap').classList.remove('ingame'); resize(); }
   $('gquit').addEventListener('click', () => { if (battle && coachReady) battleStop(); const was = !!game; endGame(null); if (was) { gameRange = null; applySysUI(); setT(tset); } closeHud(); });
   renderPick();
 

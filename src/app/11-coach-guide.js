@@ -12,10 +12,10 @@
     else { if (b.className) { b.className = ''; b.removeAttribute('title'); b.removeAttribute('aria-label'); } $('tsliderM').removeAttribute('aria-valuetext'); lastWordK = -1; }
   }
   function zoneMarks(sNow) { // the green band on the noise bar and on the slider: temperatures that build the structure (for ice it moves down during the game)
-    const g = gameNow(), hide = !(g && g.alwaysZone) && (!tipsOn() || (game ? game.level : gameLevel)); // the green band is a tip: not in challenges or with tips off
+    const g = gameNow(), hide = (game ? !!game.speed : speedMode && speedOpen(g)) || (!(g && g.alwaysZone) && (!tipsOn() || (game ? game.level : gameLevel))); // the green band is a tip: not in speed runs, challenges or with tips off
     const z = !g || hide ? null : g.zoneLive ? g.zoneLive(game) : (g.zone || g.path) ? zoneOf(g, sNow || 0) : null, nz = $('nzone'), sz = $('szone');
     nz.classList.toggle('on', !!z); sz.classList.toggle('on', !!z); if (!z) return;
-    const [lo, hi] = g.range, f = (Tv) => (Tv - lo) / (hi - lo), xn = (Tv) => Math.max(0, Math.min(1, (f(Tv) - 0.05) / 0.9));
+    const [lo, hi] = g.range, f = (Tv) => (Tv - lo) / (hi - lo), xn = (Tv) => Math.max(0, Math.min(1, f(Tv))); // the noise bar maps to the whole temperature range
     nz.style.left = 100 * xn(z[0]) + '%'; nz.style.width = 100 * (xn(z[1]) - xn(z[0])) + '%';
     const a = f(z[0]), b = f(z[1]); // the slider thumb (about 22 px) travels a little less than the full width
     sz.style.left = `calc(${100 * a}% + ${(11 - 22 * a).toFixed(1)}px)`; sz.style.width = `calc(${100 * (b - a)}% - ${(22 * (b - a)).toFixed(1)}px)`;

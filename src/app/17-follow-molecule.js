@@ -75,18 +75,37 @@
     for (let i = 0; i < N; i++) { if (ic[i]) { if (!iceT0[i]) iceT0[i] = now; iceMask[i] = now - iceT0[i] >= 1000 ? 1 : 0; } else { iceT0[i] = 0; iceMask[i] = 0; } }
     return iceMask;
   }
-  function gelPts(gp) { // protein centres along the path, unwrapped (minimum-image steps)
-    const L = eng.L, pts = [[gp.cx[gp.path[0]], gp.cy[gp.path[0]]]];
-    for (let h = 1; h < gp.path.length; h++) { const [px, py] = pts[h - 1]; let dx = gp.cx[gp.path[h]] - px, dy = gp.cy[gp.path[h]] - py;
+  // the path through the beads: along each protein's chain, and from one protein to the next only through a pair of touching stickers (type 5)
+  function gelBeads(gp) {
+    if (gp._beads && gp._beadsN === gp.path.length) return gp._beads;
+    const Lc = eng.Lc, L = eng.L, x = eng.x, y = eng.y, ty = eng.type, P = gp.path, links = [];
+    for (let h = 1; h < P.length; h++) { const A = P[h - 1], B = P[h]; let best = null, bd = Infinity; // the closest sticker pair between the two proteins
+      for (let qa = 0; qa < Lc; qa++) { const i = A * Lc + qa; if (ty[i] !== 5) continue;
+        for (let qb = 0; qb < Lc; qb++) { const j = B * Lc + qb; if (ty[j] !== 5) continue; let dx = x[i] - x[j], dy = y[i] - y[j]; dx -= L * Math.round(dx / L); dy -= L * Math.round(dy / L); const d = dx * dx + dy * dy; if (d < bd) { bd = d; best = [i, j]; } } }
+      links.push(best || [A * Lc + (Lc >> 1), B * Lc + (Lc >> 1)]); }
+    const out = [], run = (from, to) => { const st = from <= to ? 1 : -1; for (let i = from; i !== to + st; i += st) out.push(i); };
+    for (let h = 0; h < P.length; h++) { const m = P[h], m0 = m * Lc, m1 = m0 + Lc - 1, inB = h ? links[h - 1][1] : null, outB = h < P.length - 1 ? links[h][0] : null;
+      if (inB === null && outB === null) run(m0, m1);
+      else if (inB === null) run(Math.abs(outB - m0) > Math.abs(outB - m1) ? m0 : m1, outB); // the first protein: from its far chain end to the sticker that leads on
+      else if (outB === null) run(inB, Math.abs(inB - m0) > Math.abs(inB - m1) ? m0 : m1); // the last protein: on to its far chain end
+      else run(inB, outB); }
+    gp._beads = out; gp._beadsN = P.length; return out;
+  }
+  function gelPts(gp) { // positions of the path beads, unwrapped (minimum-image steps)
+    const L = eng.L, bs = gelBeads(gp), pts = [[eng.x[bs[0]], eng.y[bs[0]]]];
+    for (let h = 1; h < bs.length; h++) { const [px, py] = pts[h - 1]; let dx = eng.x[bs[h]] - px, dy = eng.y[bs[h]] - py;
       dx -= L * Math.round(dx / L); dy -= L * Math.round(dy / L); pts.push([px + dx, py + dy]); }
     return pts; }
+  const GEL_INK = '#c4122f'; // a deep red, clear against both kinds of protein beads
   function drawGel(gp) {
-    const s = cv.width / eng.L, L = eng.L, pts = gelPts(gp);
+    const s = cv.width / eng.L, L = eng.L, pts = gelPts(gp), bs = gelBeads(gp);
     ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     for (const ox of [-L, 0, L]) for (const oy of [-L, 0, L]) {
-      ctx.strokeStyle = colors.hot; ctx.globalAlpha = 0.85; ctx.lineWidth = 4 * dpr; ctx.beginPath();
+      ctx.strokeStyle = GEL_INK; ctx.globalAlpha = 0.85; ctx.lineWidth = 3 * dpr; ctx.beginPath();
       pts.forEach(([px, py], h) => { const X = (px + ox) * s, Y = (py + oy) * s; h ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); }); ctx.stroke();
-      ctx.fillStyle = colors.hot; ctx.globalAlpha = 1; for (const [px, py] of pts) { ctx.beginPath(); ctx.arc((px + ox) * s, (py + oy) * s, 4.5 * dpr, 0, 6.2832); ctx.fill(); } }
+      ctx.globalAlpha = 1; ctx.lineWidth = Math.max(1.5, 0.13 * s); ctx.strokeStyle = GEL_INK; // the beads on the path get a ring; stickers that carry the path a filled dot
+      pts.forEach(([px, py], h) => { const X = (px + ox) * s, Y = (py + oy) * s; ctx.beginPath(); ctx.arc(X, Y, 0.55 * s, 0, 6.2832); ctx.stroke();
+        if (eng.type[bs[h]] === 5) { ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(X, Y, 0.26 * s, 0, 6.2832); ctx.fill(); } }); }
     ctx.restore();
   }
   // side-by-side plates: the central half of each box (plates kept centred), water-fearing reference on the left
