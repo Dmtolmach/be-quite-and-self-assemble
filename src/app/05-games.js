@@ -26,7 +26,7 @@
   function toutOf(G, Tz) { const g = G.g, [lo, hi] = g.range, c = G.spill || g.spill || 0, f = Math.max(0, (Tz - lo) / (hi - lo)); return lo + c * (hi - lo) * f * f; }
   const DRUG_X0 = 0.6 * 48 / Math.sqrt(0.6); // left edge of the tumour band in the drug game's box (48 beads across at density 0.6)
   const GAMES = [
-    { id: 'ice', title: 'Grow the biggest ice crystal', sub: 'Ice · slow cooling wins', sys: 'ice', ordered: false, range: [0.02, 0.30], D: 150,
+    { id: 'ice', title: 'Grow the biggest ice crystal', sub: 'Slow cooling wins', sys: 'ice', ordered: false, range: [0.02, 0.30], D: 150,
       lab: 'Ice', fmt: (v) => pct(v), stars: [0.35, 0.47, 0.56],
       // the green path: start warm and cool slowly (annealing), then stay quiet for the last seconds; test runs that followed it reached 2-3 stars
       path: (s) => { const c = 0.17 - 0.12 * Math.min(1, s / 25); return [s >= 24 ? 0.02 : c - 0.025, c + 0.025]; },
@@ -41,7 +41,7 @@
       hint: 'Start warm, then cool down slowly along the green path and stay quiet at the end. If the ice stops growing, a short burst of noise melts the badly packed bits; then cool again.',
       lesson: { good: 'Cooling slowly gave the molecules time to find their places in the honeycomb, so the crystals grew large. This is annealing: how glassmakers and metal workers make strong, clear materials.',
         bad: 'Cooled too fast, the molecules lock in wherever they happen to be; kept at one temperature, the crystals grow too slowly or melt again. Start warm, cool step by step, and if growth stalls, heat briefly and cool again.' } },
-    { id: 'demix', title: 'Separate the liquids', sub: 'Two liquids · not too cold', sys: 'demix', ordered: false, range: [0.02, 1.0], D: 90, box: '36',
+    { id: 'demix', title: 'Separate oil from water', sub: 'Cool down, but not too cold', sys: 'demix', ordered: false, range: [0.02, 1.0], D: 90, box: '36',
       lab: 'Separation', fmt: (v) => v.toFixed(2), stars: [0.40, 0.55, 0.75],
       zone: [0.27, 0.42], words: [0.27, 0.42, 0.65], rise: 0.01, // separates fastest around 0.3-0.36; colder the molecules hardly move, warmer they mix
       cz: { hot: 'Too warm: the liquids mix again. Get quieter!', cold: 'Too cold: the molecules are stuck in place. A little noise!',
@@ -54,7 +54,7 @@
     { id: 'drug', title: 'Deliver the drug', sub: 'Soap molecules · hit the target windows', sys: 'dumbbell', ordered: true, range: [0.4, 2.5], D: 60, box: '48', conc: 34,
       prm: { nDrug: 90, drugPerMic: 3, extraTails: 3, preSteps: 1000, epsDB: 2.5, epsBB: 2.5, epsAS: 0, sigA: 1.0 }, raw: true, noSnap: true, side: 'Lost',
       lab: 'Delivered', fmt: (v) => v.toFixed(0) + '%', stars: [30, 45, 70], scale: 100, hotT: 1.35,
-      setup: (G) => { const w = []; let a = 6 + 4 * Math.random(); const W = 8 / 2.25, end = G.speed ? 60 * 600 / GAME_SEC : 58; /* windows ≈ 1.8 s of play each; a speed run gets them for 10 minutes */ while (a + W <= end) { w.push([a, a + W]); a += W + 5 + 4 * Math.random(); } G.win = w; G.del = 0; G.lost = 0; },
+      setup: (G) => { const R = G.rnd || Math.random, w = []; let a = 6 + 4 * R(); const W = 8 / 2.25, end = G.speed ? 60 * 600 / GAME_SEC : 58; /* windows ≈ 1.8 s of play each; a speed run gets them for 10 minutes */ while (a + W <= end) { w.push([a, a + W]); a += W + 5 + 4 * R(); } G.win = w; G.del = 0; G.lost = 0; },
       value: () => drugTick(),
       // challenges use a tumour zone instead: blood flow (flowU) carries three micelles through a heated band; some heat (spill) leaks outside
       tumour: { sub: 'Soap molecules · heat the tumour', range: [0.4, 5.0], prm: { nDrug: 15, drugPerMic: 5, extraTails: 3, preSteps: 1000, epsDB: 2.5, epsBB: 2.5, epsAS: 0, sigA: 1.0, drugXs: [2, 18, 34].map((d) => DRUG_X0 - d) },
@@ -65,7 +65,7 @@
       hint: 'The micelles need a moment to open, so start the noise just before a window and stop just before it ends. Stay quiet between windows so the micelles hold on to the rest.',
       lesson: { good: 'Short, well-timed bursts of heat opened the micelles exactly when the drug was needed, and the cold kept it locked inside the rest of the time. Temperature-sensitive carriers are designed to do just this at a warmed tumour.',
         bad: 'Heat frees the drug a little after it starts and keeps freeing it for a moment after it stops, so late or long bursts waste it. Watch the windows on the time bar and start a little early.' } },
-    { id: 'gel', title: 'Grow the longest gel strand', sub: '36 proteins', sys: 'crypt', ordered: true, range: [0.6, 7.0], D: 90, box: '48', conc: 36, epsXX: 5,
+    { id: 'gel', title: 'Grow the longest gel strand', sub: 'Unfold with heat, then cool down a little', sys: 'crypt', ordered: true, range: [0.6, 7.0], D: 90, box: '48', conc: 36, epsXX: 5,
       lab: 'Gel path', fmt: (v) => v.toFixed(0) + ' σ', stars: [50, 75, 130], scale: 200, openT: 2.2, tooHot: 4.5, openSec: 4, rise: 3, words: [1.4, 2.2, 4.5], value: () => { gelShow = eng.gelPath(1.5, 2); return gelShow.len; },
       short: "Link the proteins into the longest gel strand you can within 30 seconds.", goal: 'Link the proteins into the longest gel strand you can. Your score is the longest path through the gel, from protein to protein (red line); the box is 62 σ wide. The proteins start folded, with their sticky beads hidden inside. Two proteins are linked when they share at least two sticky contacts.', facts: ["Boiling an egg turns the clear egg white solid: heat unfolds its proteins, and they stick together into a gel.", "Gelatin jelly melts at about 30–35 °C, a little below body temperature. That is why it melts in your mouth.", "Tofu is a protein gel: soy milk is heated, then salts such as magnesium chloride make the soy proteins clump together."],
       hint: 'Folded proteins cannot link, and boiling breaks the links. Heat to open the folds, then cool well down so the links hold and the network grows.',
@@ -97,10 +97,12 @@
       return `<button data-game="${g.id}" aria-pressed="${gameSel === g}"><b>${T(g.title)}</b><small>${T(g.sub)}</small><span class="stars">${b !== null ? starStr(starsFor(g, b)) + ' ' + T('best') + ' ' + g.fmt(b) : ''}</span></button>`; }).join('')
       + (coachReady && GAMES.some((g, i) => !isOpen(i)) ? `<p class="gnext"><span aria-hidden="true">🎁</span> ${T('Every game you finish opens something new.')}</p>` : '');
     if (coachReady) speedSeg();
+    dailyRender();
     if (coachReady && typeof applyLocks === 'function') applyLocks();
   }
-  function selectGame(id) {
-    const gi = GAMES.findIndex((g) => g.id === id); if (gi < 0 || (coachReady && !isOpen(gi))) return;
+  function selectGame(id, force) {
+    const gi = GAMES.findIndex((g) => g.id === id); if (gi < 0 || (coachReady && !isOpen(gi) && !force)) return;
+    special = null; // a normal pick leaves the Daily Molecule or a friend's challenge (they set it again after this)
     if (game) endGame(null);
     if (coachReady && guide) { guide = null; coachHide(); }
     if (battle && !battle.keep) { battle = null; if (coachReady) coachHide(); }
@@ -130,6 +132,8 @@
     if (needGuide(g) && !battle && !gameLevel && !classOn) { guideStart(g); return; }
     prepGame(g); coachHide(); $('greplay').hidden = true; gendClose(); postGame = null;
     game = { g, t0: eng.time, last: eng.time, ema: null, rate: g.D / GAME_SEC, peak: -Infinity, peakSec: 0, snap: null, rec: [], level: gameLevel, bump: 0, guided: afterGuide }; afterGuide = false; game.ghost = gameLevel || battle || classOn ? null : ghostLoad(g); game.speed = speedMode && !gameLevel && !battle && !classOn && speedOpen(g) ? SPEED[g.id] : null; if (game.speed) game.ghost = null;
+    game.rnd = rngSeed(((eng && eng.p.seed) || 1) + 99); /* drug windows etc. follow the start's seed, so a challenge link replays them */ game.seed = (eng && eng.p.seed) || 1;
+    if (special && !gameLevel && !battle && !classOn) { game.special = special; game.ghost = null; game.speed = null; }
     if (battle) game.battle = battle.k; fxReset();
     if (g.setup) g.setup(game);
     if (gameLevel) { const tw = ladTwist(g, gameLevel); Object.assign(game, { af: tw.af || 0, flowK: tw.flowK || 1, bandK: tw.bandK || 1, spill: tw.spill || 0 });
@@ -149,6 +153,8 @@
     $('gstart').disabled = true; resize();
     if (g.proto) protoStart(game); else { $('gtimeLab').textContent = T(game.speed ? 'Time' : 'Time left'); $('gstarsLab').textContent = T('Stars'); }
     if (game.speed) speedHud(game); else $('gstars').className = 'gst';
+    if (game.special) $('hudTitle').textContent += ' · ' + specialLabel(game.special);
+    clipStart(game); MONET.hook('gameStart', { game: g.id });
     countdown(game); if (typeof sheet === 'function') sheet(false);
     if ($('guseMic').checked) setMode('mic').then(() => { if (!analyser && game) { setMode('slider'); $('gres').textContent = T('No microphone here: use the temperature slider.'); } });
     else setMode('slider');
@@ -188,7 +194,7 @@
     eng.computeForces(); setT(s.T); smoothReset();
   }
   function endGame(result) {
-    const G = game; game = null; clearTimeout(cdTimer); $('gfx').hidden = true; $('gfx').innerHTML = ''; coachHide();
+    const G = game; game = null; if (G) clipStop(!!result && !G.g.proto && G.battle === undefined && !G.level && !G.speed); clearTimeout(cdTimer); $('gfx').hidden = true; $('gfx').innerHTML = ''; coachHide();
     if (eng && eng.p.flowU) { eng.p.flowU = 0; } // the stream stops with the game; the tumour band stays visible for the replay
     $('gstart').disabled = false; gstartKey = 'Play again'; $('gstart').textContent = T(gstartKey); $('gquit').textContent = T('Close');
     if (!G || !result) { closeHud(); return; }
@@ -208,9 +214,10 @@
     $('gres').innerHTML = `<span class="big">${starStr(st)}</span> <b>${T('Score {s}', { s: g.fmt(v) })}</b> ${rec ? T('(new best ever!)') : T('(best ever {b})', { b: g.fmt(Math.max(b, v)) })}. ` + (dg ? dg + ' ' : '') +
       (opened ? '<b>' + T('New game unlocked: {g}!', { g: T(GAMES[gi + 1].title) }) + '</b> ' : '') +
       (st <= 1 && tipsOn() ? '<b>' + T('Tip:') + '</b> ' + T(g.hint) + ' ' : '') + (st === 3 ? T('Top score!') + ' ' + (card ? '<b>' + T('New card: {c}!', { c: T(card.t) }) + '</b> ' : T('You have all the cards of this game.') + ' ') : '') + T('Your average so far: {a} (games played: {n}).', { n: S.n, a: g.fmt(S.sum / S.n) });
+    const sp = G.special ? specialEnd(G, v, st) : null; MONET.hook('gameEnd', { game: g.id, stars: st });
     renderPick(); drawReplay(G);
     const nx = gi + 1 < GAMES.length && isOpen(gi + 1) ? GAMES[gi + 1] : null;
-    endScreen({ G, g, st, v, rec, best: b, card, extra: speedNew ? '⏱ ' + T('New: Speed run for this game! Reach the structure as fast as you can, with the numbers hidden.') : '', tip: dg,
+    endScreen({ G, g, st, v, rec, best: b, card, extra: speedNew ? '⏱ ' + T('New: Speed run for this game! Reach the structure as fast as you can, with the numbers hidden.') : '', tip: dg, sp, share: true,
       next: nx ? { label: T('Next: {g}', { g: T(nx.title) }), go: () => { selectGame(nx.id); startGame(); } } : null });
   }
   // the end of a game: a card over the box (the box behind it shows the best moment) with the stars filling in one by one, the score, and what to do next
@@ -235,8 +242,8 @@
       ${pic ? `<p class="gendverdict"><b>${T(pic.info.t)}</b><span>${T(pic.info.d)}</span></p>` : `<p class="gendmsg">${msg}</p>`}<p class="gendscore"><b data-v>${g.fmt(0)}</b>${o.rec ? `<span class="pb">${T('New personal best!')}</span>` : o.best !== null && o.best !== undefined ? `<small>${T('best ever {b}', { b: g.fmt(Math.max(o.best, v)) })}</small>` : ''}</p>
       ${pic ? (o.extra ? `<p class="gendnote"><b>${o.extra}</b></p>` : '') : `<p class="gendnote">${g.proto ? '' : T('Behind this card: your best moment, at {s} s.', { s: Math.round(G.peakSec || 0) })}${o.extra ? ' <b>' + o.extra + '</b>' : ''}</p>`}
       ${o.reward ? `<p class="gendnew"><span aria-hidden="true">🎁</span> ${T('New: {x}!', { x: T(o.reward.name) })} <small>${T(o.reward.where)}</small></p>` : ''}
-      ${o.tip ? `<p class="gendtip">${o.tip}</p>` : ''}
-      <div class="gendbtns"><button class="btn primary" data-act="again">${T('Try again')}</button>${o.next ? `<button class="btn" data-act="next">${o.next.label} ▸</button>` : ''}<button class="btn ghost" data-act="look">${T('Look at the box')}</button></div></div></div>`;
+      ${o.sp ? `<p class="gendsp">${o.sp.html}</p>` : ''}${o.tip ? `<p class="gendtip">${o.tip}</p>` : ''}
+      <div class="gendbtns"><button class="btn primary" data-act="again">${T('Try again')}</button>${o.next ? `<button class="btn" data-act="next">${o.next.label} ▸</button>` : ''}${o.share ? `<button class="btn" data-act="share"><span aria-hidden="true">📤</span> ${T('Share')}</button>` : ''}<button class="btn ghost" data-act="look">${T('Look at the box')}</button></div></div></div>`;
     el.hidden = false; el._next = o.next; el._o = o; syncBoxStart();
     if (pic) { pic.snap = pic.snap || o.snap; macroStill(el.querySelector('.gendpic canvas'), pic); } // a new fact card opens in its own window when the end window is left
     const cd = el.querySelector('.gendcard'); if (cd.scrollIntoView) setTimeout(() => cd.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }), 60);
@@ -248,6 +255,7 @@
   }
   function gendClose() { macroStop(); $('gend').hidden = true; gendTimers.forEach(clearTimeout); syncBoxStart(); }
   $('gend').addEventListener('click', (e) => { const b = e.target.closest('[data-act], .gendx'); if (!b) return; const act = b.dataset.act, nx = $('gend')._next;
+    if (act === 'share') { shareOpen($('gend')._o); return; } // the end card stays open behind the share window
     const o0 = $('gend')._o, cardNow = act !== 'macro' && o0 && o0.card ? o0.card : null; // a won fact card comes in its own window after the end window
     if (cardNow) { o0.card = null; gendClose(); fcOpen(cardNow, true, () => gendAct(act, nx)); return; }
     gendClose(); gendAct(act, nx); });

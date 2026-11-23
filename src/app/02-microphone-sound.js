@@ -24,11 +24,14 @@
     function ctx() { if (!on) return null; try { if (!ac) { ac = new (window.AudioContext || window.webkitAudioContext)(); out = ac.createGain(); out.gain.value = 0.55;
         const comp = ac.createDynamicsCompressor(); out.connect(comp); comp.connect(ac.destination); } if (ac.state === 'suspended') ac.resume(); } catch (e) { return null; } return ac; }
     // one note: frequency f (Hz), start in s from now, length, wave, volume, optional glide to f2
-    function note(f, at, dur, o = {}) { const a = ctx(); if (!a) return; const t0 = a.currentTime + at, os = a.createOscillator(), gn = a.createGain();
+    // phones: the loudspeaker sits next to the microphone, so the game would hear its own stars and tinks as noise. While the microphone drives a game
+    // (or the guided lesson) on a phone or tablet, no sounds play; on computers the reading is held while a sound plays (levelDb below)
+    function micBusy() { try { return isPhone && mode === 'mic' && !!analyser && (!!game || !!guide); } catch (e) { return false; } }
+    function note(f, at, dur, o = {}) { if (micBusy()) return; const a = ctx(); if (!a) return; const t0 = a.currentTime + at, os = a.createOscillator(), gn = a.createGain();
       os.type = o.type || 'sine'; os.frequency.setValueAtTime(f, t0); if (o.to) os.frequency.exponentialRampToValueAtTime(o.to, t0 + dur);
       const v = o.vol || 0.16; gn.gain.setValueAtTime(0.0001, t0); gn.gain.exponentialRampToValueAtTime(v, t0 + (o.att || 0.006)); gn.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
       os.connect(gn); gn.connect(out); os.start(t0); os.stop(t0 + dur + 0.02);
-      api.busyUntil = Math.max(api.busyUntil, performance.now() + 1000 * (at + dur) + 150); }
+      api.busyUntil = Math.max(api.busyUntil, performance.now() + 1000 * (at + dur + (a.outputLatency || a.baseLatency || 0)) + 150); } // + the device's output delay, so the hold covers the sound as it leaves the speaker
     const hz = (m) => 440 * Math.pow(2, (m - 69) / 12), PENTA = [0, 2, 4, 7, 9];
     let lastAt = 0; const gap = (ms) => { const n = performance.now(); if (n - lastAt < ms) return false; lastAt = n; return true; };
     api.set = (v) => { on = v; try { localStorage.setItem('mdlab-sound', v ? '1' : '0'); } catch (e) {} if (on) ctx(); };

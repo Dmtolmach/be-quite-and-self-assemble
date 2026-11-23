@@ -3,6 +3,7 @@
 
     python3 build.py              -> docs/amphiphile-assembly-lab.html
     python3 build.py --out X.html -> another path
+    python3 build.py --monet src/monet/example-adapter.js --out build-portal/index.html -> a portal build with a monetization adapter
 
 The page stays one self-contained HTML file (that is what teachers download and what the artifact serves);
 src/ only splits it into parts that are easier to read and edit:
@@ -40,11 +41,19 @@ def fonts_block():  # @font-face rules with the font files inlined, so the page 
                    f"src: url(data:font/woff2;base64,{b64}) format('woff2'); unicode-range: {f['range']}; }}")
     return '<style>\n' + '\n'.join(out) + '\n</style>'
 
+MONET_FILE = None  # set by --monet: an adapter for a separate portal build; the normal (school) build never has one
+
+def monet_block():
+    if not MONET_FILE: return '// no monetization adapter in this build'
+    return '// monetization adapter: ' + os.path.basename(MONET_FILE) + '\n' + read(MONET_FILE)
+
 def build():
     man = json.load(open(S('manifest.json')))
     app = ''.join(read(S('app', f)) for f in man['app'])
     assert app.count('/*@I18N@*/') == 1, 'the I18N marker must appear once in src/app'
     app = app.replace('/*@I18N@*/', i18n_block())
+    assert app.count('/*@MONET@*/') == 1, 'the MONET marker must appear once in src/app'
+    app = app.replace('/*@MONET@*/', monet_block())
     return (read(S('head.html')).replace('<!--@FONTS@-->', fonts_block()) + '<style>\n' + read(S('styles.css')) + '</style>\n' + read(S('body.html')) +
             '<script>\n' + read(S('engine.js')) + '</script>\n<script>\n' + app + '</script>\n' + read(S('tail.html')))
 
@@ -67,6 +76,9 @@ self.addEventListener('fetch', (e) => { const r = e.request; if (r.method !== 'G
 
 if __name__ == '__main__':
     out = sys.argv[sys.argv.index('--out') + 1] if '--out' in sys.argv else os.path.join(ROOT, 'docs', 'amphiphile-assembly-lab.html')
+    if '--monet' in sys.argv:  # portal build with an adapter: only to another path, never into docs/ (the school version)
+        assert '--out' in sys.argv and not os.path.abspath(out).startswith(os.path.join(ROOT, 'docs') + os.sep), '--monet needs --out outside docs/'
+        MONET_FILE = os.path.abspath(sys.argv[sys.argv.index('--monet') + 1])
     d = os.path.dirname(out); os.makedirs(d, exist_ok=True); html = build()
     open(out, 'w', encoding='utf-8').write(html)
     if '--out' not in sys.argv:  # the files a web server needs for "install as app" and offline use

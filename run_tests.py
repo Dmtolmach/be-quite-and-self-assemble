@@ -16,7 +16,7 @@ def syntax():  # node --check on both scripts of the built page
     print(('PASS' if not bad else 'FAIL') + ' syntax: both scripts parse'); [print('     ', b) for b in bad]; return not bad
 STEPS = [('build', [sys.executable, os.path.join(ROOT, 'build.py')]), ('syntax', syntax), ('engine', ['node', T('test_engine.js')]),
          ('startup', [sys.executable, T('test_startup.py')]), ('i18n', [sys.executable, T('test_i18n.py')]),
-         ('layout', [sys.executable, T('test_layout.py')]), ('buttons', [sys.executable, T('test_buttons.py')]), ('games', [sys.executable, T('test_games.py')]), ('offline', [sys.executable, T('test_offline_privacy.py')]),
+         ('layout', [sys.executable, T('test_layout.py')]), ('buttons', [sys.executable, T('test_buttons.py')]), ('games', [sys.executable, T('test_games.py')]), ('daily', [sys.executable, T('test_daily_share.py')]), ('aim', [sys.executable, T('test_aim_band.py')]), ('offline', [sys.executable, T('test_offline_privacy.py')]),
          ('keyboard', [sys.executable, T('test_keyboard.py')]), ('a11y', [sys.executable, T('test_a11y.py')])]
 quick = '--quick' in sys.argv; failed = []; t0 = time.time()
 for name, cmd in STEPS:

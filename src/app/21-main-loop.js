@@ -52,7 +52,7 @@
     followTick();
     if (coachReady) demoTick(isPhone ? 5 : 7); const dfr = coachReady ? demoFrame() : null;
     if (!dfr && filmCtl) { filmCtl = false; $('tsliderM').value = tset; $('micbarM').style.width = '0%'; tWordShow(); }
-    if (qLevel < 3 || (loopN & 1) === 0) { const d0 = performance.now(); if (dfr) drawDemo(dfr); else draw(); const dm = performance.now() - d0; qualityTick(now, dm, frameMs); if (dbg) dbg.draw += dm; } loopN++;
+    if (qLevel < 3 || (loopN & 1) === 0) { const d0 = performance.now(); if (dfr) drawDemo(dfr); else draw(); const dm = performance.now() - d0; qualityTick(now, dm, frameMs); if (dbg) dbg.draw += dm; } loopN++; clipTick(now);
     if (dbg) debugTick(now, frameMs);
     syncBoxStart();
     requestAnimationFrame(loop);

@@ -46,6 +46,8 @@
   const SM_TAU = 0.07;
   function smoothReset() { smX = null; }
   try { if (localStorage.getItem('mdlab-smooth') === '0') $('smooth').checked = false; } catch (e) {} // a teacher option, kept in this browser
+  try { if (localStorage.getItem('mdlab-glow') === '0') $('velGlow').checked = false; } catch (e) {}
+  $('velGlow').addEventListener('change', () => { try { localStorage.setItem('mdlab-glow', $('velGlow').checked ? '1' : '0'); } catch (e) {} });
   $('smooth').addEventListener('change', () => { try { localStorage.setItem('mdlab-smooth', $('smooth').checked ? '1' : '0'); } catch (e) {} });
   function smoothPos() { // updates the drawn positions; false when the true ones should be drawn
     const now = performance.now(), dt = Math.min(0.1, Math.max(0, (now - smT) / 1000)); smT = now;
@@ -79,5 +81,6 @@
     if (follow && !demoDrawing) drawFollow(false);
     if (!demoDrawing && coachReady && game && game.g.proto) protoDraw(game);
     if (!demoDrawing && appMode === 'game') fxDraw();
+    boxThermo();
     ctx.restore();
   }

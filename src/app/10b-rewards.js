@@ -2,7 +2,7 @@
   // Order of the rewards; Class mode, Help, the language, the microphone settings and Teacher options are always there. Teacher options → Unlock everything opens all at once.
   const SYS_NEW = 'A new system to explore.';
   const REWARDS = [
-    { id: 'demix', name: 'Separate the liquids', where: 'A new game in the list of games.' },
+    { id: 'demix', name: 'Separate oil from water', where: 'A new game in the list of games.' },
     { id: 'drug', name: 'Deliver the drug', where: 'A new game in the list of games.' },
     { id: 'explore', name: 'Explore mode', where: 'Try ice freely in the Explore tab; more systems open as you play.' },
     { id: 'sys-demix', name: 'Two liquids', where: SYS_NEW },
@@ -21,6 +21,7 @@
     return GAMES.reduce((a, g) => a + getStats(g).n, 0);
   }
   const rewardOpen = (id) => { if (unlockAll()) return true; const k = REWARDS.findIndex((r) => r.id === id); return k < 0 || k < gamesPlayed(); };
+  const optOpen = (k) => unlockAll() || gamesPlayed() >= ({ ghost: 2, clip: 3 }[k] || 0); // a hidden option is also off
   let lastReward = null; // shown on the next end card
   var locksLive = false; // set at the end of start-up; before that, only classes change
   function rewardStep() { // one more finished game; returns the reward it opens, if any
@@ -34,6 +35,7 @@
     for (const id of ['explore', 'scan', 'stats']) w.classList.toggle('lock-' + id, !rewardOpen(id));
     let cards = 0; try { cards = fcOwned().length; } catch (e) {}
     w.classList.toggle('lock-cards', !cards && !rewardOpen('stats'));
+    w.classList.toggle('lock-ghost', !optOpen('ghost')); w.classList.toggle('lock-clip', !optOpen('clip')); // game options that appear later: the ghost after 2 games, the clip after 3
     if (locksLive && !rewardOpen('explore') && (appMode === 'explore' || appMode === 'scan')) setAppMode('game');
     if (locksLive && !rewardOpen('scan') && appMode === 'scan') setAppMode('explore');
     document.querySelectorAll('#sysPanel [data-pick]').forEach((b) => b.classList.toggle('lockedsys', !rewardOpen('sys-' + b.dataset.pick)));

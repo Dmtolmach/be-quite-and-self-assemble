@@ -11,9 +11,16 @@
       $('tsliderM').setAttribute('aria-valuetext', T(T_WORDS[k])); if (k !== lastWordK) { lastWordK = k; kbSay(T(T_WORDS[k])); } }
     else { if (b.className) { b.className = ''; b.removeAttribute('title'); b.removeAttribute('aria-label'); } $('tsliderM').removeAttribute('aria-valuetext'); lastWordK = -1; }
   }
-  function zoneMarks(sNow) { // the green band on the noise bar and on the slider: temperatures that build the structure (for ice it moves down during the game)
-    const g = gameNow(), hide = (game ? !!game.speed : speedMode && speedOpen(g)) || (!(g && g.alwaysZone) && (!tipsOn() || (game ? game.level : gameLevel))); // the green band is a tip: not in speed runs, challenges or with tips off
-    const z = !g || hide ? null : g.zoneLive ? g.zoneLive(game) : (g.zone || g.path) ? zoneOf(g, sNow || 0) : null, nz = $('nzone'), sz = $('szone');
+  // the green band is one strategy that works, shown as a tip: not in speed runs, challenges or with tips off, and no longer once this game has
+  // been won with 3 stars (the player has found their own way); the guided first game always shows it and says what it is
+  function bandRetired(g) { if (!g || g.proto || !g.stars) return false; const b = getBest(g); return b !== null && starsFor(g, b) >= 3; }
+  function bandNow(sNow) {
+    const g = gameNow(), hide = (game ? !!game.speed : speedMode && speedOpen(g)) || (!(g && g.alwaysZone) && (!tipsOn() || (game ? game.level : gameLevel) || (bandRetired(g) && !(game && game.guided))));
+    if (sNow === undefined && game && g) sNow = GAME_SEC * Math.min(1, (eng.time - game.t0) / g.D);
+    return !g || hide ? null : g.zoneLive ? g.zoneLive(game) : (g.zone || g.path) ? zoneOf(g, sNow || 0) : null;
+  }
+  function zoneMarks(sNow) { // the green band on the noise bar, on the slider and on the box thermometer: temperatures that build the structure (for ice it moves down during the game)
+    const g = gameNow(), z = bandNow(sNow), nz = $('nzone'), sz = $('szone');
     nz.classList.toggle('on', !!z); sz.classList.toggle('on', !!z); if (!z) return;
     const [lo, hi] = g.range, f = (Tv) => (Tv - lo) / (hi - lo), xn = (Tv) => Math.max(0, Math.min(1, f(Tv))); // the noise bar maps to the whole temperature range
     nz.style.left = 100 * xn(z[0]) + '%'; nz.style.width = 100 * (xn(z[1]) - xn(z[0])) + '%';
@@ -32,6 +39,7 @@
   $('gtips').addEventListener('change', () => { try { localStorage.setItem('mdlab-tips', tipsOn() ? '1' : '0'); } catch (e) {} if (!tipsOn() && !guide) coachHide(); });
   function coachTick(G, s) {
     const g = G.g; if (!g.coach || !tipsOn() || G.level || !G.guided) return; // in-game coach lines only in the guided first game
+    if (s < 6) { if (!G.introShown) { G.introShown = true; G.cShown = 'intro'; G.cAt = s; coachSay('The green band shows one strategy that works: start warm, then cool slowly. Other ways can work too. Watch the molecules: a red glow means fast and hot, blue means slow and cold.', 'good'); } return; }
     const r = G.rec, back = r.find((q) => q.s >= s - 2) || r[0], tr = back ? G.ema - back.v : 0;
     const [key, cls] = g.coach(G, s, tset, tr);
     if (key !== G.cKey) { G.cKey = key; G.cCls = cls; G.cSince = s; }

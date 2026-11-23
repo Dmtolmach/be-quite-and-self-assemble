@@ -121,7 +121,7 @@
       plateLen: +$('plateLen').value, plateGap: +$('plateGap').value, plateFix: $('plateHold').checked,
       ordered: sys === 'plates' ? true : opts.ordered !== undefined ? opts.ordered : isOrdered(), demixStripes: 4, bilayerSpacing: 1.15,
       boxL: n, gravity: +$('grav').value, graftSpacing: +$('graft').value, epsCC: +$('epsCC').value, epsQL: +$('epsQL').value, epsHL: +$('epsHL').value, invert: $('bInvert').checked, nEnd: +$('nEnd').value, nWater: v,
-      thermostat: $('thermo').value, gamma: +$('gamma').value, tau: +$('tau').value, seed: (battle && battle.seed) || (opts.game && gameSel && gameSel.seed) || (Math.random() * 1e9) | 0,
+      thermostat: $('thermo').value, gamma: +$('gamma').value, tau: +$('tau').value, seed: (battle && battle.seed) || (opts.game && special && special.seed) || (opts.game && gameSel && gameSel.seed) || (Math.random() * 1e9) | 0,
       epsSS: 0, epsAS: +$('epsAS').value, epsBB: +$('epsBB').value, sigA: +$('sigA').value, sigB: 1,
       nSalt: sys === 'ice' ? v : 0, iceWall: sys === 'ice' && !opts.game && $('iceWall').checked, epsPP: +$('epsPP').value, epsH: (sys === 'mbpoly' || sys === 'plates') ? +$('epsH').value : 0, epsW: sys === 'mbpoly' ? +$('epsW').value : 0, kBend: sys === 'plates' ? 150 : +$('kBend').value, chainLen: +$('chainLen').value,
       fA: +$('fA').value, epsAB: +$('epsAB').value, epsSC: +$('epsSC').value, xC: v / 100,

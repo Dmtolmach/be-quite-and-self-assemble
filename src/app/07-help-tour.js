@@ -45,7 +45,7 @@
     await setMode('mic'); if (analyser) { demoCtl = 'mic'; $('tdMic').setAttribute('aria-pressed', 'true'); } });
   let seenTour = false; try { seenTour = localStorage.getItem('mdlab-tour') === '1'; } catch (e) {}
   let seenWel = false; try { seenWel = localStorage.getItem('mdlab-welcome') === '1'; } catch (e) {}
-  if (!seenWel) setTimeout(() => { if (tourI < 0) tourOpen(true); }, 700); // first visit (also for browsers that saw the old tour): the story, then Play
+  if (!seenWel && !/[?&]c=/.test(location.search)) setTimeout(() => { if (tourI < 0) tourOpen(true); }, 700); // first visit (also for browsers that saw the old tour): the story, then Play
   const markWel = () => { try { localStorage.setItem('mdlab-welcome', '1'); } catch (e) {} };
   const markTour = () => { try { localStorage.setItem('mdlab-tour', '1'); } catch (e) {} };
   $('tClose').addEventListener('click', tourClose);
@@ -119,6 +119,9 @@
     const heatCap = story ? ts >= 6.8 && ts < 10.5 : rising && T01 > 0.05, coolCap = story ? ts >= 10.5 && ts < 14 : falling && T01 > 0.05;
     $('tDemoCap').textContent = T(story && ts < 2.5 ? 'A water molecule: a bead with three arms that hold on to neighbours' : story && ts < 6.8 ? 'Cold and quiet: the molecules lock into a honeycomb crystal, ice'
       : heatCap ? 'Noise heats the box: the honeycomb breaks and the ice melts' : coolCap ? 'Quiet again: the molecules lock into a honeycomb again' : T01 > 0.5 ? 'Hot: liquid water' : 'Cold: ice');
+    // the welcome story carries the app in two lines: what to study (first half), what to do (second half, from the shout on)
+    const head = story && welcome ? (ts < 6.8 ? 'Study how molecules move, freeze, separate into phases and form gels.' : 'Control the temperature, compete, collect fact cards and experiment with the systems.') : '';
+    const hd = $('tDemoHead'), ht = head ? T(head) : ''; if (hd.textContent !== ht) { hd.textContent = ht; hd.hidden = !ht; }
     if (tourI >= 0 && TOUR[tourI].demo) tourRaf = requestAnimationFrame(iceDemo);
   }
 

@@ -1,55 +1,59 @@
-  // ---------- goal preview: before a game starts, the box plays a fast "film" of the system: heated it falls apart (forward),
-  // cooled it orders (the same film played backwards), 10 s of film, then 20 s of the live box, repeated ----------
-  const DEMO = { ice: { T: 0.34, ord: true, tau: 24 }, demix: { T: 2.0, ord: true, tau: 18 }, drug: { T: 2.5, ord: true, tau: 12 },
-    gel: { T: 3.5, ord: true, tau: 26, heatTau: 8, coolT: 1.2 } }; // gel: a real heat-then-cool run, played forwards only
-  const demoCache = {}; let demo = null, demoDrawing = false, demoHeat = 0, filmCtl = false;
-  const previewOn = () => appMode === 'game' && !!gameSel && !game && !(postGame && postGame === gameSel.id) && !gendOpen() && !guide && !battle && !classOn && tourI < 0 && !gameLevel && !!DEMO[gameSel.id] && !!eng;
-  function demoTick(budgetMs) { // record the film in small slices of each frame, on a copy of the game's system
-    if (!previewOn()) return; const id = gameSel.id, cf = DEMO[id];
-    if (!demo || demo.id !== id) demo = demoCache[id] || null;
-    if (!demo) {
-      let E; try { E = new MDEngine(Object.assign({}, eng.p, { T: cf.T, ordered: cf.ord, seed: 7 + id.length, baro: false, hotBand: null, flowU: 0, iceWall: false })); } catch (e) { return; }
-      E.setupTable(); const nf = 60, every = Math.max(1, Math.round(cf.tau / nf / E.p.dt));
-      demo = demoCache[id] = { id, E, frames: [], every, nf, t0: 0, k: 0 }; demo.frames.push(demoGrab(E));
-    }
-    if (demo.frames.length >= demo.nf) return;
-    const t0 = performance.now(), E = demo.E;
-    while (performance.now() - t0 < budgetMs && demo.frames.length < demo.nf) {
-      if (cf.heatTau && demo.k === Math.round(cf.heatTau / E.p.dt)) { E.p.T = cf.coolT; E.setupTable(); } // gel film: heat, then cool
-      E.step(); if (++demo.k % demo.every === 0) demo.frames.push(demoGrab(E)); }
-    if (demo.frames.length >= demo.nf) demo.t0 = performance.now();
+  // ---------- the aim: before a game starts, the box shows what to build (a still picture with a clear label, not a film) ----------
+  // ice: the perfect honeycomb crystal; two liquids: fully separated; drug: a good case next to a bad case; gel: one long strand.
+  // The gel picture is a real snapshot (protein beads only) with a 186 σ path, found by tools/calibration/geltarget.js and stored as
+  // uint16 x, y per bead (fraction of the box), so it needs no long simulation in the browser.
+  const GEL_AIM = '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';
+  const AIMS = {
+    ice: { line: 'Your aim: ice like this. The water molecules lock into a honeycomb crystal (blue).' },
+    demix: { line: 'Your aim: the two liquids fully separated, like this.' },
+    drug: { line: 'Your aim: release the drug only in the red windows.', good: 'Red window: noise opens the micelles and the drug is delivered (yellow).' },
+    gel: { line: 'Your aim: one long strand of linked proteins (red line), like this.' },
+  };
+  const aimCache = {}; let demo = null, demoDrawing = false, filmCtl = false; // demo: the aim of the picked game; demoDrawing: the box is drawing an aim (no live effects)
+  const previewOn = () => appMode === 'game' && !!gameSel && !game && !(postGame && postGame === gameSel.id) && !gendOpen() && !guide && !battle && !classOn && tourI < 0 && !gameLevel && !!AIMS[gameSel.id] && !!eng && sys === gameSel.sys;
+  function aimEngine(o) { const E = new MDEngine(Object.assign({}, eng.p, { baro: false, hotBand: null, flowU: 0, iceWall: false, seed: 7 }, o)); E.setupTable(); E.computeForces(); return E; } // forces once, so hydrogen bonds and neighbour lists exist for the analysis
+  function demoTick(budgetMs) { // prepare the aim of the picked game; only the drug needs a short simulation, done in slices of each frame
+    if (!previewOn()) return; const id = gameSel.id; demo = aimCache[id] || (aimCache[id] = { id, ready: false });
+    if (demo.ready) return;
+    try {
+      if (id === 'ice') { const E = aimEngine({ T: 0.05, ordered: true }); demo.E = E; demo.an = E.iceStats(); demo.ready = true; }
+      else if (id === 'demix') { demo.E = aimEngine({ T: 0.3, ordered: true }); demo.ready = true; }
+      else if (id === 'gel') { const E = aimEngine({ T: 0.6, ordered: true }), raw = atob(GEL_AIM), n = raw.length / 4;
+        if (E.nMol * E.Lc === n) for (let i = 0; i < n; i++) { const u = (k) => raw.charCodeAt(4 * i + k) | (raw.charCodeAt(4 * i + k + 1) << 8); E.x[i] = u(0) / 65535 * E.L; E.y[i] = u(2) / 65535 * E.L; }
+        E.computeForces(); demo.E = E; demo.gp = E.gelPath(1.5, 2); demo.ready = true; }
+      else if (id === 'drug') { // a short hot run from the loaded micelles: early, a little drug is out (good, delivered); later, much is out (bad, lost)
+        if (!demo.E) { demo.E = aimEngine({ T: 2.5, ordered: true }); demo.k = 0; }
+        const E = demo.E, t0 = performance.now(), kGood = Math.round(1.6 / E.p.dt), kBad = kGood;
+        while (performance.now() - t0 < budgetMs && demo.k < kBad) { E.step(); demo.k++;
+          if (demo.k === kGood || demo.k === kBad) { const r = E.drugStats(1.5, 2), rel = []; for (let i = 0; i < E.N; i++) if (E.type[i] === 4 && r.cnt[i] < 2) rel.push(i);
+            demo.good = { x: Float32Array.from(E.x.subarray(0, E.N)), y: Float32Array.from(E.y.subarray(0, E.N)), rel }; } }
+        if (demo.k >= kBad) { demo.type0 = Int32Array.from(E.type.subarray(0, E.N)); demo.ready = true; } }
+    } catch (e) { demo.ready = true; demo.failed = true; }
   }
-  window.__demo = () => demo && { id: demo.id, n: demo.frames.length, nf: demo.nf, k: demo.k, every: demo.every, prev: previewOn() };
-  const demoGrab = (E) => { const fr = { x: Float32Array.from(E.x.subarray(0, E.N)), y: Float32Array.from(E.y.subarray(0, E.N)), arm: E.mb && E.arm ? Float32Array.from(E.arm.subarray(0, 6 * E.N)) : null, T: E.p.T, rel: null };
-    if (E.nDrug) { const r = E.drugStats(1.5, 2), rel = []; for (let i = 0; i < E.N; i++) if (E.type[i] === 4 && r.cnt[i] < 2) rel.push(i); fr.rel = Int32Array.from(rel); } // released drug glows in the film
-    return fr; };
-  function demoFrame() { // which frame to show now, or null for the live box
-    if (!previewOn() || !demo || demo.id !== gameSel.id || demo.frames.length < demo.nf) return null;
-    const t = ((performance.now() - demo.t0) / 1000) % 10, cf = DEMO[demo.id];
-    if (cf.heatTau) { // gel: the run forwards over 8 s, then 2 s on its last frame; the controls follow the temperature it was run at
-      const i = Math.min(demo.nf - 1, Math.round(Math.min(1, t / 8) * (demo.nf - 1))), hot = demo.frames[i].T > cf.coolT + 0.01;
-      return { i, fwd: hot, f: hot ? 0.9 : 0.15, gel: true }; }
-    // others loop while the preview is on: 4 s heating, 4 s cooling (the film backwards), 2 s cold
-    const fwd = t < 4, f = fwd ? t / 4 : t < 8 ? 1 - (t - 4) / 4 : 0, i = Math.min(demo.nf - 1, Math.round(f * (demo.nf - 1)));
-    return { i, fwd, f };
+  window.__demo = () => demo && { id: demo.id, ready: !!demo.ready, prev: previewOn(), shown: !!demo.img };
+  function demoFrame() { return previewOn() && demo && demo.id === gameSel.id && demo.ready && !demo.failed ? { id: demo.id } : null; }
+  function aimPaint(E, an0, gp) { // draw a prepared engine on the box canvas with the normal drawing code
+    const keepE = eng, keepAn = an, solv = $('showSolv').checked; eng = E; an = an0 || null; demoDrawing = true;
+    if (an0 && an0.isIce) { iceE = E; iceT0 = new Float64Array(E.N).fill(performance.now() - 5000); iceMask = new Uint8Array(E.N); } // shown as ice at once (no 1 s wait)
+    if (gp) $('showSolv').checked = false; // gel: the stored picture has the proteins only
+    try { draw(); if (gp && gp.path.length > 1) drawGel(gp); } finally { eng = keepE; an = keepAn; demoDrawing = false; $('showSolv').checked = solv; }
   }
-  function drawDemo(fr) {
-    const E = demo.E, F = demo.frames[fr.i]; E.x.set(F.x); E.y.set(F.y); if (F.arm) E.arm.set(F.arm);
-    const keepE = eng, keepAn = an; eng = E; an = null; demoDrawing = true; demoHeat = fr.f;
-    try { draw(); } finally { eng = keepE; an = keepAn; demoDrawing = false; }
-    if (F.rel && F.rel.length) { const s = cv.width / E.L; ctx.save(); ctx.globalCompositeOperation = isDark() ? 'lighter' : 'source-over';
-      for (const i of F.rel) { const X = F.x[i] * s, Y = F.y[i] * s, R = 1.8 * s, gr = ctx.createRadialGradient(X, Y, 0, X, Y, R);
-        gr.addColorStop(0, 'rgba(255,214,64,0.95)'); gr.addColorStop(0.45, 'rgba(255,200,40,0.45)'); gr.addColorStop(1, 'rgba(255,200,40,0)'); ctx.fillStyle = gr; ctx.fillRect(X - R, Y - R, 2 * R, 2 * R); }
-      ctx.restore(); }
-    // banner and thermometer
-    const W = cv.width, H = cv.height, u = dpr; ctx.save();
-    const msg = T(fr.gel ? (fr.fwd ? 'Preview · noise heats the proteins: they open' : 'Preview · quiet: the open proteins link into a gel') : fr.fwd ? 'Preview · noise heats it: order is lost' : 'Preview · quiet cools it: order grows');
-    ctx.font = `700 ${14 * u}px ${css('--f-body') || 'sans-serif'}`; const tw = ctx.measureText(msg).width + 24 * u;
-    ctx.globalAlpha = 0.85; ctx.fillStyle = fr.fwd ? colors.hot : colors.cold; ctx.beginPath(); ctx.roundRect ? ctx.roundRect((W - tw) / 2, 10 * u, tw, 28 * u, 14 * u) : ctx.rect((W - tw) / 2, 10 * u, tw, 28 * u); ctx.fill();
-    ctx.globalAlpha = 1; ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(msg, W / 2, 24 * u);
-    ctx.restore();
-    // the player's own controls under the box show what the film does: the slider and the noise bar move, the symbol changes
-    const g = gameSel, [lo, hi] = g.range, Tf = lo + fr.f * (hi - lo);
-    $('tsliderM').value = Tf; $('micbarM').style.width = (100 * fr.f) + '%'; const k = tWord(g, Tf), b = $('tsetM'); b.textContent = T_SIGNS[k]; b.className = 'tw tw' + k; filmCtl = true;
+  function wrapLines(c, text, maxW) { const out = []; let line = ''; for (const w of text.split(' ')) { const t = line ? line + ' ' + w : w; if (line && c.measureText(t).width > maxW) { out.push(line); line = w; } else line = t; } if (line) out.push(line); return out; }
+  function label(c, text, cx, y, maxW, fs, bg, fg, down) { // a rounded label with wrapped text; y is its top (or its bottom when down is false)
+    c.font = `700 ${fs}px ${css('--f-body') || 'sans-serif'}`; const ls = wrapLines(c, text, maxW - 2 * fs), lh = 1.3 * fs, h = ls.length * lh + 0.8 * fs, w = Math.min(maxW, Math.max(...ls.map((l) => c.measureText(l).width)) + 2 * fs), y0 = down === false ? y - h : y;
+    c.globalAlpha = 0.92; c.fillStyle = bg; c.beginPath(); c.roundRect ? c.roundRect(cx - w / 2, y0, w, h, 0.7 * fs) : c.rect(cx - w / 2, y0, w, h); c.fill(); c.globalAlpha = 1;
+    c.fillStyle = fg; c.textAlign = 'center'; c.textBaseline = 'middle'; ls.forEach((l, i) => c.fillText(l, cx, y0 + 0.4 * fs + lh * (i + 0.5)));
   }
-
+  function aimImage() { // the whole picture, made once per size, language and theme
+    const key = [cv.width, LANG, isDark(), document.documentElement.classList.contains('hicon')].join('|'); if (demo.img && demo.key === key) return demo.img;
+    const W = cv.width, H = cv.height, u = dpr, img = document.createElement('canvas'); img.width = W; img.height = H; const c = img.getContext('2d'), A = AIMS[demo.id];
+    if (demo.id === 'drug') { const E = demo.E, S = demo.good; // the good case at the moment a red window opens: the micelles release their drug, delivered (yellow)
+      if (S) { E.x.set(S.x); E.y.set(S.y); E.type.set(demo.type0); for (const i of S.rel) E.type[i] = 3; }
+      aimPaint(E, null, null); c.drawImage(cv, 0, 0); E.type.set(demo.type0);
+      c.strokeStyle = colors.hot; c.lineWidth = 8 * u; c.strokeRect(4 * u, 4 * u, W - 8 * u, H - 8 * u); // the red frame the game shows while a window is open
+      label(c, T(A.good), W / 2, H - 12 * u, W - 24 * u, 14 * u, colors.hot, '#fff', false); }
+    else { aimPaint(demo.E, demo.an, demo.gp); c.drawImage(cv, 0, 0); }
+    label(c, T(A.line), W / 2, 10 * u, W - 24 * u, 15 * u, colors.accent, css('--accent-ink') || '#fff');
+    demo.img = img; demo.key = key; return img;
+  }
+  function drawDemo() { const img = aimImage(); ctx.drawImage(img, 0, 0); }

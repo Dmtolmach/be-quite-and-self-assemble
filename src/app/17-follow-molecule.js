@@ -122,9 +122,42 @@
     ctx.textAlign = 'left'; ctx.fillText(T('Water-fearing'), 8 * dpr, 6 * dpr); ctx.fillText(T(plateKind().name), W / 2 + 8 * dpr, 6 * dpr); ctx.restore();
   }
   let noBg = false;
+  // ---- speed glow: a soft halo behind each molecule, blue when it moves slowly, red when fast (temperature is motion) ----
+  // each molecule's kinetic energy ½v² (= its share of k_BT in 2D) is smoothed over about 0.3 s so the colours follow the heat, not the noise of single collisions
+  let kinS = null, kinE = null, kinT = 0;
+  const GLOW_N = 9, glowCols = [];
+  function glowCol(k) { const f = k / (GLOW_N - 1), c0 = hexRgb(colors.cold), c1 = hexRgb(colors.hot), mid = isDark() ? [70, 76, 86] : [236, 236, 240], a = f < 0.5 ? c0 : mid, b = f < 0.5 ? mid : c1, t = f < 0.5 ? f * 2 : (f - 0.5) * 2;
+    return `rgba(${Math.round(a[0] + (b[0] - a[0]) * t)},${Math.round(a[1] + (b[1] - a[1]) * t)},${Math.round(a[2] + (b[2] - a[2]) * t)},${isDark() ? 0.42 : 0.32})`; }
+  function velGlow(s) {
+    if (demoDrawing || !$('velGlow').checked || qLevel >= 2 || eng.walls || !eng.vx) return;
+    const N = eng.N, vx = eng.vx, vy = eng.vy, x = eng.x, y = eng.y, now = performance.now();
+    if (!kinS || kinE !== eng || kinS.length !== N) { kinS = new Float32Array(N); for (let i = 0; i < N; i++) kinS[i] = 0.5 * (vx[i] * vx[i] + vy[i] * vy[i]); kinE = eng; kinT = now; }
+    const a = 1 - Math.exp(-Math.min(500, Math.max(0, now - kinT)) / 300); kinT = now;
+    const [lo, hi] = curRange(), span = Math.max(1e-6, hi - lo), r = 0.62 * s, paths = [];
+    for (let k = 0; k < GLOW_N; k++) paths.push(new Path2D());
+    for (let i = 0; i < N; i++) { kinS[i] += a * (0.5 * (vx[i] * vx[i] + vy[i] * vy[i]) - kinS[i]);
+      const f = Math.max(0, Math.min(0.999, (kinS[i] - lo) / span)), k = Math.floor(f * GLOW_N); if (k === (GLOW_N >> 1)) continue; // the middle is neutral: no halo
+      const X = x[i] * s, Y = y[i] * s; paths[k].moveTo(X + r, Y); paths[k].arc(X, Y, r, 0, 6.2832); }
+    const key = colors.cold + colors.hot + isDark(); if (glowCols.key !== key) { for (let k = 0; k < GLOW_N; k++) glowCols[k] = glowCol(k); glowCols.key = key; }
+    for (let k = 0; k < GLOW_N; k++) if (k !== (GLOW_N >> 1)) { ctx.fillStyle = glowCols[k]; ctx.fill(paths[k]); }
+  }
+  // ---- thermometer strip on the right edge of the box in Game mode: blue → red, the green band (when shown) and where the temperature is now ----
+  function boxThermo() {
+    if (demoDrawing || appMode !== 'game' || classOn || (game && game.g.proto)) return;
+    const g = (game && game.g) || gameSel; if (!g) return; const [lo, hi] = g.range, W = cv.width, H = cv.height, u = dpr, w = 12 * u, x0 = W - w - 6 * u, top = 8 * u, h = H - 16 * u;
+    const yOf = (Tv) => top + h * (1 - Math.max(0, Math.min(1, (Tv - lo) / (hi - lo)))), gr = ctx.createLinearGradient(0, top + h, 0, top);
+    gr.addColorStop(0, colors.cold); gr.addColorStop(0.5, isDark() ? '#4a4f58' : '#ece8dc'); gr.addColorStop(1, colors.hot);
+    ctx.save(); ctx.globalAlpha = 0.9; ctx.fillStyle = gr; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x0, top, w, h, w / 2) : ctx.rect(x0, top, w, h); ctx.fill(); ctx.globalAlpha = 1;
+    const z = bandNow(); if (z) { ctx.strokeStyle = css('--good') || '#2f9e57'; ctx.lineWidth = 3 * u; ctx.strokeRect(x0 - 3 * u, yOf(z[1]), w + 6 * u, yOf(z[0]) - yOf(z[1])); }
+    const yt = yOf(tset); ctx.fillStyle = colors.ink; ctx.beginPath(); ctx.moveTo(x0 - 9 * u, yt - 6 * u); ctx.lineTo(x0 - 1 * u, yt); ctx.lineTo(x0 - 9 * u, yt + 6 * u); ctx.closePath(); ctx.fill();
+    ctx.fillRect(x0 - 1 * u, yt - 1.5 * u, w + 2 * u, 3 * u);
+    ctx.font = `${11 * u}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.fillText('🔥', x0 + w / 2, 2 * u); ctx.textBaseline = 'bottom'; ctx.fillText('❄', x0 + w / 2, H - 1 * u);
+    ctx.restore();
+  }
   function drawScene() {
     const L = eng.L, s = cv.width / L, N = eng.N, x = eng.x, y = eng.y, type = eng.type, sig = eng.sig, Lc = eng.Lc, nCh = Lc * eng.nMol;
     if (!noBg) { ctx.fillStyle = heatBg(); ctx.fillRect(0, 0, cv.width, cv.height); }
+    velGlow(s);
     if (eng.walls) {
       ctx.fillStyle = colors.line; ctx.fillRect(0, 0, cv.width, eng.walls.lo * s);
       if ($('showBonds').checked && eng.bonds2) {
