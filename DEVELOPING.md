@@ -29,7 +29,7 @@ Requirements: Python 3, Node.js, Playwright for Python (`pip install playwright`
 | `src/app/08-phone-layout.js`, `09-app-modes.js` | Phone bottom sheet; Game / Explore / Energy scan switching |
 | `src/app/10-preview-film.js` | **The aim** shown on the box before a game: a still picture of the target per game (ice crystal, separated liquids, drug at the start of a red window, a stored gel snapshot `GEL_AIM` with a 186 σ path), drawn once into an image per size/language/theme. Kept the old function names (`demoTick`, `demoFrame`, `drawDemo`) used by the main loop |
 | `src/app/10b-rewards.js` | **Step-by-step opening**: a new player sees only the first game; each finished game opens the next item of `REWARDS` (games, Explore with Ice only, then each other Explore system one at a time, Energy scan, statistics; the microphone settings are always shown). *Teacher options → Unlock everything* opens all |
-| `src/app/11-coach-guide.js` | Temperature words, green band (`bandNow()`: hidden once the game has 3 stars, `bandRetired()`; the guided game explains it), coach line (guided game only), guided first lesson, replay graph |
+| `src/app/11-coach-guide.js` | Temperature words, green band (`bandNow()`: shown in the guided first game, which explains it, and otherwise only with *Show tips* ticked, `mdlab-tips` = 1), coach line (guided game only), guided first lesson, replay graph |
 | `src/app/12-fact-cards.js` | Fact cards (54 cards in 9 decks: one per game, one per game's speed run, Explore) and the album |
 | `src/app/13-challenges.js`, `14-class-battle.js` | Challenges (5 levels per game) and class battles |
 | `src/app/15-energy-scan.js` | Energy scan mode |
@@ -41,7 +41,7 @@ Requirements: Python 3, Node.js, Playwright for Python (`pip install playwright`
 | `src/app/20b-macro-film.js` | After a game: zoom out from the box into a hand-drawn real-life picture chosen by the stars (ice cube or ice cream, glass of liquids, patient, gel/egg); the end card then shows that picture with the stars and the verdict in one window and stays open; a won fact card waits behind a button; `window.__macro(id, stars)` plays it for tests |
 | `src/app/20c-explore-scan.js` | Energy scan as an option inside Explore |
 | `src/app/20d-live-ghost.js` | The **ghost**: your best run in ice, liquids and gel (saved at a new personal best as `mdlab-ghost-<game>`) shown as 👻 on the score band at the same second. Off with *Race my best run* in the game options |
-| `src/app/20e-daily-share.js` | **Daily Molecule** (`dailyInfo()`: one game a day in turn, seed from the date, #1 = 2026-11-23), **challenge links** (`?c=` base64url of `{g, s, v, d}`: game, seed, score to beat, daily number), the **share window** and the **clip** (`clipStart/clipTick/clipStop`: a 540×960 canvas drawn from the box, temperature bar and score, recorded with `MediaRecorder`, MP4 if the browser can, else WebM; no audio). `special` holds the current daily/challenge run; `build()` takes its seed, a normal `selectGame()` clears it. Only `var`/function declarations at the top level, because `renderPick()` calls `dailyRender()` before this part runs |
+| `src/app/20e-daily-share.js` | **Daily Molecule** (`dailyInfo()`: one game a day in turn, seed from the date, #1 = 2026-11-23), **challenge links** (`?c=` base64url of `{g, s, v, d, r}`: game, seed, score to beat, daily number, and `r` the run's score at each second 0–30 s as bytes of the game's scale, shown as the 😊 ghost), the **share window** and the **clip** (`clipStart/clipTick/clipStop`: a 540×960 canvas drawn from the box, temperature bar and score, recorded with `MediaRecorder`, MP4 if the browser can, else WebM; no audio). `special` holds the current daily/challenge run; `build()` takes its seed, a normal `selectGame()` clears it. Only `var`/function declarations at the top level, because `renderPick()` calls `dailyRender()` before this part runs |
 | `src/app/20f-monetization.js` | **Monetization hooks, switched off**: `MONET.hook(name, info)` (gameStart, gameEnd, share) and `MONET.offer(kind)` do nothing without an adapter. See *Monetization (off)* below |
 | `src/app/21-main-loop.js` | Main loop, start-up, debug line (`?debug=1`) |
 | `src/i18n/fi.json`, `sv.json`, `ru.json` | Translations: English text → translated text |
@@ -85,7 +85,7 @@ The `app/*.js` parts are plain slices of one script, joined in the order of `man
 | `test_offline_privacy.py` | No network requests from the page; the served copy (with `sw.js`) reloads offline |
 | `test_keyboard.py` | Holding Space heats, letting go cools, arrows step, in a game and in Explore; projector options switch on, keep the box on screen and are remembered |
 | `test_a11y.py` | axe-core (WCAG 2.1 A/AA) on every mode, phone and desktop, the welcome card; colour contrast in high-contrast mode |
-| `test_aim_band.py` | Every game shows its aim picture; the green band shows before 3 stars and is gone after; the noise bar is not under the box |
+| `test_aim_band.py` | Every game shows its aim picture; the green band is off in a normal game and comes back with *Show tips*; the noise bar is not under the box |
 | `test_daily_share.py` | The Daily Molecule uses the day's seed, saves the best and the streak, records a clip; the end card has Share; the share text carries a challenge link that opens the invitation and replays the same seed and drug windows; no monetization adapter in the normal build |
 | `test_games.py` | Every game, two challenges and the three prototype games start and stop; a full ice game played along the green path gets at least one star and shows the end card |
 
@@ -94,6 +94,8 @@ Set `MDLAB_PAGE=/path/to/file.html` to run the browser tests on another build.
 ## Tools (`tools/`)
 
 - `calibration/gamecal.js` – plays the ice, liquids or gel game headless with a fixed strategy: `node tools/calibration/gamecal.js ice path 1`.
+- `calibration/gelage.js` – does the gel strand get shorter the longer you wait? Plays heat-then-cool (optionally in cycles) and logs the gel path every second: `node tools/calibration/gelage.js 1 0.7 8 0.12 120 [cycle]`. Result (Nov 2026, 6 seeds): the strand peaks 7–22 s after cooling (mean 123 σ, 13 % of the time ≥ 160 σ), then the clumps compact and it shrinks (mean 76 σ and nothing ≥ 130 σ after 90 s). Heating again resets it: a second heat-cool cycle gives a peak as long as the first.
+- `calibration/geltarget.js` – finds a long gel snapshot for the aim picture.
 - `calibration/speedcal.js` – game seconds to reach a speed-run target with a fixed strategy (cX constant, rA_B_D ramp): `node tools/calibration/speedcal.js ice 0.47 r0.4_0_10 1`.
 - `calibration/drugch.js` – the drug challenge headless, with every parameter on the command line: `node tools/calibration/drugch.js k=3 s=follow hi=5 sq=1 spill=0.39 …`.
 - `calibration/drugcal.js`, `drugrel.js` – drug zone game and micelle release kinetics vs temperature: `node tools/calibration/drugrel.js 1.5 2.5`.

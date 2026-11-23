@@ -10,8 +10,10 @@
   function ghostAt(gh, s) { const r = gh.r; let i = 0; while (i < r.length - 1 && r[i + 1][0] <= s) i++; return r[i]; }
   function ghostTick() {
     const G = game, sm = $('ghostS');
-    const gh = G && !G.g.proto && !G.speed && !G.level && !battle && !classOn && !G.guided && $('gghostOn').checked && optOpen('ghost') ? G.ghost : null;
+    const fr = G && G.special && G.special.kind === 'challenge' && G.special.run; // a friend's challenge: their run is the ghost, shown as 😊
+    const gh = fr || (G && !G.g.proto && !G.speed && !G.level && !battle && !classOn && !G.guided && $('gghostOn').checked && optOpen('ghost') ? G.ghost : null);
     if (!gh) { if (!sm.hidden) sm.hidden = true; return; }
+    const ic = fr ? '😊' : '👻'; if (sm.textContent !== ic) sm.textContent = ic;
     const g = G.g, s = G.cd ? 0 : GAME_SEC * Math.min(1, (eng.time - G.t0) / g.D), vg = ghostAt(gh, s)[2];
     sm.hidden = false; sm.style.left = (100 * Math.max(0, Math.min(1, vg / (g.scale || 1)))) + '%'; // your best run's score at this second
   }

@@ -11,11 +11,10 @@
       $('tsliderM').setAttribute('aria-valuetext', T(T_WORDS[k])); if (k !== lastWordK) { lastWordK = k; kbSay(T(T_WORDS[k])); } }
     else { if (b.className) { b.className = ''; b.removeAttribute('title'); b.removeAttribute('aria-label'); } $('tsliderM').removeAttribute('aria-valuetext'); lastWordK = -1; }
   }
-  // the green band is one strategy that works, shown as a tip: not in speed runs, challenges or with tips off, and no longer once this game has
-  // been won with 3 stars (the player has found their own way); the guided first game always shows it and says what it is
-  function bandRetired(g) { if (!g || g.proto || !g.stars) return false; const b = getBest(g); return b !== null && starsFor(g, b) >= 3; }
+  // the green band is one strategy that works, shown as a tip: always in the guided first game (which says what it is), otherwise only with
+  // Show tips ticked (off by default, so players watch the molecules, not the band); never in speed runs or challenges
   function bandNow(sNow) {
-    const g = gameNow(), hide = (game ? !!game.speed : speedMode && speedOpen(g)) || (!(g && g.alwaysZone) && (!tipsOn() || (game ? game.level : gameLevel) || (bandRetired(g) && !(game && game.guided))));
+    const g = gameNow(), guided = !!(game && game.guided), hide = (game ? !!game.speed : speedMode && speedOpen(g)) || (!(g && g.alwaysZone) && !guided && (!tipsOn() || (game ? game.level : gameLevel)));
     if (sNow === undefined && game && g) sNow = GAME_SEC * Math.min(1, (eng.time - game.t0) / g.D);
     return !g || hide ? null : g.zoneLive ? g.zoneLive(game) : (g.zone || g.path) ? zoneOf(g, sNow || 0) : null;
   }
@@ -35,10 +34,10 @@
   function coachHide() { coachMsg = null; $('coach').hidden = true; $('coachBtn').hidden = $('coachSkip').hidden = true; }
   const tipsOn = () => $('gtips').checked;
   $('gtips').addEventListener('change', () => zoneMarks());
-  try { if (localStorage.getItem('mdlab-tips') === '0') $('gtips').checked = false; } catch (e) {}
+  try { $('gtips').checked = localStorage.getItem('mdlab-tips') === '1'; } catch (e) {} // off unless the player ticked it
   $('gtips').addEventListener('change', () => { try { localStorage.setItem('mdlab-tips', tipsOn() ? '1' : '0'); } catch (e) {} if (!tipsOn() && !guide) coachHide(); });
   function coachTick(G, s) {
-    const g = G.g; if (!g.coach || !tipsOn() || G.level || !G.guided) return; // in-game coach lines only in the guided first game
+    const g = G.g; if (!g.coach || G.level || !G.guided) return; // in-game coach lines only in the guided first game
     if (s < 6) { if (!G.introShown) { G.introShown = true; G.cShown = 'intro'; G.cAt = s; coachSay('The green band shows one strategy that works: start warm, then cool slowly. Other ways can work too. Watch the molecules: a red glow means fast and hot, blue means slow and cold.', 'good'); } return; }
     const r = G.rec, back = r.find((q) => q.s >= s - 2) || r[0], tr = back ? G.ema - back.v : 0;
     const [key, cls] = g.coach(G, s, tset, tr);

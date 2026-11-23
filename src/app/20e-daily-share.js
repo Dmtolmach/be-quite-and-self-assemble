@@ -23,7 +23,7 @@
   function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   function dailyRec(date) { const r = lsGet('mdlab-daily'); return r && r.date === date ? r : null; }
   function streakNow() { const s = lsGet('mdlab-streak'), t = todayStr(); return s && (s.last === t || s.last === dayBefore(t)) ? s.n : 0; }
-  function specialLabel(sp) { return sp.kind === 'daily' ? '📅 ' + T('Daily Molecule #{n}', { n: sp.day }) : '🏆 ' + T('Challenge from a friend'); }
+  function specialLabel(sp) { return sp.kind === 'daily' ? '📅 ' + T('Daily Molecule #{n}', { n: sp.day }) : '🏆 ' + T(sp.speed ? 'Speed challenge from a friend 😊' : 'Challenge from a friend 😊'); }
 
   // the Daily Molecule button above the game list: shown once the first game is finished (or everything is unlocked)
   function dailyRender() {
@@ -41,7 +41,7 @@
   function specialNote() {
     if (!special) return; const g = GAMES.find((q) => q.id === special.gid);
     $('ggoal').textContent = special.kind === 'daily' ? '📅 ' + T('Daily Molecule: the same start for everyone today. Play as often as you like; your best counts.')
-      : '🏆 ' + T('Challenge: beat {v}. You start from exactly the same molecules as your friend.', { v: g.fmt(special.beat) });
+      : '🏆 ' + (special.speed ? T('Speed challenge: reach the goal faster than {v}. You start from exactly the same molecules as your friend.', { v: special.beat.toFixed(1) + ' s' }) : T('Challenge: beat {v}. You start from exactly the same molecules as your friend.', { v: g.fmt(special.beat) })) + (special.run ? ' ' + T('😊 on the score bar is your friend\'s run.') : '');
   }
 
   // after a Daily Molecule or challenge run: the line on the end card (and the saved best and streak for the daily)
@@ -54,8 +54,8 @@
       const sk = streakNow();
       return { html: '📅 ' + T('Daily Molecule #{n}: today\'s best {v}.', { n: sp.day, v: g.fmt(r.best) }) + (sk > 1 ? ' 🔥 ' + T('{n} days in a row', { n: sk }) + '.' : '') + ' ' + T('Share it so your friends can try the same start.') };
     }
-    const win = v > sp.beat; if (win) say(T('You beat the challenge!'));
-    return { html: '🏆 ' + (win ? T('You beat the challenge: {a} against {b}!', { a: g.fmt(v), b: g.fmt(sp.beat) }) : T('Not yet: {a} against {b}. Try again!', { a: g.fmt(v), b: g.fmt(sp.beat) })) + (win ? ' ' + T('Send it back and see if they can beat you.') : '') };
+    const fm = sp.speed ? (x) => x === undefined ? '–' : x.toFixed(1) + ' s' : g.fmt, win = sp.speed ? v !== undefined && v < sp.beat : v > sp.beat; if (win) say(T('You beat the challenge!'));
+    return { html: '🏆 ' + (win ? T('You beat the challenge: {a} against {b}!', { a: fm(v), b: fm(sp.beat) }) : T('Not yet: {a} against {b}. Try again!', { a: fm(v), b: fm(sp.beat) })) + (win ? ' ' + T('Send it back and see if they can beat you.') : '') };
   }
 
   // ---- challenge link: ?c=<base64url of {g, s, v, d}> ----
@@ -66,19 +66,21 @@
     return PUBLIC_URL; }
   function chalUrl(o) { return linkBase() + '?c=' + b64u(JSON.stringify(o)); }
   function chalParse(q) {
-    try { const m = /[?&]c=([A-Za-z0-9_-]{8,400})/.exec(q); if (!m) return null; const o = JSON.parse(unb64u(m[1])), g = GAMES.find((x) => x.id === o.g);
+    try { const m = /[?&]c=([A-Za-z0-9_-]{8,800})/.exec(q); if (!m) return null; const o = JSON.parse(unb64u(m[1])), g = GAMES.find((x) => x.id === o.g);
       if (!g || !Number.isFinite(+o.v) || !Number.isInteger(o.s) || o.s <= 0) return null;
-      return { kind: 'challenge', gid: g.id, seed: o.s >>> 0, beat: +o.v, day: Number.isInteger(o.d) ? o.d : 0 };
+      let run = null; if (typeof o.r === 'string' && o.r.length >= 4 && o.r.length <= 330) { const b = unb64u(o.r), sc = g.scale || 1; run = { r: Array.from(b, (ch, i) => [i, 0, ch.charCodeAt(0) / 255 * sc]) }; } // the friend's score at each second
+      const speed = o.m === 's' && !!SPEED[g.id] && +o.v > 0;
+      return { kind: 'challenge', gid: g.id, seed: o.s >>> 0, beat: +o.v, day: Number.isInteger(o.d) ? o.d : 0, run, speed };
     } catch (e) { return null; }
   }
   var chalIn = chalParse(location.search);
   if (chalIn) { try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) {} setTimeout(chalShow, 600); }
   function chalShow() {
     const sp = chalIn, g = GAMES.find((q) => q.id === sp.gid);
-    $('chalText').textContent = T('A friend scored {v} in “{g}”. Same start, same molecules: can you beat it?', { v: g.fmt(sp.beat), g: T(g.title) });
+    $('chalText').textContent = (sp.speed ? T('A friend reached the goal of “{g}” in {v} (speed run). Same start, same molecules: can you be faster?', { v: sp.beat.toFixed(1) + ' s', g: T(g.title) }) : T('A friend scored {v} in “{g}”. Same start, same molecules: can you beat it?', { v: g.fmt(sp.beat), g: T(g.title) })) + (sp.run ? ' ' + T('You race your friend\'s run: 😊 on the score bar.') : '');
     $('chalModal').hidden = false; $('chalGo').focus();
   }
-  function chalAccept(play) { $('chalModal').hidden = true; if (!chalIn) return; setAppMode('game'); specialPick(chalIn); if (play) startGame(); else tourOpen(true); }
+  function chalAccept(play) { $('chalModal').hidden = true; if (!chalIn) return; setAppMode('game'); speedMode = !!chalIn.speed; specialPick(chalIn); speedSeg(); if (play) startGame(); else tourOpen(true); }
   $('chalGo').addEventListener('click', () => chalAccept(true));
   $('chalHow').addEventListener('click', () => chalAccept(false));
   $('chalNo').addEventListener('click', () => { $('chalModal').hidden = true; });
@@ -87,8 +89,8 @@
   function shareOpen(o) {
     if (!o || !o.G) return; const g = o.g, G = o.G, sp = G.special;
     const head = sp && sp.kind === 'daily' ? T('Shut Up and Get Structured · Daily #{n}', { n: sp.day }) : T('Shut Up and Get Structured');
-    const url = chalUrl({ g: g.id, s: G.seed >>> 0, v: +(+o.v).toFixed(4), d: sp && sp.kind === 'daily' ? sp.day : 0 });
-    const text = head + '\n' + (GAME_ICON[g.id] || '') + ' ' + T(g.title) + ': ' + g.fmt(o.v) + ' ' + starStr(o.st) + '\n' + T('Same start for you. Can you beat it?');
+    const spd = !!G.speed, url = chalUrl({ g: g.id, s: G.seed >>> 0, v: +(+o.v).toFixed(spd ? 2 : 4), d: sp && sp.kind === 'daily' ? sp.day : 0, m: spd ? 's' : undefined, r: runBytes(G) });
+    const text = head + '\n' + (GAME_ICON[g.id] || '') + ' ' + T(g.title) + (spd ? ' · ⏱ ' + T('Speed run') : '') + ': ' + g.fmt(o.v) + ' ' + starStr(o.st) + '\n' + T(spd ? 'Same start for you. Can you be faster?' : 'Same start for you. Can you beat it?');
     shareCur = { text, url, g };
     $('shareText').textContent = text + '\n' + url; $('shareMsg').textContent = '';
     $('shareNative').hidden = !navigator.share;
@@ -98,6 +100,11 @@
     $('shareModal').hidden = false; ($('shareNative').hidden ? $('shareCopy') : $('shareNative')).focus();
     MONET.hook('share', { game: g.id });
   }
+  function runBytes(G) { // this run's score at each second (0..30 s), one byte each as a fraction of the game's scale: the friend sees it as 😊
+    const rec = G.rec || [], sc = G.g.scale || 1; if (rec.length < 4) return undefined; let s = '', j = 0;
+    const end = Math.min(240, G.speed ? Math.ceil(rec[rec.length - 1].s) : GAME_SEC);
+    for (let k = 0; k <= end; k++) { while (j < rec.length - 1 && rec[j + 1].s <= k) j++; s += String.fromCharCode(Math.round(255 * Math.max(0, Math.min(1, (rec[j].v || 0) / sc)))); }
+    return b64u(s); }
   function shareClose() { $('shareModal').hidden = true; const v = $('shareVideo'); if (v.pause) v.pause(); }
   function shareMsg(t) { $('shareMsg').textContent = t; say(t); }
   async function copyText(t) {
@@ -122,7 +129,7 @@
   function clipDrop() { if (CLIP.url) { try { URL.revokeObjectURL(CLIP.url); } catch (e) {} } CLIP.url = null; CLIP.blob = null; }
   function clipStart(G) {
     clipStop(false); clipDrop();
-    if (!$('gclipOn').checked || !optOpen('clip') || classOn || battle || G.g.proto || G.level || G.speed || qLevel >= 2) return; // slow devices: no clip, so the game stays smooth
+    if (!$('gclipOn').checked || !optOpen('clip') || classOn || battle || G.g.proto || G.level || qLevel >= 2) return; // slow devices: no clip, so the game stays smooth
     const type = clipType(); if (!type || !HTMLCanvasElement.prototype.captureStream) return;
     try {
       if (!CLIP.cv) { CLIP.cv = document.createElement('canvas'); CLIP.cv.width = 540; CLIP.cv.height = 960; CLIP.cx = CLIP.cv.getContext('2d'); }
@@ -151,10 +158,10 @@
     c.fillStyle = '#ffffff'; c.fillRect(bx + f * bs - 4, y - 8, 8, 38);
     c.font = '20px system-ui, sans-serif'; c.textAlign = 'left'; c.fillStyle = '#cfe8ec'; c.fillText('❄️ ' + T('quiet'), bx, y + 52); c.textAlign = 'right'; c.fillText(T('loud') + ' 🔥', bx + bs, y + 52); c.textAlign = 'center';
     if (mode === 'mic') { const m = parseFloat($('micbar').style.width) || 0; c.fillStyle = '#24434c'; c.fillRect(bx + 120, y + 36, bs - 240, 14); c.fillStyle = '#7fd1b9'; c.fillRect(bx + 120, y + 36, (bs - 240) * Math.min(1, m / 100), 14); }
-    const v = G.ema === null || G.ema === undefined ? 0 : G.ema, best = Number.isFinite(G.peak) ? G.peak : v, frac = Math.min(1, Math.max(0, (eng.time - G.t0) / g.D));
+    const v = G.ema === null || G.ema === undefined ? 0 : G.ema, best = Number.isFinite(G.peak) && !G.speed ? G.peak : v, frac = Math.min(1, Math.max(0, (eng.time - G.t0) / g.D));
     c.fillStyle = '#ffffff'; c.font = '700 64px system-ui, sans-serif'; c.fillText(g.fmt(last ? best : Math.max(0, v)), cen, 826);
-    c.fillStyle = '#f2c94c'; c.font = '44px system-ui, sans-serif'; c.fillText(starStr(starsFor(g, best)), cen, 878);
-    c.fillStyle = '#9fd6d6'; c.font = '20px system-ui, sans-serif'; c.fillText(last ? T('Can you beat it?') : T('Shout to melt · hush to freeze') + ' · ' + T('{n} s', { n: Math.ceil(GAME_SEC * (1 - frac)) }), cen, 930, W - 40);
+    c.fillStyle = '#f2c94c'; c.font = '44px system-ui, sans-serif'; c.fillText(G.speed ? (last && G.doneAt !== undefined ? '⏱ ' + G.doneAt.toFixed(1) + ' s' : '⏱') : starStr(starsFor(g, best)), cen, 878);
+    c.fillStyle = '#9fd6d6'; c.font = '20px system-ui, sans-serif'; c.fillText(last ? T('Can you beat it?') : T('Shout to melt · hush to freeze') + ' · ' + T('{n} s', { n: G.speed ? (GAME_SEC * (eng.time - G.t0) / g.D).toFixed(1) : Math.ceil(GAME_SEC * (1 - frac)) }), cen, 930, W - 40);
   }
   dailyRender();
   window.__daily = () => ({ info: dailyInfo(), special, rec: lsGet('mdlab-daily'), streak: streakNow(), clip: !!CLIP.url, recording: !!CLIP.rec, chalUrl: (o) => chalUrl(o), parse: (q) => chalParse(q) }); // for tests

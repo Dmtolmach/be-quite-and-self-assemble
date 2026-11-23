@@ -1089,7 +1089,6 @@
  "Not now": "Не сейчас",
  "The game clip (optional) is a video of the molecule box only, with no sound. It is made inside this browser and leaves the device only if you share or save it yourself.": "Ролик игры (по желанию) — это видео только ящика с молекулами, без звука. Он создаётся в этом браузере и покидает устройство, только если вы сами им поделитесь или сохраните его.",
  "Daily Molecule #{n}": "Молекула дня №{n}",
- "Challenge from a friend": "Вызов от друга",
  "Today's best: {v}": "Лучшее сегодня: {v}",
  "Same start for everyone today.": "Сегодня у всех одинаковый старт.",
  "{n} days in a row": "{n} дн. подряд",
@@ -1125,5 +1124,13 @@
  "Separate oil from water": "Отделите масло от воды",
  "Cool down, but not too cold": "Охладите, но не слишком сильно",
  "Unfold with heat, then cool down a little": "Разверните нагревом, затем немного охладите",
- "Red window: noise opens the micelles and the drug is delivered (yellow).": "Красное окно: шум открывает мицеллы, и лекарство доставлено (жёлтое)."
+ "Red window: noise opens the micelles and the drug is delivered (yellow).": "Красное окно: шум открывает мицеллы, и лекарство доставлено (жёлтое).",
+ "Challenge from a friend 😊": "Вызов от друга 😊",
+ "😊 on the score bar is your friend's run.": "😊 на полосе очков — это игра вашего друга.",
+ "You race your friend's run: 😊 on the score bar.": "Вы соревнуетесь с игрой друга: 😊 на полосе очков.",
+ "Speed challenge from a friend 😊": "Скоростной вызов от друга 😊",
+ "Speed challenge: reach the goal faster than {v}. You start from exactly the same molecules as your friend.": "Скоростной вызов: достигните цели быстрее, чем за {v}. Вы начинаете с точно тех же молекул, что и ваш друг.",
+ "A friend reached the goal of “{g}” in {v} (speed run). Same start, same molecules: can you be faster?": "Друг достиг цели в игре «{g}» за {v} (скоростной забег). Тот же старт, те же молекулы: сможете быстрее?",
+ "Same start for you. Can you be faster?": "У тебя тот же старт. Сможешь быстрее?",
+ "max {v}": "макс. {v}"
 }

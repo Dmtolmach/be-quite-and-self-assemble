@@ -43,6 +43,12 @@ async def main():
         par = await pg.evaluate(f"window.__daily().parse({q!r})")
         if not par or par['seed'] != info['seed'] or par['gid'] != g: bad.append(f'challenge link does not carry the run: {par}')
         if await pg.evaluate("window.__daily().parse('?c=bm9wZQ')"): bad.append('a broken link was accepted')
+        if not par or not par.get('run') or len(par['run']['r']) != 31: bad.append('challenge link does not carry the run for the 😊 ghost')
+        p3 = await page(b, errors=errs); await p3.goto(URL + q); await p3.wait_for_timeout(1500)
+        await p3.evaluate("document.getElementById('guseMic').checked=false"); await p3.click('#chalGo'); await p3.wait_for_timeout(5000)
+        gs = await p3.evaluate("(()=>{const e=document.getElementById('ghostS'); return [e.hidden, e.textContent]})()")
+        if gs != [False, '😊']: bad.append(f"friend's run not shown as 😊 during the challenge: {gs}")
+        await p3.click('#gquit')
         await pg.click('#shareClose')
         # a drug challenge link: the invitation opens, and the same seed gives the same drug windows twice
         q2 = await pg.evaluate("window.__daily().chalUrl({g:'drug', s:123457, v:40, d:0})")
@@ -61,6 +67,14 @@ async def main():
         await p2.click('#gquit'); await p2.wait_for_timeout(300)
         await p2.click('[data-game=ice]'); await p2.wait_for_timeout(300)
         if await p2.evaluate("window.__daily().special"): bad.append('a normal game pick did not leave the challenge')
+        # a speed-run challenge: the link says speed run, the game starts as a speed run with the friend's run as 😊
+        q4 = await pg.evaluate("window.__daily().chalUrl({g:'demix', s:777, v:9.5, d:0, m:'s', r:'AAECAwQFBgcICQ'})"); q4 = q4[q4.index('?'):]
+        p4 = await page(b, errors=errs); await p4.goto(URL + q4); await p4.wait_for_timeout(1500)
+        if 'speed' not in (await p4.text_content('#chalText')): bad.append('speed challenge invitation does not say speed run')
+        await p4.evaluate("document.getElementById('guseMic').checked=false"); await p4.click('#chalGo'); await p4.wait_for_timeout(4500)
+        st4 = await p4.evaluate("(()=>{const G=window.__game(); const e=document.getElementById('ghostS'); return G ? [!!G.speed, window.__eng().p.seed, e.hidden, e.textContent] : null})()")
+        if st4 != [True, 777, False, '😊']: bad.append(f'speed challenge did not start as a speed run with the same seed and 😊: {st4}')
+        await p4.click('#gquit')
         await b.close()
     report('daily molecule, share, clip and challenge links', bad + sorted(set(errs)))
 asyncio.run(main())

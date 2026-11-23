@@ -1089,7 +1089,6 @@
  "Not now": "Ei nyt",
  "The game clip (optional) is a video of the molecule box only, with no sound. It is made inside this browser and leaves the device only if you share or save it yourself.": "Pelivideo (valinnainen) näyttää vain molekyylilaatikon, eikä siinä ole ääntä. Se tehdään tässä selaimessa, ja se lähtee laitteelta vain, jos itse jaat tai tallennat sen.",
  "Daily Molecule #{n}": "Päivän molekyyli #{n}",
- "Challenge from a friend": "Kaverin haaste",
  "Today's best: {v}": "Päivän paras: {v}",
  "Same start for everyone today.": "Sama alku kaikille tänään.",
  "{n} days in a row": "{n} päivää putkeen",
@@ -1125,5 +1124,13 @@
  "Separate oil from water": "Erota öljy vedestä",
  "Cool down, but not too cold": "Jäähdytä, mutta ei liian kylmäksi",
  "Unfold with heat, then cool down a little": "Avaa lämmöllä, jäähdytä sitten hieman",
- "Red window: noise opens the micelles and the drug is delivered (yellow).": "Punainen ikkuna: melu avaa misellit ja lääke pääsee perille (keltainen)."
+ "Red window: noise opens the micelles and the drug is delivered (yellow).": "Punainen ikkuna: melu avaa misellit ja lääke pääsee perille (keltainen).",
+ "Challenge from a friend 😊": "Kaverin haaste 😊",
+ "😊 on the score bar is your friend's run.": "😊 tulospalkissa on kaverisi suoritus.",
+ "You race your friend's run: 😊 on the score bar.": "Kisaat kaverisi suoritusta vastaan: 😊 tulospalkissa.",
+ "Speed challenge from a friend 😊": "Kaverin nopeushaaste 😊",
+ "Speed challenge: reach the goal faster than {v}. You start from exactly the same molecules as your friend.": "Nopeushaaste: saavuta tavoite nopeammin kuin {v}. Aloitat täsmälleen samoista molekyyleistä kuin kaverisi.",
+ "A friend reached the goal of “{g}” in {v} (speed run). Same start, same molecules: can you be faster?": "Kaverisi saavutti pelin ”{g}” tavoitteen ajassa {v} (nopeuspeli). Sama alku, samat molekyylit: pystytkö nopeammin?",
+ "Same start for you. Can you be faster?": "Sama alku sinulle. Pystytkö nopeammin?",
+ "max {v}": "maks. {v}"
 }

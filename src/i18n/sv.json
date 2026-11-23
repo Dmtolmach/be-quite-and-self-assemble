@@ -1089,7 +1089,6 @@
  "Not now": "Inte nu",
  "The game clip (optional) is a video of the molecule box only, with no sound. It is made inside this browser and leaves the device only if you share or save it yourself.": "Spelklippet (valfritt) är en video av bara molekyllådan, utan ljud. Det görs i den här webbläsaren och lämnar enheten bara om du själv delar eller sparar det.",
  "Daily Molecule #{n}": "Dagens molekyl #{n}",
- "Challenge from a friend": "Utmaning från en vän",
  "Today's best: {v}": "Dagens bästa: {v}",
  "Same start for everyone today.": "Samma start för alla i dag.",
  "{n} days in a row": "{n} dagar i rad",
@@ -1125,5 +1124,13 @@
  "Separate oil from water": "Skilj olja från vatten",
  "Cool down, but not too cold": "Kyl ner, men inte för kallt",
  "Unfold with heat, then cool down a little": "Veckla upp med värme, kyl sedan lite",
- "Red window: noise opens the micelles and the drug is delivered (yellow).": "Rött fönster: oväsen öppnar micellerna och läkemedlet levereras (gult)."
+ "Red window: noise opens the micelles and the drug is delivered (yellow).": "Rött fönster: oväsen öppnar micellerna och läkemedlet levereras (gult).",
+ "Challenge from a friend 😊": "Utmaning från en vän 😊",
+ "😊 on the score bar is your friend's run.": "😊 på poängstapeln är din väns runda.",
+ "You race your friend's run: 😊 on the score bar.": "Du tävlar mot din väns runda: 😊 på poängstapeln.",
+ "Speed challenge from a friend 😊": "Fartutmaning från en vän 😊",
+ "Speed challenge: reach the goal faster than {v}. You start from exactly the same molecules as your friend.": "Fartutmaning: nå målet snabbare än {v}. Du startar från exakt samma molekyler som din vän.",
+ "A friend reached the goal of “{g}” in {v} (speed run). Same start, same molecules: can you be faster?": "En vän nådde målet i ”{g}” på {v} (fartrunda). Samma start, samma molekyler: kan du vara snabbare?",
+ "Same start for you. Can you be faster?": "Samma start för dig. Kan du vara snabbare?",
+ "max {v}": "max {v}"
 }

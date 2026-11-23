@@ -25,7 +25,10 @@
     G.ema = G.ema === null || g.raw ? v : G.ema + (1 - Math.exp(-dt / 2.0)) * (v - G.ema);
     const s = GAME_SEC * (now - G.t0) / g.D;
     if (!G.cd) gameSounds(G, g);
-    $('gtime').textContent = T('{n} s', { n: s.toFixed(1) }); $('gval').textContent = g.fmt(Math.max(0, G.ema));
+    $('gtime').textContent = T('{n} s', { n: s.toFixed(1) });
+    if (!G.cd && G.ema > G.peak) G.peak = G.ema; // the longest so far: a gold mark on the score band, and for the gel (whose strand flickers) also written next to the score
+    $('gval').textContent = g.fmt(Math.max(0, G.ema)) + (g.id === 'gel' && G.peak > 0 ? ' · ' + T('max {v}', { v: g.fmt(G.peak) }) : '');
+    if (G.peak > 0) { $('gbest').style.display = 'block'; $('gbest').style.left = (100 * Math.max(0, Math.min(1, G.peak / (g.scale || 1)))) + '%'; }
     $('gnow').style.left = (100 * Math.max(0, Math.min(1, G.ema / (g.scale || 1)))) + '%';
     lostBar(G, sp.target); $('gbar').style.width = (100 * Math.min(1, s / SPEED_BAR)) + '%';
     if (!G.rec.length || s - G.rec[G.rec.length - 1].s >= 0.25) G.rec.push({ s, T: tset, v: G.ema, d: 0, l: 0, z: false });
@@ -43,7 +46,8 @@
     const card = st === 3 ? fcGive(FC_ALL.filter((c) => c.deck.speed === g.id)) : null; // three stars: a card from this game's speed-run deck
     renderPick();
     const gs = Object.assign({}, g, { fmt: (x) => x.toFixed(1) + ' s' });
-    endScreen({ G, g: gs, st, v: t === undefined ? 0 : t, rec, best: null, noPic: true, speedRun: true, tip: '', card,
+    const spx = G.special ? specialEnd(G, t, st) : null;
+    endScreen({ G, g: gs, st, v: t === undefined ? 0 : t, rec, best: null, noPic: true, speedRun: true, tip: '', card, sp: spx, share: t !== undefined,
       extra: t === undefined ? T('Too much drug was released outside the red windows: {n} can no longer be reached.', { n: g.fmt(sp.target) }) : b !== null && !rec ? T('Your fastest: {t}', { t: b.toFixed(1) + ' s' }) : T('Stars: under {a} s ★★★, under {b} s ★★.', { a: sp.t[2], b: sp.t[1] }) });
   }
   function speedHud(G) { // the score now, the goal, the clock and your fastest time: all written out
