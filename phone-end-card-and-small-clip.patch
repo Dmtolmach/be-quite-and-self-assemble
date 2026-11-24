@@ -1,0 +1,63 @@
+diff --git a/DEVELOPING.md b/DEVELOPING.md
+index ff833b9..7505e66 100644
+--- a/DEVELOPING.md
++++ b/DEVELOPING.md
+@@ -41,7 +41,7 @@ Requirements: Python 3, Node.js, Playwright for Python (`pip install playwright`
+ | `src/app/20b-macro-film.js` | After a game: zoom out from the box into a hand-drawn real-life picture chosen by the stars (ice cube or ice cream, glass of liquids, patient, gel/egg); the end card then shows that picture with the stars and the verdict in one window and stays open; a won fact card waits behind a button; `window.__macro(id, stars)` plays it for tests |
+ | `src/app/20c-explore-scan.js` | Energy scan as an option inside Explore |
+ | `src/app/20d-live-ghost.js` | The **ghost**: your best run in ice, liquids and gel (saved at a new personal best as `mdlab-ghost-<game>`) shown as 👻 on the score band at the same second. Off with *Race my best run* in the game options |
+-| `src/app/20e-daily-share.js` | **Daily Molecule** (`dailyInfo()`: one game a day in turn, seed from the date, #1 = 2026-11-23), **challenge links** (`?c=` base64url of `{g, s, v, d, r}`: game, seed, score to beat, daily number, and `r` the run's score at each second 0–30 s as bytes of the game's scale, shown as the 😊 ghost), the **share window** and the **clip** (`clipStart/clipTick/clipStop`: a 540×960 canvas drawn from the box, temperature bar and score, recorded with `MediaRecorder`, MP4 if the browser can, else WebM; no audio). `special` holds the current daily/challenge run; `build()` takes its seed, a normal `selectGame()` clears it. Only `var`/function declarations at the top level, because `renderPick()` calls `dailyRender()` before this part runs |
++| `src/app/20e-daily-share.js` | **Daily Molecule** (`dailyInfo()`: one game a day in turn, seed from the date, #1 = 2026-11-23), **challenge links** (`?c=` base64url of `{g, s, v, d, r}`: game, seed, score to beat, daily number, and `r` the run's score at each second 0–30 s as bytes of the game's scale, shown as the 😊 ghost), the **share window** and the **clip** (`clipStart/clipTick/clipStop`: a 360×640 canvas at 20 frames/s and 350 kbit/s, about 1.3 MB per 30 s game drawn from the box, temperature bar and score, recorded with `MediaRecorder`, MP4 if the browser can, else WebM; no audio). `special` holds the current daily/challenge run; `build()` takes its seed, a normal `selectGame()` clears it. Only `var`/function declarations at the top level, because `renderPick()` calls `dailyRender()` before this part runs |
+ | `src/app/20f-monetization.js` | **Monetization hooks, switched off**: `MONET.hook(name, info)` (gameStart, gameEnd, share) and `MONET.offer(kind)` do nothing without an adapter. See *Monetization (off)* below |
+ | `src/app/21-main-loop.js` | Main loop, start-up, debug line (`?debug=1`) |
+ | `src/i18n/fi.json`, `sv.json`, `ru.json` | Translations: English text → translated text |
+diff --git a/README.md b/README.md
+index 12b085c..090aea7 100644
+--- a/README.md
++++ b/README.md
+@@ -137,7 +137,7 @@ After the first finished game, a **📅 Daily Molecule** button sits above the l
+ 
+ The end card of a normal game, a speed run and the Daily Molecule has **📤 Share**. A shared speed run becomes a *speed challenge*: the friend plays the same speed run from the same start, and must reach the goal faster. It opens a window with:
+ - **A short text** with the game, the score and the stars, and a **challenge link**. *Share…* uses the device's own share menu (phones, tablets), *Copy text and link* puts it on the clipboard.
+-- **The clip** (when *Record a clip to share* is ticked): a 30-second vertical video of the run (box, temperature bar, score, stars), ready for a message or a short-video app. *Save the clip* downloads it (MP4 where the browser can make it, otherwise WebM).
++- **The clip** (when *Record a clip to share* is ticked): a 30-second vertical video of the run (box, temperature bar, score, stars; 360×640, about 1–2 MB), ready for a message or a short-video app. *Save the clip* downloads it (MP4 where the browser can make it, otherwise WebM).
+ 
+ Whoever opens the challenge link sees *🏆 You have been challenged!* with the score to beat. *Accept the challenge* starts the same game from exactly the same molecules, and the friend's run is shown as **😊** on the score bar at the same second and, after the game, as a second line (😊 friend) in the replay graph (like the 👻 of your own best run; the link carries the friend's score for each second, 31 numbers). The end card then says whether they beat it, and they can share their own score back. A new student who opens a challenge for the ice game first goes through the guided microphone set-up, as on any first visit. The link opens the public page (https://dmtolmach.github.io/be-quite-and-self-assemble/docs/) when the game was played from a file or inside claude.ai, and the school's own page when it is served from the school's website.
+ 
+diff --git a/src/app/20e-daily-share.js b/src/app/20e-daily-share.js
+index 552ddfd..33b6881 100644
+--- a/src/app/20e-daily-share.js
++++ b/src/app/20e-daily-share.js
+@@ -132,8 +132,8 @@
+     if (!$('gclipOn').checked || !optOpen('clip') || classOn || battle || G.g.proto || G.level || qLevel >= 2) return; // slow devices: no clip, so the game stays smooth
+     const type = clipType(); if (!type || !HTMLCanvasElement.prototype.captureStream) return;
+     try {
+-      if (!CLIP.cv) { CLIP.cv = document.createElement('canvas'); CLIP.cv.width = 540; CLIP.cv.height = 960; CLIP.cx = CLIP.cv.getContext('2d'); }
+-      clipDraw(G); const st = CLIP.cv.captureStream(30), r = new MediaRecorder(st, { mimeType: type, videoBitsPerSecond: 1600000 });
++      if (!CLIP.cv) { CLIP.cv = document.createElement('canvas'); CLIP.cv.width = 360; CLIP.cv.height = 640; CLIP.cx = CLIP.cv.getContext('2d'); CLIP.cx.scale(2 / 3, 2 / 3); } // drawn in 540×960 units, recorded at 360×640
++      clipDraw(G); const st = CLIP.cv.captureStream(20), r = new MediaRecorder(st, { mimeType: type, videoBitsPerSecond: 350000 }); // about 1.3 MB for a 30 s game, small enough for any messenger
+       CLIP.chunks = []; CLIP.type = type; CLIP.G = G; CLIP.last = 0; CLIP.stream = st;
+       r.ondataavailable = (e) => { if (e.data && e.data.size) CLIP.chunks.push(e.data); };
+       r.start(1000); CLIP.rec = r;
+@@ -145,7 +145,7 @@
+       if (!$('shareModal').hidden && shareCur) { $('shareClipBox').hidden = false; $('shareVideo').src = CLIP.url; } } CLIP.chunks = []; };
+     try { if (keep) clipDraw(CLIP.G, true); r.state !== 'inactive' ? r.stop() : r.onstop(); } catch (e) {}
+   }
+-  function clipTick(now) { if (!CLIP.rec || !CLIP.G || now - CLIP.last < 33) return; CLIP.last = now; try { clipDraw(CLIP.G); } catch (e) {} }
++  function clipTick(now) { if (!CLIP.rec || !CLIP.G || now - CLIP.last < 50) return; CLIP.last = now; try { clipDraw(CLIP.G); } catch (e) {} }
+   function clipDraw(G, last) {
+     const c = CLIP.cx, W = 540, g = G.g, cen = W / 2; if (!c) return;
+     c.fillStyle = '#0f2a33'; c.fillRect(0, 0, W, 960); c.textAlign = 'center'; c.textBaseline = 'alphabetic';
+diff --git a/src/styles.css b/src/styles.css
+index 09e67ee..63d75bc 100644
+--- a/src/styles.css
++++ b/src/styles.css
+@@ -438,7 +438,7 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
+ @container (max-width: 600px) { .gendcard.withpic { grid-template-columns: 1fr; width: min(460px, 100%) } }
+ @container (max-height: 520px) and (max-width: 600px) { .gendcard.withpic .gendpic { max-width: 300px; justify-self: center; width: 100% } }
+ @media (max-width: 700px) { /* phones: the end window fills the screen and scrolls, so nothing is cut off */
+-  .gend { position: fixed !important; left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; z-index: 200; padding: 12px 10px calc(12px + env(safe-area-inset-bottom)); place-items: start center; background: color-mix(in srgb, var(--bg) 80%, transparent) }
++  .gend { position: fixed !important; left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; z-index: 200; padding: 12px 10px calc(96px + env(safe-area-inset-bottom)); place-items: start center; background: color-mix(in srgb, var(--bg) 80%, transparent) } /* bottom padding clears the bottom mode bar, which sits on top */
+   .gendcard.withpic { grid-template-columns: 1fr; margin: auto 0 } }
+ .gendcard.withpic .gendx { z-index: 3; background: var(--panel); border-radius: 50%; box-shadow: 0 1px 4px color-mix(in srgb, var(--ink) 25%, transparent) }
+ 
