@@ -2,7 +2,7 @@
 
 A molecular dynamics game for schools: students control molecules with their voice. It runs in any modern browser (Chrome, Edge, Firefox, Safari) on laptops, tablets and phones. No account, no server, no internet needed once you have it.
 
-**Play online:** https://dmtolmach.github.io/be-quite-and-self-assemble/
+**Play online:** https://dmtolmach.github.io/be-quite-and-self-assemble/docs/
 
 ## 1. Use it from one file
 
@@ -14,7 +14,7 @@ The browser asks for the microphone the first time a student presses **Mic**. Th
 
 ## 2. Install it as an app
 
-1. Open https://dmtolmach.github.io/be-quite-and-self-assemble/
+1. Open https://dmtolmach.github.io/be-quite-and-self-assemble/docs/
 2. Install:
    - **Chrome or Edge** (Windows, macOS, Chromebook, Android): the install icon in the address bar, or *Teacher options → Use without internet → Install as an app* at the bottom of the page.
    - **iPad or iPhone** (Safari): *Share → Add to Home Screen*.

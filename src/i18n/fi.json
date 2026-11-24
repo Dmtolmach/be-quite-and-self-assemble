@@ -1132,5 +1132,6 @@
  "Speed challenge: reach the goal faster than {v}. You start from exactly the same molecules as your friend.": "Nopeushaaste: saavuta tavoite nopeammin kuin {v}. Aloitat täsmälleen samoista molekyyleistä kuin kaverisi.",
  "A friend reached the goal of “{g}” in {v} (speed run). Same start, same molecules: can you be faster?": "Kaverisi saavutti pelin ”{g}” tavoitteen ajassa {v} (nopeuspeli). Sama alku, samat molekyylit: pystytkö nopeammin?",
  "Same start for you. Can you be faster?": "Sama alku sinulle. Pystytkö nopeammin?",
- "max {v}": "maks. {v}"
+ "max": "maks.",
+ "friend": "kaveri"
 }

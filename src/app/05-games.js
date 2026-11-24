@@ -141,7 +141,7 @@
     const gb = document.querySelector('.gbar'); gb.querySelectorAll('.win').forEach((x) => x.remove());
     const DD = game.speed ? g.D * SPEED_BAR / GAME_SEC : g.D; for (const [w0, w1] of game.win || []) { if (w0 >= DD) continue; const d = document.createElement('div'); d.className = 'win'; d.style.left = (100 * w0 / DD) + '%'; d.style.width = (100 * (w1 - w0) / DD) + '%'; gb.appendChild(d); }
     $('gpeakLab').textContent = T(g.side || 'Best this run');
-    $('gpeak').textContent = '–'; $('gbest').style.display = 'none';
+    $('gpeak').textContent = '–'; $('gbest').style.display = 'none'; $('gbest').dataset.l = T('max');
     gameCarry = 0; running = true; $('pause').textContent = T('Pause');
     $('gvalLab').textContent = T(g.lab); $('gval').textContent = '–'; $('gstars').textContent = starStr(0); $('gtime').textContent = GAME_SEC;
     const band = $('gband'); band.querySelectorAll('.tick').forEach((x) => x.remove());

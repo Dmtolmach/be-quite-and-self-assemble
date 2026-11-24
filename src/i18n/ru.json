@@ -1132,5 +1132,6 @@
  "Speed challenge: reach the goal faster than {v}. You start from exactly the same molecules as your friend.": "Скоростной вызов: достигните цели быстрее, чем за {v}. Вы начинаете с точно тех же молекул, что и ваш друг.",
  "A friend reached the goal of “{g}” in {v} (speed run). Same start, same molecules: can you be faster?": "Друг достиг цели в игре «{g}» за {v} (скоростной забег). Тот же старт, те же молекулы: сможете быстрее?",
  "Same start for you. Can you be faster?": "У тебя тот же старт. Сможешь быстрее?",
- "max {v}": "макс. {v}"
+ "max": "макс.",
+ "friend": "друг"
 }

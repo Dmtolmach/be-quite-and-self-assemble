@@ -26,8 +26,8 @@
     const s = GAME_SEC * (now - G.t0) / g.D;
     if (!G.cd) gameSounds(G, g);
     $('gtime').textContent = T('{n} s', { n: s.toFixed(1) });
-    if (!G.cd && G.ema > G.peak) G.peak = G.ema; // the longest so far: a gold mark on the score band, and for the gel (whose strand flickers) also written next to the score
-    $('gval').textContent = g.fmt(Math.max(0, G.ema)) + (g.id === 'gel' && G.peak > 0 ? ' · ' + T('max {v}', { v: g.fmt(G.peak) }) : '');
+    if (!G.cd && G.ema > G.peak) G.peak = G.ema; // the best so far: a marked line on the score band, next to the goal line and the line of the score now
+    $('gval').textContent = g.fmt(Math.max(0, G.ema));
     if (G.peak > 0) { $('gbest').style.display = 'block'; $('gbest').style.left = (100 * Math.max(0, Math.min(1, G.peak / (g.scale || 1)))) + '%'; }
     $('gnow').style.left = (100 * Math.max(0, Math.min(1, G.ema / (g.scale || 1)))) + '%';
     lostBar(G, sp.target); $('gbar').style.width = (100 * Math.min(1, s / SPEED_BAR)) + '%';
@@ -40,7 +40,7 @@
   function speedEnd(G) {
     const g = G.g, sp = G.speed, t = G.doneAt, st = t === undefined ? 0 : t <= sp.t[2] ? 3 : t <= sp.t[1] ? 2 : 1, b = speedBest(g), rec = t !== undefined && (b === null || t < b);
     if (rec) { try { localStorage.setItem('mdlab-speed-' + g.id, t.toFixed(2)); } catch (e) {} }
-    $('hudGoal').textContent = ''; $('gagain').hidden = false; $('grestart').hidden = true; $('greplay').hidden = true;
+    $('hudGoal').textContent = ''; $('gagain').hidden = false; $('grestart').hidden = true; $('greplay').hidden = true; setTimeout(() => drawReplay(G), 0); // the graph of this speed run (with the friend's run in a challenge)
     if (G.snap) { restoreSnap(G.snap); running = false; $('pause').textContent = T('Resume'); showReport(report()); }
     $('gres').textContent = ''; $('gtime').textContent = t === undefined ? '–' : T('{n} s', { n: t.toFixed(1) }); // the clock shows the result, not the end of the 1.5 s check
     const card = st === 3 ? fcGive(FC_ALL.filter((c) => c.deck.speed === g.id)) : null; // three stars: a card from this game's speed-run deck

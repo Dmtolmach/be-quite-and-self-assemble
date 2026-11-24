@@ -1132,5 +1132,6 @@
  "Speed challenge: reach the goal faster than {v}. You start from exactly the same molecules as your friend.": "Fartutmaning: nå målet snabbare än {v}. Du startar från exakt samma molekyler som din vän.",
  "A friend reached the goal of “{g}” in {v} (speed run). Same start, same molecules: can you be faster?": "En vän nådde målet i ”{g}” på {v} (fartrunda). Samma start, samma molekyler: kan du vara snabbare?",
  "Same start for you. Can you be faster?": "Samma start för dig. Kan du vara snabbare?",
- "max {v}": "max {v}"
+ "max": "max",
+ "friend": "vän"
 }

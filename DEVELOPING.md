@@ -117,5 +117,5 @@ Earlier versions sat at the repository root as `amphiphile-assembly_v6.html`, `a
 ## Releasing
 
 1. `python3 run_tests.py` – all must pass.
-2. Commit and push: GitHub Pages serves the `docs/` folder (https://dmtolmach.github.io/be-quite-and-self-assemble/).
+2. Commit and push: GitHub Pages serves the repository root, so the app is at https://dmtolmach.github.io/be-quite-and-self-assemble/docs/ (the root address shows this README; challenge links use `/docs/`, `PUBLIC_URL` in `20e-daily-share.js`).
 3. Update the teacher README if anything visible changed.

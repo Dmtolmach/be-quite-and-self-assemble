@@ -464,7 +464,7 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
 .gband { position: relative } .gband .ghostmark { top: 50%; margin-top: -9px; font-size: 15px; opacity: .85 }
 
 /* ---- speed run: only the goal, the clock and the molecules ---- */
-.speedrun #szone, .speedrun #nzone, .speedrun .coach, .speedrun .gres, .speedrun #gbest, .speedrun:not(.speeddrug) .gbar { display: none !important } /* no time bar in a speed run; the drug game keeps it for its red windows */
+.speedrun #szone, .speedrun #nzone, .speedrun .coach, .speedrun .gres, .speedrun:not(.speeddrug) .gbar { display: none !important } /* no time bar in a speed run; the drug game keeps it for its red windows */
 .speedrun .gband .tick.goal { white-space: nowrap; font-weight: 700; color: var(--ink); z-index: 2 }
 .speedrun #hudGoal { display: block; margin-top: 4px; font-weight: 600 }
 .speedseg { margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr } .speedseg button small { display: block; font-weight: 400; font-size: 11.5px; color: var(--muted) }
@@ -501,6 +501,10 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
 .lock-ghost .optghost, .lock-clip .optclip { display: none !important } /* shown after 2 and 3 finished games */
 .tdhead { margin: 0 0 6px; font-weight: 700; font-size: 15px; line-height: 1.35; min-height: 2.7em; color: var(--accent) } .tdhead[hidden] { display: none } /* the two lines of the welcome story */
 @media (max-width: 700px) { .tdhead { font-size: 13.5px } }
+/* the best score of this run: a dashed accent line marked 'max', unlike the gold goal/star lines and the black line of the score now */
+.gband .best { width: 0; margin-left: -1px; background: none; border-left: 3px dashed var(--accent) }
+.gband .best::after { content: attr(data-l); position: absolute; top: 0; left: 3px; font-size: 10px; font-weight: 700; line-height: 22px; color: var(--accent); white-space: nowrap }
+@media (max-width: 700px) { .gband .best::after { line-height: 16px } }
 </style>
 
 <div class="wrap notranslate" data-sys="dumbbell" translate="no">
@@ -3246,7 +3250,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Speed challenge: reach the goal faster than {v}. You start from exactly the same molecules as your friend.": "Nopeushaaste: saavuta tavoite nopeammin kuin {v}. Aloitat täsmälleen samoista molekyyleistä kuin kaverisi.",
   "A friend reached the goal of “{g}” in {v} (speed run). Same start, same molecules: can you be faster?": "Kaverisi saavutti pelin ”{g}” tavoitteen ajassa {v} (nopeuspeli). Sama alku, samat molekyylit: pystytkö nopeammin?",
   "Same start for you. Can you be faster?": "Sama alku sinulle. Pystytkö nopeammin?",
-  "max {v}": "maks. {v}"
+  "max": "maks.",
+  "friend": "kaveri"
  },
  "sv": {
   "Cleared!": "Klarat!",
@@ -4382,7 +4387,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Speed challenge: reach the goal faster than {v}. You start from exactly the same molecules as your friend.": "Fartutmaning: nå målet snabbare än {v}. Du startar från exakt samma molekyler som din vän.",
   "A friend reached the goal of “{g}” in {v} (speed run). Same start, same molecules: can you be faster?": "En vän nådde målet i ”{g}” på {v} (fartrunda). Samma start, samma molekyler: kan du vara snabbare?",
   "Same start for you. Can you be faster?": "Samma start för dig. Kan du vara snabbare?",
-  "max {v}": "max {v}"
+  "max": "max",
+  "friend": "vän"
  },
  "ru": {
   "Cleared!": "Пройдено!",
@@ -5518,7 +5524,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   "Speed challenge: reach the goal faster than {v}. You start from exactly the same molecules as your friend.": "Скоростной вызов: достигните цели быстрее, чем за {v}. Вы начинаете с точно тех же молекул, что и ваш друг.",
   "A friend reached the goal of “{g}” in {v} (speed run). Same start, same molecules: can you be faster?": "Друг достиг цели в игре «{g}» за {v} (скоростной забег). Тот же старт, те же молекулы: сможете быстрее?",
   "Same start for you. Can you be faster?": "У тебя тот же старт. Сможешь быстрее?",
-  "max {v}": "макс. {v}"
+  "max": "макс.",
+  "friend": "друг"
  }
 };
   let LANG = 'en';
@@ -6212,7 +6219,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const gb = document.querySelector('.gbar'); gb.querySelectorAll('.win').forEach((x) => x.remove());
     const DD = game.speed ? g.D * SPEED_BAR / GAME_SEC : g.D; for (const [w0, w1] of game.win || []) { if (w0 >= DD) continue; const d = document.createElement('div'); d.className = 'win'; d.style.left = (100 * w0 / DD) + '%'; d.style.width = (100 * (w1 - w0) / DD) + '%'; gb.appendChild(d); }
     $('gpeakLab').textContent = T(g.side || 'Best this run');
-    $('gpeak').textContent = '–'; $('gbest').style.display = 'none';
+    $('gpeak').textContent = '–'; $('gbest').style.display = 'none'; $('gbest').dataset.l = T('max');
     gameCarry = 0; running = true; $('pause').textContent = T('Pause');
     $('gvalLab').textContent = T(g.lab); $('gval').textContent = '–'; $('gstars').textContent = starStr(0); $('gtime').textContent = GAME_SEC;
     const band = $('gband'); band.querySelectorAll('.tick').forEach((x) => x.remove());
@@ -6406,8 +6413,8 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const s = GAME_SEC * (now - G.t0) / g.D;
     if (!G.cd) gameSounds(G, g);
     $('gtime').textContent = T('{n} s', { n: s.toFixed(1) });
-    if (!G.cd && G.ema > G.peak) G.peak = G.ema; // the longest so far: a gold mark on the score band, and for the gel (whose strand flickers) also written next to the score
-    $('gval').textContent = g.fmt(Math.max(0, G.ema)) + (g.id === 'gel' && G.peak > 0 ? ' · ' + T('max {v}', { v: g.fmt(G.peak) }) : '');
+    if (!G.cd && G.ema > G.peak) G.peak = G.ema; // the best so far: a marked line on the score band, next to the goal line and the line of the score now
+    $('gval').textContent = g.fmt(Math.max(0, G.ema));
     if (G.peak > 0) { $('gbest').style.display = 'block'; $('gbest').style.left = (100 * Math.max(0, Math.min(1, G.peak / (g.scale || 1)))) + '%'; }
     $('gnow').style.left = (100 * Math.max(0, Math.min(1, G.ema / (g.scale || 1)))) + '%';
     lostBar(G, sp.target); $('gbar').style.width = (100 * Math.min(1, s / SPEED_BAR)) + '%';
@@ -6420,7 +6427,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   function speedEnd(G) {
     const g = G.g, sp = G.speed, t = G.doneAt, st = t === undefined ? 0 : t <= sp.t[2] ? 3 : t <= sp.t[1] ? 2 : 1, b = speedBest(g), rec = t !== undefined && (b === null || t < b);
     if (rec) { try { localStorage.setItem('mdlab-speed-' + g.id, t.toFixed(2)); } catch (e) {} }
-    $('hudGoal').textContent = ''; $('gagain').hidden = false; $('grestart').hidden = true; $('greplay').hidden = true;
+    $('hudGoal').textContent = ''; $('gagain').hidden = false; $('grestart').hidden = true; $('greplay').hidden = true; setTimeout(() => drawReplay(G), 0); // the graph of this speed run (with the friend's run in a challenge)
     if (G.snap) { restoreSnap(G.snap); running = false; $('pause').textContent = T('Resume'); showReport(report()); }
     $('gres').textContent = ''; $('gtime').textContent = t === undefined ? '–' : T('{n} s', { n: t.toFixed(1) }); // the clock shows the result, not the end of the 1.5 s check
     const card = st === 3 ? fcGive(FC_ALL.filter((c) => c.deck.speed === g.id)) : null; // three stars: a card from this game's speed-run deck
@@ -6939,26 +6946,32 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
     const x = c.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, W, H);
     const col = (k) => css('--' + k), fs = W < 420 ? 10.5 : 11.5;
     const padL = 4, padR = 42, padT = 20, padB = 15, pw = W - padL - padR, ph = H - padT - padB;
-    const X = (s) => padL + pw * s / GAME_SEC, [lo, hi] = g.range, YT = (Tv) => padT + ph * (1 - (Tv - lo) / (hi - lo));
+    const fr = G.special && G.special.kind === 'challenge' && G.special.run ? G.special.run.r : null; // a friend's challenge: their score at each second, drawn as a second line
+    const sp = G.speed, tEnd = sp ? Math.max(5, r[r.length - 1].s, fr ? fr.length - 1 : 0) : GAME_SEC; // a speed run has no fixed length: the axis runs to the later finish
+    const X = (s) => padL + pw * Math.min(s, tEnd) / tEnd, [lo, hi] = g.range, YT = (Tv) => padT + ph * (1 - (Tv - lo) / (hi - lo));
     const nD = g.id === 'drug' && eng && eng.nDrug ? eng.nDrug : 0; if (nD) r.forEach((q) => { q.lp = 100 * (q.l || 0) / nD; }); // drug games: lost drug as a second line
-    const top = Math.max(g.stars[2] * 1.12, G.peak * 1.05, nD ? Math.max(...r.map((q) => q.lp)) * 1.05 : 0) || 1, YV = (v) => padT + ph * (1 - Math.max(0, Math.min(top, v)) / top);
+    const marks = sp ? [sp.target] : g.stars, top = Math.max(marks[marks.length - 1] * 1.12, G.peak * 1.05, fr ? Math.max(...fr.map((q) => q[2])) * 1.05 : 0, nD ? Math.max(...r.map((q) => q.lp)) * 1.05 : 0) || 1, YV = (v) => padT + ph * (1 - Math.max(0, Math.min(top, v)) / top);
     x.fillStyle = col('cell'); x.fillRect(padL, padT, pw, ph);
-    if (g.zone || g.path) { x.fillStyle = col('good') + '33'; x.beginPath(); const ss = []; for (let q = 0; q <= 60; q++) ss.push(GAME_SEC * q / 60);
+    if ((g.zone || g.path) && !sp) { x.fillStyle = col('good') + '33'; x.beginPath(); const ss = []; for (let q = 0; q <= 60; q++) ss.push(GAME_SEC * q / 60);
       ss.forEach((sv, i) => (i ? x.lineTo : x.moveTo).call(x, X(sv), YT(Math.min(hi, zoneOf(g, sv)[1]))));
       for (let i = ss.length - 1; i >= 0; i--) x.lineTo(X(ss[i]), YT(Math.max(lo, zoneOf(g, ss[i])[0]))); x.closePath(); x.fill(); }
     for (const [a, b] of G.win || []) { x.fillStyle = col('hot') + '33'; x.fillRect(X(a / G.rate), padT, X(b / G.rate) - X(a / G.rate), ph); }
     if (g.flowU) { x.fillStyle = col('hot') + '33'; for (let i = 0; i < r.length; i++) if (r[i].z) { const s0 = r[i].s, s1 = i + 1 < r.length ? r[i + 1].s : GAME_SEC; x.fillRect(X(s0), padT, X(s1) - X(s0) + 0.5, ph); } }
     x.font = `${fs}px ${css('--f-body')}`; x.textBaseline = 'middle';
-    g.stars.forEach((sv, k) => { const y = YV(sv); x.strokeStyle = col('cryst') + 'aa'; x.lineWidth = 1; x.setLineDash([3, 3]); x.beginPath(); x.moveTo(padL, y); x.lineTo(padL + pw, y); x.stroke();
-      x.setLineDash([]); x.fillStyle = col('cryst'); x.textAlign = 'left'; x.fillText('★'.repeat(k + 1), padL + pw + 2, y); });
+    marks.forEach((sv, k) => { const y = YV(sv); x.strokeStyle = col('cryst') + 'aa'; x.lineWidth = 1; x.setLineDash([3, 3]); x.beginPath(); x.moveTo(padL, y); x.lineTo(padL + pw, y); x.stroke();
+      x.setLineDash([]); x.fillStyle = col('cryst'); x.textAlign = 'left'; x.fillText(sp ? '🏁' : '★'.repeat(k + 1), padL + pw + 2, y); });
     const line = (key, Y, color, w, dash) => { x.strokeStyle = color; x.lineWidth = w; x.lineJoin = 'round'; x.setLineDash(dash || []); x.beginPath(); r.forEach((q, i) => (i ? x.lineTo : x.moveTo).call(x, X(q.s), Y(q[key]))); x.stroke(); x.setLineDash([]); }; // dashes as well as colours, for colour-blind players
-    line('T', YT, col('hot'), 2, [7, 4]); if (nD) line('lp', YV, col('muted'), 2, [2, 4]); line('v', YV, col('accent'), 3);
+    line('T', YT, col('hot'), 2, [7, 4]); if (nD) line('lp', YV, col('muted'), 2, [2, 4]);
+    if (fr) { x.strokeStyle = col('poly'); x.lineWidth = 2.5; x.setLineDash([9, 3, 2, 3]); x.beginPath(); fr.forEach((q, i) => (i ? x.lineTo : x.moveTo).call(x, X(q[0]), YV(q[2]))); x.stroke(); x.setLineDash([]);
+      const q = fr[fr.length - 1]; x.font = `${fs + 2}px ${css('--f-body')}`; x.textAlign = 'center'; x.fillText('😊', Math.min(padL + pw - 8, X(q[0])), YV(q[2]) - 9); x.font = `${fs}px ${css('--f-body')}`; }
+    line('v', YV, col('accent'), 3);
     x.fillStyle = col('accent'); x.beginPath(); x.arc(X(G.peakSec), YV(G.peak), 4, 0, 7); x.fill();
-    x.fillStyle = col('muted'); x.textAlign = 'center'; for (const s of [0, 10, 20, 30]) x.fillText(s === 30 ? T('{n} s', { n: 30 }) : String(s), s === 30 ? padL + pw - 10 : Math.max(padL + 4, X(s)), H - padB / 2 + 1);
+    x.fillStyle = col('muted'); x.textAlign = 'center'; const st = sp ? [5, 10, 15, 20, 30, 60, 120, 300].find((d) => tEnd / d <= 4) || 600 : 10, ticks = []; for (let s = 0; s <= tEnd + 1e-6; s += st) ticks.push(s);
+    for (const s of ticks) { const lastT = s + st > tEnd; x.fillText(lastT ? T('{n} s', { n: s }) : String(s), lastT ? Math.min(padL + pw - 10, X(s)) : Math.max(padL + 4, X(s)), H - padB / 2 + 1); }
     // legend along the top
     let lx = padL; const item = (color, label, box, dash) => { x.fillStyle = color; if (box) x.fillRect(lx, 5, 12, 10); else if (dash) { x.strokeStyle = color; x.lineWidth = 2.5; x.setLineDash(dash); x.beginPath(); x.moveTo(lx, 10.5); x.lineTo(lx + 16, 10.5); x.stroke(); x.setLineDash([]); } else x.fillRect(lx, 9, 14, 3); lx += 20; x.fillStyle = col('ink'); x.textAlign = 'left'; x.fillText(label, lx, 10); lx += x.measureText(label).width + 12; };
-    item(col('hot'), T('your temperature'), false, [5, 3]); item(col('accent'), T('score')); if (nD) item(col('muted'), T('lost drug'), false, [2, 3]);
-    if (g.zone || g.path) item(col('good') + '66', T(g.path ? 'green path' : 'green zone'), true); else if (G.win) item(col('hot') + '55', T('red windows'), true); else if (g.flowU) item(col('hot') + '55', T('micelle in the tumour'), true);
+    item(col('hot'), T('your temperature'), false, [5, 3]); item(col('accent'), T('score')); if (fr) item(col('poly'), '😊 ' + T('friend'), false, [9, 3, 2, 3]); if (nD) item(col('muted'), T('lost drug'), false, [2, 3]);
+    if ((g.zone || g.path) && !sp) item(col('good') + '66', T(g.path ? 'green path' : 'green zone'), true); else if (G.win) item(col('hot') + '55', T('red windows'), true); else if (g.flowU) item(col('hot') + '55', T('micelle in the tumour'), true);
   }
   // games open one after another as rewards for finished games (see 10b-rewards.js); teachers can open everything
   function isOpen(i) { return i <= 0 || rewardOpen(GAMES[i].id); }
@@ -8405,7 +8418,7 @@ if (typeof module !== 'undefined') module.exports = MDEngine;
   // Only `var` and function declarations here: renderPick() in 05-games.js calls dailyRender() during start-up, before this part runs.
   var special = null; // the run being played: { kind: 'daily' | 'challenge', gid, seed, date, day, beat }
   var DAILY_EPOCH = Date.UTC(2026, 10, 23); // Daily Molecule #1
-  var PUBLIC_URL = 'https://dmtolmach.github.io/be-quite-and-self-assemble/';
+  var PUBLIC_URL = 'https://dmtolmach.github.io/be-quite-and-self-assemble/docs/';
   var GAME_ICON = { ice: '❄️', demix: '🫧', drug: '💊', gel: '🥚' };
   var CLIP = { rec: null, chunks: [], cv: null, cx: null, blob: null, url: null, type: '', last: 0, G: null };
   var shareCur = null; // what the share window is showing

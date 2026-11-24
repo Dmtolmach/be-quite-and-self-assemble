@@ -6,7 +6,7 @@
   // Only `var` and function declarations here: renderPick() in 05-games.js calls dailyRender() during start-up, before this part runs.
   var special = null; // the run being played: { kind: 'daily' | 'challenge', gid, seed, date, day, beat }
   var DAILY_EPOCH = Date.UTC(2026, 10, 23); // Daily Molecule #1
-  var PUBLIC_URL = 'https://dmtolmach.github.io/be-quite-and-self-assemble/';
+  var PUBLIC_URL = 'https://dmtolmach.github.io/be-quite-and-self-assemble/docs/';
   var GAME_ICON = { ice: '❄️', demix: '🫧', drug: '💊', gel: '🥚' };
   var CLIP = { rec: null, chunks: [], cv: null, cx: null, blob: null, url: null, type: '', last: 0, G: null };
   var shareCur = null; // what the share window is showing

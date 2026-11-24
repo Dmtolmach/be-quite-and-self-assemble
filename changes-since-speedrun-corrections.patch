@@ -1,5 +1,5 @@
 diff --git a/DEVELOPING.md b/DEVELOPING.md
-index 81e607d..5894dc7 100644
+index 81e607d..ff833b9 100644
 --- a/DEVELOPING.md
 +++ b/DEVELOPING.md
 @@ -27,13 +27,13 @@ Requirements: Python 3, Node.js, Playwright for Python (`pip install playwright`
@@ -75,10 +75,48 @@ index 81e607d..5894dc7 100644
  ## Old links
  
  Earlier versions sat at the repository root as `amphiphile-assembly_v6.html`, `amphiphile-assembly-lab_v6.html` and `amphiphile-assembly-lab.html`, and many people link to them directly. `build.py` writes the current page to those three names as well (list `LEGACY` in `build.py`), so old links always open the newest version. Commit them together with `docs/`.
+@@ -104,5 +117,5 @@ Earlier versions sat at the repository root as `amphiphile-assembly_v6.html`, `a
+ ## Releasing
+ 
+ 1. `python3 run_tests.py` – all must pass.
+-2. Commit and push: GitHub Pages serves the `docs/` folder (https://dmtolmach.github.io/be-quite-and-self-assemble/).
++2. Commit and push: GitHub Pages serves the repository root, so the app is at https://dmtolmach.github.io/be-quite-and-self-assemble/docs/ (the root address shows this README; challenge links use `/docs/`, `PUBLIC_URL` in `20e-daily-share.js`).
+ 3. Update the teacher README if anything visible changed.
+diff --git a/INSTALL.md b/INSTALL.md
+index 68e4146..96e9771 100644
+--- a/INSTALL.md
++++ b/INSTALL.md
+@@ -2,7 +2,7 @@
+ 
+ A molecular dynamics game for schools: students control molecules with their voice. It runs in any modern browser (Chrome, Edge, Firefox, Safari) on laptops, tablets and phones. No account, no server, no internet needed once you have it.
+ 
+-**Play online:** https://dmtolmach.github.io/be-quite-and-self-assemble/
++**Play online:** https://dmtolmach.github.io/be-quite-and-self-assemble/docs/
+ 
+ ## 1. Use it from one file
+ 
+@@ -14,7 +14,7 @@ The browser asks for the microphone the first time a student presses **Mic**. Th
+ 
+ ## 2. Install it as an app
+ 
+-1. Open https://dmtolmach.github.io/be-quite-and-self-assemble/
++1. Open https://dmtolmach.github.io/be-quite-and-self-assemble/docs/
+ 2. Install:
+    - **Chrome or Edge** (Windows, macOS, Chromebook, Android): the install icon in the address bar, or *Teacher options → Use without internet → Install as an app* at the bottom of the page.
+    - **iPad or iPhone** (Safari): *Share → Add to Home Screen*.
 diff --git a/README.md b/README.md
-index 636a1c8..557a41b 100644
+index 636a1c8..12b085c 100644
 --- a/README.md
 +++ b/README.md
+@@ -27,7 +27,7 @@ Made by [Dmitry Tolmachev](https://scholar.google.com/citations?user=OQtj-R4AAAA
+ 
+ ## Running it
+ 
+-- **Play online:** https://dmtolmach.github.io/be-quite-and-self-assemble/ (installable as an app).
++- **Play online:** https://dmtolmach.github.io/be-quite-and-self-assemble/docs/ (installable as an app).
+ - **Or open the file** `docs/amphiphile-assembly-lab.html` in a browser; it needs no internet. Download and install steps: [INSTALL.md](INSTALL.md).
+ - **Microphone:** the browser asks for permission the first time the microphone is used. Browsers allow the microphone only on `https://` pages or on a file opened from your own computer. Nothing is recorded or sent anywhere: the page only measures the loudness (see *Privacy and offline use* below).
+ - **Speed:** a recent laptop runs every system smoothly. On slow phones the page automatically switches to simpler drawing (see *Drawing quality* in Teacher options at the bottom of the page). Phones and old tablets run the smaller boxes well. The water systems (Ice, Oily particles) are the slowest, because each water molecule also rotates.
 @@ -45,6 +45,8 @@ Made by [Dmitry Tolmachev](https://scholar.google.com/citations?user=OQtj-R4AAAA
  
  For the school's data protection officer (GDPR), in short:
@@ -88,7 +126,16 @@ index 636a1c8..557a41b 100644
  - **The page makes no network connections of its own:** no analytics, no cookies, no accounts, no adverts, no external fonts or scripts (the fonts are built into the file). A test (`tests/test_offline_privacy.py`) checks that, opened from disk with the microphone on and a game running, the browser requests nothing but the page itself.
  - **Saved data:** stars, cards and settings are kept only in the browser's local storage on that device, under keys starting with `mdlab-`. **Delete saved data** in Teacher options removes them all.
  - **The microphone is optional:** the temperature slider does the same job.
-@@ -90,23 +92,28 @@ Four 30-second games. The game panel is kept short: game cards (title and one-li
+@@ -55,7 +57,7 @@ Students and teachers see the same in the app: a 🔒 line under the microphone
+ **No internet needed:**
+ - **The file itself:** `amphiphile-assembly-lab.html` contains everything (code, fonts, icons). Copy it to each computer or a USB stick and open it in a browser; it never needs the internet.
+ - **Download the page** (Teacher options → *Use without internet*) saves that file when the page is opened from a website. If the browser blocks it, Ctrl+S (⌘S on a Mac) does the same.
+-- **Install as an app:** when the page is served from a website with the files from the build next to it (`index.html`, `manifest.webmanifest`, `sw.js`, icons — the whole `docs/` folder, served by GitHub Pages at https://dmtolmach.github.io/be-quite-and-self-assemble/), Chrome and Edge show **Install as an app** in Teacher options (and an install icon in the address bar); on an iPad or iPhone use *Share → Add to Home Screen*. The installed app opens from the home screen or app list and works with no internet; a new version is picked up the next time it is opened online.
++- **Install as an app:** when the page is served from a website with the files from the build next to it (`index.html`, `manifest.webmanifest`, `sw.js`, icons — the whole `docs/` folder, served by GitHub Pages at https://dmtolmach.github.io/be-quite-and-self-assemble/docs/), Chrome and Edge show **Install as an app** in Teacher options (and an install icon in the address bar); on an iPad or iPhone use *Share → Add to Home Screen*. The installed app opens from the home screen or app list and works with no internet; a new version is picked up the next time it is opened online.
+ 
+ ## A first lesson in 10 minutes
+ 
+@@ -90,26 +92,31 @@ Four 30-second games. The game panel is kept short: game cards (title and one-li
  | Game | System | Goal | Stars at |
  |---|---|---|---|
  | **Grow the biggest ice crystal** | Ice | Turn as much water into ice as possible. | 35%, 47%, 56% ice |
@@ -115,12 +162,16 @@ index 636a1c8..557a41b 100644
  - **A coach line at the bottom of the box** appears only in the first game right after the guided lesson (and never in challenges); in all other games nothing is written over the box except heat-wave warnings in challenges and the star bursts. It says what the molecules are doing and what to try, for example *Too warm: the ice cannot grow. Get quieter!* or *Red window: make noise now!* It follows the temperature and how the score is changing, and changes at most every 1.5 s.
 -- **The green band is a tip**: it is hidden in challenges and when **Show tips** is off. In Deliver the drug it shows the loud range while a window is open (or about to) and the quiet range otherwise; in the gel game it shows the opening range until the proteins have had about 4 s of heat, then the cool range.
 +- **The green band is a tip**: one strategy that works, not the only one. It shows in the guided first game and, with **Show tips** ticked, in every game; never in challenges or speed runs.
-+- **Maximum so far** (speed runs): a gold mark on the score band shows the best score of this run; for the gel, whose strand length flickers, it is also written next to the score (*87 σ · max 120 σ*).
++- **Maximum so far**: on the score band a dashed line marked *max* shows the best score of this run, next to the goal (or star) lines and the black line of the score now. Useful above all for the gel, whose strand length flickers.
 +- **Speed glow.** Every molecule has a soft halo coloured by how fast it moves: blue when slow (cold), red when fast (hot); each molecule's speed is smoothed over about 0.3 s. Noise turns the box red within a second, before any structure changes, so students see that their voice moves the molecules. The two liquids are purple and amber, so their colours never look like temperature. *Teacher options → Speed glow* switches it off.
 +- **Thermometer on the box.** In Game mode a strip along the right edge of the box runs from blue (cold, bottom) to red (hot, top), with a black marker at the current temperature and the green band when it is shown, so players can keep their eyes on the molecules. The temperature slider under the box has the same blue → red colours. The noise level is no longer shown under the box; it is in the **Microphone** panel.
  - **Temperature in words.** During games the number under the box is replaced by a symbol: ❄️❄️ cold, ❄️ cool, ☀️ warm, 🔥 hot (the word shows as a tooltip). Symbols keep the bar the same width in every language. A green band on the slider and on the **Your noise** bar (the microphone level, shown big when the microphone is on) marks the temperatures to aim for. For the two liquids it is fixed (*cool*, where the blobs grow fastest). For ice it is a **green path** that moves down during the game: start warm, cool slowly, and stay quiet for the last seconds (annealing). If the ice stops growing, the coach suggests a short burst of noise to melt badly packed bits, then cooling again.
  - At the end, the box shows the best moment of the run (press **Resume** to let it continue from there). The text gives the score, **one sentence about this run** (for example how much of the game was spent too warm, too cold or in the green band, how many drug windows were heated, or whether the proteins were ever heated enough). Students who get 0 or 1 star also get a tip.
- - **A replay graph** under the text shows the student's temperature over the 30 s (red line), the score (teal line, dot at the best moment) and the star levels, with the green band (ice, liquids) or the red drug windows shaded. In the drug game a grey line shows the lost drug (%) next to the delivered score. It shows at a glance whether the student was too loud, too quiet, or late.
+-- **A replay graph** under the text shows the student's temperature over the 30 s (red line), the score (teal line, dot at the best moment) and the star levels, with the green band (ice, liquids) or the red drug windows shaded. In the drug game a grey line shows the lost drug (%) next to the delivered score. It shows at a glance whether the student was too loud, too quiet, or late.
++- **A replay graph** (also after speed runs, with the goal line 🏁 and a time axis as long as the run) under the text shows the student's temperature over the 30 s (red line), the score (teal line, dot at the best moment) and the star levels, with the green band (ice, liquids) or the red drug windows shaded. In the drug game a grey line shows the lost drug (%) next to the delivered score. It shows at a glance whether the student was too loud, too quiet, or late.
+ - **Statistics on this device** (folded under the box; click to open) lists games played, average and best score for each game. They are stored only in this browser. **Reset statistics** clears them.
+ - **Give up** ends a game early; **Play again** restarts it.
+ 
 @@ -118,10 +125,24 @@ The star levels come from test runs of simple ways to play. In the ice game, sta
  Each game needs a different strategy, which is what makes them good discussion starters:
  
@@ -140,7 +191,7 @@ index 636a1c8..557a41b 100644
 +- **A short text** with the game, the score and the stars, and a **challenge link**. *Share…* uses the device's own share menu (phones, tablets), *Copy text and link* puts it on the clipboard.
 +- **The clip** (when *Record a clip to share* is ticked): a 30-second vertical video of the run (box, temperature bar, score, stars), ready for a message or a short-video app. *Save the clip* downloads it (MP4 where the browser can make it, otherwise WebM).
 +
-+Whoever opens the challenge link sees *🏆 You have been challenged!* with the score to beat. *Accept the challenge* starts the same game from exactly the same molecules, and the friend's run is shown as **😊** on the score bar at the same second (like the 👻 of your own best run; the link carries the friend's score for each second, 31 numbers). The end card then says whether they beat it, and they can share their own score back. A new student who opens a challenge for the ice game first goes through the guided microphone set-up, as on any first visit. The link opens the public page (https://dmtolmach.github.io/be-quite-and-self-assemble/) when the game was played from a file or inside claude.ai, and the school's own page when it is served from the school's website.
++Whoever opens the challenge link sees *🏆 You have been challenged!* with the score to beat. *Accept the challenge* starts the same game from exactly the same molecules, and the friend's run is shown as **😊** on the score bar at the same second and, after the game, as a second line (😊 friend) in the replay graph (like the 👻 of your own best run; the link carries the friend's score for each second, 31 numbers). The end card then says whether they beat it, and they can share their own score back. A new student who opens a challenge for the ice game first goes through the guided microphone set-up, as on any first visit. The link opens the public page (https://dmtolmach.github.io/be-quite-and-self-assemble/docs/) when the game was played from a file or inside claude.ai, and the school's own page when it is served from the school's website.
 +
 +Same start does not mean identical runs: the starting arrangement and the drug windows are the same for everyone, but each player's temperatures differ (and a slow computer may run fewer steps per picture), so the molecules soon go their own way. That is the point: the better temperature control wins.
 +
@@ -237,7 +288,7 @@ index f99785b..ecf631a 100644
      let lastAt = 0; const gap = (ms) => { const n = performance.now(); if (n - lastAt < ms) return false; lastAt = n; return true; };
      api.set = (v) => { on = v; try { localStorage.setItem('mdlab-sound', v ? '1' : '0'); } catch (e) {} if (on) ctx(); };
 diff --git a/src/app/05-games.js b/src/app/05-games.js
-index 310b074..6e399aa 100644
+index 310b074..15fc1d2 100644
 --- a/src/app/05-games.js
 +++ b/src/app/05-games.js
 @@ -26,7 +26,7 @@
@@ -300,6 +351,15 @@ index 310b074..6e399aa 100644
      if (battle) game.battle = battle.k; fxReset();
      if (g.setup) g.setup(game);
      if (gameLevel) { const tw = ladTwist(g, gameLevel); Object.assign(game, { af: tw.af || 0, flowK: tw.flowK || 1, bandK: tw.bandK || 1, spill: tw.spill || 0 });
+@@ -137,7 +141,7 @@
+     const gb = document.querySelector('.gbar'); gb.querySelectorAll('.win').forEach((x) => x.remove());
+     const DD = game.speed ? g.D * SPEED_BAR / GAME_SEC : g.D; for (const [w0, w1] of game.win || []) { if (w0 >= DD) continue; const d = document.createElement('div'); d.className = 'win'; d.style.left = (100 * w0 / DD) + '%'; d.style.width = (100 * (w1 - w0) / DD) + '%'; gb.appendChild(d); }
+     $('gpeakLab').textContent = T(g.side || 'Best this run');
+-    $('gpeak').textContent = '–'; $('gbest').style.display = 'none';
++    $('gpeak').textContent = '–'; $('gbest').style.display = 'none'; $('gbest').dataset.l = T('max');
+     gameCarry = 0; running = true; $('pause').textContent = T('Pause');
+     $('gvalLab').textContent = T(g.lab); $('gval').textContent = '–'; $('gstars').textContent = starStr(0); $('gtime').textContent = GAME_SEC;
+     const band = $('gband'); band.querySelectorAll('.tick').forEach((x) => x.remove());
 @@ -149,6 +153,8 @@
      $('gstart').disabled = true; resize();
      if (g.proto) protoStart(game); else { $('gtimeLab').textContent = T(game.speed ? 'Time' : 'Time left'); $('gstarsLab').textContent = T('Stars'); }
@@ -361,7 +421,7 @@ index 310b074..6e399aa 100644
      if (cardNow) { o0.card = null; gendClose(); fcOpen(cardNow, true, () => gendAct(act, nx)); return; }
      gendClose(); gendAct(act, nx); });
 diff --git a/src/app/05b-speed-run.js b/src/app/05b-speed-run.js
-index 782a948..01aa829 100644
+index 782a948..ee34955 100644
 --- a/src/app/05b-speed-run.js
 +++ b/src/app/05b-speed-run.js
 @@ -25,7 +25,10 @@
@@ -370,13 +430,20 @@ index 782a948..01aa829 100644
      if (!G.cd) gameSounds(G, g);
 -    $('gtime').textContent = T('{n} s', { n: s.toFixed(1) }); $('gval').textContent = g.fmt(Math.max(0, G.ema));
 +    $('gtime').textContent = T('{n} s', { n: s.toFixed(1) });
-+    if (!G.cd && G.ema > G.peak) G.peak = G.ema; // the longest so far: a gold mark on the score band, and for the gel (whose strand flickers) also written next to the score
-+    $('gval').textContent = g.fmt(Math.max(0, G.ema)) + (g.id === 'gel' && G.peak > 0 ? ' · ' + T('max {v}', { v: g.fmt(G.peak) }) : '');
++    if (!G.cd && G.ema > G.peak) G.peak = G.ema; // the best so far: a marked line on the score band, next to the goal line and the line of the score now
++    $('gval').textContent = g.fmt(Math.max(0, G.ema));
 +    if (G.peak > 0) { $('gbest').style.display = 'block'; $('gbest').style.left = (100 * Math.max(0, Math.min(1, G.peak / (g.scale || 1)))) + '%'; }
      $('gnow').style.left = (100 * Math.max(0, Math.min(1, G.ema / (g.scale || 1)))) + '%';
      lostBar(G, sp.target); $('gbar').style.width = (100 * Math.min(1, s / SPEED_BAR)) + '%';
      if (!G.rec.length || s - G.rec[G.rec.length - 1].s >= 0.25) G.rec.push({ s, T: tset, v: G.ema, d: 0, l: 0, z: false });
-@@ -43,7 +46,8 @@
+@@ -37,13 +40,14 @@
+   function speedEnd(G) {
+     const g = G.g, sp = G.speed, t = G.doneAt, st = t === undefined ? 0 : t <= sp.t[2] ? 3 : t <= sp.t[1] ? 2 : 1, b = speedBest(g), rec = t !== undefined && (b === null || t < b);
+     if (rec) { try { localStorage.setItem('mdlab-speed-' + g.id, t.toFixed(2)); } catch (e) {} }
+-    $('hudGoal').textContent = ''; $('gagain').hidden = false; $('grestart').hidden = true; $('greplay').hidden = true;
++    $('hudGoal').textContent = ''; $('gagain').hidden = false; $('grestart').hidden = true; $('greplay').hidden = true; setTimeout(() => drawReplay(G), 0); // the graph of this speed run (with the friend's run in a challenge)
+     if (G.snap) { restoreSnap(G.snap); running = false; $('pause').textContent = T('Resume'); showReport(report()); }
+     $('gres').textContent = ''; $('gtime').textContent = t === undefined ? '–' : T('{n} s', { n: t.toFixed(1) }); // the clock shows the result, not the end of the 1.5 s check
      const card = st === 3 ? fcGive(FC_ALL.filter((c) => c.deck.speed === g.id)) : null; // three stars: a card from this game's speed-run deck
      renderPick();
      const gs = Object.assign({}, g, { fmt: (x) => x.toFixed(1) + ' s' });
@@ -555,7 +622,7 @@ index 5213ca4..36f1504 100644
      if (locksLive && !rewardOpen('scan') && appMode === 'scan') setAppMode('explore');
      document.querySelectorAll('#sysPanel [data-pick]').forEach((b) => b.classList.toggle('lockedsys', !rewardOpen('sys-' + b.dataset.pick)));
 diff --git a/src/app/11-coach-guide.js b/src/app/11-coach-guide.js
-index ceafa79..38f4071 100644
+index ceafa79..b1de0e1 100644
 --- a/src/app/11-coach-guide.js
 +++ b/src/app/11-coach-guide.js
 @@ -11,9 +11,15 @@
@@ -591,6 +658,48 @@ index ceafa79..38f4071 100644
      const r = G.rec, back = r.find((q) => q.s >= s - 2) || r[0], tr = back ? G.ema - back.v : 0;
      const [key, cls] = g.coach(G, s, tset, tr);
      if (key !== G.cKey) { G.cKey = key; G.cCls = cls; G.cSince = s; }
+@@ -137,26 +144,32 @@
+     const x = c.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, W, H);
+     const col = (k) => css('--' + k), fs = W < 420 ? 10.5 : 11.5;
+     const padL = 4, padR = 42, padT = 20, padB = 15, pw = W - padL - padR, ph = H - padT - padB;
+-    const X = (s) => padL + pw * s / GAME_SEC, [lo, hi] = g.range, YT = (Tv) => padT + ph * (1 - (Tv - lo) / (hi - lo));
++    const fr = G.special && G.special.kind === 'challenge' && G.special.run ? G.special.run.r : null; // a friend's challenge: their score at each second, drawn as a second line
++    const sp = G.speed, tEnd = sp ? Math.max(5, r[r.length - 1].s, fr ? fr.length - 1 : 0) : GAME_SEC; // a speed run has no fixed length: the axis runs to the later finish
++    const X = (s) => padL + pw * Math.min(s, tEnd) / tEnd, [lo, hi] = g.range, YT = (Tv) => padT + ph * (1 - (Tv - lo) / (hi - lo));
+     const nD = g.id === 'drug' && eng && eng.nDrug ? eng.nDrug : 0; if (nD) r.forEach((q) => { q.lp = 100 * (q.l || 0) / nD; }); // drug games: lost drug as a second line
+-    const top = Math.max(g.stars[2] * 1.12, G.peak * 1.05, nD ? Math.max(...r.map((q) => q.lp)) * 1.05 : 0) || 1, YV = (v) => padT + ph * (1 - Math.max(0, Math.min(top, v)) / top);
++    const marks = sp ? [sp.target] : g.stars, top = Math.max(marks[marks.length - 1] * 1.12, G.peak * 1.05, fr ? Math.max(...fr.map((q) => q[2])) * 1.05 : 0, nD ? Math.max(...r.map((q) => q.lp)) * 1.05 : 0) || 1, YV = (v) => padT + ph * (1 - Math.max(0, Math.min(top, v)) / top);
+     x.fillStyle = col('cell'); x.fillRect(padL, padT, pw, ph);
+-    if (g.zone || g.path) { x.fillStyle = col('good') + '33'; x.beginPath(); const ss = []; for (let q = 0; q <= 60; q++) ss.push(GAME_SEC * q / 60);
++    if ((g.zone || g.path) && !sp) { x.fillStyle = col('good') + '33'; x.beginPath(); const ss = []; for (let q = 0; q <= 60; q++) ss.push(GAME_SEC * q / 60);
+       ss.forEach((sv, i) => (i ? x.lineTo : x.moveTo).call(x, X(sv), YT(Math.min(hi, zoneOf(g, sv)[1]))));
+       for (let i = ss.length - 1; i >= 0; i--) x.lineTo(X(ss[i]), YT(Math.max(lo, zoneOf(g, ss[i])[0]))); x.closePath(); x.fill(); }
+     for (const [a, b] of G.win || []) { x.fillStyle = col('hot') + '33'; x.fillRect(X(a / G.rate), padT, X(b / G.rate) - X(a / G.rate), ph); }
+     if (g.flowU) { x.fillStyle = col('hot') + '33'; for (let i = 0; i < r.length; i++) if (r[i].z) { const s0 = r[i].s, s1 = i + 1 < r.length ? r[i + 1].s : GAME_SEC; x.fillRect(X(s0), padT, X(s1) - X(s0) + 0.5, ph); } }
+     x.font = `${fs}px ${css('--f-body')}`; x.textBaseline = 'middle';
+-    g.stars.forEach((sv, k) => { const y = YV(sv); x.strokeStyle = col('cryst') + 'aa'; x.lineWidth = 1; x.setLineDash([3, 3]); x.beginPath(); x.moveTo(padL, y); x.lineTo(padL + pw, y); x.stroke();
+-      x.setLineDash([]); x.fillStyle = col('cryst'); x.textAlign = 'left'; x.fillText('★'.repeat(k + 1), padL + pw + 2, y); });
++    marks.forEach((sv, k) => { const y = YV(sv); x.strokeStyle = col('cryst') + 'aa'; x.lineWidth = 1; x.setLineDash([3, 3]); x.beginPath(); x.moveTo(padL, y); x.lineTo(padL + pw, y); x.stroke();
++      x.setLineDash([]); x.fillStyle = col('cryst'); x.textAlign = 'left'; x.fillText(sp ? '🏁' : '★'.repeat(k + 1), padL + pw + 2, y); });
+     const line = (key, Y, color, w, dash) => { x.strokeStyle = color; x.lineWidth = w; x.lineJoin = 'round'; x.setLineDash(dash || []); x.beginPath(); r.forEach((q, i) => (i ? x.lineTo : x.moveTo).call(x, X(q.s), Y(q[key]))); x.stroke(); x.setLineDash([]); }; // dashes as well as colours, for colour-blind players
+-    line('T', YT, col('hot'), 2, [7, 4]); if (nD) line('lp', YV, col('muted'), 2, [2, 4]); line('v', YV, col('accent'), 3);
++    line('T', YT, col('hot'), 2, [7, 4]); if (nD) line('lp', YV, col('muted'), 2, [2, 4]);
++    if (fr) { x.strokeStyle = col('poly'); x.lineWidth = 2.5; x.setLineDash([9, 3, 2, 3]); x.beginPath(); fr.forEach((q, i) => (i ? x.lineTo : x.moveTo).call(x, X(q[0]), YV(q[2]))); x.stroke(); x.setLineDash([]);
++      const q = fr[fr.length - 1]; x.font = `${fs + 2}px ${css('--f-body')}`; x.textAlign = 'center'; x.fillText('😊', Math.min(padL + pw - 8, X(q[0])), YV(q[2]) - 9); x.font = `${fs}px ${css('--f-body')}`; }
++    line('v', YV, col('accent'), 3);
+     x.fillStyle = col('accent'); x.beginPath(); x.arc(X(G.peakSec), YV(G.peak), 4, 0, 7); x.fill();
+-    x.fillStyle = col('muted'); x.textAlign = 'center'; for (const s of [0, 10, 20, 30]) x.fillText(s === 30 ? T('{n} s', { n: 30 }) : String(s), s === 30 ? padL + pw - 10 : Math.max(padL + 4, X(s)), H - padB / 2 + 1);
++    x.fillStyle = col('muted'); x.textAlign = 'center'; const st = sp ? [5, 10, 15, 20, 30, 60, 120, 300].find((d) => tEnd / d <= 4) || 600 : 10, ticks = []; for (let s = 0; s <= tEnd + 1e-6; s += st) ticks.push(s);
++    for (const s of ticks) { const lastT = s + st > tEnd; x.fillText(lastT ? T('{n} s', { n: s }) : String(s), lastT ? Math.min(padL + pw - 10, X(s)) : Math.max(padL + 4, X(s)), H - padB / 2 + 1); }
+     // legend along the top
+     let lx = padL; const item = (color, label, box, dash) => { x.fillStyle = color; if (box) x.fillRect(lx, 5, 12, 10); else if (dash) { x.strokeStyle = color; x.lineWidth = 2.5; x.setLineDash(dash); x.beginPath(); x.moveTo(lx, 10.5); x.lineTo(lx + 16, 10.5); x.stroke(); x.setLineDash([]); } else x.fillRect(lx, 9, 14, 3); lx += 20; x.fillStyle = col('ink'); x.textAlign = 'left'; x.fillText(label, lx, 10); lx += x.measureText(label).width + 12; };
+-    item(col('hot'), T('your temperature'), false, [5, 3]); item(col('accent'), T('score')); if (nD) item(col('muted'), T('lost drug'), false, [2, 3]);
+-    if (g.zone || g.path) item(col('good') + '66', T(g.path ? 'green path' : 'green zone'), true); else if (G.win) item(col('hot') + '55', T('red windows'), true); else if (g.flowU) item(col('hot') + '55', T('micelle in the tumour'), true);
++    item(col('hot'), T('your temperature'), false, [5, 3]); item(col('accent'), T('score')); if (fr) item(col('poly'), '😊 ' + T('friend'), false, [9, 3, 2, 3]); if (nD) item(col('muted'), T('lost drug'), false, [2, 3]);
++    if ((g.zone || g.path) && !sp) item(col('good') + '66', T(g.path ? 'green path' : 'green zone'), true); else if (G.win) item(col('hot') + '55', T('red windows'), true); else if (g.flowU) item(col('hot') + '55', T('micelle in the tumour'), true);
+   }
+   // games open one after another as rewards for finished games (see 10b-rewards.js); teachers can open everything
+   function isOpen(i) { return i <= 0 || rewardOpen(GAMES[i].id); }
 diff --git a/src/app/16-rendering.js b/src/app/16-rendering.js
 index 0c5d81e..fa74980 100644
 --- a/src/app/16-rendering.js
@@ -676,7 +785,7 @@ index 7ae6af7..fa3fbc7 100644
    }
 diff --git a/src/app/20e-daily-share.js b/src/app/20e-daily-share.js
 new file mode 100644
-index 0000000..705bca8
+index 0000000..552ddfd
 --- /dev/null
 +++ b/src/app/20e-daily-share.js
 @@ -0,0 +1,167 @@
@@ -688,7 +797,7 @@ index 0000000..705bca8
 +  // Only `var` and function declarations here: renderPick() in 05-games.js calls dailyRender() during start-up, before this part runs.
 +  var special = null; // the run being played: { kind: 'daily' | 'challenge', gid, seed, date, day, beat }
 +  var DAILY_EPOCH = Date.UTC(2026, 10, 23); // Daily Molecule #1
-+  var PUBLIC_URL = 'https://dmtolmach.github.io/be-quite-and-self-assemble/';
++  var PUBLIC_URL = 'https://dmtolmach.github.io/be-quite-and-self-assemble/docs/';
 +  var GAME_ICON = { ice: '❄️', demix: '🫧', drug: '💊', gel: '🥚' };
 +  var CLIP = { rec: null, chunks: [], cv: null, cx: null, blob: null, url: null, type: '', last: 0, G: null };
 +  var shareCur = null; // what the share window is showing
@@ -966,10 +1075,10 @@ index aa48774..a4c9f70 100644
          <li>The microphone is optional: the temperature slider does the same job.</li>
          <li>So the app itself collects no personal data. The website that serves the page may keep ordinary server logs, like any website.</li>
 diff --git a/src/i18n/fi.json b/src/i18n/fi.json
-index 13229b1..976c06b 100644
+index 13229b1..a0d1caa 100644
 --- a/src/i18n/fi.json
 +++ b/src/i18n/fi.json
-@@ -1075,5 +1075,62 @@
+@@ -1075,5 +1075,63 @@
   "Start again": "Aloita alusta",
   "lost {n}": "hukassa {n}",
   "36 proteins": "36 proteiinia",
@@ -1031,14 +1140,15 @@ index 13229b1..976c06b 100644
 + "Speed challenge: reach the goal faster than {v}. You start from exactly the same molecules as your friend.": "Nopeushaaste: saavuta tavoite nopeammin kuin {v}. Aloitat täsmälleen samoista molekyyleistä kuin kaverisi.",
 + "A friend reached the goal of “{g}” in {v} (speed run). Same start, same molecules: can you be faster?": "Kaverisi saavutti pelin ”{g}” tavoitteen ajassa {v} (nopeuspeli). Sama alku, samat molekyylit: pystytkö nopeammin?",
 + "Same start for you. Can you be faster?": "Sama alku sinulle. Pystytkö nopeammin?",
-+ "max {v}": "maks. {v}"
++ "max": "maks.",
++ "friend": "kaveri"
  }
 \ No newline at end of file
 diff --git a/src/i18n/ru.json b/src/i18n/ru.json
-index b9eca8f..5fb3cc7 100644
+index b9eca8f..fe24c6e 100644
 --- a/src/i18n/ru.json
 +++ b/src/i18n/ru.json
-@@ -1075,5 +1075,62 @@
+@@ -1075,5 +1075,63 @@
   "Start again": "Начать заново",
   "lost {n}": "потеряно {n}",
   "36 proteins": "36 белков",
@@ -1100,14 +1210,15 @@ index b9eca8f..5fb3cc7 100644
 + "Speed challenge: reach the goal faster than {v}. You start from exactly the same molecules as your friend.": "Скоростной вызов: достигните цели быстрее, чем за {v}. Вы начинаете с точно тех же молекул, что и ваш друг.",
 + "A friend reached the goal of “{g}” in {v} (speed run). Same start, same molecules: can you be faster?": "Друг достиг цели в игре «{g}» за {v} (скоростной забег). Тот же старт, те же молекулы: сможете быстрее?",
 + "Same start for you. Can you be faster?": "У тебя тот же старт. Сможешь быстрее?",
-+ "max {v}": "макс. {v}"
++ "max": "макс.",
++ "friend": "друг"
  }
 \ No newline at end of file
 diff --git a/src/i18n/sv.json b/src/i18n/sv.json
-index b92e2d0..74f22e0 100644
+index b92e2d0..168f85c 100644
 --- a/src/i18n/sv.json
 +++ b/src/i18n/sv.json
-@@ -1075,5 +1075,62 @@
+@@ -1075,5 +1075,63 @@
   "Start again": "Börja om",
   "lost {n}": "förlorat {n}",
   "36 proteins": "36 proteiner",
@@ -1169,7 +1280,8 @@ index b92e2d0..74f22e0 100644
 + "Speed challenge: reach the goal faster than {v}. You start from exactly the same molecules as your friend.": "Fartutmaning: nå målet snabbare än {v}. Du startar från exakt samma molekyler som din vän.",
 + "A friend reached the goal of “{g}” in {v} (speed run). Same start, same molecules: can you be faster?": "En vän nådde målet i ”{g}” på {v} (fartrunda). Samma start, samma molekyler: kan du vara snabbare?",
 + "Same start for you. Can you be faster?": "Samma start för dig. Kan du vara snabbare?",
-+ "max {v}": "max {v}"
++ "max": "max",
++ "friend": "vän"
  }
 \ No newline at end of file
 diff --git a/src/manifest.json b/src/manifest.json
@@ -1220,7 +1332,7 @@ index 0000000..7b1e2ac
 +    offer(kind, info) { console.log('[monet] offer', kind, info); return false; }, // return true (or a Promise of true) after a finished rewarded ad
 +  };
 diff --git a/src/styles.css b/src/styles.css
-index ec16ac8..c4ecfe9 100644
+index ec16ac8..09e67ee 100644
 --- a/src/styles.css
 +++ b/src/styles.css
 @@ -2,7 +2,7 @@
@@ -1246,7 +1358,16 @@ index ec16ac8..c4ecfe9 100644
  * { box-sizing: border-box }
  body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 14px; line-height: 1.5;
    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px }
-@@ -455,3 +455,32 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
+@@ -447,7 +447,7 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
+ .gband { position: relative } .gband .ghostmark { top: 50%; margin-top: -9px; font-size: 15px; opacity: .85 }
+ 
+ /* ---- speed run: only the goal, the clock and the molecules ---- */
+-.speedrun #szone, .speedrun #nzone, .speedrun .coach, .speedrun .gres, .speedrun #gbest, .speedrun:not(.speeddrug) .gbar { display: none !important } /* no time bar in a speed run; the drug game keeps it for its red windows */
++.speedrun #szone, .speedrun #nzone, .speedrun .coach, .speedrun .gres, .speedrun:not(.speeddrug) .gbar { display: none !important } /* no time bar in a speed run; the drug game keeps it for its red windows */
+ .speedrun .gband .tick.goal { white-space: nowrap; font-weight: 700; color: var(--ink); z-index: 2 }
+ .speedrun #hudGoal { display: block; margin-top: 4px; font-weight: 600 }
+ .speedseg { margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr } .speedseg button small { display: block; font-weight: 400; font-size: 11.5px; color: var(--muted) }
+@@ -455,3 +455,36 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
  .gband .glost span { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); font: 700 11px/1 var(--f-body); color: var(--ink); white-space: nowrap }
  .gband .glost.near { animation: lostpulse 1s ease-in-out infinite } @keyframes lostpulse { 50% { background-color: color-mix(in srgb, var(--hot) 35%, transparent) } }
  @media (prefers-reduced-motion: reduce) { .gband .glost.near { animation: none } }
@@ -1279,6 +1400,10 @@ index ec16ac8..c4ecfe9 100644
 +.lock-ghost .optghost, .lock-clip .optclip { display: none !important } /* shown after 2 and 3 finished games */
 +.tdhead { margin: 0 0 6px; font-weight: 700; font-size: 15px; line-height: 1.35; min-height: 2.7em; color: var(--accent) } .tdhead[hidden] { display: none } /* the two lines of the welcome story */
 +@media (max-width: 700px) { .tdhead { font-size: 13.5px } }
++/* the best score of this run: a dashed accent line marked 'max', unlike the gold goal/star lines and the black line of the score now */
++.gband .best { width: 0; margin-left: -1px; background: none; border-left: 3px dashed var(--accent) }
++.gband .best::after { content: attr(data-l); position: absolute; top: 0; left: 3px; font-size: 10px; font-weight: 700; line-height: 22px; color: var(--accent); white-space: nowrap }
++@media (max-width: 700px) { .gband .best::after { line-height: 16px } }
 diff --git a/tests/test_aim_band.py b/tests/test_aim_band.py
 new file mode 100644
 index 0000000..6ab79b6

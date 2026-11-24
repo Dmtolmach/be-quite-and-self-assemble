@@ -144,26 +144,32 @@
     const x = c.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, W, H);
     const col = (k) => css('--' + k), fs = W < 420 ? 10.5 : 11.5;
     const padL = 4, padR = 42, padT = 20, padB = 15, pw = W - padL - padR, ph = H - padT - padB;
-    const X = (s) => padL + pw * s / GAME_SEC, [lo, hi] = g.range, YT = (Tv) => padT + ph * (1 - (Tv - lo) / (hi - lo));
+    const fr = G.special && G.special.kind === 'challenge' && G.special.run ? G.special.run.r : null; // a friend's challenge: their score at each second, drawn as a second line
+    const sp = G.speed, tEnd = sp ? Math.max(5, r[r.length - 1].s, fr ? fr.length - 1 : 0) : GAME_SEC; // a speed run has no fixed length: the axis runs to the later finish
+    const X = (s) => padL + pw * Math.min(s, tEnd) / tEnd, [lo, hi] = g.range, YT = (Tv) => padT + ph * (1 - (Tv - lo) / (hi - lo));
     const nD = g.id === 'drug' && eng && eng.nDrug ? eng.nDrug : 0; if (nD) r.forEach((q) => { q.lp = 100 * (q.l || 0) / nD; }); // drug games: lost drug as a second line
-    const top = Math.max(g.stars[2] * 1.12, G.peak * 1.05, nD ? Math.max(...r.map((q) => q.lp)) * 1.05 : 0) || 1, YV = (v) => padT + ph * (1 - Math.max(0, Math.min(top, v)) / top);
+    const marks = sp ? [sp.target] : g.stars, top = Math.max(marks[marks.length - 1] * 1.12, G.peak * 1.05, fr ? Math.max(...fr.map((q) => q[2])) * 1.05 : 0, nD ? Math.max(...r.map((q) => q.lp)) * 1.05 : 0) || 1, YV = (v) => padT + ph * (1 - Math.max(0, Math.min(top, v)) / top);
     x.fillStyle = col('cell'); x.fillRect(padL, padT, pw, ph);
-    if (g.zone || g.path) { x.fillStyle = col('good') + '33'; x.beginPath(); const ss = []; for (let q = 0; q <= 60; q++) ss.push(GAME_SEC * q / 60);
+    if ((g.zone || g.path) && !sp) { x.fillStyle = col('good') + '33'; x.beginPath(); const ss = []; for (let q = 0; q <= 60; q++) ss.push(GAME_SEC * q / 60);
       ss.forEach((sv, i) => (i ? x.lineTo : x.moveTo).call(x, X(sv), YT(Math.min(hi, zoneOf(g, sv)[1]))));
       for (let i = ss.length - 1; i >= 0; i--) x.lineTo(X(ss[i]), YT(Math.max(lo, zoneOf(g, ss[i])[0]))); x.closePath(); x.fill(); }
     for (const [a, b] of G.win || []) { x.fillStyle = col('hot') + '33'; x.fillRect(X(a / G.rate), padT, X(b / G.rate) - X(a / G.rate), ph); }
     if (g.flowU) { x.fillStyle = col('hot') + '33'; for (let i = 0; i < r.length; i++) if (r[i].z) { const s0 = r[i].s, s1 = i + 1 < r.length ? r[i + 1].s : GAME_SEC; x.fillRect(X(s0), padT, X(s1) - X(s0) + 0.5, ph); } }
     x.font = `${fs}px ${css('--f-body')}`; x.textBaseline = 'middle';
-    g.stars.forEach((sv, k) => { const y = YV(sv); x.strokeStyle = col('cryst') + 'aa'; x.lineWidth = 1; x.setLineDash([3, 3]); x.beginPath(); x.moveTo(padL, y); x.lineTo(padL + pw, y); x.stroke();
-      x.setLineDash([]); x.fillStyle = col('cryst'); x.textAlign = 'left'; x.fillText('★'.repeat(k + 1), padL + pw + 2, y); });
+    marks.forEach((sv, k) => { const y = YV(sv); x.strokeStyle = col('cryst') + 'aa'; x.lineWidth = 1; x.setLineDash([3, 3]); x.beginPath(); x.moveTo(padL, y); x.lineTo(padL + pw, y); x.stroke();
+      x.setLineDash([]); x.fillStyle = col('cryst'); x.textAlign = 'left'; x.fillText(sp ? '🏁' : '★'.repeat(k + 1), padL + pw + 2, y); });
     const line = (key, Y, color, w, dash) => { x.strokeStyle = color; x.lineWidth = w; x.lineJoin = 'round'; x.setLineDash(dash || []); x.beginPath(); r.forEach((q, i) => (i ? x.lineTo : x.moveTo).call(x, X(q.s), Y(q[key]))); x.stroke(); x.setLineDash([]); }; // dashes as well as colours, for colour-blind players
-    line('T', YT, col('hot'), 2, [7, 4]); if (nD) line('lp', YV, col('muted'), 2, [2, 4]); line('v', YV, col('accent'), 3);
+    line('T', YT, col('hot'), 2, [7, 4]); if (nD) line('lp', YV, col('muted'), 2, [2, 4]);
+    if (fr) { x.strokeStyle = col('poly'); x.lineWidth = 2.5; x.setLineDash([9, 3, 2, 3]); x.beginPath(); fr.forEach((q, i) => (i ? x.lineTo : x.moveTo).call(x, X(q[0]), YV(q[2]))); x.stroke(); x.setLineDash([]);
+      const q = fr[fr.length - 1]; x.font = `${fs + 2}px ${css('--f-body')}`; x.textAlign = 'center'; x.fillText('😊', Math.min(padL + pw - 8, X(q[0])), YV(q[2]) - 9); x.font = `${fs}px ${css('--f-body')}`; }
+    line('v', YV, col('accent'), 3);
     x.fillStyle = col('accent'); x.beginPath(); x.arc(X(G.peakSec), YV(G.peak), 4, 0, 7); x.fill();
-    x.fillStyle = col('muted'); x.textAlign = 'center'; for (const s of [0, 10, 20, 30]) x.fillText(s === 30 ? T('{n} s', { n: 30 }) : String(s), s === 30 ? padL + pw - 10 : Math.max(padL + 4, X(s)), H - padB / 2 + 1);
+    x.fillStyle = col('muted'); x.textAlign = 'center'; const st = sp ? [5, 10, 15, 20, 30, 60, 120, 300].find((d) => tEnd / d <= 4) || 600 : 10, ticks = []; for (let s = 0; s <= tEnd + 1e-6; s += st) ticks.push(s);
+    for (const s of ticks) { const lastT = s + st > tEnd; x.fillText(lastT ? T('{n} s', { n: s }) : String(s), lastT ? Math.min(padL + pw - 10, X(s)) : Math.max(padL + 4, X(s)), H - padB / 2 + 1); }
     // legend along the top
     let lx = padL; const item = (color, label, box, dash) => { x.fillStyle = color; if (box) x.fillRect(lx, 5, 12, 10); else if (dash) { x.strokeStyle = color; x.lineWidth = 2.5; x.setLineDash(dash); x.beginPath(); x.moveTo(lx, 10.5); x.lineTo(lx + 16, 10.5); x.stroke(); x.setLineDash([]); } else x.fillRect(lx, 9, 14, 3); lx += 20; x.fillStyle = col('ink'); x.textAlign = 'left'; x.fillText(label, lx, 10); lx += x.measureText(label).width + 12; };
-    item(col('hot'), T('your temperature'), false, [5, 3]); item(col('accent'), T('score')); if (nD) item(col('muted'), T('lost drug'), false, [2, 3]);
-    if (g.zone || g.path) item(col('good') + '66', T(g.path ? 'green path' : 'green zone'), true); else if (G.win) item(col('hot') + '55', T('red windows'), true); else if (g.flowU) item(col('hot') + '55', T('micelle in the tumour'), true);
+    item(col('hot'), T('your temperature'), false, [5, 3]); item(col('accent'), T('score')); if (fr) item(col('poly'), '😊 ' + T('friend'), false, [9, 3, 2, 3]); if (nD) item(col('muted'), T('lost drug'), false, [2, 3]);
+    if ((g.zone || g.path) && !sp) item(col('good') + '66', T(g.path ? 'green path' : 'green zone'), true); else if (G.win) item(col('hot') + '55', T('red windows'), true); else if (g.flowU) item(col('hot') + '55', T('micelle in the tumour'), true);
   }
   // games open one after another as rewards for finished games (see 10b-rewards.js); teachers can open everything
   function isOpen(i) { return i <= 0 || rewardOpen(GAMES[i].id); }
