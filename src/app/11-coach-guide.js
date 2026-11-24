@@ -5,16 +5,16 @@
   const gameNow = () => (appMode === 'game' && gameRange ? (game ? game.g : gameCfg()) : null);
   let lastWordK = -1;
   function tWordShow() { // during games the box shows cold / cool / warm / hot instead of a number
-    const g = gameNow(), b = $('tsetM');
+    const g = gameNow() || (!isTeacher() && appMode === 'explore' && eng ? { range: curRange() } : null), b = $('tsetM'); // players see words in Explore too
     // symbols instead of words, so the bar keeps its width in every language; the word stays as the tooltip and for screen readers
     if (g) { const k = tWord(g, tset); b.textContent = T_SIGNS[k]; b.title = T(T_WORDS[k]); b.setAttribute('aria-label', T(T_WORDS[k])); b.className = 'tw tw' + k;
       $('tsliderM').setAttribute('aria-valuetext', T(T_WORDS[k])); if (k !== lastWordK) { lastWordK = k; kbSay(T(T_WORDS[k])); } }
     else { if (b.className) { b.className = ''; b.removeAttribute('title'); b.removeAttribute('aria-label'); } $('tsliderM').removeAttribute('aria-valuetext'); lastWordK = -1; }
   }
   // the green band is one strategy that works, shown as a tip: always in the guided first game (which says what it is), otherwise only with
-  // Show tips ticked (off by default, so players watch the molecules, not the band); never in speed runs or challenges
+  // Show tips ticked (off by default, so players watch the molecules, not the band); never in speed runs, challenges, a friend's challenge or the Daily Molecule
   function bandNow(sNow) {
-    const g = gameNow(), guided = !!(game && game.guided), hide = (game ? !!game.speed : speedMode && speedOpen(g)) || (!(g && g.alwaysZone) && !guided && (!tipsOn() || (game ? game.level : gameLevel)));
+    const g = gameNow(), guided = !!(game && game.guided), hide = !!special || (game ? !!game.speed : speedMode && speedOpen(g)) || (!(g && g.alwaysZone) && !guided && (!tipsOn() || (game ? game.level : gameLevel)));
     if (sNow === undefined && game && g) sNow = GAME_SEC * Math.min(1, (eng.time - game.t0) / g.D);
     return !g || hide ? null : g.zoneLive ? g.zoneLive(game) : (g.zone || g.path) ? zoneOf(g, sNow || 0) : null;
   }

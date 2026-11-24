@@ -4,7 +4,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PAGE = os.environ.get('MDLAB_PAGE') or os.path.join(ROOT, 'docs', 'amphiphile-assembly-lab.html')
 URL = 'file://' + PAGE
 SKIP_INTRO = ("localStorage.setItem('mdlab-tour','1');localStorage.setItem('mdlab-welcome','1');"
-              "localStorage.setItem('mdlab-guided','1');localStorage.setItem('mdlab-unlock','1');localStorage.setItem('mdlab-ladall','1')")
+              "localStorage.setItem('mdlab-guided','1');localStorage.setItem('mdlab-unlock','1');localStorage.setItem('mdlab-ladall','1');"
+              "if(!localStorage.getItem('mdlab-role'))localStorage.setItem('mdlab-role','teacher')")  # teacher mode shows every tool; tests of player mode set mdlab-role themselves
 def chrome():  # a system Chrome if there is one, otherwise Playwright's own Chromium
     for c in ('/usr/bin/google-chrome', shutil.which('google-chrome') or '', shutil.which('chromium') or ''):
         if c and os.path.exists(c): return c

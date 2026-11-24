@@ -17,6 +17,10 @@ async def main():
         await pg.evaluate("localStorage.setItem('mdlab-proto','1')"); await pg.reload(); await pg.wait_for_timeout(800)
         await pg.click('[data-appmode=game]'); await pg.evaluate("document.getElementById('guseMic').checked=false")
         for pid in ['p-stream', 'p-line', 'p-waves']:
+            try: await pg.wait_for_selector(f'[data-proto={pid}]', state='visible', timeout=15000)
+            except Exception:
+                diag = await pg.evaluate(f"(()=>{{const e=document.querySelector('[data-proto={pid}]'); if(!e) return 'no element'; let x=e,out=[]; while(x){{const c=getComputedStyle(x); if(c.display==='none'||x.hidden) out.push((x.id||x.className)+':'+c.display); x=x.parentElement;}} return [out, document.querySelector('.wrap').className]}})()")
+                bad.append(f'{pid}: prototype button not visible: {diag}'); continue
             await pg.click(f'[data-proto={pid}]'); await pg.wait_for_timeout(300); await pg.evaluate("document.getElementById('gstartBox').click()"); await pg.wait_for_timeout(4500)
             st = await pg.evaluate("(()=>{const G=window.__game(); return G ? [G.lives, G.lvl, G.score] : null})()")
             if not st or st[0] != 3 or st[1] < 1: bad.append(f'{pid}: prototype did not start properly ({st})')

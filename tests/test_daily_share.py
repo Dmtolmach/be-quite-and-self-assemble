@@ -9,6 +9,7 @@ async def main():
     bad = []; errs = []
     async with async_playwright() as p:
         b = await browser(p); pg = await page(b, errors=errs)
+        await pg.evaluate("localStorage.setItem('mdlab-role','player')"); await pg.reload(); await pg.wait_for_timeout(800) # the Daily Molecule and clips are player features
         if await pg.evaluate("window.__monet().enabled"): bad.append('monetization adapter present in the normal build')
         await pg.click('[data-appmode=game]'); await pg.evaluate("document.getElementById('guseMic').checked=false")
         if await pg.evaluate("document.getElementById('gdaily').hidden"): bad.append('Daily Molecule button not shown')
@@ -17,6 +18,8 @@ async def main():
         if await pg.evaluate("(window.__daily().special||{}).kind") != 'daily': bad.append('daily button did not select the daily run')
         await pg.evaluate("document.getElementById('gstartBox').click()"); await pg.wait_for_timeout(2600)
         seed = await pg.evaluate("window.__eng().p.seed")
+        await pg.evaluate("document.getElementById('gtips').checked = true"); await pg.wait_for_timeout(600)
+        if await pg.evaluate("document.getElementById('szone').classList.contains('on')"): bad.append('green band shown in the Daily Molecule')
         if seed != info['seed']: bad.append(f'daily run seed {seed} is not the day seed {info["seed"]}')
         if not await pg.evaluate("window.__daily().recording"): bad.append('no clip is being recorded during the run')
         g = info['gid']
@@ -30,6 +33,7 @@ async def main():
         await pg.wait_for_timeout(2500)
         if not await pg.evaluate("!!document.querySelector('#gend [data-act=share]')"): bad.append('no Share button on the end card')
         if not await pg.evaluate("!!document.querySelector('#gend .gendsp')"): bad.append('no daily line on the end card')
+        if await pg.evaluate("!!document.querySelector('#gend .gendtip')"): bad.append('tip shown on the Daily Molecule end card')
         d = await pg.evaluate("window.__daily()")
         if not d['rec'] or d['rec']['tries'] != 1: bad.append(f'daily result not saved: {d["rec"]}')
         if d['streak'] != 1: bad.append(f'streak is {d["streak"]}, expected 1')
@@ -38,6 +42,7 @@ async def main():
         if await pg.evaluate("document.getElementById('shareModal').hidden"): bad.append('share window did not open')
         txt = await pg.text_content('#shareText')
         if '?c=' not in txt: bad.append('share text has no challenge link')
+        if not int(await pg.evaluate("document.getElementById('shareQR').dataset.n || 0")): bad.append('no QR code of the challenge link')
         if await pg.evaluate("document.getElementById('shareClipBox').hidden"): bad.append('clip not offered in the share window')
         link = [w for w in txt.split() if '?c=' in w][0]; q = link[link.index('?'):]
         par = await pg.evaluate(f"window.__daily().parse({q!r})")
@@ -48,6 +53,9 @@ async def main():
         await p3.evaluate("document.getElementById('guseMic').checked=false"); await p3.click('#chalGo'); await p3.wait_for_timeout(5000)
         gs = await p3.evaluate("(()=>{const e=document.getElementById('ghostS'); return [e.hidden, e.textContent]})()")
         if gs != [False, '😊']: bad.append(f"friend's run not shown as 😊 during the challenge: {gs}")
+        await p3.evaluate("document.getElementById('gtips').checked = true")
+        await p3.wait_for_timeout(600)
+        if await p3.evaluate("document.getElementById('szone').classList.contains('on')"): bad.append('green band shown in a friend challenge')
         await p3.click('#gquit')
         await pg.click('#shareClose')
         # a drug challenge link: the invitation opens, and the same seed gives the same drug windows twice

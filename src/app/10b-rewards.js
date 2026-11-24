@@ -15,7 +15,8 @@
     { id: 'sys-lcst', name: 'Polymer chains', where: SYS_NEW },
     { id: 'sys-mbpoly', name: 'Oily particles', where: SYS_NEW },
   ]; // Explore starts with Ice; each of its other systems opens one at a time
-  const unlockAll = () => { try { return localStorage.getItem('mdlab-unlock') === '1'; } catch (e) { return false; } };
+  const isTeacher = () => { try { return localStorage.getItem('mdlab-role') === 'teacher'; } catch (e) { return false; } }; // teacher mode (20h-roles-lessons.js)
+  const unlockAll = () => { if (isTeacher()) return true; try { return localStorage.getItem('mdlab-unlock') === '1'; } catch (e) { return false; } }; // teachers see everything
   function gamesPlayed() { // finished games in this browser; a returning player (from before this counter) keeps what the statistics show
     try { const v = localStorage.getItem('mdlab-played'); if (v !== null) return +v || 0; } catch (e) {}
     return GAMES.reduce((a, g) => a + getStats(g).n, 0);
@@ -26,13 +27,13 @@
   var locksLive = false; // set at the end of start-up; before that, only classes change
   function rewardStep() { // one more finished game; returns the reward it opens, if any
     const n = gamesPlayed(), was = unlockAll(); try { localStorage.setItem('mdlab-played', String(n + 1)); } catch (e) {}
-    const r = !was && n < REWARDS.length ? REWARDS[n] : null; lastReward = r;
+    let r = !was && n < REWARDS.length ? REWARDS[n] : null; if (r && r.id === 'scan' && !isTeacher()) r = null; lastReward = r; // players have no energy scan
     if (r) { try { localStorage.setItem('mdlab-fresh', r.id); } catch (e) {} }
     applyLocks(); return r;
   }
   function applyLocks() { // hide what is not open yet
     const w = document.querySelector('.wrap'); if (!w) return;
-    for (const id of ['explore', 'scan', 'stats']) w.classList.toggle('lock-' + id, !rewardOpen(id));
+    for (const id of ['explore', 'scan', 'stats']) w.classList.toggle('lock-' + id, !rewardOpen(id) || (id === 'scan' && !isTeacher()));
     let cards = 0; try { cards = fcOwned().length; } catch (e) {}
     w.classList.toggle('lock-cards', !cards && !rewardOpen('stats'));
     w.classList.toggle('lock-ghost', !optOpen('ghost')); w.classList.toggle('lock-clip', !optOpen('clip')); // game options that appear later: the ghost after 2 games, the clip after 3

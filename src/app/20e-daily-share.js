@@ -92,7 +92,7 @@
     const spd = !!G.speed, url = chalUrl({ g: g.id, s: G.seed >>> 0, v: +(+o.v).toFixed(spd ? 2 : 4), d: sp && sp.kind === 'daily' ? sp.day : 0, m: spd ? 's' : undefined, r: runBytes(G) });
     const text = head + '\n' + (GAME_ICON[g.id] || '') + ' ' + T(g.title) + (spd ? ' · ⏱ ' + T('Speed run') : '') + ': ' + g.fmt(o.v) + ' ' + starStr(o.st) + '\n' + T(spd ? 'Same start for you. Can you be faster?' : 'Same start for you. Can you beat it?');
     shareCur = { text, url, g };
-    $('shareText').textContent = text + '\n' + url; $('shareMsg').textContent = '';
+    $('shareText').textContent = text + '\n' + url; $('shareMsg').textContent = ''; qrDraw($('shareQR'), url);
     $('shareNative').hidden = !navigator.share;
     const hasClip = !!CLIP.url; $('shareClipBox').hidden = !hasClip;
     if (hasClip) { const v = $('shareVideo'); if (v.src !== CLIP.url) v.src = CLIP.url; v.play && v.play().catch(() => {});
@@ -105,6 +105,15 @@
     const end = Math.min(240, G.speed ? Math.ceil(rec[rec.length - 1].s) : GAME_SEC);
     for (let k = 0; k <= end; k++) { while (j < rec.length - 1 && rec[j + 1].s <= k) j++; s += String.fromCharCode(Math.round(255 * Math.max(0, Math.min(1, (rec[j].v || 0) / sc)))); }
     return b64u(s); }
+  // QR code of the challenge link (qrcode-generator, 20g-qrcode.js): drawn on a canvas, dark on white with the standard quiet zone
+  function qrDraw(cv0, text) {
+    const c = cv0.getContext('2d'); c.fillStyle = '#fff'; c.fillRect(0, 0, cv0.width, cv0.height);
+    try { const q = qrcode(0, 'M'); q.addData(text); q.make(); const n = q.getModuleCount(), s = Math.floor(cv0.width / (n + 8)), o = Math.floor((cv0.width - s * n) / 2);
+      c.fillStyle = '#000'; for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (q.isDark(r, k)) c.fillRect(o + k * s, o + r * s, s, s); cv0.dataset.n = n; return true;
+    } catch (e) { cv0.dataset.n = 0; return false; } }
+  $('shareQRBig').addEventListener('click', () => { if (!shareCur) return; $('qrBigText').textContent = shareCur.text.split('\n').slice(0, 2).join(' · ');
+    const cv1 = $('qrBigCv'); qrDraw(cv1, shareCur.url); $('qrBig').hidden = false; $('qrBigClose').focus(); });
+  $('qrBigClose').addEventListener('click', () => { $('qrBig').hidden = true; });
   function shareClose() { $('shareModal').hidden = true; const v = $('shareVideo'); if (v.pause) v.pause(); }
   function shareMsg(t) { $('shareMsg').textContent = t; say(t); }
   async function copyText(t) {
@@ -119,7 +128,7 @@
   $('shareClipSave').addEventListener('click', () => { if (!CLIP.url) return; const a = document.createElement('a'); a.href = CLIP.url; a.download = 'get-structured-' + (shareCur ? shareCur.g.id : 'run') + '.' + clipExt(); document.body.appendChild(a); a.click(); a.remove(); shareMsg(T('Clip saved.') + (clipExt() === 'webm' ? ' ' + T('Some apps need MP4: open the clip in a video app and save it again.') : '')); });
   $('shareClose').addEventListener('click', shareClose);
   $('shareModal').addEventListener('click', (e) => { if (e.target === $('shareModal')) shareClose(); });
-  document.addEventListener('keydown', (e) => { if (e.key !== 'Escape') return; if (!$('shareModal').hidden) shareClose(); else if (!$('chalModal').hidden) $('chalModal').hidden = true; });
+  document.addEventListener('keydown', (e) => { if (e.key !== 'Escape') return; if (!$('qrBig').hidden) $('qrBig').hidden = true; else if (!$('shareModal').hidden) shareClose(); else if (!$('chalModal').hidden) $('chalModal').hidden = true; });
 
   // ---- clip: a vertical video (9:16) of the run, drawn from the box, the temperature bar and the score; no sound ----
   try { const c = localStorage.getItem('mdlab-clip'); if (c !== null) $('gclipOn').checked = c === '1'; } catch (e) {}
@@ -132,8 +141,8 @@
     if (!$('gclipOn').checked || !optOpen('clip') || classOn || battle || G.g.proto || G.level || qLevel >= 2) return; // slow devices: no clip, so the game stays smooth
     const type = clipType(); if (!type || !HTMLCanvasElement.prototype.captureStream) return;
     try {
-      if (!CLIP.cv) { CLIP.cv = document.createElement('canvas'); CLIP.cv.width = 540; CLIP.cv.height = 960; CLIP.cx = CLIP.cv.getContext('2d'); }
-      clipDraw(G); const st = CLIP.cv.captureStream(30), r = new MediaRecorder(st, { mimeType: type, videoBitsPerSecond: 1600000 });
+      if (!CLIP.cv) { CLIP.cv = document.createElement('canvas'); CLIP.cv.width = 360; CLIP.cv.height = 640; CLIP.cx = CLIP.cv.getContext('2d'); CLIP.cx.scale(2 / 3, 2 / 3); } // drawn in 540×960 units, recorded at 360×640
+      clipDraw(G); const st = CLIP.cv.captureStream(20), r = new MediaRecorder(st, { mimeType: type, videoBitsPerSecond: 350000 }); // about 1.3 MB for a 30 s game, small enough for any messenger
       CLIP.chunks = []; CLIP.type = type; CLIP.G = G; CLIP.last = 0; CLIP.stream = st;
       r.ondataavailable = (e) => { if (e.data && e.data.size) CLIP.chunks.push(e.data); };
       r.start(1000); CLIP.rec = r;
@@ -145,7 +154,7 @@
       if (!$('shareModal').hidden && shareCur) { $('shareClipBox').hidden = false; $('shareVideo').src = CLIP.url; } } CLIP.chunks = []; };
     try { if (keep) clipDraw(CLIP.G, true); r.state !== 'inactive' ? r.stop() : r.onstop(); } catch (e) {}
   }
-  function clipTick(now) { if (!CLIP.rec || !CLIP.G || now - CLIP.last < 33) return; CLIP.last = now; try { clipDraw(CLIP.G); } catch (e) {} }
+  function clipTick(now) { if (!CLIP.rec || !CLIP.G || now - CLIP.last < 50) return; CLIP.last = now; try { clipDraw(CLIP.G); } catch (e) {} }
   function clipDraw(G, last) {
     const c = CLIP.cx, W = 540, g = G.g, cen = W / 2; if (!c) return;
     c.fillStyle = '#0f2a33'; c.fillRect(0, 0, W, 960); c.textAlign = 'center'; c.textBaseline = 'alphabetic';

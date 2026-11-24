@@ -438,7 +438,7 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
 @container (max-width: 600px) { .gendcard.withpic { grid-template-columns: 1fr; width: min(460px, 100%) } }
 @container (max-height: 520px) and (max-width: 600px) { .gendcard.withpic .gendpic { max-width: 300px; justify-self: center; width: 100% } }
 @media (max-width: 700px) { /* phones: the end window fills the screen and scrolls, so nothing is cut off */
-  .gend { position: fixed !important; left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; z-index: 200; padding: 12px 10px calc(12px + env(safe-area-inset-bottom)); place-items: start center; background: color-mix(in srgb, var(--bg) 80%, transparent) }
+  .gend { position: fixed !important; left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; z-index: 200; padding: 12px 10px calc(96px + env(safe-area-inset-bottom)); place-items: start center; background: color-mix(in srgb, var(--bg) 80%, transparent) } /* bottom padding clears the bottom mode bar, which sits on top */
   .gendcard.withpic { grid-template-columns: 1fr; margin: auto 0 } }
 .gendcard.withpic .gendx { z-index: 3; background: var(--panel); border-radius: 50%; box-shadow: 0 1px 4px color-mix(in srgb, var(--ink) 25%, transparent) }
 
@@ -488,3 +488,24 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
 .gband .best { width: 0; margin-left: -1px; background: none; border-left: 3px dashed var(--accent) }
 .gband .best::after { content: attr(data-l); position: absolute; top: 0; left: 3px; font-size: 10px; font-weight: 700; line-height: 22px; color: var(--accent); white-space: nowrap }
 @media (max-width: 700px) { .gband .best::after { line-height: 16px } }
+/* ---- player mode / teacher mode ---- */
+.role-player .teachonly, .role-teacher .playonly { display: none !important }
+.role-player #compPanel > :not(summary):not(#concRow):not(#concNote) { display: none !important } /* players: the amount only */
+.role-player [data-appmode="scan"], .role-player .zhint { display: none !important }
+.role-teacher .gdaily, .role-teacher .optclip, .role-teacher .dstreak { display: none !important } /* no daily, streaks or clips in a lesson */
+.rolebtn { white-space: nowrap }
+.twroles { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center } .twroles .btn { flex: 1 1 180px }
+.lessonpanel > summary { cursor: pointer; list-style: none } .lessonpanel > summary::-webkit-details-marker { display: none }
+.lesson { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 8px 0; background: var(--panel) }
+.lesson > summary { cursor: pointer; font-weight: 700; font-size: 15px }
+.lesson h4 { margin: 10px 0 4px; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted) }
+.lesson p, .lesson li { font-size: 14px; line-height: 1.45 } .lesson ol, .lesson ul { margin: 0; padding-left: 20px } .lesson li { margin: 3px 0 }
+.lesson .lask small { display: block; color: var(--muted); font-size: 13px } .lesson .lgoal { margin: 8px 0 0 }
+.lesson .btns { margin-top: 10px }
+.role-player .mbar-t small, .role-player #ticks, .role-player #boxinfo { display: none !important } /* players: no reduced units or scale numbers, the temperature is a word */
+@media (max-width: 700px) { .rolebtn .rtxt { display: none } .rolebtn { padding-left: 10px; padding-right: 10px } }
+@media (max-width: 400px) { header #classBtn, header .hsep { display: none !important } } /* very small phones: Class mode (a projector view) stays reachable from the lessons */
+.shareqr { display: flex; gap: 12px; align-items: center; margin: 8px 0 } .shareqr canvas { width: 120px; height: 120px; flex: none; image-rendering: pixelated; border-radius: 4px }
+.qrbig { position: fixed; inset: 0; z-index: 400; background: #fff; color: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px; text-align: center }
+.qrbig[hidden] { display: none } .qrbig h2 { margin: 0; font-size: clamp(20px, 4vw, 36px) } .qrbig p { margin: 0; font-size: clamp(14px, 2.4vw, 22px) }
+.qrbig canvas { width: min(70vh, 86vw); height: min(70vh, 86vw); image-rendering: pixelated }

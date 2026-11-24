@@ -59,6 +59,33 @@ Students and teachers see the same in the app: a 🔒 line under the microphone 
 - **Download the page** (Teacher options → *Use without internet*) saves that file when the page is opened from a website. If the browser blocks it, Ctrl+S (⌘S on a Mac) does the same.
 - **Install as an app:** when the page is served from a website with the files from the build next to it (`index.html`, `manifest.webmanifest`, `sw.js`, icons — the whole `docs/` folder, served by GitHub Pages at https://dmtolmach.github.io/be-quite-and-self-assemble/docs/), Chrome and Edge show **Install as an app** in Teacher options (and an install icon in the address bar); on an iPad or iPhone use *Share → Add to Home Screen*. The installed app opens from the home screen or app list and works with no internet; a new version is picked up the next time it is opened online.
 
+## Player mode and teacher mode
+
+The app has two modes for two audiences. The welcome card asks: **▶ Play: make ice** (player mode) or **👩‍🏫 I'm a teacher** (teacher mode). The button at the top right (🎮 Player / 👩‍🏫 Teacher) switches at any time, and a link ending in `?teacher` (for example https://dmtolmach.github.io/be-quite-and-self-assemble/docs/?teacher) opens teacher mode directly, without the welcome card; `?player` opens player mode. The choice is kept in the browser.
+
+| | Player mode (children about 10–12) | Teacher mode |
+|---|---|---|
+| Unlocking | Step by step: every finished game opens something new | Everything open from the start, including all challenge levels |
+| Home | The games, Daily Molecule, challenges, speed runs, cards | **Lessons** panel on top, then the games |
+| Explore | A sandbox: pick a system, set the temperature (shown as a word) and the number of molecules | Everything: model parameters, box and view, live readouts, energy scan |
+| Class tools | Not shown | Class mode, class battle, prototype games |
+| Not shown | Model parameters, energy scan, readouts, reduced units (T*) | Daily Molecule, streaks, clips |
+| Options panel | *Settings* (smooth motion, speed glow, projector, offline, privacy) | *Teacher options* |
+
+### Lessons (teacher mode)
+
+Five ten-minute lesson cards, each with a goal, three steps, what to point at on the screen and three questions for the class with short answers. **Play in class mode** opens the lesson's game in class mode; **Open in Explore** (or **Open the energy scan**) opens its system.
+
+| Lesson | System / game | Idea |
+|---|---|---|
+| ❄️ Freezing and slow cooling | Ice | Slow cooling gives bigger, clearer crystals |
+| 🫧 Oil and water | Two liquids | Some liquids do not mix; too cold freezes everything in place |
+| 💊 Soap and medicine | Soap molecules / Deliver the drug | Micelles carry drugs; warming opens them |
+| 🥚 Boiled egg and jelly | Proteins / gel strand | Heat unfolds proteins and they link into a gel |
+| 📈 What is melting? | Ice, energy scan | At the melting point heat breaks the structure; supercooling |
+
+The lesson texts are drafts for teachers to adapt; the Finnish and Swedish versions have not been checked by a native speaker.
+
 ## A first lesson in 10 minutes
 
 1. Open the page. It starts in **Game** mode with *Grow the biggest ice crystal* selected.
@@ -87,7 +114,7 @@ Temperatures are in reduced units (T*). They are not degrees Celsius: each syste
 
 ## Game mode
 
-Four 30-second games. The game panel is kept short: game cards (title and one-line hint), **Start**, **Use the microphone** and **Show tips**; the goal preview film on the box shows what to do. In games the box size line and the Temperature panel (Cool/Heat/Pause) are hidden; the slider and Mic button under the box remain. At first only the ice game is open: a star in a game opens the next one. The folded **Teacher options** at the very bottom of the page, under the cards, hold **Unlock all games**, **Unlock all challenges** (this browser only; press again to lock) and **Class battle**.
+Four 30-second games. The game panel is kept short: game cards (title and one-line hint), **Start**, **Use the microphone** and **Show tips**; the goal preview film on the box shows what to do. In games the box size line and the Temperature panel (Cool/Heat/Pause) are hidden; the slider and Mic button under the box remain. At first only the ice game is open: a star in a game opens the next one. In teacher mode everything is open from the start; the folded **Teacher options** at the very bottom of the page hold **Class battle** and the prototype games.
 
 | Game | System | Goal | Stars at |
 |---|---|---|---|
@@ -105,7 +132,7 @@ How a game runs:
   After that, the box shows a crystal of ice and a line of instructions: make noise (or drag the slider right) and the ice melts; be quiet (or drag it left) and it freezes again; then **Play** starts the real game. **Skip** jumps straight to the game. The guide appears once per browser.
 - **The aim.** Before a game starts, the box shows a still picture of what to build, with a label that says so: for ice, a perfect honeycomb crystal (blue); for the two liquids, the liquids fully separated; for the drug, the good case at the moment a red target window opens (red frame; the micelles open and the drug is delivered, yellow); for the gel, a real snapshot with one long strand of linked proteins (red line, 186 σ, found with `tools/calibration/geltarget.js`). It is not shown in challenges, class mode or the guided first game.
 - Press **Start**. A 3-2-1-Go countdown runs over the box; the clock and the molecules wait for it.
-- **Race my best run** appears in the game options after 2 finished games and **Record a clip to share** after 3 (before that both are off), so a new player sees only *Use the microphone* and *Show tips*. *Unlock everything* in Teacher options shows them at once.
+- **Race my best run** appears in the game options after 2 finished games and **Record a clip to share** after 3 (before that both are off), so a new player sees only *Use the microphone* and *Show tips*. Teacher mode shows them at once.
 - **Use the microphone** (ticked by default) lets the room control the temperature. Untick it to use the slider instead.
 - **Show tips** (off by default; remembered in this browser) shows the green band in every game. The guided first game shows the band anyway and says that it is one strategy that works; after that the band is off, so players watch the molecules rather than the band, until someone ticks **Show tips**. The sentence about the run and the tip for 0–1 stars after a game are always shown.
 - During the game, the bar shows the score now, the star levels and the time left. When a new star is reached, the stars pop up over the box.
@@ -131,15 +158,16 @@ Each game needs a different strategy, which is what makes them good discussion s
 
 ### Daily Molecule
 
-After the first finished game, a **📅 Daily Molecule** button sits above the list of games. Every day one of the four games is chosen (they take turns), and everyone who plays that day starts from exactly the same arrangement of molecules (the start comes from the date; in the drug game, the target windows too). Students can play it as often as they like: the best score of the day is kept and shown on the button. Playing on days in a row builds a streak (🔥 3 days in a row). Stars, cards and statistics count as in a normal game. Nothing is sent anywhere: two students compare by sharing their result.
+After the first finished game, a **📅 Daily Molecule** button sits above the list of games. Every day one of the four games is chosen (they take turns), and everyone who plays that day starts from exactly the same arrangement of molecules (the start comes from the date; in the drug game, the target windows too). Students can play it as often as they like: the best score of the day is kept and shown on the button. Playing on days in a row builds a streak (🔥 3 days in a row). Stars, cards and statistics count as in a normal game. Everyone plays it without tips: no green band (even with *Show tips* ticked) and no sentence or tip about the run on the end card. Nothing is sent anywhere: two students compare by sharing their result.
 
 ### Sharing a result and challenge links
 
 The end card of a normal game, a speed run and the Daily Molecule has **📤 Share**. A shared speed run becomes a *speed challenge*: the friend plays the same speed run from the same start, and must reach the goal faster. It opens a window with:
+- **A QR code** of the challenge link; **Show big for the class** fills the screen with it, so a whole class can scan it from the projector.
 - **A short text** with the game, the score and the stars, and a **challenge link**. *Share…* uses the device's own share menu (phones, tablets), *Copy text and link* puts it on the clipboard.
-- **The clip** (when *Record a clip to share* is ticked): a 30-second vertical video of the run (box, temperature bar, score, stars), ready for a message or a short-video app. *Save the clip* downloads it (MP4 where the browser can make it, otherwise WebM).
+- **The clip** (when *Record a clip to share* is ticked): a 30-second vertical video of the run (box, temperature bar, score, stars; 360×640, about 1–2 MB), ready for a message or a short-video app. *Save the clip* downloads it (MP4 where the browser can make it, otherwise WebM).
 
-Whoever opens the challenge link sees *🏆 You have been challenged!* with the score to beat. *Accept the challenge* starts the same game from exactly the same molecules, and the friend's run is shown as **😊** on the score bar at the same second and, after the game, as a second line (😊 friend) in the replay graph (like the 👻 of your own best run; the link carries the friend's score for each second, 31 numbers). The end card then says whether they beat it, and they can share their own score back. A new student who opens a challenge for the ice game first goes through the guided microphone set-up, as on any first visit. The link opens the public page (https://dmtolmach.github.io/be-quite-and-self-assemble/docs/) when the game was played from a file or inside claude.ai, and the school's own page when it is served from the school's website.
+Whoever opens the challenge link sees *🏆 You have been challenged!* with the score to beat. A friend's challenge (like the Daily Molecule) is a fair contest, so it shows no tips: no green band (even with *Show tips* ticked), no guided lesson, and no sentence or tip about the run on the end card. *Accept the challenge* starts the same game from exactly the same molecules, and the friend's run is shown as **😊** on the score bar at the same second and, after the game, as a second line (😊 friend) in the replay graph (like the 👻 of your own best run; the link carries the friend's score for each second, 31 numbers). The end card then says whether they beat it, and they can share their own score back. A new student can tune the microphone with *Set up the microphone* in the Microphone panel. The link opens the public page (https://dmtolmach.github.io/be-quite-and-self-assemble/docs/) when the game was played from a file or inside claude.ai, and the school's own page when it is served from the school's website.
 
 Same start does not mean identical runs: the starting arrangement and the drug windows are the same for everyone, but each player's temperatures differ (and a slow computer may run fewer steps per picture), so the molecules soon go their own way. That is the point: the better temperature control wins.
 

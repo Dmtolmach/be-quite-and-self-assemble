@@ -1,6 +1,6 @@
   // ---------- challenges: once all six cards of a game are collected, five harder levels; a star opens the next; no tips ----------
   const LADDER = 5, AF_LEVELS = [8, 16, 24, 32, 40]; // antifreeze per ice challenge: following the green path gives about 53, 45, 44, 40 and 36% ice (one star at 35%)
-  const ladAll = () => { try { return localStorage.getItem('mdlab-ladall') === '1'; } catch (e) { return false; } };
+  const ladAll = () => { if (isTeacher()) return true; try { return localStorage.getItem('mdlab-ladall') === '1'; } catch (e) { return false; } }; // teachers: every challenge level open
   const deckDone = (g) => { if (ladAll()) return true; const own = fcOwned(); return FC_ALL.filter((c) => c.deck.game === g.id).every((c) => own.includes(c.id)); };
   const ladGet = (g) => { try { return JSON.parse(localStorage.getItem('mdlab-ladder-' + g.id) || '{}') || {}; } catch (e) { return {}; } }; // level -> best stars
   const ladSet = (g, k, st) => { const o = ladGet(g); o[k] = Math.max(o[k] || 0, st); try { localStorage.setItem('mdlab-ladder-' + g.id, JSON.stringify(o)); } catch (e) {} };

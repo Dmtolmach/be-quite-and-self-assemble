@@ -1,0 +1,2582 @@
+diff --git a/DEVELOPING.md b/DEVELOPING.md
+index ff833b9..0a1e769 100644
+--- a/DEVELOPING.md
++++ b/DEVELOPING.md
+@@ -40,8 +40,10 @@ Requirements: Python 3, Node.js, Playwright for Python (`pip install playwright`
+ | `src/app/20a-highlights.js` | Game highlights: a new piece of ice crystal (≥5 molecules frozen for good within 2 s, joined by hydrogen-bond neighbours) glows along its own bonds; a liquid domain glows only where it grows beyond its record size (not edge fluctuations); a gel path that beats its record gets a running spark |
+ | `src/app/20b-macro-film.js` | After a game: zoom out from the box into a hand-drawn real-life picture chosen by the stars (ice cube or ice cream, glass of liquids, patient, gel/egg); the end card then shows that picture with the stars and the verdict in one window and stays open; a won fact card waits behind a button; `window.__macro(id, stars)` plays it for tests |
+ | `src/app/20c-explore-scan.js` | Energy scan as an option inside Explore |
++| `src/app/20g-qrcode.js` | Third-party: **qrcode-generator 1.4.4** by Kazuhiko Arase, MIT licence (header kept in the file), only comment lines and the module wrapper removed. Used by `qrDraw()` in `20e-daily-share.js` for the challenge QR code (error correction M) |
++| `src/app/20h-roles-lessons.js` | **Player mode / teacher mode** (`isTeacher()` is in `10b-rewards.js`; `mdlab-role`; classes `role-player` / `role-teacher` on `<html>`; elements with `teachonly` / `playonly` show in one mode only; `?teacher` / `?player` links) and the **lesson cards** (`LESSONS`: goal, steps, point at, questions with answers, and the system/game the buttons open). In teacher mode `unlockAll()` and `ladAll()` are true |
+ | `src/app/20d-live-ghost.js` | The **ghost**: your best run in ice, liquids and gel (saved at a new personal best as `mdlab-ghost-<game>`) shown as 👻 on the score band at the same second. Off with *Race my best run* in the game options |
+-| `src/app/20e-daily-share.js` | **Daily Molecule** (`dailyInfo()`: one game a day in turn, seed from the date, #1 = 2026-11-23), **challenge links** (`?c=` base64url of `{g, s, v, d, r}`: game, seed, score to beat, daily number, and `r` the run's score at each second 0–30 s as bytes of the game's scale, shown as the 😊 ghost), the **share window** and the **clip** (`clipStart/clipTick/clipStop`: a 540×960 canvas drawn from the box, temperature bar and score, recorded with `MediaRecorder`, MP4 if the browser can, else WebM; no audio). `special` holds the current daily/challenge run; `build()` takes its seed, a normal `selectGame()` clears it. Only `var`/function declarations at the top level, because `renderPick()` calls `dailyRender()` before this part runs |
++| `src/app/20e-daily-share.js` | **Daily Molecule** (`dailyInfo()`: one game a day in turn, seed from the date, #1 = 2026-11-23), **challenge links** (`?c=` base64url of `{g, s, v, d, r}`: game, seed, score to beat, daily number, and `r` the run's score at each second 0–30 s as bytes of the game's scale, shown as the 😊 ghost), the **share window** and the **clip** (`clipStart/clipTick/clipStop`: a 360×640 canvas at 20 frames/s and 350 kbit/s, about 1.3 MB per 30 s game drawn from the box, temperature bar and score, recorded with `MediaRecorder`, MP4 if the browser can, else WebM; no audio). `special` holds the current daily/challenge run; `build()` takes its seed, a normal `selectGame()` clears it. Only `var`/function declarations at the top level, because `renderPick()` calls `dailyRender()` before this part runs |
+ | `src/app/20f-monetization.js` | **Monetization hooks, switched off**: `MONET.hook(name, info)` (gameStart, gameEnd, share) and `MONET.offer(kind)` do nothing without an adapter. See *Monetization (off)* below |
+ | `src/app/21-main-loop.js` | Main loop, start-up, debug line (`?debug=1`) |
+ | `src/i18n/fi.json`, `sv.json`, `ru.json` | Translations: English text → translated text |
+@@ -71,7 +73,7 @@ The `app/*.js` parts are plain slices of one script, joined in the order of `man
+ 
+ ## Saved in the browser (localStorage)
+ 
+-`mdlab-welcome`, `mdlab-tour` (welcome / tour seen) · `mdlab-guided` (guided first game done) · `mdlab-unlock`, `mdlab-ladall` (teacher unlocks) · `mdlab-played` (finished games: opens rewards), `mdlab-fresh` (newest reward, marked NEW) · `mdlab-ladder-<game>` (challenge progress) · `mdlab-stats-<game>` (statistics) · `mdlab-cards` (fact cards) · `mdlab-daily` (today's Daily Molecule: date, best, tries), `mdlab-streak` (days in a row) · `mdlab-tips`, `mdlab-clip`, `mdlab-glow`, `mdlab-sound`, `mdlab-pitch`, `mdlab-mode`, `mdlab-display`, `mdlab-proto` (settings). Clear them to see the app as a new student would.
++`mdlab-welcome`, `mdlab-tour` (welcome / tour seen) · `mdlab-guided` (guided first game done) · `mdlab-unlock`, `mdlab-ladall` (teacher unlocks) · `mdlab-played` (finished games: opens rewards), `mdlab-fresh` (newest reward, marked NEW) · `mdlab-ladder-<game>` (challenge progress) · `mdlab-stats-<game>` (statistics) · `mdlab-cards` (fact cards) · `mdlab-role` (player / teacher) · `mdlab-daily` (today's Daily Molecule: date, best, tries), `mdlab-streak` (days in a row) · `mdlab-tips`, `mdlab-clip`, `mdlab-glow`, `mdlab-sound`, `mdlab-pitch`, `mdlab-mode`, `mdlab-display`, `mdlab-proto` (settings). Clear them to see the app as a new student would.
+ 
+ ## Tests (`tests/`)
+ 
+@@ -85,6 +87,7 @@ The `app/*.js` parts are plain slices of one script, joined in the order of `man
+ | `test_offline_privacy.py` | No network requests from the page; the served copy (with `sw.js`) reloads offline |
+ | `test_keyboard.py` | Holding Space heats, letting go cools, arrows step, in a game and in Explore; projector options switch on, keep the box on screen and are remembered |
+ | `test_a11y.py` | axe-core (WCAG 2.1 A/AA) on every mode, phone and desktop, the welcome card; colour contrast in high-contrast mode |
++| `test_roles.py` | Welcome choice, header switch and `?teacher` link; what each mode shows and hides; the lesson buttons open Explore, the energy scan and class mode |
+ | `test_aim_band.py` | Every game shows its aim picture; the green band is off in a normal game and comes back with *Show tips*; the noise bar is not under the box |
+ | `test_daily_share.py` | The Daily Molecule uses the day's seed, saves the best and the streak, records a clip; the end card has Share; the share text carries a challenge link that opens the invitation and replays the same seed and drug windows; no monetization adapter in the normal build |
+ | `test_games.py` | Every game, two challenges and the three prototype games start and stop; a full ice game played along the green path gets at least one star and shows the end card |
+diff --git a/README.md b/README.md
+index 12b085c..b7491f2 100644
+--- a/README.md
++++ b/README.md
+@@ -59,6 +59,33 @@ Students and teachers see the same in the app: a 🔒 line under the microphone
+ - **Download the page** (Teacher options → *Use without internet*) saves that file when the page is opened from a website. If the browser blocks it, Ctrl+S (⌘S on a Mac) does the same.
+ - **Install as an app:** when the page is served from a website with the files from the build next to it (`index.html`, `manifest.webmanifest`, `sw.js`, icons — the whole `docs/` folder, served by GitHub Pages at https://dmtolmach.github.io/be-quite-and-self-assemble/docs/), Chrome and Edge show **Install as an app** in Teacher options (and an install icon in the address bar); on an iPad or iPhone use *Share → Add to Home Screen*. The installed app opens from the home screen or app list and works with no internet; a new version is picked up the next time it is opened online.
+ 
++## Player mode and teacher mode
++
++The app has two modes for two audiences. The welcome card asks: **▶ Play: make ice** (player mode) or **👩‍🏫 I'm a teacher** (teacher mode). The button at the top right (🎮 Player / 👩‍🏫 Teacher) switches at any time, and a link ending in `?teacher` (for example https://dmtolmach.github.io/be-quite-and-self-assemble/docs/?teacher) opens teacher mode directly, without the welcome card; `?player` opens player mode. The choice is kept in the browser.
++
++| | Player mode (children about 10–12) | Teacher mode |
++|---|---|---|
++| Unlocking | Step by step: every finished game opens something new | Everything open from the start, including all challenge levels |
++| Home | The games, Daily Molecule, challenges, speed runs, cards | **Lessons** panel on top, then the games |
++| Explore | A sandbox: pick a system, set the temperature (shown as a word) and the number of molecules | Everything: model parameters, box and view, live readouts, energy scan |
++| Class tools | Not shown | Class mode, class battle, prototype games |
++| Not shown | Model parameters, energy scan, readouts, reduced units (T*) | Daily Molecule, streaks, clips |
++| Options panel | *Settings* (smooth motion, speed glow, projector, offline, privacy) | *Teacher options* |
++
++### Lessons (teacher mode)
++
++Five ten-minute lesson cards, each with a goal, three steps, what to point at on the screen and three questions for the class with short answers. **Play in class mode** opens the lesson's game in class mode; **Open in Explore** (or **Open the energy scan**) opens its system.
++
++| Lesson | System / game | Idea |
++|---|---|---|
++| ❄️ Freezing and slow cooling | Ice | Slow cooling gives bigger, clearer crystals |
++| 🫧 Oil and water | Two liquids | Some liquids do not mix; too cold freezes everything in place |
++| 💊 Soap and medicine | Soap molecules / Deliver the drug | Micelles carry drugs; warming opens them |
++| 🥚 Boiled egg and jelly | Proteins / gel strand | Heat unfolds proteins and they link into a gel |
++| 📈 What is melting? | Ice, energy scan | At the melting point heat breaks the structure; supercooling |
++
++The lesson texts are drafts for teachers to adapt; the Finnish and Swedish versions have not been checked by a native speaker.
++
+ ## A first lesson in 10 minutes
+ 
+ 1. Open the page. It starts in **Game** mode with *Grow the biggest ice crystal* selected.
+@@ -87,7 +114,7 @@ Temperatures are in reduced units (T*). They are not degrees Celsius: each syste
+ 
+ ## Game mode
+ 
+-Four 30-second games. The game panel is kept short: game cards (title and one-line hint), **Start**, **Use the microphone** and **Show tips**; the goal preview film on the box shows what to do. In games the box size line and the Temperature panel (Cool/Heat/Pause) are hidden; the slider and Mic button under the box remain. At first only the ice game is open: a star in a game opens the next one. The folded **Teacher options** at the very bottom of the page, under the cards, hold **Unlock all games**, **Unlock all challenges** (this browser only; press again to lock) and **Class battle**.
++Four 30-second games. The game panel is kept short: game cards (title and one-line hint), **Start**, **Use the microphone** and **Show tips**; the goal preview film on the box shows what to do. In games the box size line and the Temperature panel (Cool/Heat/Pause) are hidden; the slider and Mic button under the box remain. At first only the ice game is open: a star in a game opens the next one. In teacher mode everything is open from the start; the folded **Teacher options** at the very bottom of the page hold **Class battle** and the prototype games.
+ 
+ | Game | System | Goal | Stars at |
+ |---|---|---|---|
+@@ -105,7 +132,7 @@ How a game runs:
+   After that, the box shows a crystal of ice and a line of instructions: make noise (or drag the slider right) and the ice melts; be quiet (or drag it left) and it freezes again; then **Play** starts the real game. **Skip** jumps straight to the game. The guide appears once per browser.
+ - **The aim.** Before a game starts, the box shows a still picture of what to build, with a label that says so: for ice, a perfect honeycomb crystal (blue); for the two liquids, the liquids fully separated; for the drug, the good case at the moment a red target window opens (red frame; the micelles open and the drug is delivered, yellow); for the gel, a real snapshot with one long strand of linked proteins (red line, 186 σ, found with `tools/calibration/geltarget.js`). It is not shown in challenges, class mode or the guided first game.
+ - Press **Start**. A 3-2-1-Go countdown runs over the box; the clock and the molecules wait for it.
+-- **Race my best run** appears in the game options after 2 finished games and **Record a clip to share** after 3 (before that both are off), so a new player sees only *Use the microphone* and *Show tips*. *Unlock everything* in Teacher options shows them at once.
++- **Race my best run** appears in the game options after 2 finished games and **Record a clip to share** after 3 (before that both are off), so a new player sees only *Use the microphone* and *Show tips*. Teacher mode shows them at once.
+ - **Use the microphone** (ticked by default) lets the room control the temperature. Untick it to use the slider instead.
+ - **Show tips** (off by default; remembered in this browser) shows the green band in every game. The guided first game shows the band anyway and says that it is one strategy that works; after that the band is off, so players watch the molecules rather than the band, until someone ticks **Show tips**. The sentence about the run and the tip for 0–1 stars after a game are always shown.
+ - During the game, the bar shows the score now, the star levels and the time left. When a new star is reached, the stars pop up over the box.
+@@ -131,15 +158,16 @@ Each game needs a different strategy, which is what makes them good discussion s
+ 
+ ### Daily Molecule
+ 
+-After the first finished game, a **📅 Daily Molecule** button sits above the list of games. Every day one of the four games is chosen (they take turns), and everyone who plays that day starts from exactly the same arrangement of molecules (the start comes from the date; in the drug game, the target windows too). Students can play it as often as they like: the best score of the day is kept and shown on the button. Playing on days in a row builds a streak (🔥 3 days in a row). Stars, cards and statistics count as in a normal game. Nothing is sent anywhere: two students compare by sharing their result.
++After the first finished game, a **📅 Daily Molecule** button sits above the list of games. Every day one of the four games is chosen (they take turns), and everyone who plays that day starts from exactly the same arrangement of molecules (the start comes from the date; in the drug game, the target windows too). Students can play it as often as they like: the best score of the day is kept and shown on the button. Playing on days in a row builds a streak (🔥 3 days in a row). Stars, cards and statistics count as in a normal game. Everyone plays it without tips: no green band (even with *Show tips* ticked) and no sentence or tip about the run on the end card. Nothing is sent anywhere: two students compare by sharing their result.
+ 
+ ### Sharing a result and challenge links
+ 
+ The end card of a normal game, a speed run and the Daily Molecule has **📤 Share**. A shared speed run becomes a *speed challenge*: the friend plays the same speed run from the same start, and must reach the goal faster. It opens a window with:
++- **A QR code** of the challenge link; **Show big for the class** fills the screen with it, so a whole class can scan it from the projector.
+ - **A short text** with the game, the score and the stars, and a **challenge link**. *Share…* uses the device's own share menu (phones, tablets), *Copy text and link* puts it on the clipboard.
+-- **The clip** (when *Record a clip to share* is ticked): a 30-second vertical video of the run (box, temperature bar, score, stars), ready for a message or a short-video app. *Save the clip* downloads it (MP4 where the browser can make it, otherwise WebM).
++- **The clip** (when *Record a clip to share* is ticked): a 30-second vertical video of the run (box, temperature bar, score, stars; 360×640, about 1–2 MB), ready for a message or a short-video app. *Save the clip* downloads it (MP4 where the browser can make it, otherwise WebM).
+ 
+-Whoever opens the challenge link sees *🏆 You have been challenged!* with the score to beat. *Accept the challenge* starts the same game from exactly the same molecules, and the friend's run is shown as **😊** on the score bar at the same second and, after the game, as a second line (😊 friend) in the replay graph (like the 👻 of your own best run; the link carries the friend's score for each second, 31 numbers). The end card then says whether they beat it, and they can share their own score back. A new student who opens a challenge for the ice game first goes through the guided microphone set-up, as on any first visit. The link opens the public page (https://dmtolmach.github.io/be-quite-and-self-assemble/docs/) when the game was played from a file or inside claude.ai, and the school's own page when it is served from the school's website.
++Whoever opens the challenge link sees *🏆 You have been challenged!* with the score to beat. A friend's challenge (like the Daily Molecule) is a fair contest, so it shows no tips: no green band (even with *Show tips* ticked), no guided lesson, and no sentence or tip about the run on the end card. *Accept the challenge* starts the same game from exactly the same molecules, and the friend's run is shown as **😊** on the score bar at the same second and, after the game, as a second line (😊 friend) in the replay graph (like the 👻 of your own best run; the link carries the friend's score for each second, 31 numbers). The end card then says whether they beat it, and they can share their own score back. A new student can tune the microphone with *Set up the microphone* in the Microphone panel. The link opens the public page (https://dmtolmach.github.io/be-quite-and-self-assemble/docs/) when the game was played from a file or inside claude.ai, and the school's own page when it is served from the school's website.
+ 
+ Same start does not mean identical runs: the starting arrangement and the drug windows are the same for everyone, but each player's temperatures differ (and a slow computer may run fewer steps per picture), so the molecules soon go their own way. That is the point: the better temperature control wins.
+ 
+diff --git a/src/app/05-games.js b/src/app/05-games.js
+index 15fc1d2..60a29ac 100644
+--- a/src/app/05-games.js
++++ b/src/app/05-games.js
+@@ -129,7 +129,7 @@
+   function startGame() {
+     const g = gameCfg(); if (!g) return;
+     if (guide) { guide = null; coachHide(); }
+-    if (needGuide(g) && !battle && !gameLevel && !classOn) { guideStart(g); return; }
++    if (needGuide(g) && !battle && !gameLevel && !classOn && !special) { guideStart(g); return; } // a friend's challenge or the Daily Molecule starts at once, without the guided lesson
+     prepGame(g); coachHide(); $('greplay').hidden = true; gendClose(); postGame = null;
+     game = { g, t0: eng.time, last: eng.time, ema: null, rate: g.D / GAME_SEC, peak: -Infinity, peakSec: 0, snap: null, rec: [], level: gameLevel, bump: 0, guided: afterGuide }; afterGuide = false; game.ghost = gameLevel || battle || classOn ? null : ghostLoad(g); game.speed = speedMode && !gameLevel && !battle && !classOn && speedOpen(g) ? SPEED[g.id] : null; if (game.speed) game.ghost = null;
+     game.rnd = rngSeed(((eng && eng.p.seed) || 1) + 99); /* drug windows etc. follow the start's seed, so a challenge link replays them */ game.seed = (eng && eng.p.seed) || 1;
+@@ -204,7 +204,7 @@
+     if (G.speed) { speedEnd(G); return; }
+     if (G.level) { ladderEnd(G); return; }
+     const g = G.g, v = G.peak, st = starsFor(g, v), b = getBest(g), rec = b === null || v > b, gi = GAMES.indexOf(g), wasOpen = gi + 1 < GAMES.length && isOpen(gi + 1); if (rec) { setBest(g, v); ghostSave(G); } /* the new best run becomes the ghost for next time */
+-    const opened = false, dg = diagnose(G, st), speedNew = SPEED[g.id] && st === 3 && !(b !== null && starsFor(g, b) === 3) && !unlockAll();
++    const chal = !!G.special, opened = false, dg = chal ? '' : diagnose(G, st), /* a friend's challenge or the Daily Molecule: no tips, it is a fair contest */ speedNew = SPEED[g.id] && st === 3 && !(b !== null && starsFor(g, b) === 3) && !unlockAll();
+     if (speedNew) { speedMode = false; try { localStorage.setItem('mdlab-fresh', 'speed'); } catch (e) {} }
+     const card = st === 3 ? fcGive(FC_ALL.filter((c) => c.deck.game === g.id)) : null; // three stars: a new fact card, until the deck is complete
+     const S = addStat(g, v);
+@@ -213,7 +213,7 @@
+       if (g.value) g.value(); const rv = G.peak; $('gval').textContent = g.fmt(rv); $('gval').className = ''; $('gnow').style.left = (100 * Math.max(0, Math.min(1, rv / (g.scale || 1)))) + '%'; }
+     $('gres').innerHTML = `<span class="big">${starStr(st)}</span> <b>${T('Score {s}', { s: g.fmt(v) })}</b> ${rec ? T('(new best ever!)') : T('(best ever {b})', { b: g.fmt(Math.max(b, v)) })}. ` + (dg ? dg + ' ' : '') +
+       (opened ? '<b>' + T('New game unlocked: {g}!', { g: T(GAMES[gi + 1].title) }) + '</b> ' : '') +
+-      (st <= 1 ? '<b>' + T('Tip:') + '</b> ' + T(g.hint) + ' ' : '') + (st === 3 ? T('Top score!') + ' ' + (card ? '<b>' + T('New card: {c}!', { c: T(card.t) }) + '</b> ' : T('You have all the cards of this game.') + ' ') : '') + T('Your average so far: {a} (games played: {n}).', { n: S.n, a: g.fmt(S.sum / S.n) });
++      (st <= 1 && !chal ? '<b>' + T('Tip:') + '</b> ' + T(g.hint) + ' ' : '') + (st === 3 ? T('Top score!') + ' ' + (card ? '<b>' + T('New card: {c}!', { c: T(card.t) }) + '</b> ' : T('You have all the cards of this game.') + ' ') : '') + T('Your average so far: {a} (games played: {n}).', { n: S.n, a: g.fmt(S.sum / S.n) });
+     const sp = G.special ? specialEnd(G, v, st) : null; MONET.hook('gameEnd', { game: g.id, stars: st });
+     renderPick(); drawReplay(G);
+     const nx = gi + 1 < GAMES.length && isOpen(gi + 1) ? GAMES[gi + 1] : null;
+diff --git a/src/app/10b-rewards.js b/src/app/10b-rewards.js
+index 36f1504..2db9b55 100644
+--- a/src/app/10b-rewards.js
++++ b/src/app/10b-rewards.js
+@@ -15,7 +15,8 @@
+     { id: 'sys-lcst', name: 'Polymer chains', where: SYS_NEW },
+     { id: 'sys-mbpoly', name: 'Oily particles', where: SYS_NEW },
+   ]; // Explore starts with Ice; each of its other systems opens one at a time
+-  const unlockAll = () => { try { return localStorage.getItem('mdlab-unlock') === '1'; } catch (e) { return false; } };
++  const isTeacher = () => { try { return localStorage.getItem('mdlab-role') === 'teacher'; } catch (e) { return false; } }; // teacher mode (20h-roles-lessons.js)
++  const unlockAll = () => { if (isTeacher()) return true; try { return localStorage.getItem('mdlab-unlock') === '1'; } catch (e) { return false; } }; // teachers see everything
+   function gamesPlayed() { // finished games in this browser; a returning player (from before this counter) keeps what the statistics show
+     try { const v = localStorage.getItem('mdlab-played'); if (v !== null) return +v || 0; } catch (e) {}
+     return GAMES.reduce((a, g) => a + getStats(g).n, 0);
+@@ -26,13 +27,13 @@
+   var locksLive = false; // set at the end of start-up; before that, only classes change
+   function rewardStep() { // one more finished game; returns the reward it opens, if any
+     const n = gamesPlayed(), was = unlockAll(); try { localStorage.setItem('mdlab-played', String(n + 1)); } catch (e) {}
+-    const r = !was && n < REWARDS.length ? REWARDS[n] : null; lastReward = r;
++    let r = !was && n < REWARDS.length ? REWARDS[n] : null; if (r && r.id === 'scan' && !isTeacher()) r = null; lastReward = r; // players have no energy scan
+     if (r) { try { localStorage.setItem('mdlab-fresh', r.id); } catch (e) {} }
+     applyLocks(); return r;
+   }
+   function applyLocks() { // hide what is not open yet
+     const w = document.querySelector('.wrap'); if (!w) return;
+-    for (const id of ['explore', 'scan', 'stats']) w.classList.toggle('lock-' + id, !rewardOpen(id));
++    for (const id of ['explore', 'scan', 'stats']) w.classList.toggle('lock-' + id, !rewardOpen(id) || (id === 'scan' && !isTeacher()));
+     let cards = 0; try { cards = fcOwned().length; } catch (e) {}
+     w.classList.toggle('lock-cards', !cards && !rewardOpen('stats'));
+     w.classList.toggle('lock-ghost', !optOpen('ghost')); w.classList.toggle('lock-clip', !optOpen('clip')); // game options that appear later: the ghost after 2 games, the clip after 3
+diff --git a/src/app/11-coach-guide.js b/src/app/11-coach-guide.js
+index b1de0e1..89606df 100644
+--- a/src/app/11-coach-guide.js
++++ b/src/app/11-coach-guide.js
+@@ -5,16 +5,16 @@
+   const gameNow = () => (appMode === 'game' && gameRange ? (game ? game.g : gameCfg()) : null);
+   let lastWordK = -1;
+   function tWordShow() { // during games the box shows cold / cool / warm / hot instead of a number
+-    const g = gameNow(), b = $('tsetM');
++    const g = gameNow() || (!isTeacher() && appMode === 'explore' && eng ? { range: curRange() } : null), b = $('tsetM'); // players see words in Explore too
+     // symbols instead of words, so the bar keeps its width in every language; the word stays as the tooltip and for screen readers
+     if (g) { const k = tWord(g, tset); b.textContent = T_SIGNS[k]; b.title = T(T_WORDS[k]); b.setAttribute('aria-label', T(T_WORDS[k])); b.className = 'tw tw' + k;
+       $('tsliderM').setAttribute('aria-valuetext', T(T_WORDS[k])); if (k !== lastWordK) { lastWordK = k; kbSay(T(T_WORDS[k])); } }
+     else { if (b.className) { b.className = ''; b.removeAttribute('title'); b.removeAttribute('aria-label'); } $('tsliderM').removeAttribute('aria-valuetext'); lastWordK = -1; }
+   }
+   // the green band is one strategy that works, shown as a tip: always in the guided first game (which says what it is), otherwise only with
+-  // Show tips ticked (off by default, so players watch the molecules, not the band); never in speed runs or challenges
++  // Show tips ticked (off by default, so players watch the molecules, not the band); never in speed runs, challenges, a friend's challenge or the Daily Molecule
+   function bandNow(sNow) {
+-    const g = gameNow(), guided = !!(game && game.guided), hide = (game ? !!game.speed : speedMode && speedOpen(g)) || (!(g && g.alwaysZone) && !guided && (!tipsOn() || (game ? game.level : gameLevel)));
++    const g = gameNow(), guided = !!(game && game.guided), hide = !!special || (game ? !!game.speed : speedMode && speedOpen(g)) || (!(g && g.alwaysZone) && !guided && (!tipsOn() || (game ? game.level : gameLevel)));
+     if (sNow === undefined && game && g) sNow = GAME_SEC * Math.min(1, (eng.time - game.t0) / g.D);
+     return !g || hide ? null : g.zoneLive ? g.zoneLive(game) : (g.zone || g.path) ? zoneOf(g, sNow || 0) : null;
+   }
+diff --git a/src/app/13-challenges.js b/src/app/13-challenges.js
+index 682c09e..71b66c0 100644
+--- a/src/app/13-challenges.js
++++ b/src/app/13-challenges.js
+@@ -1,6 +1,6 @@
+   // ---------- challenges: once all six cards of a game are collected, five harder levels; a star opens the next; no tips ----------
+   const LADDER = 5, AF_LEVELS = [8, 16, 24, 32, 40]; // antifreeze per ice challenge: following the green path gives about 53, 45, 44, 40 and 36% ice (one star at 35%)
+-  const ladAll = () => { try { return localStorage.getItem('mdlab-ladall') === '1'; } catch (e) { return false; } };
++  const ladAll = () => { if (isTeacher()) return true; try { return localStorage.getItem('mdlab-ladall') === '1'; } catch (e) { return false; } }; // teachers: every challenge level open
+   const deckDone = (g) => { if (ladAll()) return true; const own = fcOwned(); return FC_ALL.filter((c) => c.deck.game === g.id).every((c) => own.includes(c.id)); };
+   const ladGet = (g) => { try { return JSON.parse(localStorage.getItem('mdlab-ladder-' + g.id) || '{}') || {}; } catch (e) { return {}; } }; // level -> best stars
+   const ladSet = (g, k, st) => { const o = ladGet(g); o[k] = Math.max(o[k] || 0, st); try { localStorage.setItem('mdlab-ladder-' + g.id, JSON.stringify(o)); } catch (e) {} };
+diff --git a/src/app/20e-daily-share.js b/src/app/20e-daily-share.js
+index 552ddfd..204e999 100644
+--- a/src/app/20e-daily-share.js
++++ b/src/app/20e-daily-share.js
+@@ -92,7 +92,7 @@
+     const spd = !!G.speed, url = chalUrl({ g: g.id, s: G.seed >>> 0, v: +(+o.v).toFixed(spd ? 2 : 4), d: sp && sp.kind === 'daily' ? sp.day : 0, m: spd ? 's' : undefined, r: runBytes(G) });
+     const text = head + '\n' + (GAME_ICON[g.id] || '') + ' ' + T(g.title) + (spd ? ' · ⏱ ' + T('Speed run') : '') + ': ' + g.fmt(o.v) + ' ' + starStr(o.st) + '\n' + T(spd ? 'Same start for you. Can you be faster?' : 'Same start for you. Can you beat it?');
+     shareCur = { text, url, g };
+-    $('shareText').textContent = text + '\n' + url; $('shareMsg').textContent = '';
++    $('shareText').textContent = text + '\n' + url; $('shareMsg').textContent = ''; qrDraw($('shareQR'), url);
+     $('shareNative').hidden = !navigator.share;
+     const hasClip = !!CLIP.url; $('shareClipBox').hidden = !hasClip;
+     if (hasClip) { const v = $('shareVideo'); if (v.src !== CLIP.url) v.src = CLIP.url; v.play && v.play().catch(() => {});
+@@ -105,6 +105,15 @@
+     const end = Math.min(240, G.speed ? Math.ceil(rec[rec.length - 1].s) : GAME_SEC);
+     for (let k = 0; k <= end; k++) { while (j < rec.length - 1 && rec[j + 1].s <= k) j++; s += String.fromCharCode(Math.round(255 * Math.max(0, Math.min(1, (rec[j].v || 0) / sc)))); }
+     return b64u(s); }
++  // QR code of the challenge link (qrcode-generator, 20g-qrcode.js): drawn on a canvas, dark on white with the standard quiet zone
++  function qrDraw(cv0, text) {
++    const c = cv0.getContext('2d'); c.fillStyle = '#fff'; c.fillRect(0, 0, cv0.width, cv0.height);
++    try { const q = qrcode(0, 'M'); q.addData(text); q.make(); const n = q.getModuleCount(), s = Math.floor(cv0.width / (n + 8)), o = Math.floor((cv0.width - s * n) / 2);
++      c.fillStyle = '#000'; for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (q.isDark(r, k)) c.fillRect(o + k * s, o + r * s, s, s); cv0.dataset.n = n; return true;
++    } catch (e) { cv0.dataset.n = 0; return false; } }
++  $('shareQRBig').addEventListener('click', () => { if (!shareCur) return; $('qrBigText').textContent = shareCur.text.split('\n').slice(0, 2).join(' · ');
++    const cv1 = $('qrBigCv'); qrDraw(cv1, shareCur.url); $('qrBig').hidden = false; $('qrBigClose').focus(); });
++  $('qrBigClose').addEventListener('click', () => { $('qrBig').hidden = true; });
+   function shareClose() { $('shareModal').hidden = true; const v = $('shareVideo'); if (v.pause) v.pause(); }
+   function shareMsg(t) { $('shareMsg').textContent = t; say(t); }
+   async function copyText(t) {
+@@ -119,7 +128,7 @@
+   $('shareClipSave').addEventListener('click', () => { if (!CLIP.url) return; const a = document.createElement('a'); a.href = CLIP.url; a.download = 'get-structured-' + (shareCur ? shareCur.g.id : 'run') + '.' + clipExt(); document.body.appendChild(a); a.click(); a.remove(); shareMsg(T('Clip saved.') + (clipExt() === 'webm' ? ' ' + T('Some apps need MP4: open the clip in a video app and save it again.') : '')); });
+   $('shareClose').addEventListener('click', shareClose);
+   $('shareModal').addEventListener('click', (e) => { if (e.target === $('shareModal')) shareClose(); });
+-  document.addEventListener('keydown', (e) => { if (e.key !== 'Escape') return; if (!$('shareModal').hidden) shareClose(); else if (!$('chalModal').hidden) $('chalModal').hidden = true; });
++  document.addEventListener('keydown', (e) => { if (e.key !== 'Escape') return; if (!$('qrBig').hidden) $('qrBig').hidden = true; else if (!$('shareModal').hidden) shareClose(); else if (!$('chalModal').hidden) $('chalModal').hidden = true; });
+ 
+   // ---- clip: a vertical video (9:16) of the run, drawn from the box, the temperature bar and the score; no sound ----
+   try { const c = localStorage.getItem('mdlab-clip'); if (c !== null) $('gclipOn').checked = c === '1'; } catch (e) {}
+@@ -132,8 +141,8 @@
+     if (!$('gclipOn').checked || !optOpen('clip') || classOn || battle || G.g.proto || G.level || qLevel >= 2) return; // slow devices: no clip, so the game stays smooth
+     const type = clipType(); if (!type || !HTMLCanvasElement.prototype.captureStream) return;
+     try {
+-      if (!CLIP.cv) { CLIP.cv = document.createElement('canvas'); CLIP.cv.width = 540; CLIP.cv.height = 960; CLIP.cx = CLIP.cv.getContext('2d'); }
+-      clipDraw(G); const st = CLIP.cv.captureStream(30), r = new MediaRecorder(st, { mimeType: type, videoBitsPerSecond: 1600000 });
++      if (!CLIP.cv) { CLIP.cv = document.createElement('canvas'); CLIP.cv.width = 360; CLIP.cv.height = 640; CLIP.cx = CLIP.cv.getContext('2d'); CLIP.cx.scale(2 / 3, 2 / 3); } // drawn in 540×960 units, recorded at 360×640
++      clipDraw(G); const st = CLIP.cv.captureStream(20), r = new MediaRecorder(st, { mimeType: type, videoBitsPerSecond: 350000 }); // about 1.3 MB for a 30 s game, small enough for any messenger
+       CLIP.chunks = []; CLIP.type = type; CLIP.G = G; CLIP.last = 0; CLIP.stream = st;
+       r.ondataavailable = (e) => { if (e.data && e.data.size) CLIP.chunks.push(e.data); };
+       r.start(1000); CLIP.rec = r;
+@@ -145,7 +154,7 @@
+       if (!$('shareModal').hidden && shareCur) { $('shareClipBox').hidden = false; $('shareVideo').src = CLIP.url; } } CLIP.chunks = []; };
+     try { if (keep) clipDraw(CLIP.G, true); r.state !== 'inactive' ? r.stop() : r.onstop(); } catch (e) {}
+   }
+-  function clipTick(now) { if (!CLIP.rec || !CLIP.G || now - CLIP.last < 33) return; CLIP.last = now; try { clipDraw(CLIP.G); } catch (e) {} }
++  function clipTick(now) { if (!CLIP.rec || !CLIP.G || now - CLIP.last < 50) return; CLIP.last = now; try { clipDraw(CLIP.G); } catch (e) {} }
+   function clipDraw(G, last) {
+     const c = CLIP.cx, W = 540, g = G.g, cen = W / 2; if (!c) return;
+     c.fillStyle = '#0f2a33'; c.fillRect(0, 0, W, 960); c.textAlign = 'center'; c.textBaseline = 'alphabetic';
+diff --git a/src/app/20g-qrcode.js b/src/app/20g-qrcode.js
+new file mode 100644
+index 0000000..7e3866c
+--- /dev/null
++++ b/src/app/20g-qrcode.js
+@@ -0,0 +1,1630 @@
++  // ---------- QR codes for class challenges: qrcode-generator 1.4.4 by Kazuhiko Arase (MIT licence, header kept below), unchanged except removed comment lines and the module wrapper ----------
++//---------------------------------------------------------------------
++//
++// QR Code Generator for JavaScript
++//
++// Copyright (c) 2009 Kazuhiko Arase
++//
++// URL: http://www.d-project.com/
++//
++// Licensed under the MIT license:
++//  http://www.opensource.org/licenses/mit-license.php
++//
++// The word 'QR Code' is registered trademark of
++// DENSO WAVE INCORPORATED
++//  http://www.denso-wave.com/qrcode/faqpatent-e.html
++//
++//---------------------------------------------------------------------
++var qrcode = function() {
++  /**
++   * qrcode
++   * @param typeNumber 1 to 40
++   * @param errorCorrectionLevel 'L','M','Q','H'
++   */
++  var qrcode = function(typeNumber, errorCorrectionLevel) {
++    var PAD0 = 0xEC;
++    var PAD1 = 0x11;
++    var _typeNumber = typeNumber;
++    var _errorCorrectionLevel = QRErrorCorrectionLevel[errorCorrectionLevel];
++    var _modules = null;
++    var _moduleCount = 0;
++    var _dataCache = null;
++    var _dataList = [];
++    var _this = {};
++    var makeImpl = function(test, maskPattern) {
++      _moduleCount = _typeNumber * 4 + 17;
++      _modules = function(moduleCount) {
++        var modules = new Array(moduleCount);
++        for (var row = 0; row < moduleCount; row += 1) {
++          modules[row] = new Array(moduleCount);
++          for (var col = 0; col < moduleCount; col += 1) {
++            modules[row][col] = null;
++          }
++        }
++        return modules;
++      }(_moduleCount);
++      setupPositionProbePattern(0, 0);
++      setupPositionProbePattern(_moduleCount - 7, 0);
++      setupPositionProbePattern(0, _moduleCount - 7);
++      setupPositionAdjustPattern();
++      setupTimingPattern();
++      setupTypeInfo(test, maskPattern);
++      if (_typeNumber >= 7) {
++        setupTypeNumber(test);
++      }
++      if (_dataCache == null) {
++        _dataCache = createData(_typeNumber, _errorCorrectionLevel, _dataList);
++      }
++      mapData(_dataCache, maskPattern);
++    };
++    var setupPositionProbePattern = function(row, col) {
++      for (var r = -1; r <= 7; r += 1) {
++        if (row + r <= -1 || _moduleCount <= row + r) continue;
++        for (var c = -1; c <= 7; c += 1) {
++          if (col + c <= -1 || _moduleCount <= col + c) continue;
++          if ( (0 <= r && r <= 6 && (c == 0 || c == 6) )
++              || (0 <= c && c <= 6 && (r == 0 || r == 6) )
++              || (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
++            _modules[row + r][col + c] = true;
++          } else {
++            _modules[row + r][col + c] = false;
++          }
++        }
++      }
++    };
++    var getBestMaskPattern = function() {
++      var minLostPoint = 0;
++      var pattern = 0;
++      for (var i = 0; i < 8; i += 1) {
++        makeImpl(true, i);
++        var lostPoint = QRUtil.getLostPoint(_this);
++        if (i == 0 || minLostPoint > lostPoint) {
++          minLostPoint = lostPoint;
++          pattern = i;
++        }
++      }
++      return pattern;
++    };
++    var setupTimingPattern = function() {
++      for (var r = 8; r < _moduleCount - 8; r += 1) {
++        if (_modules[r][6] != null) {
++          continue;
++        }
++        _modules[r][6] = (r % 2 == 0);
++      }
++      for (var c = 8; c < _moduleCount - 8; c += 1) {
++        if (_modules[6][c] != null) {
++          continue;
++        }
++        _modules[6][c] = (c % 2 == 0);
++      }
++    };
++    var setupPositionAdjustPattern = function() {
++      var pos = QRUtil.getPatternPosition(_typeNumber);
++      for (var i = 0; i < pos.length; i += 1) {
++        for (var j = 0; j < pos.length; j += 1) {
++          var row = pos[i];
++          var col = pos[j];
++          if (_modules[row][col] != null) {
++            continue;
++          }
++          for (var r = -2; r <= 2; r += 1) {
++            for (var c = -2; c <= 2; c += 1) {
++              if (r == -2 || r == 2 || c == -2 || c == 2
++                  || (r == 0 && c == 0) ) {
++                _modules[row + r][col + c] = true;
++              } else {
++                _modules[row + r][col + c] = false;
++              }
++            }
++          }
++        }
++      }
++    };
++    var setupTypeNumber = function(test) {
++      var bits = QRUtil.getBCHTypeNumber(_typeNumber);
++      for (var i = 0; i < 18; i += 1) {
++        var mod = (!test && ( (bits >> i) & 1) == 1);
++        _modules[Math.floor(i / 3)][i % 3 + _moduleCount - 8 - 3] = mod;
++      }
++      for (var i = 0; i < 18; i += 1) {
++        var mod = (!test && ( (bits >> i) & 1) == 1);
++        _modules[i % 3 + _moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
++      }
++    };
++    var setupTypeInfo = function(test, maskPattern) {
++      var data = (_errorCorrectionLevel << 3) | maskPattern;
++      var bits = QRUtil.getBCHTypeInfo(data);
++      for (var i = 0; i < 15; i += 1) {
++        var mod = (!test && ( (bits >> i) & 1) == 1);
++        if (i < 6) {
++          _modules[i][8] = mod;
++        } else if (i < 8) {
++          _modules[i + 1][8] = mod;
++        } else {
++          _modules[_moduleCount - 15 + i][8] = mod;
++        }
++      }
++      for (var i = 0; i < 15; i += 1) {
++        var mod = (!test && ( (bits >> i) & 1) == 1);
++        if (i < 8) {
++          _modules[8][_moduleCount - i - 1] = mod;
++        } else if (i < 9) {
++          _modules[8][15 - i - 1 + 1] = mod;
++        } else {
++          _modules[8][15 - i - 1] = mod;
++        }
++      }
++      _modules[_moduleCount - 8][8] = (!test);
++    };
++    var mapData = function(data, maskPattern) {
++      var inc = -1;
++      var row = _moduleCount - 1;
++      var bitIndex = 7;
++      var byteIndex = 0;
++      var maskFunc = QRUtil.getMaskFunction(maskPattern);
++      for (var col = _moduleCount - 1; col > 0; col -= 2) {
++        if (col == 6) col -= 1;
++        while (true) {
++          for (var c = 0; c < 2; c += 1) {
++            if (_modules[row][col - c] == null) {
++              var dark = false;
++              if (byteIndex < data.length) {
++                dark = ( ( (data[byteIndex] >>> bitIndex) & 1) == 1);
++              }
++              var mask = maskFunc(row, col - c);
++              if (mask) {
++                dark = !dark;
++              }
++              _modules[row][col - c] = dark;
++              bitIndex -= 1;
++              if (bitIndex == -1) {
++                byteIndex += 1;
++                bitIndex = 7;
++              }
++            }
++          }
++          row += inc;
++          if (row < 0 || _moduleCount <= row) {
++            row -= inc;
++            inc = -inc;
++            break;
++          }
++        }
++      }
++    };
++    var createBytes = function(buffer, rsBlocks) {
++      var offset = 0;
++      var maxDcCount = 0;
++      var maxEcCount = 0;
++      var dcdata = new Array(rsBlocks.length);
++      var ecdata = new Array(rsBlocks.length);
++      for (var r = 0; r < rsBlocks.length; r += 1) {
++        var dcCount = rsBlocks[r].dataCount;
++        var ecCount = rsBlocks[r].totalCount - dcCount;
++        maxDcCount = Math.max(maxDcCount, dcCount);
++        maxEcCount = Math.max(maxEcCount, ecCount);
++        dcdata[r] = new Array(dcCount);
++        for (var i = 0; i < dcdata[r].length; i += 1) {
++          dcdata[r][i] = 0xff & buffer.getBuffer()[i + offset];
++        }
++        offset += dcCount;
++        var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
++        var rawPoly = qrPolynomial(dcdata[r], rsPoly.getLength() - 1);
++        var modPoly = rawPoly.mod(rsPoly);
++        ecdata[r] = new Array(rsPoly.getLength() - 1);
++        for (var i = 0; i < ecdata[r].length; i += 1) {
++          var modIndex = i + modPoly.getLength() - ecdata[r].length;
++          ecdata[r][i] = (modIndex >= 0)? modPoly.getAt(modIndex) : 0;
++        }
++      }
++      var totalCodeCount = 0;
++      for (var i = 0; i < rsBlocks.length; i += 1) {
++        totalCodeCount += rsBlocks[i].totalCount;
++      }
++      var data = new Array(totalCodeCount);
++      var index = 0;
++      for (var i = 0; i < maxDcCount; i += 1) {
++        for (var r = 0; r < rsBlocks.length; r += 1) {
++          if (i < dcdata[r].length) {
++            data[index] = dcdata[r][i];
++            index += 1;
++          }
++        }
++      }
++      for (var i = 0; i < maxEcCount; i += 1) {
++        for (var r = 0; r < rsBlocks.length; r += 1) {
++          if (i < ecdata[r].length) {
++            data[index] = ecdata[r][i];
++            index += 1;
++          }
++        }
++      }
++      return data;
++    };
++    var createData = function(typeNumber, errorCorrectionLevel, dataList) {
++      var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectionLevel);
++      var buffer = qrBitBuffer();
++      for (var i = 0; i < dataList.length; i += 1) {
++        var data = dataList[i];
++        buffer.put(data.getMode(), 4);
++        buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
++        data.write(buffer);
++      }
++      var totalDataCount = 0;
++      for (var i = 0; i < rsBlocks.length; i += 1) {
++        totalDataCount += rsBlocks[i].dataCount;
++      }
++      if (buffer.getLengthInBits() > totalDataCount * 8) {
++        throw 'code length overflow. ('
++          + buffer.getLengthInBits()
++          + '>'
++          + totalDataCount * 8
++          + ')';
++      }
++      if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
++        buffer.put(0, 4);
++      }
++      while (buffer.getLengthInBits() % 8 != 0) {
++        buffer.putBit(false);
++      }
++      while (true) {
++        if (buffer.getLengthInBits() >= totalDataCount * 8) {
++          break;
++        }
++        buffer.put(PAD0, 8);
++        if (buffer.getLengthInBits() >= totalDataCount * 8) {
++          break;
++        }
++        buffer.put(PAD1, 8);
++      }
++      return createBytes(buffer, rsBlocks);
++    };
++    _this.addData = function(data, mode) {
++      mode = mode || 'Byte';
++      var newData = null;
++      switch(mode) {
++      case 'Numeric' :
++        newData = qrNumber(data);
++        break;
++      case 'Alphanumeric' :
++        newData = qrAlphaNum(data);
++        break;
++      case 'Byte' :
++        newData = qr8BitByte(data);
++        break;
++      case 'Kanji' :
++        newData = qrKanji(data);
++        break;
++      default :
++        throw 'mode:' + mode;
++      }
++      _dataList.push(newData);
++      _dataCache = null;
++    };
++    _this.isDark = function(row, col) {
++      if (row < 0 || _moduleCount <= row || col < 0 || _moduleCount <= col) {
++        throw row + ',' + col;
++      }
++      return _modules[row][col];
++    };
++    _this.getModuleCount = function() {
++      return _moduleCount;
++    };
++    _this.make = function() {
++      if (_typeNumber < 1) {
++        var typeNumber = 1;
++        for (; typeNumber < 40; typeNumber++) {
++          var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, _errorCorrectionLevel);
++          var buffer = qrBitBuffer();
++          for (var i = 0; i < _dataList.length; i++) {
++            var data = _dataList[i];
++            buffer.put(data.getMode(), 4);
++            buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
++            data.write(buffer);
++          }
++          var totalDataCount = 0;
++          for (var i = 0; i < rsBlocks.length; i++) {
++            totalDataCount += rsBlocks[i].dataCount;
++          }
++          if (buffer.getLengthInBits() <= totalDataCount * 8) {
++            break;
++          }
++        }
++        _typeNumber = typeNumber;
++      }
++      makeImpl(false, getBestMaskPattern() );
++    };
++    _this.createTableTag = function(cellSize, margin) {
++      cellSize = cellSize || 2;
++      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
++      var qrHtml = '';
++      qrHtml += '<table style="';
++      qrHtml += ' border-width: 0px; border-style: none;';
++      qrHtml += ' border-collapse: collapse;';
++      qrHtml += ' padding: 0px; margin: ' + margin + 'px;';
++      qrHtml += '">';
++      qrHtml += '<tbody>';
++      for (var r = 0; r < _this.getModuleCount(); r += 1) {
++        qrHtml += '<tr>';
++        for (var c = 0; c < _this.getModuleCount(); c += 1) {
++          qrHtml += '<td style="';
++          qrHtml += ' border-width: 0px; border-style: none;';
++          qrHtml += ' border-collapse: collapse;';
++          qrHtml += ' padding: 0px; margin: 0px;';
++          qrHtml += ' width: ' + cellSize + 'px;';
++          qrHtml += ' height: ' + cellSize + 'px;';
++          qrHtml += ' background-color: ';
++          qrHtml += _this.isDark(r, c)? '#000000' : '#ffffff';
++          qrHtml += ';';
++          qrHtml += '"/>';
++        }
++        qrHtml += '</tr>';
++      }
++      qrHtml += '</tbody>';
++      qrHtml += '</table>';
++      return qrHtml;
++    };
++    _this.createSvgTag = function(cellSize, margin, alt, title) {
++      var opts = {};
++      if (typeof arguments[0] == 'object') {
++        opts = arguments[0];
++        cellSize = opts.cellSize;
++        margin = opts.margin;
++        alt = opts.alt;
++        title = opts.title;
++      }
++      cellSize = cellSize || 2;
++      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
++      alt = (typeof alt === 'string') ? {text: alt} : alt || {};
++      alt.text = alt.text || null;
++      alt.id = (alt.text) ? alt.id || 'qrcode-description' : null;
++      title = (typeof title === 'string') ? {text: title} : title || {};
++      title.text = title.text || null;
++      title.id = (title.text) ? title.id || 'qrcode-title' : null;
++      var size = _this.getModuleCount() * cellSize + margin * 2;
++      var c, mc, r, mr, qrSvg='', rect;
++      rect = 'l' + cellSize + ',0 0,' + cellSize +
++        ' -' + cellSize + ',0 0,-' + cellSize + 'z ';
++      qrSvg += '<svg version="1.1" xmlns="http://www.w3.org/2000/svg"';
++      qrSvg += !opts.scalable ? ' width="' + size + 'px" height="' + size + 'px"' : '';
++      qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" ';
++      qrSvg += ' preserveAspectRatio="xMinYMin meet"';
++      qrSvg += (title.text || alt.text) ? ' role="img" aria-labelledby="' +
++          escapeXml([title.id, alt.id].join(' ').trim() ) + '"' : '';
++      qrSvg += '>';
++      qrSvg += (title.text) ? '<title id="' + escapeXml(title.id) + '">' +
++          escapeXml(title.text) + '</title>' : '';
++      qrSvg += (alt.text) ? '<description id="' + escapeXml(alt.id) + '">' +
++          escapeXml(alt.text) + '</description>' : '';
++      qrSvg += '<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>';
++      qrSvg += '<path d="';
++      for (r = 0; r < _this.getModuleCount(); r += 1) {
++        mr = r * cellSize + margin;
++        for (c = 0; c < _this.getModuleCount(); c += 1) {
++          if (_this.isDark(r, c) ) {
++            mc = c*cellSize+margin;
++            qrSvg += 'M' + mc + ',' + mr + rect;
++          }
++        }
++      }
++      qrSvg += '" stroke="transparent" fill="black"/>';
++      qrSvg += '</svg>';
++      return qrSvg;
++    };
++    _this.createDataURL = function(cellSize, margin) {
++      cellSize = cellSize || 2;
++      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
++      var size = _this.getModuleCount() * cellSize + margin * 2;
++      var min = margin;
++      var max = size - margin;
++      return createDataURL(size, size, function(x, y) {
++        if (min <= x && x < max && min <= y && y < max) {
++          var c = Math.floor( (x - min) / cellSize);
++          var r = Math.floor( (y - min) / cellSize);
++          return _this.isDark(r, c)? 0 : 1;
++        } else {
++          return 1;
++        }
++      } );
++    };
++    _this.createImgTag = function(cellSize, margin, alt) {
++      cellSize = cellSize || 2;
++      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
++      var size = _this.getModuleCount() * cellSize + margin * 2;
++      var img = '';
++      img += '<img';
++      img += '\u0020src="';
++      img += _this.createDataURL(cellSize, margin);
++      img += '"';
++      img += '\u0020width="';
++      img += size;
++      img += '"';
++      img += '\u0020height="';
++      img += size;
++      img += '"';
++      if (alt) {
++        img += '\u0020alt="';
++        img += escapeXml(alt);
++        img += '"';
++      }
++      img += '/>';
++      return img;
++    };
++    var escapeXml = function(s) {
++      var escaped = '';
++      for (var i = 0; i < s.length; i += 1) {
++        var c = s.charAt(i);
++        switch(c) {
++        case '<': escaped += '&lt;'; break;
++        case '>': escaped += '&gt;'; break;
++        case '&': escaped += '&amp;'; break;
++        case '"': escaped += '&quot;'; break;
++        default : escaped += c; break;
++        }
++      }
++      return escaped;
++    };
++    var _createHalfASCII = function(margin) {
++      var cellSize = 1;
++      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
++      var size = _this.getModuleCount() * cellSize + margin * 2;
++      var min = margin;
++      var max = size - margin;
++      var y, x, r1, r2, p;
++      var blocks = {
++        '██': '█',
++        '█ ': '▀',
++        ' █': '▄',
++        '  ': ' '
++      };
++      var blocksLastLineNoMargin = {
++        '██': '▀',
++        '█ ': '▀',
++        ' █': ' ',
++        '  ': ' '
++      };
++      var ascii = '';
++      for (y = 0; y < size; y += 2) {
++        r1 = Math.floor((y - min) / cellSize);
++        r2 = Math.floor((y + 1 - min) / cellSize);
++        for (x = 0; x < size; x += 1) {
++          p = '█';
++          if (min <= x && x < max && min <= y && y < max && _this.isDark(r1, Math.floor((x - min) / cellSize))) {
++            p = ' ';
++          }
++          if (min <= x && x < max && min <= y+1 && y+1 < max && _this.isDark(r2, Math.floor((x - min) / cellSize))) {
++            p += ' ';
++          }
++          else {
++            p += '█';
++          }
++          ascii += (margin < 1 && y+1 >= max) ? blocksLastLineNoMargin[p] : blocks[p];
++        }
++        ascii += '\n';
++      }
++      if (size % 2 && margin > 0) {
++        return ascii.substring(0, ascii.length - size - 1) + Array(size+1).join('▀');
++      }
++      return ascii.substring(0, ascii.length-1);
++    };
++    _this.createASCII = function(cellSize, margin) {
++      cellSize = cellSize || 1;
++      if (cellSize < 2) {
++        return _createHalfASCII(margin);
++      }
++      cellSize -= 1;
++      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
++      var size = _this.getModuleCount() * cellSize + margin * 2;
++      var min = margin;
++      var max = size - margin;
++      var y, x, r, p;
++      var white = Array(cellSize+1).join('██');
++      var black = Array(cellSize+1).join('  ');
++      var ascii = '';
++      var line = '';
++      for (y = 0; y < size; y += 1) {
++        r = Math.floor( (y - min) / cellSize);
++        line = '';
++        for (x = 0; x < size; x += 1) {
++          p = 1;
++          if (min <= x && x < max && min <= y && y < max && _this.isDark(r, Math.floor((x - min) / cellSize))) {
++            p = 0;
++          }
++          line += p ? white : black;
++        }
++        for (r = 0; r < cellSize; r += 1) {
++          ascii += line + '\n';
++        }
++      }
++      return ascii.substring(0, ascii.length-1);
++    };
++    _this.renderTo2dContext = function(context, cellSize) {
++      cellSize = cellSize || 2;
++      var length = _this.getModuleCount();
++      for (var row = 0; row < length; row++) {
++        for (var col = 0; col < length; col++) {
++          context.fillStyle = _this.isDark(row, col) ? 'black' : 'white';
++          context.fillRect(row * cellSize, col * cellSize, cellSize, cellSize);
++        }
++      }
++    }
++    return _this;
++  };
++  qrcode.stringToBytesFuncs = {
++    'default' : function(s) {
++      var bytes = [];
++      for (var i = 0; i < s.length; i += 1) {
++        var c = s.charCodeAt(i);
++        bytes.push(c & 0xff);
++      }
++      return bytes;
++    }
++  };
++  qrcode.stringToBytes = qrcode.stringToBytesFuncs['default'];
++  /**
++   * @param unicodeData base64 string of byte array.
++   * [16bit Unicode],[16bit Bytes], ...
++   * @param numChars
++   */
++  qrcode.createStringToBytes = function(unicodeData, numChars) {
++    var unicodeMap = function() {
++      var bin = base64DecodeInputStream(unicodeData);
++      var read = function() {
++        var b = bin.read();
++        if (b == -1) throw 'eof';
++        return b;
++      };
++      var count = 0;
++      var unicodeMap = {};
++      while (true) {
++        var b0 = bin.read();
++        if (b0 == -1) break;
++        var b1 = read();
++        var b2 = read();
++        var b3 = read();
++        var k = String.fromCharCode( (b0 << 8) | b1);
++        var v = (b2 << 8) | b3;
++        unicodeMap[k] = v;
++        count += 1;
++      }
++      if (count != numChars) {
++        throw count + ' != ' + numChars;
++      }
++      return unicodeMap;
++    }();
++    var unknownChar = '?'.charCodeAt(0);
++    return function(s) {
++      var bytes = [];
++      for (var i = 0; i < s.length; i += 1) {
++        var c = s.charCodeAt(i);
++        if (c < 128) {
++          bytes.push(c);
++        } else {
++          var b = unicodeMap[s.charAt(i)];
++          if (typeof b == 'number') {
++            if ( (b & 0xff) == b) {
++              bytes.push(b);
++            } else {
++              bytes.push(b >>> 8);
++              bytes.push(b & 0xff);
++            }
++          } else {
++            bytes.push(unknownChar);
++          }
++        }
++      }
++      return bytes;
++    };
++  };
++  var QRMode = {
++    MODE_NUMBER :    1 << 0,
++    MODE_ALPHA_NUM : 1 << 1,
++    MODE_8BIT_BYTE : 1 << 2,
++    MODE_KANJI :     1 << 3
++  };
++  var QRErrorCorrectionLevel = {
++    L : 1,
++    M : 0,
++    Q : 3,
++    H : 2
++  };
++  var QRMaskPattern = {
++    PATTERN000 : 0,
++    PATTERN001 : 1,
++    PATTERN010 : 2,
++    PATTERN011 : 3,
++    PATTERN100 : 4,
++    PATTERN101 : 5,
++    PATTERN110 : 6,
++    PATTERN111 : 7
++  };
++  var QRUtil = function() {
++    var PATTERN_POSITION_TABLE = [
++      [],
++      [6, 18],
++      [6, 22],
++      [6, 26],
++      [6, 30],
++      [6, 34],
++      [6, 22, 38],
++      [6, 24, 42],
++      [6, 26, 46],
++      [6, 28, 50],
++      [6, 30, 54],
++      [6, 32, 58],
++      [6, 34, 62],
++      [6, 26, 46, 66],
++      [6, 26, 48, 70],
++      [6, 26, 50, 74],
++      [6, 30, 54, 78],
++      [6, 30, 56, 82],
++      [6, 30, 58, 86],
++      [6, 34, 62, 90],
++      [6, 28, 50, 72, 94],
++      [6, 26, 50, 74, 98],
++      [6, 30, 54, 78, 102],
++      [6, 28, 54, 80, 106],
++      [6, 32, 58, 84, 110],
++      [6, 30, 58, 86, 114],
++      [6, 34, 62, 90, 118],
++      [6, 26, 50, 74, 98, 122],
++      [6, 30, 54, 78, 102, 126],
++      [6, 26, 52, 78, 104, 130],
++      [6, 30, 56, 82, 108, 134],
++      [6, 34, 60, 86, 112, 138],
++      [6, 30, 58, 86, 114, 142],
++      [6, 34, 62, 90, 118, 146],
++      [6, 30, 54, 78, 102, 126, 150],
++      [6, 24, 50, 76, 102, 128, 154],
++      [6, 28, 54, 80, 106, 132, 158],
++      [6, 32, 58, 84, 110, 136, 162],
++      [6, 26, 54, 82, 110, 138, 166],
++      [6, 30, 58, 86, 114, 142, 170]
++    ];
++    var G15 = (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0);
++    var G18 = (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0);
++    var G15_MASK = (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1);
++    var _this = {};
++    var getBCHDigit = function(data) {
++      var digit = 0;
++      while (data != 0) {
++        digit += 1;
++        data >>>= 1;
++      }
++      return digit;
++    };
++    _this.getBCHTypeInfo = function(data) {
++      var d = data << 10;
++      while (getBCHDigit(d) - getBCHDigit(G15) >= 0) {
++        d ^= (G15 << (getBCHDigit(d) - getBCHDigit(G15) ) );
++      }
++      return ( (data << 10) | d) ^ G15_MASK;
++    };
++    _this.getBCHTypeNumber = function(data) {
++      var d = data << 12;
++      while (getBCHDigit(d) - getBCHDigit(G18) >= 0) {
++        d ^= (G18 << (getBCHDigit(d) - getBCHDigit(G18) ) );
++      }
++      return (data << 12) | d;
++    };
++    _this.getPatternPosition = function(typeNumber) {
++      return PATTERN_POSITION_TABLE[typeNumber - 1];
++    };
++    _this.getMaskFunction = function(maskPattern) {
++      switch (maskPattern) {
++      case QRMaskPattern.PATTERN000 :
++        return function(i, j) { return (i + j) % 2 == 0; };
++      case QRMaskPattern.PATTERN001 :
++        return function(i, j) { return i % 2 == 0; };
++      case QRMaskPattern.PATTERN010 :
++        return function(i, j) { return j % 3 == 0; };
++      case QRMaskPattern.PATTERN011 :
++        return function(i, j) { return (i + j) % 3 == 0; };
++      case QRMaskPattern.PATTERN100 :
++        return function(i, j) { return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 == 0; };
++      case QRMaskPattern.PATTERN101 :
++        return function(i, j) { return (i * j) % 2 + (i * j) % 3 == 0; };
++      case QRMaskPattern.PATTERN110 :
++        return function(i, j) { return ( (i * j) % 2 + (i * j) % 3) % 2 == 0; };
++      case QRMaskPattern.PATTERN111 :
++        return function(i, j) { return ( (i * j) % 3 + (i + j) % 2) % 2 == 0; };
++      default :
++        throw 'bad maskPattern:' + maskPattern;
++      }
++    };
++    _this.getErrorCorrectPolynomial = function(errorCorrectLength) {
++      var a = qrPolynomial([1], 0);
++      for (var i = 0; i < errorCorrectLength; i += 1) {
++        a = a.multiply(qrPolynomial([1, QRMath.gexp(i)], 0) );
++      }
++      return a;
++    };
++    _this.getLengthInBits = function(mode, type) {
++      if (1 <= type && type < 10) {
++        switch(mode) {
++        case QRMode.MODE_NUMBER    : return 10;
++        case QRMode.MODE_ALPHA_NUM : return 9;
++        case QRMode.MODE_8BIT_BYTE : return 8;
++        case QRMode.MODE_KANJI     : return 8;
++        default :
++          throw 'mode:' + mode;
++        }
++      } else if (type < 27) {
++        switch(mode) {
++        case QRMode.MODE_NUMBER    : return 12;
++        case QRMode.MODE_ALPHA_NUM : return 11;
++        case QRMode.MODE_8BIT_BYTE : return 16;
++        case QRMode.MODE_KANJI     : return 10;
++        default :
++          throw 'mode:' + mode;
++        }
++      } else if (type < 41) {
++        switch(mode) {
++        case QRMode.MODE_NUMBER    : return 14;
++        case QRMode.MODE_ALPHA_NUM : return 13;
++        case QRMode.MODE_8BIT_BYTE : return 16;
++        case QRMode.MODE_KANJI     : return 12;
++        default :
++          throw 'mode:' + mode;
++        }
++      } else {
++        throw 'type:' + type;
++      }
++    };
++    _this.getLostPoint = function(qrcode) {
++      var moduleCount = qrcode.getModuleCount();
++      var lostPoint = 0;
++      for (var row = 0; row < moduleCount; row += 1) {
++        for (var col = 0; col < moduleCount; col += 1) {
++          var sameCount = 0;
++          var dark = qrcode.isDark(row, col);
++          for (var r = -1; r <= 1; r += 1) {
++            if (row + r < 0 || moduleCount <= row + r) {
++              continue;
++            }
++            for (var c = -1; c <= 1; c += 1) {
++              if (col + c < 0 || moduleCount <= col + c) {
++                continue;
++              }
++              if (r == 0 && c == 0) {
++                continue;
++              }
++              if (dark == qrcode.isDark(row + r, col + c) ) {
++                sameCount += 1;
++              }
++            }
++          }
++          if (sameCount > 5) {
++            lostPoint += (3 + sameCount - 5);
++          }
++        }
++      };
++      for (var row = 0; row < moduleCount - 1; row += 1) {
++        for (var col = 0; col < moduleCount - 1; col += 1) {
++          var count = 0;
++          if (qrcode.isDark(row, col) ) count += 1;
++          if (qrcode.isDark(row + 1, col) ) count += 1;
++          if (qrcode.isDark(row, col + 1) ) count += 1;
++          if (qrcode.isDark(row + 1, col + 1) ) count += 1;
++          if (count == 0 || count == 4) {
++            lostPoint += 3;
++          }
++        }
++      }
++      for (var row = 0; row < moduleCount; row += 1) {
++        for (var col = 0; col < moduleCount - 6; col += 1) {
++          if (qrcode.isDark(row, col)
++              && !qrcode.isDark(row, col + 1)
++              &&  qrcode.isDark(row, col + 2)
++              &&  qrcode.isDark(row, col + 3)
++              &&  qrcode.isDark(row, col + 4)
++              && !qrcode.isDark(row, col + 5)
++              &&  qrcode.isDark(row, col + 6) ) {
++            lostPoint += 40;
++          }
++        }
++      }
++      for (var col = 0; col < moduleCount; col += 1) {
++        for (var row = 0; row < moduleCount - 6; row += 1) {
++          if (qrcode.isDark(row, col)
++              && !qrcode.isDark(row + 1, col)
++              &&  qrcode.isDark(row + 2, col)
++              &&  qrcode.isDark(row + 3, col)
++              &&  qrcode.isDark(row + 4, col)
++              && !qrcode.isDark(row + 5, col)
++              &&  qrcode.isDark(row + 6, col) ) {
++            lostPoint += 40;
++          }
++        }
++      }
++      var darkCount = 0;
++      for (var col = 0; col < moduleCount; col += 1) {
++        for (var row = 0; row < moduleCount; row += 1) {
++          if (qrcode.isDark(row, col) ) {
++            darkCount += 1;
++          }
++        }
++      }
++      var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
++      lostPoint += ratio * 10;
++      return lostPoint;
++    };
++    return _this;
++  }();
++  var QRMath = function() {
++    var EXP_TABLE = new Array(256);
++    var LOG_TABLE = new Array(256);
++    for (var i = 0; i < 8; i += 1) {
++      EXP_TABLE[i] = 1 << i;
++    }
++    for (var i = 8; i < 256; i += 1) {
++      EXP_TABLE[i] = EXP_TABLE[i - 4]
++        ^ EXP_TABLE[i - 5]
++        ^ EXP_TABLE[i - 6]
++        ^ EXP_TABLE[i - 8];
++    }
++    for (var i = 0; i < 255; i += 1) {
++      LOG_TABLE[EXP_TABLE[i] ] = i;
++    }
++    var _this = {};
++    _this.glog = function(n) {
++      if (n < 1) {
++        throw 'glog(' + n + ')';
++      }
++      return LOG_TABLE[n];
++    };
++    _this.gexp = function(n) {
++      while (n < 0) {
++        n += 255;
++      }
++      while (n >= 256) {
++        n -= 255;
++      }
++      return EXP_TABLE[n];
++    };
++    return _this;
++  }();
++  function qrPolynomial(num, shift) {
++    if (typeof num.length == 'undefined') {
++      throw num.length + '/' + shift;
++    }
++    var _num = function() {
++      var offset = 0;
++      while (offset < num.length && num[offset] == 0) {
++        offset += 1;
++      }
++      var _num = new Array(num.length - offset + shift);
++      for (var i = 0; i < num.length - offset; i += 1) {
++        _num[i] = num[i + offset];
++      }
++      return _num;
++    }();
++    var _this = {};
++    _this.getAt = function(index) {
++      return _num[index];
++    };
++    _this.getLength = function() {
++      return _num.length;
++    };
++    _this.multiply = function(e) {
++      var num = new Array(_this.getLength() + e.getLength() - 1);
++      for (var i = 0; i < _this.getLength(); i += 1) {
++        for (var j = 0; j < e.getLength(); j += 1) {
++          num[i + j] ^= QRMath.gexp(QRMath.glog(_this.getAt(i) ) + QRMath.glog(e.getAt(j) ) );
++        }
++      }
++      return qrPolynomial(num, 0);
++    };
++    _this.mod = function(e) {
++      if (_this.getLength() - e.getLength() < 0) {
++        return _this;
++      }
++      var ratio = QRMath.glog(_this.getAt(0) ) - QRMath.glog(e.getAt(0) );
++      var num = new Array(_this.getLength() );
++      for (var i = 0; i < _this.getLength(); i += 1) {
++        num[i] = _this.getAt(i);
++      }
++      for (var i = 0; i < e.getLength(); i += 1) {
++        num[i] ^= QRMath.gexp(QRMath.glog(e.getAt(i) ) + ratio);
++      }
++      return qrPolynomial(num, 0).mod(e);
++    };
++    return _this;
++  };
++  var QRRSBlock = function() {
++    var RS_BLOCK_TABLE = [
++      [1, 26, 19],
++      [1, 26, 16],
++      [1, 26, 13],
++      [1, 26, 9],
++      [1, 44, 34],
++      [1, 44, 28],
++      [1, 44, 22],
++      [1, 44, 16],
++      [1, 70, 55],
++      [1, 70, 44],
++      [2, 35, 17],
++      [2, 35, 13],
++      [1, 100, 80],
++      [2, 50, 32],
++      [2, 50, 24],
++      [4, 25, 9],
++      [1, 134, 108],
++      [2, 67, 43],
++      [2, 33, 15, 2, 34, 16],
++      [2, 33, 11, 2, 34, 12],
++      [2, 86, 68],
++      [4, 43, 27],
++      [4, 43, 19],
++      [4, 43, 15],
++      [2, 98, 78],
++      [4, 49, 31],
++      [2, 32, 14, 4, 33, 15],
++      [4, 39, 13, 1, 40, 14],
++      [2, 121, 97],
++      [2, 60, 38, 2, 61, 39],
++      [4, 40, 18, 2, 41, 19],
++      [4, 40, 14, 2, 41, 15],
++      [2, 146, 116],
++      [3, 58, 36, 2, 59, 37],
++      [4, 36, 16, 4, 37, 17],
++      [4, 36, 12, 4, 37, 13],
++      [2, 86, 68, 2, 87, 69],
++      [4, 69, 43, 1, 70, 44],
++      [6, 43, 19, 2, 44, 20],
++      [6, 43, 15, 2, 44, 16],
++      [4, 101, 81],
++      [1, 80, 50, 4, 81, 51],
++      [4, 50, 22, 4, 51, 23],
++      [3, 36, 12, 8, 37, 13],
++      [2, 116, 92, 2, 117, 93],
++      [6, 58, 36, 2, 59, 37],
++      [4, 46, 20, 6, 47, 21],
++      [7, 42, 14, 4, 43, 15],
++      [4, 133, 107],
++      [8, 59, 37, 1, 60, 38],
++      [8, 44, 20, 4, 45, 21],
++      [12, 33, 11, 4, 34, 12],
++      [3, 145, 115, 1, 146, 116],
++      [4, 64, 40, 5, 65, 41],
++      [11, 36, 16, 5, 37, 17],
++      [11, 36, 12, 5, 37, 13],
++      [5, 109, 87, 1, 110, 88],
++      [5, 65, 41, 5, 66, 42],
++      [5, 54, 24, 7, 55, 25],
++      [11, 36, 12, 7, 37, 13],
++      [5, 122, 98, 1, 123, 99],
++      [7, 73, 45, 3, 74, 46],
++      [15, 43, 19, 2, 44, 20],
++      [3, 45, 15, 13, 46, 16],
++      [1, 135, 107, 5, 136, 108],
++      [10, 74, 46, 1, 75, 47],
++      [1, 50, 22, 15, 51, 23],
++      [2, 42, 14, 17, 43, 15],
++      [5, 150, 120, 1, 151, 121],
++      [9, 69, 43, 4, 70, 44],
++      [17, 50, 22, 1, 51, 23],
++      [2, 42, 14, 19, 43, 15],
++      [3, 141, 113, 4, 142, 114],
++      [3, 70, 44, 11, 71, 45],
++      [17, 47, 21, 4, 48, 22],
++      [9, 39, 13, 16, 40, 14],
++      [3, 135, 107, 5, 136, 108],
++      [3, 67, 41, 13, 68, 42],
++      [15, 54, 24, 5, 55, 25],
++      [15, 43, 15, 10, 44, 16],
++      [4, 144, 116, 4, 145, 117],
++      [17, 68, 42],
++      [17, 50, 22, 6, 51, 23],
++      [19, 46, 16, 6, 47, 17],
++      [2, 139, 111, 7, 140, 112],
++      [17, 74, 46],
++      [7, 54, 24, 16, 55, 25],
++      [34, 37, 13],
++      [4, 151, 121, 5, 152, 122],
++      [4, 75, 47, 14, 76, 48],
++      [11, 54, 24, 14, 55, 25],
++      [16, 45, 15, 14, 46, 16],
++      [6, 147, 117, 4, 148, 118],
++      [6, 73, 45, 14, 74, 46],
++      [11, 54, 24, 16, 55, 25],
++      [30, 46, 16, 2, 47, 17],
++      [8, 132, 106, 4, 133, 107],
++      [8, 75, 47, 13, 76, 48],
++      [7, 54, 24, 22, 55, 25],
++      [22, 45, 15, 13, 46, 16],
++      [10, 142, 114, 2, 143, 115],
++      [19, 74, 46, 4, 75, 47],
++      [28, 50, 22, 6, 51, 23],
++      [33, 46, 16, 4, 47, 17],
++      [8, 152, 122, 4, 153, 123],
++      [22, 73, 45, 3, 74, 46],
++      [8, 53, 23, 26, 54, 24],
++      [12, 45, 15, 28, 46, 16],
++      [3, 147, 117, 10, 148, 118],
++      [3, 73, 45, 23, 74, 46],
++      [4, 54, 24, 31, 55, 25],
++      [11, 45, 15, 31, 46, 16],
++      [7, 146, 116, 7, 147, 117],
++      [21, 73, 45, 7, 74, 46],
++      [1, 53, 23, 37, 54, 24],
++      [19, 45, 15, 26, 46, 16],
++      [5, 145, 115, 10, 146, 116],
++      [19, 75, 47, 10, 76, 48],
++      [15, 54, 24, 25, 55, 25],
++      [23, 45, 15, 25, 46, 16],
++      [13, 145, 115, 3, 146, 116],
++      [2, 74, 46, 29, 75, 47],
++      [42, 54, 24, 1, 55, 25],
++      [23, 45, 15, 28, 46, 16],
++      [17, 145, 115],
++      [10, 74, 46, 23, 75, 47],
++      [10, 54, 24, 35, 55, 25],
++      [19, 45, 15, 35, 46, 16],
++      [17, 145, 115, 1, 146, 116],
++      [14, 74, 46, 21, 75, 47],
++      [29, 54, 24, 19, 55, 25],
++      [11, 45, 15, 46, 46, 16],
++      [13, 145, 115, 6, 146, 116],
++      [14, 74, 46, 23, 75, 47],
++      [44, 54, 24, 7, 55, 25],
++      [59, 46, 16, 1, 47, 17],
++      [12, 151, 121, 7, 152, 122],
++      [12, 75, 47, 26, 76, 48],
++      [39, 54, 24, 14, 55, 25],
++      [22, 45, 15, 41, 46, 16],
++      [6, 151, 121, 14, 152, 122],
++      [6, 75, 47, 34, 76, 48],
++      [46, 54, 24, 10, 55, 25],
++      [2, 45, 15, 64, 46, 16],
++      [17, 152, 122, 4, 153, 123],
++      [29, 74, 46, 14, 75, 47],
++      [49, 54, 24, 10, 55, 25],
++      [24, 45, 15, 46, 46, 16],
++      [4, 152, 122, 18, 153, 123],
++      [13, 74, 46, 32, 75, 47],
++      [48, 54, 24, 14, 55, 25],
++      [42, 45, 15, 32, 46, 16],
++      [20, 147, 117, 4, 148, 118],
++      [40, 75, 47, 7, 76, 48],
++      [43, 54, 24, 22, 55, 25],
++      [10, 45, 15, 67, 46, 16],
++      [19, 148, 118, 6, 149, 119],
++      [18, 75, 47, 31, 76, 48],
++      [34, 54, 24, 34, 55, 25],
++      [20, 45, 15, 61, 46, 16]
++    ];
++    var qrRSBlock = function(totalCount, dataCount) {
++      var _this = {};
++      _this.totalCount = totalCount;
++      _this.dataCount = dataCount;
++      return _this;
++    };
++    var _this = {};
++    var getRsBlockTable = function(typeNumber, errorCorrectionLevel) {
++      switch(errorCorrectionLevel) {
++      case QRErrorCorrectionLevel.L :
++        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
++      case QRErrorCorrectionLevel.M :
++        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
++      case QRErrorCorrectionLevel.Q :
++        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
++      case QRErrorCorrectionLevel.H :
++        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
++      default :
++        return undefined;
++      }
++    };
++    _this.getRSBlocks = function(typeNumber, errorCorrectionLevel) {
++      var rsBlock = getRsBlockTable(typeNumber, errorCorrectionLevel);
++      if (typeof rsBlock == 'undefined') {
++        throw 'bad rs block @ typeNumber:' + typeNumber +
++            '/errorCorrectionLevel:' + errorCorrectionLevel;
++      }
++      var length = rsBlock.length / 3;
++      var list = [];
++      for (var i = 0; i < length; i += 1) {
++        var count = rsBlock[i * 3 + 0];
++        var totalCount = rsBlock[i * 3 + 1];
++        var dataCount = rsBlock[i * 3 + 2];
++        for (var j = 0; j < count; j += 1) {
++          list.push(qrRSBlock(totalCount, dataCount) );
++        }
++      }
++      return list;
++    };
++    return _this;
++  }();
++  var qrBitBuffer = function() {
++    var _buffer = [];
++    var _length = 0;
++    var _this = {};
++    _this.getBuffer = function() {
++      return _buffer;
++    };
++    _this.getAt = function(index) {
++      var bufIndex = Math.floor(index / 8);
++      return ( (_buffer[bufIndex] >>> (7 - index % 8) ) & 1) == 1;
++    };
++    _this.put = function(num, length) {
++      for (var i = 0; i < length; i += 1) {
++        _this.putBit( ( (num >>> (length - i - 1) ) & 1) == 1);
++      }
++    };
++    _this.getLengthInBits = function() {
++      return _length;
++    };
++    _this.putBit = function(bit) {
++      var bufIndex = Math.floor(_length / 8);
++      if (_buffer.length <= bufIndex) {
++        _buffer.push(0);
++      }
++      if (bit) {
++        _buffer[bufIndex] |= (0x80 >>> (_length % 8) );
++      }
++      _length += 1;
++    };
++    return _this;
++  };
++  var qrNumber = function(data) {
++    var _mode = QRMode.MODE_NUMBER;
++    var _data = data;
++    var _this = {};
++    _this.getMode = function() {
++      return _mode;
++    };
++    _this.getLength = function(buffer) {
++      return _data.length;
++    };
++    _this.write = function(buffer) {
++      var data = _data;
++      var i = 0;
++      while (i + 2 < data.length) {
++        buffer.put(strToNum(data.substring(i, i + 3) ), 10);
++        i += 3;
++      }
++      if (i < data.length) {
++        if (data.length - i == 1) {
++          buffer.put(strToNum(data.substring(i, i + 1) ), 4);
++        } else if (data.length - i == 2) {
++          buffer.put(strToNum(data.substring(i, i + 2) ), 7);
++        }
++      }
++    };
++    var strToNum = function(s) {
++      var num = 0;
++      for (var i = 0; i < s.length; i += 1) {
++        num = num * 10 + chatToNum(s.charAt(i) );
++      }
++      return num;
++    };
++    var chatToNum = function(c) {
++      if ('0' <= c && c <= '9') {
++        return c.charCodeAt(0) - '0'.charCodeAt(0);
++      }
++      throw 'illegal char :' + c;
++    };
++    return _this;
++  };
++  var qrAlphaNum = function(data) {
++    var _mode = QRMode.MODE_ALPHA_NUM;
++    var _data = data;
++    var _this = {};
++    _this.getMode = function() {
++      return _mode;
++    };
++    _this.getLength = function(buffer) {
++      return _data.length;
++    };
++    _this.write = function(buffer) {
++      var s = _data;
++      var i = 0;
++      while (i + 1 < s.length) {
++        buffer.put(
++          getCode(s.charAt(i) ) * 45 +
++          getCode(s.charAt(i + 1) ), 11);
++        i += 2;
++      }
++      if (i < s.length) {
++        buffer.put(getCode(s.charAt(i) ), 6);
++      }
++    };
++    var getCode = function(c) {
++      if ('0' <= c && c <= '9') {
++        return c.charCodeAt(0) - '0'.charCodeAt(0);
++      } else if ('A' <= c && c <= 'Z') {
++        return c.charCodeAt(0) - 'A'.charCodeAt(0) + 10;
++      } else {
++        switch (c) {
++        case ' ' : return 36;
++        case '$' : return 37;
++        case '%' : return 38;
++        case '*' : return 39;
++        case '+' : return 40;
++        case '-' : return 41;
++        case '.' : return 42;
++        case '/' : return 43;
++        case ':' : return 44;
++        default :
++          throw 'illegal char :' + c;
++        }
++      }
++    };
++    return _this;
++  };
++  var qr8BitByte = function(data) {
++    var _mode = QRMode.MODE_8BIT_BYTE;
++    var _data = data;
++    var _bytes = qrcode.stringToBytes(data);
++    var _this = {};
++    _this.getMode = function() {
++      return _mode;
++    };
++    _this.getLength = function(buffer) {
++      return _bytes.length;
++    };
++    _this.write = function(buffer) {
++      for (var i = 0; i < _bytes.length; i += 1) {
++        buffer.put(_bytes[i], 8);
++      }
++    };
++    return _this;
++  };
++  var qrKanji = function(data) {
++    var _mode = QRMode.MODE_KANJI;
++    var _data = data;
++    var stringToBytes = qrcode.stringToBytesFuncs['SJIS'];
++    if (!stringToBytes) {
++      throw 'sjis not supported.';
++    }
++    !function(c, code) {
++      var test = stringToBytes(c);
++      if (test.length != 2 || ( (test[0] << 8) | test[1]) != code) {
++        throw 'sjis not supported.';
++      }
++    }('\u53cb', 0x9746);
++    var _bytes = stringToBytes(data);
++    var _this = {};
++    _this.getMode = function() {
++      return _mode;
++    };
++    _this.getLength = function(buffer) {
++      return ~~(_bytes.length / 2);
++    };
++    _this.write = function(buffer) {
++      var data = _bytes;
++      var i = 0;
++      while (i + 1 < data.length) {
++        var c = ( (0xff & data[i]) << 8) | (0xff & data[i + 1]);
++        if (0x8140 <= c && c <= 0x9FFC) {
++          c -= 0x8140;
++        } else if (0xE040 <= c && c <= 0xEBBF) {
++          c -= 0xC140;
++        } else {
++          throw 'illegal char at ' + (i + 1) + '/' + c;
++        }
++        c = ( (c >>> 8) & 0xff) * 0xC0 + (c & 0xff);
++        buffer.put(c, 13);
++        i += 2;
++      }
++      if (i < data.length) {
++        throw 'illegal char at ' + (i + 1);
++      }
++    };
++    return _this;
++  };
++  var byteArrayOutputStream = function() {
++    var _bytes = [];
++    var _this = {};
++    _this.writeByte = function(b) {
++      _bytes.push(b & 0xff);
++    };
++    _this.writeShort = function(i) {
++      _this.writeByte(i);
++      _this.writeByte(i >>> 8);
++    };
++    _this.writeBytes = function(b, off, len) {
++      off = off || 0;
++      len = len || b.length;
++      for (var i = 0; i < len; i += 1) {
++        _this.writeByte(b[i + off]);
++      }
++    };
++    _this.writeString = function(s) {
++      for (var i = 0; i < s.length; i += 1) {
++        _this.writeByte(s.charCodeAt(i) );
++      }
++    };
++    _this.toByteArray = function() {
++      return _bytes;
++    };
++    _this.toString = function() {
++      var s = '';
++      s += '[';
++      for (var i = 0; i < _bytes.length; i += 1) {
++        if (i > 0) {
++          s += ',';
++        }
++        s += _bytes[i];
++      }
++      s += ']';
++      return s;
++    };
++    return _this;
++  };
++  var base64EncodeOutputStream = function() {
++    var _buffer = 0;
++    var _buflen = 0;
++    var _length = 0;
++    var _base64 = '';
++    var _this = {};
++    var writeEncoded = function(b) {
++      _base64 += String.fromCharCode(encode(b & 0x3f) );
++    };
++    var encode = function(n) {
++      if (n < 0) {
++      } else if (n < 26) {
++        return 0x41 + n;
++      } else if (n < 52) {
++        return 0x61 + (n - 26);
++      } else if (n < 62) {
++        return 0x30 + (n - 52);
++      } else if (n == 62) {
++        return 0x2b;
++      } else if (n == 63) {
++        return 0x2f;
++      }
++      throw 'n:' + n;
++    };
++    _this.writeByte = function(n) {
++      _buffer = (_buffer << 8) | (n & 0xff);
++      _buflen += 8;
++      _length += 1;
++      while (_buflen >= 6) {
++        writeEncoded(_buffer >>> (_buflen - 6) );
++        _buflen -= 6;
++      }
++    };
++    _this.flush = function() {
++      if (_buflen > 0) {
++        writeEncoded(_buffer << (6 - _buflen) );
++        _buffer = 0;
++        _buflen = 0;
++      }
++      if (_length % 3 != 0) {
++        var padlen = 3 - _length % 3;
++        for (var i = 0; i < padlen; i += 1) {
++          _base64 += '=';
++        }
++      }
++    };
++    _this.toString = function() {
++      return _base64;
++    };
++    return _this;
++  };
++  var base64DecodeInputStream = function(str) {
++    var _str = str;
++    var _pos = 0;
++    var _buffer = 0;
++    var _buflen = 0;
++    var _this = {};
++    _this.read = function() {
++      while (_buflen < 8) {
++        if (_pos >= _str.length) {
++          if (_buflen == 0) {
++            return -1;
++          }
++          throw 'unexpected end of file./' + _buflen;
++        }
++        var c = _str.charAt(_pos);
++        _pos += 1;
++        if (c == '=') {
++          _buflen = 0;
++          return -1;
++        } else if (c.match(/^\s$/) ) {
++          continue;
++        }
++        _buffer = (_buffer << 6) | decode(c.charCodeAt(0) );
++        _buflen += 6;
++      }
++      var n = (_buffer >>> (_buflen - 8) ) & 0xff;
++      _buflen -= 8;
++      return n;
++    };
++    var decode = function(c) {
++      if (0x41 <= c && c <= 0x5a) {
++        return c - 0x41;
++      } else if (0x61 <= c && c <= 0x7a) {
++        return c - 0x61 + 26;
++      } else if (0x30 <= c && c <= 0x39) {
++        return c - 0x30 + 52;
++      } else if (c == 0x2b) {
++        return 62;
++      } else if (c == 0x2f) {
++        return 63;
++      } else {
++        throw 'c:' + c;
++      }
++    };
++    return _this;
++  };
++  var gifImage = function(width, height) {
++    var _width = width;
++    var _height = height;
++    var _data = new Array(width * height);
++    var _this = {};
++    _this.setPixel = function(x, y, pixel) {
++      _data[y * _width + x] = pixel;
++    };
++    _this.write = function(out) {
++      out.writeString('GIF87a');
++      out.writeShort(_width);
++      out.writeShort(_height);
++      out.writeByte(0x80); // 2bit
++      out.writeByte(0);
++      out.writeByte(0);
++      out.writeByte(0x00);
++      out.writeByte(0x00);
++      out.writeByte(0x00);
++      out.writeByte(0xff);
++      out.writeByte(0xff);
++      out.writeByte(0xff);
++      out.writeString(',');
++      out.writeShort(0);
++      out.writeShort(0);
++      out.writeShort(_width);
++      out.writeShort(_height);
++      out.writeByte(0);
++      var lzwMinCodeSize = 2;
++      var raster = getLZWRaster(lzwMinCodeSize);
++      out.writeByte(lzwMinCodeSize);
++      var offset = 0;
++      while (raster.length - offset > 255) {
++        out.writeByte(255);
++        out.writeBytes(raster, offset, 255);
++        offset += 255;
++      }
++      out.writeByte(raster.length - offset);
++      out.writeBytes(raster, offset, raster.length - offset);
++      out.writeByte(0x00);
++      out.writeString(';');
++    };
++    var bitOutputStream = function(out) {
++      var _out = out;
++      var _bitLength = 0;
++      var _bitBuffer = 0;
++      var _this = {};
++      _this.write = function(data, length) {
++        if ( (data >>> length) != 0) {
++          throw 'length over';
++        }
++        while (_bitLength + length >= 8) {
++          _out.writeByte(0xff & ( (data << _bitLength) | _bitBuffer) );
++          length -= (8 - _bitLength);
++          data >>>= (8 - _bitLength);
++          _bitBuffer = 0;
++          _bitLength = 0;
++        }
++        _bitBuffer = (data << _bitLength) | _bitBuffer;
++        _bitLength = _bitLength + length;
++      };
++      _this.flush = function() {
++        if (_bitLength > 0) {
++          _out.writeByte(_bitBuffer);
++        }
++      };
++      return _this;
++    };
++    var getLZWRaster = function(lzwMinCodeSize) {
++      var clearCode = 1 << lzwMinCodeSize;
++      var endCode = (1 << lzwMinCodeSize) + 1;
++      var bitLength = lzwMinCodeSize + 1;
++      var table = lzwTable();
++      for (var i = 0; i < clearCode; i += 1) {
++        table.add(String.fromCharCode(i) );
++      }
++      table.add(String.fromCharCode(clearCode) );
++      table.add(String.fromCharCode(endCode) );
++      var byteOut = byteArrayOutputStream();
++      var bitOut = bitOutputStream(byteOut);
++      bitOut.write(clearCode, bitLength);
++      var dataIndex = 0;
++      var s = String.fromCharCode(_data[dataIndex]);
++      dataIndex += 1;
++      while (dataIndex < _data.length) {
++        var c = String.fromCharCode(_data[dataIndex]);
++        dataIndex += 1;
++        if (table.contains(s + c) ) {
++          s = s + c;
++        } else {
++          bitOut.write(table.indexOf(s), bitLength);
++          if (table.size() < 0xfff) {
++            if (table.size() == (1 << bitLength) ) {
++              bitLength += 1;
++            }
++            table.add(s + c);
++          }
++          s = c;
++        }
++      }
++      bitOut.write(table.indexOf(s), bitLength);
++      bitOut.write(endCode, bitLength);
++      bitOut.flush();
++      return byteOut.toByteArray();
++    };
++    var lzwTable = function() {
++      var _map = {};
++      var _size = 0;
++      var _this = {};
++      _this.add = function(key) {
++        if (_this.contains(key) ) {
++          throw 'dup key:' + key;
++        }
++        _map[key] = _size;
++        _size += 1;
++      };
++      _this.size = function() {
++        return _size;
++      };
++      _this.indexOf = function(key) {
++        return _map[key];
++      };
++      _this.contains = function(key) {
++        return typeof _map[key] != 'undefined';
++      };
++      return _this;
++    };
++    return _this;
++  };
++  var createDataURL = function(width, height, getPixel) {
++    var gif = gifImage(width, height);
++    for (var y = 0; y < height; y += 1) {
++      for (var x = 0; x < width; x += 1) {
++        gif.setPixel(x, y, getPixel(x, y) );
++      }
++    }
++    var b = byteArrayOutputStream();
++    gif.write(b);
++    var base64 = base64EncodeOutputStream();
++    var bytes = b.toByteArray();
++    for (var i = 0; i < bytes.length; i += 1) {
++      base64.writeByte(bytes[i]);
++    }
++    base64.flush();
++    return 'data:image/gif;base64,' + base64;
++  };
++  return qrcode;
++}();
++!function() {
++  qrcode.stringToBytesFuncs['UTF-8'] = function(s) {
++    function toUTF8Array(str) {
++      var utf8 = [];
++      for (var i=0; i < str.length; i++) {
++        var charcode = str.charCodeAt(i);
++        if (charcode < 0x80) utf8.push(charcode);
++        else if (charcode < 0x800) {
++          utf8.push(0xc0 | (charcode >> 6),
++              0x80 | (charcode & 0x3f));
++        }
++        else if (charcode < 0xd800 || charcode >= 0xe000) {
++          utf8.push(0xe0 | (charcode >> 12),
++              0x80 | ((charcode>>6) & 0x3f),
++              0x80 | (charcode & 0x3f));
++        }
++        else {
++          i++;
++          charcode = 0x10000 + (((charcode & 0x3ff)<<10)
++            | (str.charCodeAt(i) & 0x3ff));
++          utf8.push(0xf0 | (charcode >>18),
++              0x80 | ((charcode>>12) & 0x3f),
++              0x80 | ((charcode>>6) & 0x3f),
++              0x80 | (charcode & 0x3f));
++        }
++      }
++      return utf8;
++    }
++    return toUTF8Array(s);
++  };
++}();
+diff --git a/src/app/20h-roles-lessons.js b/src/app/20h-roles-lessons.js
+new file mode 100644
+index 0000000..a712dba
+--- /dev/null
++++ b/src/app/20h-roles-lessons.js
+@@ -0,0 +1,93 @@
++  // ---------- two audiences: players (children about 10–12) and teachers ----------
++  // Player mode: games first, step-by-step unlocking, Daily Molecule, challenges, cards; Explore is a simple sandbox (temperature and
++  // amount only) and the technical parts (model parameters, energy scan, readouts, class tools) are hidden.
++  // Teacher mode: everything open from the start, the Lessons panel on top, class mode and class battle; no Daily button, streaks or clips.
++  // The choice: the two buttons on the welcome card, the switch in the header, or a link with ?teacher (or ?player). Kept as mdlab-role.
++  // isTeacher() itself is in 10b-rewards.js, because unlockAll() needs it during start-up.
++  function setRole(r, quiet) {
++    try { localStorage.setItem('mdlab-role', r); } catch (e) {}
++    roleApply(); if (!quiet) say(T(r === 'teacher' ? 'Teacher mode' : 'Player mode'));
++  }
++  function roleApply(init) { // init: during start-up only the classes, the header button and the lessons (the rest is not ready yet)
++    const t = isTeacher(), h = document.documentElement;
++    h.classList.toggle('role-teacher', t); h.classList.toggle('role-player', !t);
++    const b = $('roleBtn'); b.innerHTML = '<span aria-hidden="true">' + (t ? '👩‍🏫' : '🎮') + '</span><span class="rtxt"> ' + T(t ? 'Teacher' : 'Player') + '</span>'; // phones: the icon only
++    b.title = T(t ? 'Teacher mode. Press to switch to player mode.' : 'Player mode. Press to switch to teacher mode.'); b.setAttribute('aria-label', b.title);
++    lessonsRender(); if (init) return;
++    if (!t && classOn) classExit();
++    if (!t && appMode === 'scan') setAppMode('explore');
++    applyLocks(); renderPick(); dailyRender(); tWordShow();
++  }
++  $('roleBtn').addEventListener('click', () => setRole(isTeacher() ? 'player' : 'teacher'));
++  $('tTeach').addEventListener('click', () => { markWel(); welcome = false; tourClose(); setRole('teacher'); lessonsOpen(); });
++  $('tPlay').addEventListener('click', () => setRole('player', true), true); // runs before the guided first game starts
++  (function roleFromLink() { // ?teacher or ?player in the address: a school can bookmark the teacher version
++    const q = location.search; if (!/[?&](teacher|player)(=|&|$)/.test(q)) return;
++    const t = /[?&]teacher(=|&|$)/.test(q); try { localStorage.setItem('mdlab-role', t ? 'teacher' : 'player'); if (t) localStorage.setItem('mdlab-welcome', '1'); } catch (e) {}
++  })();
++
++  // ---- lesson cards (teacher mode): goal, a 10-minute plan, what to point at, questions for the class with short answers ----
++  const LESSONS = [
++    { id: 'ice', icon: '❄️', title: 'Freezing and slow cooling', explore: 'ice', game: 'ice',
++      goal: 'Water freezes when its molecules slow down and lock into place. Cooling slowly gives bigger, clearer crystals.',
++      steps: ['Explore → Ice. Make noise: the crystal melts. Be quiet: it freezes again. Blue molecules are ice; a red glow means fast, a blue glow slow.',
++        'Class mode → “Grow the biggest ice crystal”. Round 1: everyone goes silent at once. Note the score.',
++        'Round 2: start a little noisy, then get quieter slowly. Compare the two scores.'],
++      point: 'The glow turns from red to blue first; only then blue honeycomb patches grow.',
++      ask: [['Why did going silent at once give less ice?', 'The molecules froze where they were, in a jumble, with no time to find their places.'],
++        ['Why is ice from a hotel bar clear and ice from a home freezer cloudy?', 'It is frozen slowly, so the crystals are big and the air can escape.'],
++        ['What is different about molecules in warm water?', 'They move faster.']] },
++    { id: 'demix', icon: '🫧', title: 'Oil and water', explore: 'demix', game: 'demix',
++      goal: 'Some liquids do not mix. Cooling lets them separate, but if it is too cold everything freezes in place.',
++      steps: ['Explore → Two liquids. Hot: everything is mixed. Cooler: purple and amber blobs appear and grow.',
++        'Make it very cold: the blobs stop growing. Ask why.',
++        'Class mode → “Separate oil from water”: try very quiet against medium quiet.'],
++      point: 'Small blobs merging into bigger ones; at very cold the picture freezes.',
++      ask: [['Why do the blobs get bigger over time?', 'Each liquid prefers its own kind; fewer, bigger blobs have less border.'],
++        ['Why does very cold stop the separation?', 'The molecules hardly move, so they cannot reach their own kind.'],
++        ['Where do you see liquids that do not mix at home?', 'Salad dressing, oil on soup, mayonnaise (it is held together by egg).']] },
++    { id: 'drug', icon: '💊', title: 'Soap and medicine', explore: 'dumbbell', game: 'drug',
++      goal: 'Soap molecules have a water-loving head and an oil-loving tail. In water they form balls (micelles) that can carry medicine; warming opens them.',
++      steps: ['Explore → Soap molecules. Cold: balls form, tails inside. Hot: they fall apart.',
++        'Class mode → “Deliver the drug”: make noise only during the red windows.',
++        'Discuss what happened to the drug released at the wrong time.'],
++      point: 'Tails hide inside the balls, heads face the water; drug glows yellow when delivered.',
++      ask: [['Why do the tails hide inside the balls?', 'They do not like water; inside the ball they only touch other tails.'],
++        ['How does soap clean oily hands?', 'The tails grab the oil and the balls carry it away in the water.'],
++        ['Why must the noise come at the right moment?', 'Drug released in the wrong place is lost; in medicine it could also do harm.']] },
++    { id: 'gel', icon: '🥚', title: 'Boiled egg and jelly', explore: 'crypt', game: 'gel',
++      goal: 'Proteins are folded chains. Heat unfolds them, their sticky parts come out and they link into a network: a gel, like egg white turning solid.',
++      steps: ['Explore → Proteins. Cold: folded. Warm: they open and clump. Very hot: the clumps fall apart.',
++        'Class mode → “Grow the longest gel strand”: heat first, then cool down a little.',
++        'If the strand stops growing, heat again and cool: waiting only makes the clumps compact.'],
++      point: 'Orange sticky beads coming out of the folds; the red line is the longest strand.',
++      ask: [['Why can a boiled egg not become raw again?', 'The unfolded proteins are stuck to each other and cannot fold back.'],
++        ['Why does too much heat break the strand?', 'Heat also pulls the sticky links apart.'],
++        ['Why does waiting not make the strand longer?', 'The clumps pull together into compact balls, so the long path breaks.']] },
++    { id: 'scan', icon: '📈', title: 'What is melting?', explore: 'ice', scan: true,
++      goal: 'At the melting point the heat goes into breaking the structure, not into warming it up.',
++      steps: ['Explore → Ice → Energy scan → Heating scan. The energy climbs; find the peak in the heat capacity.',
++        'Run a cooling scan: freezing happens at a lower temperature than melting.',
++        'Open the “Frost needs a start” card from the Ice deck.'],
++      point: 'The peak in the heat capacity graph; the gap between heating and cooling.',
++      ask: [['Why does a glass of ice water stay at 0 °C while you warm it?', 'The heat is used to melt the ice, not to warm the water.'],
++        ['Why does water here freeze colder than it melts?', 'Ice needs a small seed to start growing; until then the water stays liquid.'],
++        ['What do the molecules do at the peak?', 'They break their bonds: the crystal turns into liquid.']] },
++  ];
++  function lessonsRender() {
++    const box = $('lessons'); if (!box || !isTeacher()) return;
++    const open = [...box.querySelectorAll('details[open]')].map((d) => d.dataset.l);
++    box.innerHTML = LESSONS.map((L) => `<details class="lesson" data-l="${L.id}"${open.includes(L.id) ? ' open' : ''}><summary><span aria-hidden="true">${L.icon}</span> ${T(L.title)}</summary>`
++      + `<p class="lgoal"><b>${T('Goal:')}</b> ${T(L.goal)}</p><h4>${T('10 minutes')}</h4><ol>${L.steps.map((s) => `<li>${T(s)}</li>`).join('')}</ol>`
++      + `<p><b>${T('Point at:')}</b> ${T(L.point)}</p><h4>${T('Ask the class')}</h4><ul class="lask">${L.ask.map(([q, a]) => `<li>${T(q)} <small>${T(a)}</small></li>`).join('')}</ul>`
++      + `<div class="btns">${L.game ? `<button class="btn primary" data-lgo="class">${T('Play in class mode')}</button>` : ''}<button class="btn" data-lgo="${L.scan ? 'scan' : 'explore'}">${T(L.scan ? 'Open the energy scan' : 'Open in Explore')}</button></div></details>`).join('');
++  }
++  $('lessons').addEventListener('click', (e) => {
++    const b = e.target.closest('[data-lgo]'); if (!b) return; const L = LESSONS.find((q) => q.id === b.closest('[data-l]').dataset.l); if (!L) return;
++    if (b.dataset.lgo === 'class') { setAppMode('game'); selectGame(L.game, true); classEnter(); return; }
++    setAppMode('explore'); pickSys(L.explore); if (b.dataset.lgo === 'scan') setAppMode('scan');
++    if (typeof sheet === 'function' && phoneUI()) sheet(false);
++  });
++  function lessonsOpen() { const p = $('lessonPanel'); p.open = true; if (typeof sheet === 'function' && phoneUI()) sheet(true); try { p.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch (e) {} }
++  roleApply(true);
++  window.__role = () => ({ teacher: isTeacher(), lessons: LESSONS.length }); // for tests
+diff --git a/src/body.html b/src/body.html
+index a4c9f70..f471225 100644
+--- a/src/body.html
++++ b/src/body.html
+@@ -1,7 +1,7 @@
+ 
+ <div class="wrap notranslate" data-sys="dumbbell" translate="no">
+   <header>
+-    <div class="langbox"><button class="btn" id="classBtn" title="Class mode: the whole room controls one box with its noise">Class mode</button><span class="hsep" aria-hidden="true"></span><button class="btn helpbtn" id="helpBtn" aria-label="Help: quick tour" title="Help: quick tour"><span aria-hidden="true">?</span> Help</button><label for="lang" class="sr">Language</label>
++    <div class="langbox"><button class="btn rolebtn" id="roleBtn"></button><button class="btn teachonly" id="classBtn" title="Class mode: the whole room controls one box with its noise">Class mode</button><span class="hsep" aria-hidden="true"></span><button class="btn helpbtn" id="helpBtn" aria-label="Help: quick tour" title="Help: quick tour"><span aria-hidden="true">?</span> Help</button><label for="lang" class="sr">Language</label>
+       <select id="lang" aria-label="Language"><option value="en">English</option><option value="fi">Suomi</option><option value="sv">Svenska</option><option value="ru">Русский</option></select></div>
+     <div>
+       <div class="brand"><svg class="logo" viewBox="0 0 48 48" width="44" height="44" aria-hidden="true"><line x1="32.7" y1="29.0" x2="39.8" y2="33.1" stroke="var(--bond)" stroke-width="2.2"/><circle cx="39.8" cy="33.1" r="4.8" fill="var(--head)"/><line x1="24.0" y1="34.1" x2="24.0" y2="42.3" stroke="var(--bond)" stroke-width="2.2"/><circle cx="24.0" cy="42.3" r="4.8" fill="var(--head)"/><line x1="15.3" y1="29.0" x2="8.2" y2="33.1" stroke="var(--bond)" stroke-width="2.2"/><circle cx="8.2" cy="33.1" r="4.8" fill="var(--head)"/><line x1="15.3" y1="18.9" x2="8.2" y2="14.8" stroke="var(--bond)" stroke-width="2.2"/><circle cx="8.2" cy="14.8" r="4.8" fill="var(--head)"/><line x1="24.0" y1="13.9" x2="24.0" y2="5.7" stroke="var(--bond)" stroke-width="2.2"/><circle cx="24.0" cy="5.7" r="4.8" fill="var(--head)"/><line x1="32.7" y1="18.9" x2="39.8" y2="14.8" stroke="var(--bond)" stroke-width="2.2"/><circle cx="39.8" cy="14.8" r="4.8" fill="var(--head)"/><g stroke="#4a3000" stroke-width="1.1" stroke-linecap="round"><circle cx="24" cy="24" r="10.6" fill="var(--cryst)"/><path d="M18.59 20.39 q1.80 -1.58 3.61 0 M25.80 20.39 q1.80 -1.58 3.61 0" fill="none"/><path d="M19.94 28.51 h8.12" fill="none"/><rect x="21.89" y="24.68" width="4.22" height="12.63" rx="2.11" fill="var(--cryst)"/></g></svg><h1>Shut Up and Get Structured</h1></div>
+@@ -15,7 +15,7 @@
+       <h3 id="tTitle"></h3>
+       <div class="tdemo" id="tDemo" hidden><p class="tdhead" id="tDemoHead" aria-live="off"></p><canvas id="tCanvas" width="640" height="360"></canvas><small id="tDemoCap"></small><div class="tdctl"><button class="btn tdmic" id="tdMic" aria-pressed="false"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/></svg><span>Microphone</span></button><input type="range" id="tdT" min="0" max="1" step="0.01" value="0" aria-label="Temperature"></div></div>
+       <p id="tText"></p>
+-      <div class="twel" id="tWel" hidden><label class="twlang"><span aria-hidden="true">🌐</span><select id="tLang" aria-label="Language"><option value="en">English</option><option value="fi">Suomi</option><option value="sv">Svenska</option><option value="ru">Русский</option></select></label><button class="btn primary twplay" id="tPlay">▶ Play: make ice</button><div class="twmore"><button class="btn" id="tTour">Show me around</button><button class="btn ghost" id="tFree">Just explore</button></div><p class="privline"><span aria-hidden="true">🔒</span> <span>Microphone sound is analysed here and never leaves this device.</span> <button class="linkbtn" data-privacy>Privacy</button></p></div>
++      <div class="twel" id="tWel" hidden><label class="twlang"><span aria-hidden="true">🌐</span><select id="tLang" aria-label="Language"><option value="en">English</option><option value="fi">Suomi</option><option value="sv">Svenska</option><option value="ru">Русский</option></select></label><div class="twroles"><button class="btn primary twplay" id="tPlay">▶ Play: make ice</button><button class="btn twteach" id="tTeach"><span aria-hidden="true">👩‍🏫</span> I'm a teacher</button></div><div class="twmore"><button class="btn" id="tTour">Show me around</button><button class="btn ghost" id="tFree">Just explore</button></div><p class="privline"><span aria-hidden="true">🔒</span> <span>Microphone sound is analysed here and never leaves this device.</span> <button class="linkbtn" data-privacy>Privacy</button></p></div>
+       <div class="tnav"><span class="cnt" id="tCount"></span><button class="btn" id="tBack">Back</button><button class="btn primary" id="tNext">Next</button></div>
+     </div>
+   </div>
+@@ -71,7 +71,7 @@
+           <div class="mpP"><small>P</small><b id="pbP">0.00</b></div></div>
+       </div>
+       <div class="legend"><span id="legendItems" style="display:contents"></span><span id="boxinfo" style="font-family:var(--f-mono)"></span><span class="zhint">Click a molecule to follow it</span></div>
+-      <div class="cellsec rosec" data-mode="explore">
++      <div class="cellsec rosec teachonly" data-mode="explore">
+         <h3>Live readouts</h3>
+         <div class="readouts">
+           <div class="ro"><span id="l0">–</span><b id="r0">–</b></div>
+@@ -141,6 +141,12 @@
+         <button data-appmode="game" aria-pressed="true">Game</button>
+         <button data-appmode="explore" aria-pressed="false" data-reward="explore">Explore</button>
+       </div>
++      <details class="panel lessonpanel teachonly" id="lessonPanel" open>
++        <summary><h2><span aria-hidden="true">📚</span> Lessons</h2></summary>
++        <p class="note">Ten-minute plans for a class with the projector: what to do, what to point at and what to ask.</p>
++        <p class="note"><b>Class challenge:</b> play a game on the projector, press <b>Share</b> on the end card and show the QR code. Students scan it and play the same start on their phones or at home; compare the scores next lesson.</p>
++        <div id="lessons"></div>
++      </details>
+       <div class="panel" id="gamePanel" data-mode="game">
+         <h2>Game: steer the molecules with your voice</h2>
+         <div class="gdaily" id="gdaily" hidden></div>
+@@ -209,7 +215,7 @@
+       <div class="panel graphpanel" id="graphPanel" data-mode="scan" hidden></div>
+ 
+       <details class="panel" id="compPanel" data-mode="explore">
+-        <summary><h2>Composition and interactions</h2></summary>
++        <summary><h2><span class="teachonly">Composition and interactions</span><span class="playonly">How many molecules</span></h2></summary>
+         <div class="row" id="concRow"><label for="conc" id="concLab">Concentration</label><output id="concO">26%</output>
+           <input type="range" id="conc" min="2" max="60" step="1" value="26"></div>
+         <p class="note" id="concNote"></p>
+@@ -289,7 +295,7 @@
+         <p class="note" data-show="mbpoly">Chain length 1 (default) gives free nonpolar solutes; longer lengths give one or more chains of the same beads.</p>
+       </details>
+ 
+-      <details class="panel" id="modelPanel" data-mode="explore">
++      <details class="panel teachonly" id="modelPanel" data-mode="explore">
+         <summary><h2>Model and integrator</h2></summary>
+         <div class="row"><label for="thermo">Thermostat</label>
+           <select id="thermo"><option value="langevin">Langevin (BAOAB)</option><option value="bussi">Bussi velocity rescaling</option></select></div>
+@@ -313,7 +319,7 @@
+         <div class="checks"><label><input type="checkbox" autocomplete="off" id="autoSpf" checked> Adjust steps per frame automatically to keep the animation smooth</label></div>
+       </details>
+ 
+-      <details class="panel" data-mode="explore">
++      <details class="panel teachonly" id="viewPanel" data-mode="explore">
+         <summary><h2>Box and view</h2></summary>
+         <div class="row" id="sizeRow"><label for="size">Box size</label>
+           <select id="size"><option value="36">36×36 sites · 1296 beads</option><option value="48" selected>48×48 sites · 2304 beads</option><option value="64">64×64 sites · 4096 beads</option></select></div>
+@@ -343,15 +349,15 @@
+   </details>
+   <div class="panel teachpanel">
+         <div class="gteach">
+-          <details class="teacher"><summary>Teacher options</summary>
++          <details class="teacher"><summary><span class="teachonly">Teacher options</span><span class="playonly">Settings</span></summary>
+             <div class="row qrow"><label for="quality">Drawing quality</label>
+           <select id="quality"><option value="auto" selected>Automatic (lighter on slow devices)</option><option value="0">Full</option><option value="1">Lighter</option><option value="2">Light</option><option value="3">Lightest</option></select></div>
+             <p class="note">For slow computers or projectors: lighter drawing keeps the simulation smooth.</p>
++            <div class="btns" hidden><button class="btn" id="gunlock">Unlock all games</button><button class="btn" id="ladUnlock">Unlock all challenges</button></div><!-- replaced by teacher mode; kept for old saved settings and tests -->
+             <div class="checks"><label><input type="checkbox" autocomplete="off" id="smooth" checked> Smooth motion</label><label><input type="checkbox" autocomplete="off" id="velGlow" checked> Speed glow (blue slow, red fast)</label></div>
+             <p class="note">Molecules glide between frames instead of jumping. Only the picture changes, not the simulation. Kept in this browser.</p>
+-            <div class="btns"><button class="btn" id="gunlock">Unlock all games</button><button class="btn" id="ladUnlock">Unlock all challenges</button></div>
+-            <p class="note">For this browser only. Press again to lock.</p>
+-        <div class="gproto"><h3>Prototype games</h3><p class="note">New game ideas to try with a class before they become real games.</p><button class="btn" id="protoToggle">Show prototype games</button></div>
++            
++        <div class="gproto teachonly"><h3>Prototype games</h3><p class="note">New game ideas to try with a class before they become real games.</p><button class="btn" id="protoToggle">Show prototype games</button></div>
+         <div class="gdisp">
+           <h3>Projector and accessibility</h3>
+           <div class="checks"><label><input type="checkbox" autocomplete="off" id="optBig"> Larger text</label><label><input type="checkbox" autocomplete="off" id="optHi"> High contrast</label></div>
+@@ -363,7 +369,7 @@
+           <div class="btns"><button class="btn" id="pwaInstall" hidden>Install as an app</button><button class="btn" id="dlPage">Download the page</button><button class="btn" data-privacy>Privacy</button><button class="btn" id="wipeData">Delete saved data</button></div>
+           <p class="note" id="oflNote" hidden></p>
+         </div>
+-        <div class="gbattle">
++        <div class="gbattle teachonly">
+           <h3>Class battle</h3>
+           <div class="btns"><label class="gmic">Teams <select id="bTeams"><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select></label><button class="btn" id="bStart">Start a battle</button></div>
+           <p class="note">Teams take turns on the selected game, all from the same start. The highest score wins. Battles do not change statistics or cards.</p>
+@@ -375,6 +381,7 @@
+     <div class="privcard sharecard">
+       <h3 id="shareTitle">Share your result</h3>
+       <pre class="sharetext" id="shareText"></pre>
++      <div class="shareqr"><canvas id="shareQR" width="200" height="200" role="img" aria-label="QR code of the challenge link"></canvas><div><p class="note">Scan with a phone camera to play the same start.</p><button class="btn" id="shareQRBig">Show big for the class</button></div></div>
+       <div class="btns"><button class="btn primary" id="shareNative">Share…</button><button class="btn" id="shareCopy">Copy text and link</button></div>
+       <div class="shareclip" id="shareClipBox" hidden>
+         <video id="shareVideo" muted playsinline loop controls></video>
+@@ -385,6 +392,9 @@
+       <button class="btn ghost" id="shareClose">Close</button>
+     </div>
+   </div>
++  <div class="qrbig" id="qrBig" role="dialog" aria-modal="true" aria-labelledby="qrBigTitle" hidden>
++    <h2 id="qrBigTitle">Scan to play the same start</h2><p id="qrBigText"></p><canvas id="qrBigCv" width="600" height="600" role="img" aria-label="QR code of the challenge link"></canvas><button class="btn primary" id="qrBigClose">Close</button>
++  </div>
+   <div class="privmodal" id="chalModal" role="dialog" aria-modal="true" aria-labelledby="chalTitle" hidden>
+     <div class="privcard">
+       <h3 id="chalTitle">🏆 You have been challenged!</h3>
+diff --git a/src/i18n/fi.json b/src/i18n/fi.json
+index a0d1caa..7dcde11 100644
+--- a/src/i18n/fi.json
++++ b/src/i18n/fi.json
+@@ -1133,5 +1133,91 @@
+  "A friend reached the goal of “{g}” in {v} (speed run). Same start, same molecules: can you be faster?": "Kaverisi saavutti pelin ”{g}” tavoitteen ajassa {v} (nopeuspeli). Sama alku, samat molekyylit: pystytkö nopeammin?",
+  "Same start for you. Can you be faster?": "Sama alku sinulle. Pystytkö nopeammin?",
+  "max": "maks.",
+- "friend": "kaveri"
++ "friend": "kaveri",
++ "Teacher mode": "Opettajatila",
++ "Player mode": "Pelaajatila",
++ "Teacher": "Opettaja",
++ "Player": "Pelaaja",
++ "Teacher mode. Press to switch to player mode.": "Opettajatila. Paina vaihtaaksesi pelaajatilaan.",
++ "Player mode. Press to switch to teacher mode.": "Pelaajatila. Paina vaihtaaksesi opettajatilaan.",
++ "<span aria-hidden=\"true\">👩‍🏫</span> I'm a teacher": "<span aria-hidden=\"true\">👩‍🏫</span> Olen opettaja",
++ "<span aria-hidden=\"true\">📚</span> Lessons": "<span aria-hidden=\"true\">📚</span> Oppitunnit",
++ "Ten-minute plans for a class with the projector: what to do, what to point at and what to ask.": "Kymmenen minuutin suunnitelmat luokalle ja projektorille: mitä tehdä, mihin osoittaa ja mitä kysyä.",
++ "<span class=\"teachonly\">Teacher options</span><span class=\"playonly\">Settings</span>": "<span class=\"teachonly\">Opettajan asetukset</span><span class=\"playonly\">Asetukset</span>",
++ "Goal:": "Tavoite:",
++ "10 minutes": "10 minuuttia",
++ "Point at:": "Näytä:",
++ "Ask the class": "Kysy luokalta",
++ "Play in class mode": "Pelaa luokkatilassa",
++ "Open the energy scan": "Avaa energiaskannaus",
++ "Open in Explore": "Avaa Tutki-tilassa",
++ "Freezing and slow cooling": "Jäätyminen ja hidas jäähdytys",
++ "Water freezes when its molecules slow down and lock into place. Cooling slowly gives bigger, clearer crystals.": "Vesi jäätyy, kun sen molekyylit hidastuvat ja lukittuvat paikoilleen. Hidas jäähdytys antaa suurempia ja kirkkaampia kiteitä.",
++ "Explore → Ice. Make noise: the crystal melts. Be quiet: it freezes again. Blue molecules are ice; a red glow means fast, a blue glow slow.": "Tutki → Jää. Pidä ääntä: kide sulaa. Ole hiljaa: se jäätyy taas. Siniset molekyylit ovat jäätä; punainen hehku tarkoittaa nopeaa, sininen hidasta.",
++ "Class mode → “Grow the biggest ice crystal”. Round 1: everyone goes silent at once. Note the score.": "Luokkatila → ”Kasvata suurin jääkide”. Kierros 1: kaikki hiljenevät heti. Kirjaa tulos.",
++ "Round 2: start a little noisy, then get quieter slowly. Compare the two scores.": "Kierros 2: aloita hieman äänekkäästi ja hiljene sitten hitaasti. Vertaa tuloksia.",
++ "The glow turns from red to blue first; only then blue honeycomb patches grow.": "Hehku muuttuu ensin punaisesta siniseksi; vasta sitten siniset hunajakennolaikut kasvavat.",
++ "Why did going silent at once give less ice?": "Miksi heti hiljeneminen antoi vähemmän jäätä?",
++ "The molecules froze where they were, in a jumble, with no time to find their places.": "Molekyylit jäätyivät sinne, missä ne olivat, sekaisin, ilman aikaa löytää paikkaansa.",
++ "Why is ice from a hotel bar clear and ice from a home freezer cloudy?": "Miksi hotellibaarin jää on kirkasta ja kotipakastimen jää sameaa?",
++ "It is frozen slowly, so the crystals are big and the air can escape.": "Se jäädytetään hitaasti, joten kiteet ovat suuria ja ilma pääsee pois.",
++ "What is different about molecules in warm water?": "Mikä on erilaista lämpimän veden molekyyleissä?",
++ "They move faster.": "Ne liikkuvat nopeammin.",
++ "Oil and water": "Öljy ja vesi",
++ "Some liquids do not mix. Cooling lets them separate, but if it is too cold everything freezes in place.": "Jotkin nesteet eivät sekoitu. Jäähdytys antaa niiden erottua, mutta liian kylmässä kaikki jähmettyy paikoilleen.",
++ "Explore → Two liquids. Hot: everything is mixed. Cooler: purple and amber blobs appear and grow.": "Tutki → Kaksi nestettä. Kuumassa kaikki on sekaisin. Viileämmässä violetit ja meripihkan väriset läikät ilmestyvät ja kasvavat.",
++ "Make it very cold: the blobs stop growing. Ask why.": "Tee siitä hyvin kylmä: läikät lakkaavat kasvamasta. Kysy miksi.",
++ "Class mode → “Separate oil from water”: try very quiet against medium quiet.": "Luokkatila → ”Erota öljy vedestä”: kokeile hyvin hiljaista ja keskihiljaista.",
++ "Small blobs merging into bigger ones; at very cold the picture freezes.": "Pienet läikät yhdistyvät suuremmiksi; hyvin kylmässä kuva jähmettyy.",
++ "Why do the blobs get bigger over time?": "Miksi läikät kasvavat ajan myötä?",
++ "Each liquid prefers its own kind; fewer, bigger blobs have less border.": "Kumpikin neste viihtyy omiensa kanssa; harvemmilla, suuremmilla läikillä on vähemmän rajaa.",
++ "Why does very cold stop the separation?": "Miksi kova kylmyys pysäyttää erottumisen?",
++ "The molecules hardly move, so they cannot reach their own kind.": "Molekyylit tuskin liikkuvat, joten ne eivät pääse omiensa luo.",
++ "Where do you see liquids that do not mix at home?": "Missä näet kotona nesteitä, jotka eivät sekoitu?",
++ "Salad dressing, oil on soup, mayonnaise (it is held together by egg).": "Salaatinkastike, öljy keiton pinnalla, majoneesi (muna pitää sen koossa).",
++ "Soap and medicine": "Saippua ja lääke",
++ "Soap molecules have a water-loving head and an oil-loving tail. In water they form balls (micelles) that can carry medicine; warming opens them.": "Saippuamolekyyleillä on vettä rakastava pää ja öljyä rakastava häntä. Vedessä ne muodostavat palloja (misellejä), jotka voivat kuljettaa lääkettä; lämmitys avaa ne.",
++ "Explore → Soap molecules. Cold: balls form, tails inside. Hot: they fall apart.": "Tutki → Saippuamolekyylit. Kylmässä syntyy palloja, hännät sisällä. Kuumassa ne hajoavat.",
++ "Class mode → “Deliver the drug”: make noise only during the red windows.": "Luokkatila → ”Toimita lääkeaine”: pidä ääntä vain punaisten ikkunoiden aikana.",
++ "Discuss what happened to the drug released at the wrong time.": "Keskustelkaa, mitä väärään aikaan vapautuneelle lääkkeelle tapahtui.",
++ "Tails hide inside the balls, heads face the water; drug glows yellow when delivered.": "Hännät piiloutuvat pallojen sisään, päät ovat veteen päin; lääke hehkuu keltaisena, kun se on perillä.",
++ "Why do the tails hide inside the balls?": "Miksi hännät piiloutuvat pallojen sisään?",
++ "They do not like water; inside the ball they only touch other tails.": "Ne eivät pidä vedestä; pallon sisällä ne koskettavat vain toisia häntiä.",
++ "How does soap clean oily hands?": "Miten saippua puhdistaa öljyiset kädet?",
++ "The tails grab the oil and the balls carry it away in the water.": "Hännät tarttuvat öljyyn, ja pallot kuljettavat sen pois veden mukana.",
++ "Why must the noise come at the right moment?": "Miksi äänen täytyy tulla oikealla hetkellä?",
++ "Drug released in the wrong place is lost; in medicine it could also do harm.": "Väärässä paikassa vapautunut lääke menee hukkaan; lääketieteessä se voisi myös vahingoittaa.",
++ "Boiled egg and jelly": "Keitetty muna ja hyytelö",
++ "Proteins are folded chains. Heat unfolds them, their sticky parts come out and they link into a network: a gel, like egg white turning solid.": "Proteiinit ovat laskostuneita ketjuja. Lämpö avaa ne, niiden tahmeat osat tulevat esiin ja ne liittyvät verkostoksi: geeliksi, kuten valkuainen kiinteytyy.",
++ "Explore → Proteins. Cold: folded. Warm: they open and clump. Very hot: the clumps fall apart.": "Tutki → Proteiinit. Kylmässä laskostuneita. Lämpimässä ne avautuvat ja paakkuuntuvat. Hyvin kuumassa paakut hajoavat.",
++ "Class mode → “Grow the longest gel strand”: heat first, then cool down a little.": "Luokkatila → ”Kasvata pisin geelisäie”: lämmitä ensin ja jäähdytä sitten hieman.",
++ "If the strand stops growing, heat again and cool: waiting only makes the clumps compact.": "Jos säie lakkaa kasvamasta, lämmitä uudelleen ja jäähdytä: odottaminen vain tiivistää paakut.",
++ "Orange sticky beads coming out of the folds; the red line is the longest strand.": "Oranssit tahmeat helmet tulevat esiin laskoksista; punainen viiva on pisin säie.",
++ "Why can a boiled egg not become raw again?": "Miksi keitetty muna ei voi muuttua takaisin raa'aksi?",
++ "The unfolded proteins are stuck to each other and cannot fold back.": "Avautuneet proteiinit ovat tarttuneet toisiinsa eivätkä voi laskostua takaisin.",
++ "Why does too much heat break the strand?": "Miksi liika lämpö katkaisee säikeen?",
++ "Heat also pulls the sticky links apart.": "Lämpö myös repii tahmeat sidokset irti.",
++ "Why does waiting not make the strand longer?": "Miksi odottaminen ei pidennä säiettä?",
++ "The clumps pull together into compact balls, so the long path breaks.": "Paakut vetäytyvät tiiviiksi palloiksi, joten pitkä polku katkeaa.",
++ "What is melting?": "Mitä sulaminen on?",
++ "At the melting point the heat goes into breaking the structure, not into warming it up.": "Sulamispisteessä lämpö kuluu rakenteen rikkomiseen, ei lämmittämiseen.",
++ "Explore → Ice → Energy scan → Heating scan. The energy climbs; find the peak in the heat capacity.": "Tutki → Jää → Energiaskannaus → Lämmitysskannaus. Energia nousee; etsi lämpökapasiteetin huippu.",
++ "Run a cooling scan: freezing happens at a lower temperature than melting.": "Tee jäähdytysskannaus: jäätyminen tapahtuu alemmassa lämpötilassa kuin sulaminen.",
++ "Open the “Frost needs a start” card from the Ice deck.": "Avaa Jää-pakan kortti ”Huurre tarvitsee alun”.",
++ "The peak in the heat capacity graph; the gap between heating and cooling.": "Lämpökapasiteettikuvaajan huippu; ero lämmityksen ja jäähdytyksen välillä.",
++ "Why does a glass of ice water stay at 0 °C while you warm it?": "Miksi lasillinen jäävettä pysyy 0 °C:ssa, kun sitä lämmitetään?",
++ "The heat is used to melt the ice, not to warm the water.": "Lämpö kuluu jään sulattamiseen, ei veden lämmittämiseen.",
++ "Why does water here freeze colder than it melts?": "Miksi vesi jäätyy tässä kylmemmässä kuin sulaa?",
++ "Ice needs a small seed to start growing; until then the water stays liquid.": "Jää tarvitsee pienen siemenen alkaakseen kasvaa; siihen asti vesi pysyy nestemäisenä.",
++ "What do the molecules do at the peak?": "Mitä molekyylit tekevät huipulla?",
++ "They break their bonds: the crystal turns into liquid.": "Ne rikkovat sidoksensa: kide muuttuu nesteeksi.",
++ "Settings": "Asetukset",
++ "<span class=\"teachonly\">Composition and interactions</span><span class=\"playonly\">How many molecules</span>": "<span class=\"teachonly\">Koostumus ja vuorovaikutukset</span><span class=\"playonly\">Kuinka monta molekyyliä</span>",
++ "I'm a teacher": "Olen opettaja",
++ "Lessons": "Oppitunnit",
++ "How many molecules": "Kuinka monta molekyyliä",
++ "Scan with a phone camera to play the same start.": "Skannaa puhelimen kameralla ja pelaa samasta alusta.",
++ "Show big for the class": "Näytä isona luokalle",
++ "Scan to play the same start": "Skannaa ja pelaa samasta alusta",
++ "<b>Class challenge:</b> play a game on the projector, press <b>Share</b> on the end card and show the QR code. Students scan it and play the same start on their phones or at home; compare the scores next lesson.": "<b>Luokan haaste:</b> pelaa peli projektorilla, paina loppukortissa <b>Jaa</b> ja näytä QR-koodi. Oppilaat skannaavat sen ja pelaavat samasta alusta puhelimellaan tai kotona; vertailkaa tuloksia seuraavalla tunnilla."
+ }
+\ No newline at end of file
+diff --git a/src/i18n/ru.json b/src/i18n/ru.json
+index fe24c6e..aa9f8d4 100644
+--- a/src/i18n/ru.json
++++ b/src/i18n/ru.json
+@@ -1133,5 +1133,91 @@
+  "A friend reached the goal of “{g}” in {v} (speed run). Same start, same molecules: can you be faster?": "Друг достиг цели в игре «{g}» за {v} (скоростной забег). Тот же старт, те же молекулы: сможете быстрее?",
+  "Same start for you. Can you be faster?": "У тебя тот же старт. Сможешь быстрее?",
+  "max": "макс.",
+- "friend": "друг"
++ "friend": "друг",
++ "Teacher mode": "Режим учителя",
++ "Player mode": "Режим игрока",
++ "Teacher": "Учитель",
++ "Player": "Игрок",
++ "Teacher mode. Press to switch to player mode.": "Режим учителя. Нажмите, чтобы перейти в режим игрока.",
++ "Player mode. Press to switch to teacher mode.": "Режим игрока. Нажмите, чтобы перейти в режим учителя.",
++ "<span aria-hidden=\"true\">👩‍🏫</span> I'm a teacher": "<span aria-hidden=\"true\">👩‍🏫</span> Я учитель",
++ "<span aria-hidden=\"true\">📚</span> Lessons": "<span aria-hidden=\"true\">📚</span> Уроки",
++ "Ten-minute plans for a class with the projector: what to do, what to point at and what to ask.": "Планы на десять минут для класса с проектором: что делать, на что показать и о чём спросить.",
++ "<span class=\"teachonly\">Teacher options</span><span class=\"playonly\">Settings</span>": "<span class=\"teachonly\">Настройки учителя</span><span class=\"playonly\">Настройки</span>",
++ "Goal:": "Цель:",
++ "10 minutes": "10 минут",
++ "Point at:": "Покажите:",
++ "Ask the class": "Спросите класс",
++ "Play in class mode": "Играть в режиме класса",
++ "Open the energy scan": "Открыть энергетический скан",
++ "Open in Explore": "Открыть в «Исследовать»",
++ "Freezing and slow cooling": "Замерзание и медленное охлаждение",
++ "Water freezes when its molecules slow down and lock into place. Cooling slowly gives bigger, clearer crystals.": "Вода замерзает, когда её молекулы замедляются и встают на свои места. Медленное охлаждение даёт более крупные и прозрачные кристаллы.",
++ "Explore → Ice. Make noise: the crystal melts. Be quiet: it freezes again. Blue molecules are ice; a red glow means fast, a blue glow slow.": "«Исследовать» → Лёд. Шумите: кристалл тает. Тишина: он снова замерзает. Синие молекулы — лёд; красное свечение — быстрые, синее — медленные.",
++ "Class mode → “Grow the biggest ice crystal”. Round 1: everyone goes silent at once. Note the score.": "Режим класса → «Вырастите самый большой кристалл льда». Раунд 1: все сразу замолкают. Запишите результат.",
++ "Round 2: start a little noisy, then get quieter slowly. Compare the two scores.": "Раунд 2: начните немного шумно, затем медленно затихайте. Сравните результаты.",
++ "The glow turns from red to blue first; only then blue honeycomb patches grow.": "Сначала свечение меняется с красного на синее; только потом растут синие соты.",
++ "Why did going silent at once give less ice?": "Почему резкая тишина дала меньше льда?",
++ "The molecules froze where they were, in a jumble, with no time to find their places.": "Молекулы замёрзли там, где были, вперемешку, не успев найти свои места.",
++ "Why is ice from a hotel bar clear and ice from a home freezer cloudy?": "Почему лёд в баре отеля прозрачный, а из домашней морозилки мутный?",
++ "It is frozen slowly, so the crystals are big and the air can escape.": "Его замораживают медленно: кристаллы крупные, и воздух успевает выйти.",
++ "What is different about molecules in warm water?": "Чем отличаются молекулы в тёплой воде?",
++ "They move faster.": "Они движутся быстрее.",
++ "Oil and water": "Масло и вода",
++ "Some liquids do not mix. Cooling lets them separate, but if it is too cold everything freezes in place.": "Некоторые жидкости не смешиваются. Охлаждение позволяет им разделиться, но если слишком холодно, всё застывает на месте.",
++ "Explore → Two liquids. Hot: everything is mixed. Cooler: purple and amber blobs appear and grow.": "«Исследовать» → Две жидкости. Горячо: всё перемешано. Прохладнее: появляются и растут фиолетовые и янтарные капли.",
++ "Make it very cold: the blobs stop growing. Ask why.": "Сделайте очень холодно: капли перестают расти. Спросите почему.",
++ "Class mode → “Separate oil from water”: try very quiet against medium quiet.": "Режим класса → «Отделите масло от воды»: сравните очень тихо и умеренно тихо.",
++ "Small blobs merging into bigger ones; at very cold the picture freezes.": "Маленькие капли сливаются в большие; при сильном холоде картина застывает.",
++ "Why do the blobs get bigger over time?": "Почему капли со временем становятся больше?",
++ "Each liquid prefers its own kind; fewer, bigger blobs have less border.": "Каждая жидкость предпочитает своих; у меньшего числа больших капель меньше границы.",
++ "Why does very cold stop the separation?": "Почему сильный холод останавливает разделение?",
++ "The molecules hardly move, so they cannot reach their own kind.": "Молекулы почти не двигаются и не могут добраться до своих.",
++ "Where do you see liquids that do not mix at home?": "Где дома встречаются жидкости, которые не смешиваются?",
++ "Salad dressing, oil on soup, mayonnaise (it is held together by egg).": "Заправка для салата, жир на супе, майонез (его держит вместе яйцо).",
++ "Soap and medicine": "Мыло и лекарство",
++ "Soap molecules have a water-loving head and an oil-loving tail. In water they form balls (micelles) that can carry medicine; warming opens them.": "У молекул мыла голова любит воду, а хвост — масло. В воде они собираются в шарики (мицеллы), которые могут нести лекарство; нагрев их раскрывает.",
++ "Explore → Soap molecules. Cold: balls form, tails inside. Hot: they fall apart.": "«Исследовать» → Молекулы мыла. Холодно: образуются шарики, хвосты внутри. Горячо: они распадаются.",
++ "Class mode → “Deliver the drug”: make noise only during the red windows.": "Режим класса → «Доставьте лекарство»: шумите только в красных окнах.",
++ "Discuss what happened to the drug released at the wrong time.": "Обсудите, что случилось с лекарством, выпущенным не вовремя.",
++ "Tails hide inside the balls, heads face the water; drug glows yellow when delivered.": "Хвосты прячутся внутри шариков, головы смотрят в воду; доставленное лекарство светится жёлтым.",
++ "Why do the tails hide inside the balls?": "Почему хвосты прячутся внутри шариков?",
++ "They do not like water; inside the ball they only touch other tails.": "Они не любят воду; внутри шарика они касаются только других хвостов.",
++ "How does soap clean oily hands?": "Как мыло отмывает жирные руки?",
++ "The tails grab the oil and the balls carry it away in the water.": "Хвосты захватывают жир, а шарики уносят его с водой.",
++ "Why must the noise come at the right moment?": "Почему шум должен прозвучать в нужный момент?",
++ "Drug released in the wrong place is lost; in medicine it could also do harm.": "Лекарство, выпущенное не там, теряется; в медицине оно может и навредить.",
++ "Boiled egg and jelly": "Варёное яйцо и желе",
++ "Proteins are folded chains. Heat unfolds them, their sticky parts come out and they link into a network: a gel, like egg white turning solid.": "Белки — это свёрнутые цепочки. Нагрев их разворачивает, липкие части выходят наружу, и белки сцепляются в сеть: гель, как застывающий белок яйца.",
++ "Explore → Proteins. Cold: folded. Warm: they open and clump. Very hot: the clumps fall apart.": "«Исследовать» → Белки. Холодно: свёрнуты. Тепло: раскрываются и слипаются. Очень горячо: комки распадаются.",
++ "Class mode → “Grow the longest gel strand”: heat first, then cool down a little.": "Режим класса → «Вырастите самую длинную нить геля»: сначала нагрейте, потом немного охладите.",
++ "If the strand stops growing, heat again and cool: waiting only makes the clumps compact.": "Если нить перестала расти, снова нагрейте и охладите: ожидание лишь уплотняет комки.",
++ "Orange sticky beads coming out of the folds; the red line is the longest strand.": "Оранжевые липкие бусины выходят из складок; красная линия — самая длинная нить.",
++ "Why can a boiled egg not become raw again?": "Почему варёное яйцо не может снова стать сырым?",
++ "The unfolded proteins are stuck to each other and cannot fold back.": "Развернувшиеся белки слиплись и не могут свернуться обратно.",
++ "Why does too much heat break the strand?": "Почему слишком сильный нагрев рвёт нить?",
++ "Heat also pulls the sticky links apart.": "Нагрев также разрывает липкие связи.",
++ "Why does waiting not make the strand longer?": "Почему ожидание не делает нить длиннее?",
++ "The clumps pull together into compact balls, so the long path breaks.": "Комки стягиваются в плотные шарики, и длинный путь рвётся.",
++ "What is melting?": "Что такое плавление?",
++ "At the melting point the heat goes into breaking the structure, not into warming it up.": "В точке плавления тепло идёт на разрушение структуры, а не на нагрев.",
++ "Explore → Ice → Energy scan → Heating scan. The energy climbs; find the peak in the heat capacity.": "«Исследовать» → Лёд → Энергетический скан → Скан нагрева. Энергия растёт; найдите пик теплоёмкости.",
++ "Run a cooling scan: freezing happens at a lower temperature than melting.": "Запустите скан охлаждения: замерзание происходит при более низкой температуре, чем плавление.",
++ "Open the “Frost needs a start” card from the Ice deck.": "Откройте карточку «Инею нужен старт» из колоды «Лёд».",
++ "The peak in the heat capacity graph; the gap between heating and cooling.": "Пик на графике теплоёмкости; разница между нагревом и охлаждением.",
++ "Why does a glass of ice water stay at 0 °C while you warm it?": "Почему стакан воды со льдом остаётся при 0 °C, пока его греют?",
++ "The heat is used to melt the ice, not to warm the water.": "Тепло тратится на таяние льда, а не на нагрев воды.",
++ "Why does water here freeze colder than it melts?": "Почему здесь вода замерзает при более низкой температуре, чем тает?",
++ "Ice needs a small seed to start growing; until then the water stays liquid.": "Льду нужен маленький зародыш, чтобы начать расти; до тех пор вода остаётся жидкой.",
++ "What do the molecules do at the peak?": "Что делают молекулы на пике?",
++ "They break their bonds: the crystal turns into liquid.": "Они рвут свои связи: кристалл превращается в жидкость.",
++ "Settings": "Настройки",
++ "<span class=\"teachonly\">Composition and interactions</span><span class=\"playonly\">How many molecules</span>": "<span class=\"teachonly\">Состав и взаимодействия</span><span class=\"playonly\">Сколько молекул</span>",
++ "I'm a teacher": "Я учитель",
++ "Lessons": "Уроки",
++ "How many molecules": "Сколько молекул",
++ "Scan with a phone camera to play the same start.": "Отсканируйте камерой телефона, чтобы сыграть с того же старта.",
++ "Show big for the class": "Показать крупно для класса",
++ "Scan to play the same start": "Отсканируйте и сыграйте с того же старта",
++ "<b>Class challenge:</b> play a game on the projector, press <b>Share</b> on the end card and show the QR code. Students scan it and play the same start on their phones or at home; compare the scores next lesson.": "<b>Вызов для класса:</b> сыграйте на проекторе, нажмите <b>Поделиться</b> на итоговой карточке и покажите QR-код. Ученики сканируют его и играют с того же старта на телефонах или дома; сравните результаты на следующем уроке."
+ }
+\ No newline at end of file
+diff --git a/src/i18n/sv.json b/src/i18n/sv.json
+index 168f85c..70f67cc 100644
+--- a/src/i18n/sv.json
++++ b/src/i18n/sv.json
+@@ -1133,5 +1133,91 @@
+  "A friend reached the goal of “{g}” in {v} (speed run). Same start, same molecules: can you be faster?": "En vän nådde målet i ”{g}” på {v} (fartrunda). Samma start, samma molekyler: kan du vara snabbare?",
+  "Same start for you. Can you be faster?": "Samma start för dig. Kan du vara snabbare?",
+  "max": "max",
+- "friend": "vän"
++ "friend": "vän",
++ "Teacher mode": "Lärarläge",
++ "Player mode": "Spelarläge",
++ "Teacher": "Lärare",
++ "Player": "Spelare",
++ "Teacher mode. Press to switch to player mode.": "Lärarläge. Tryck för att byta till spelarläge.",
++ "Player mode. Press to switch to teacher mode.": "Spelarläge. Tryck för att byta till lärarläge.",
++ "<span aria-hidden=\"true\">👩‍🏫</span> I'm a teacher": "<span aria-hidden=\"true\">👩‍🏫</span> Jag är lärare",
++ "<span aria-hidden=\"true\">📚</span> Lessons": "<span aria-hidden=\"true\">📚</span> Lektioner",
++ "Ten-minute plans for a class with the projector: what to do, what to point at and what to ask.": "Tiominutersplaner för en klass med projektor: vad man gör, vad man pekar på och vad man frågar.",
++ "<span class=\"teachonly\">Teacher options</span><span class=\"playonly\">Settings</span>": "<span class=\"teachonly\">Lärarinställningar</span><span class=\"playonly\">Inställningar</span>",
++ "Goal:": "Mål:",
++ "10 minutes": "10 minuter",
++ "Point at:": "Peka på:",
++ "Ask the class": "Fråga klassen",
++ "Play in class mode": "Spela i klassläge",
++ "Open the energy scan": "Öppna energiskanningen",
++ "Open in Explore": "Öppna i Utforska",
++ "Freezing and slow cooling": "Frysning och långsam nedkylning",
++ "Water freezes when its molecules slow down and lock into place. Cooling slowly gives bigger, clearer crystals.": "Vatten fryser när molekylerna saktar in och låser sig på plats. Långsam nedkylning ger större och klarare kristaller.",
++ "Explore → Ice. Make noise: the crystal melts. Be quiet: it freezes again. Blue molecules are ice; a red glow means fast, a blue glow slow.": "Utforska → Is. Låt: kristallen smälter. Var tyst: den fryser igen. Blå molekyler är is; rött sken betyder snabbt, blått långsamt.",
++ "Class mode → “Grow the biggest ice crystal”. Round 1: everyone goes silent at once. Note the score.": "Klassläge → ”Odla den största iskristallen”. Omgång 1: alla blir tysta direkt. Notera poängen.",
++ "Round 2: start a little noisy, then get quieter slowly. Compare the two scores.": "Omgång 2: börja lite högljutt och bli sedan tystare långsamt. Jämför poängen.",
++ "The glow turns from red to blue first; only then blue honeycomb patches grow.": "Skenet går först från rött till blått; först därefter växer blå bikakefläckar.",
++ "Why did going silent at once give less ice?": "Varför gav det mindre is att bli tyst direkt?",
++ "The molecules froze where they were, in a jumble, with no time to find their places.": "Molekylerna frös där de var, i en röra, utan tid att hitta sina platser.",
++ "Why is ice from a hotel bar clear and ice from a home freezer cloudy?": "Varför är is från en hotellbar klar och is från frysen hemma grumlig?",
++ "It is frozen slowly, so the crystals are big and the air can escape.": "Den fryses långsamt, så kristallerna blir stora och luften kan försvinna.",
++ "What is different about molecules in warm water?": "Vad är annorlunda med molekylerna i varmt vatten?",
++ "They move faster.": "De rör sig snabbare.",
++ "Oil and water": "Olja och vatten",
++ "Some liquids do not mix. Cooling lets them separate, but if it is too cold everything freezes in place.": "Vissa vätskor blandas inte. Nedkylning låter dem skiljas åt, men är det för kallt fryser allt på plats.",
++ "Explore → Two liquids. Hot: everything is mixed. Cooler: purple and amber blobs appear and grow.": "Utforska → Två vätskor. Varmt: allt är blandat. Svalare: lila och bärnstensfärgade fläckar dyker upp och växer.",
++ "Make it very cold: the blobs stop growing. Ask why.": "Gör det mycket kallt: fläckarna slutar växa. Fråga varför.",
++ "Class mode → “Separate oil from water”: try very quiet against medium quiet.": "Klassläge → ”Skilj olja från vatten”: prova mycket tyst mot ganska tyst.",
++ "Small blobs merging into bigger ones; at very cold the picture freezes.": "Små fläckar smälter ihop till större; vid mycket kallt fryser bilden.",
++ "Why do the blobs get bigger over time?": "Varför blir fläckarna större med tiden?",
++ "Each liquid prefers its own kind; fewer, bigger blobs have less border.": "Varje vätska föredrar sin egen sort; färre och större fläckar har mindre gräns.",
++ "Why does very cold stop the separation?": "Varför stoppar mycket kyla separationen?",
++ "The molecules hardly move, so they cannot reach their own kind.": "Molekylerna rör sig knappt, så de når inte sin egen sort.",
++ "Where do you see liquids that do not mix at home?": "Var ser du vätskor som inte blandas hemma?",
++ "Salad dressing, oil on soup, mayonnaise (it is held together by egg).": "Salladsdressing, olja på soppa, majonnäs (den hålls ihop av ägg).",
++ "Soap and medicine": "Tvål och medicin",
++ "Soap molecules have a water-loving head and an oil-loving tail. In water they form balls (micelles) that can carry medicine; warming opens them.": "Tvålmolekyler har ett vattenälskande huvud och en oljeälskande svans. I vatten bildar de bollar (miceller) som kan bära medicin; värme öppnar dem.",
++ "Explore → Soap molecules. Cold: balls form, tails inside. Hot: they fall apart.": "Utforska → Tvålmolekyler. Kallt: bollar bildas, svansarna inuti. Varmt: de faller isär.",
++ "Class mode → “Deliver the drug”: make noise only during the red windows.": "Klassläge → ”Leverera läkemedlet”: låt bara under de röda fönstren.",
++ "Discuss what happened to the drug released at the wrong time.": "Diskutera vad som hände med läkemedlet som släpptes vid fel tid.",
++ "Tails hide inside the balls, heads face the water; drug glows yellow when delivered.": "Svansarna gömmer sig i bollarna, huvudena vänds mot vattnet; läkemedlet lyser gult när det levererats.",
++ "Why do the tails hide inside the balls?": "Varför gömmer sig svansarna i bollarna?",
++ "They do not like water; inside the ball they only touch other tails.": "De gillar inte vatten; inne i bollen rör de bara andra svansar.",
++ "How does soap clean oily hands?": "Hur gör tvål oljiga händer rena?",
++ "The tails grab the oil and the balls carry it away in the water.": "Svansarna griper oljan och bollarna bär bort den med vattnet.",
++ "Why must the noise come at the right moment?": "Varför måste ljudet komma i rätt ögonblick?",
++ "Drug released in the wrong place is lost; in medicine it could also do harm.": "Läkemedel som släpps på fel plats går förlorat; inom medicinen kan det också skada.",
++ "Boiled egg and jelly": "Kokt ägg och gelé",
++ "Proteins are folded chains. Heat unfolds them, their sticky parts come out and they link into a network: a gel, like egg white turning solid.": "Proteiner är vikta kedjor. Värme vecklar ut dem, de klibbiga delarna kommer fram och de länkas till ett nätverk: en gel, som när äggvita stelnar.",
++ "Explore → Proteins. Cold: folded. Warm: they open and clump. Very hot: the clumps fall apart.": "Utforska → Proteiner. Kallt: vikta. Varmt: de öppnas och klumpar ihop sig. Mycket varmt: klumparna faller isär.",
++ "Class mode → “Grow the longest gel strand”: heat first, then cool down a little.": "Klassläge → ”Odla den längsta gelsträngen”: värm först och kyl sedan lite.",
++ "If the strand stops growing, heat again and cool: waiting only makes the clumps compact.": "Om strängen slutar växa, värm igen och kyl: att vänta gör bara klumparna kompakta.",
++ "Orange sticky beads coming out of the folds; the red line is the longest strand.": "Orangea klibbiga pärlor kommer ut ur vecken; den röda linjen är den längsta strängen.",
++ "Why can a boiled egg not become raw again?": "Varför kan ett kokt ägg inte bli rått igen?",
++ "The unfolded proteins are stuck to each other and cannot fold back.": "De utvecklade proteinerna sitter fast i varandra och kan inte vikas tillbaka.",
++ "Why does too much heat break the strand?": "Varför bryter för mycket värme strängen?",
++ "Heat also pulls the sticky links apart.": "Värme drar också isär de klibbiga länkarna.",
++ "Why does waiting not make the strand longer?": "Varför blir strängen inte längre av att vänta?",
++ "The clumps pull together into compact balls, so the long path breaks.": "Klumparna drar ihop sig till kompakta bollar, så den långa vägen bryts.",
++ "What is melting?": "Vad är smältning?",
++ "At the melting point the heat goes into breaking the structure, not into warming it up.": "Vid smältpunkten går värmen till att bryta strukturen, inte till att värma den.",
++ "Explore → Ice → Energy scan → Heating scan. The energy climbs; find the peak in the heat capacity.": "Utforska → Is → Energiskanning → Uppvärmningsskanning. Energin stiger; hitta toppen i värmekapaciteten.",
++ "Run a cooling scan: freezing happens at a lower temperature than melting.": "Kör en nedkylningsskanning: frysning sker vid lägre temperatur än smältning.",
++ "Open the “Frost needs a start” card from the Ice deck.": "Öppna kortet ”Frost behöver en start” i Is-leken.",
++ "The peak in the heat capacity graph; the gap between heating and cooling.": "Toppen i grafen för värmekapacitet; skillnaden mellan uppvärmning och nedkylning.",
++ "Why does a glass of ice water stay at 0 °C while you warm it?": "Varför stannar ett glas isvatten på 0 °C medan du värmer det?",
++ "The heat is used to melt the ice, not to warm the water.": "Värmen går åt till att smälta isen, inte till att värma vattnet.",
++ "Why does water here freeze colder than it melts?": "Varför fryser vattnet här vid lägre temperatur än det smälter?",
++ "Ice needs a small seed to start growing; until then the water stays liquid.": "Is behöver ett litet frö för att börja växa; tills dess förblir vattnet flytande.",
++ "What do the molecules do at the peak?": "Vad gör molekylerna vid toppen?",
++ "They break their bonds: the crystal turns into liquid.": "De bryter sina bindningar: kristallen blir vätska.",
++ "Settings": "Inställningar",
++ "<span class=\"teachonly\">Composition and interactions</span><span class=\"playonly\">How many molecules</span>": "<span class=\"teachonly\">Sammansättning och växelverkningar</span><span class=\"playonly\">Hur många molekyler</span>",
++ "I'm a teacher": "Jag är lärare",
++ "Lessons": "Lektioner",
++ "How many molecules": "Hur många molekyler",
++ "Scan with a phone camera to play the same start.": "Skanna med mobilkameran för att spela samma start.",
++ "Show big for the class": "Visa stort för klassen",
++ "Scan to play the same start": "Skanna och spela samma start",
++ "<b>Class challenge:</b> play a game on the projector, press <b>Share</b> on the end card and show the QR code. Students scan it and play the same start on their phones or at home; compare the scores next lesson.": "<b>Klassutmaning:</b> spela ett spel på projektorn, tryck <b>Dela</b> på slutkortet och visa QR-koden. Eleverna skannar den och spelar samma start i mobilen eller hemma; jämför poängen nästa lektion."
+ }
+\ No newline at end of file
+diff --git a/src/manifest.json b/src/manifest.json
+index 9e784f2..868c3a8 100644
+--- a/src/manifest.json
++++ b/src/manifest.json
+@@ -29,6 +29,8 @@
+   "20d-live-ghost.js",
+   "20e-daily-share.js",
+   "20f-monetization.js",
++  "20g-qrcode.js",
++  "20h-roles-lessons.js",
+   "21-main-loop.js"
+  ],
+  "languages": [
+diff --git a/src/styles.css b/src/styles.css
+index 09e67ee..fb5e807 100644
+--- a/src/styles.css
++++ b/src/styles.css
+@@ -438,7 +438,7 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
+ @container (max-width: 600px) { .gendcard.withpic { grid-template-columns: 1fr; width: min(460px, 100%) } }
+ @container (max-height: 520px) and (max-width: 600px) { .gendcard.withpic .gendpic { max-width: 300px; justify-self: center; width: 100% } }
+ @media (max-width: 700px) { /* phones: the end window fills the screen and scrolls, so nothing is cut off */
+-  .gend { position: fixed !important; left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; z-index: 200; padding: 12px 10px calc(12px + env(safe-area-inset-bottom)); place-items: start center; background: color-mix(in srgb, var(--bg) 80%, transparent) }
++  .gend { position: fixed !important; left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; z-index: 200; padding: 12px 10px calc(96px + env(safe-area-inset-bottom)); place-items: start center; background: color-mix(in srgb, var(--bg) 80%, transparent) } /* bottom padding clears the bottom mode bar, which sits on top */
+   .gendcard.withpic { grid-template-columns: 1fr; margin: auto 0 } }
+ .gendcard.withpic .gendx { z-index: 3; background: var(--panel); border-radius: 50%; box-shadow: 0 1px 4px color-mix(in srgb, var(--ink) 25%, transparent) }
+ 
+@@ -488,3 +488,24 @@ details.fresh::after, .panel.fresh::after { top: 6px; right: 8px }
+ .gband .best { width: 0; margin-left: -1px; background: none; border-left: 3px dashed var(--accent) }
+ .gband .best::after { content: attr(data-l); position: absolute; top: 0; left: 3px; font-size: 10px; font-weight: 700; line-height: 22px; color: var(--accent); white-space: nowrap }
+ @media (max-width: 700px) { .gband .best::after { line-height: 16px } }
++/* ---- player mode / teacher mode ---- */
++.role-player .teachonly, .role-teacher .playonly { display: none !important }
++.role-player #compPanel > :not(summary):not(#concRow):not(#concNote) { display: none !important } /* players: the amount only */
++.role-player [data-appmode="scan"], .role-player .zhint { display: none !important }
++.role-teacher .gdaily, .role-teacher .optclip, .role-teacher .dstreak { display: none !important } /* no daily, streaks or clips in a lesson */
++.rolebtn { white-space: nowrap }
++.twroles { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center } .twroles .btn { flex: 1 1 180px }
++.lessonpanel > summary { cursor: pointer; list-style: none } .lessonpanel > summary::-webkit-details-marker { display: none }
++.lesson { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 8px 0; background: var(--panel) }
++.lesson > summary { cursor: pointer; font-weight: 700; font-size: 15px }
++.lesson h4 { margin: 10px 0 4px; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted) }
++.lesson p, .lesson li { font-size: 14px; line-height: 1.45 } .lesson ol, .lesson ul { margin: 0; padding-left: 20px } .lesson li { margin: 3px 0 }
++.lesson .lask small { display: block; color: var(--muted); font-size: 13px } .lesson .lgoal { margin: 8px 0 0 }
++.lesson .btns { margin-top: 10px }
++.role-player .mbar-t small, .role-player #ticks, .role-player #boxinfo { display: none !important } /* players: no reduced units or scale numbers, the temperature is a word */
++@media (max-width: 700px) { .rolebtn .rtxt { display: none } .rolebtn { padding-left: 10px; padding-right: 10px } }
++@media (max-width: 400px) { header #classBtn, header .hsep { display: none !important } } /* very small phones: Class mode (a projector view) stays reachable from the lessons */
++.shareqr { display: flex; gap: 12px; align-items: center; margin: 8px 0 } .shareqr canvas { width: 120px; height: 120px; flex: none; image-rendering: pixelated; border-radius: 4px }
++.qrbig { position: fixed; inset: 0; z-index: 400; background: #fff; color: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px; text-align: center }
++.qrbig[hidden] { display: none } .qrbig h2 { margin: 0; font-size: clamp(20px, 4vw, 36px) } .qrbig p { margin: 0; font-size: clamp(14px, 2.4vw, 22px) }
++.qrbig canvas { width: min(70vh, 86vw); height: min(70vh, 86vw); image-rendering: pixelated }
+diff --git a/tests/common.py b/tests/common.py
+index 5cce35a..9f63d6a 100644
+--- a/tests/common.py
++++ b/tests/common.py
+@@ -4,7 +4,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ PAGE = os.environ.get('MDLAB_PAGE') or os.path.join(ROOT, 'docs', 'amphiphile-assembly-lab.html')
+ URL = 'file://' + PAGE
+ SKIP_INTRO = ("localStorage.setItem('mdlab-tour','1');localStorage.setItem('mdlab-welcome','1');"
+-              "localStorage.setItem('mdlab-guided','1');localStorage.setItem('mdlab-unlock','1');localStorage.setItem('mdlab-ladall','1')")
++              "localStorage.setItem('mdlab-guided','1');localStorage.setItem('mdlab-unlock','1');localStorage.setItem('mdlab-ladall','1');"
++              "if(!localStorage.getItem('mdlab-role'))localStorage.setItem('mdlab-role','teacher')")  # teacher mode shows every tool; tests of player mode set mdlab-role themselves
+ def chrome():  # a system Chrome if there is one, otherwise Playwright's own Chromium
+     for c in ('/usr/bin/google-chrome', shutil.which('google-chrome') or '', shutil.which('chromium') or ''):
+         if c and os.path.exists(c): return c
+diff --git a/tests/test_daily_share.py b/tests/test_daily_share.py
+index 0495ea9..90731d6 100644
+--- a/tests/test_daily_share.py
++++ b/tests/test_daily_share.py
+@@ -9,6 +9,7 @@ async def main():
+     bad = []; errs = []
+     async with async_playwright() as p:
+         b = await browser(p); pg = await page(b, errors=errs)
++        await pg.evaluate("localStorage.setItem('mdlab-role','player')"); await pg.reload(); await pg.wait_for_timeout(800) # the Daily Molecule and clips are player features
+         if await pg.evaluate("window.__monet().enabled"): bad.append('monetization adapter present in the normal build')
+         await pg.click('[data-appmode=game]'); await pg.evaluate("document.getElementById('guseMic').checked=false")
+         if await pg.evaluate("document.getElementById('gdaily').hidden"): bad.append('Daily Molecule button not shown')
+@@ -17,6 +18,8 @@ async def main():
+         if await pg.evaluate("(window.__daily().special||{}).kind") != 'daily': bad.append('daily button did not select the daily run')
+         await pg.evaluate("document.getElementById('gstartBox').click()"); await pg.wait_for_timeout(2600)
+         seed = await pg.evaluate("window.__eng().p.seed")
++        await pg.evaluate("document.getElementById('gtips').checked = true"); await pg.wait_for_timeout(600)
++        if await pg.evaluate("document.getElementById('szone').classList.contains('on')"): bad.append('green band shown in the Daily Molecule')
+         if seed != info['seed']: bad.append(f'daily run seed {seed} is not the day seed {info["seed"]}')
+         if not await pg.evaluate("window.__daily().recording"): bad.append('no clip is being recorded during the run')
+         g = info['gid']
+@@ -30,6 +33,7 @@ async def main():
+         await pg.wait_for_timeout(2500)
+         if not await pg.evaluate("!!document.querySelector('#gend [data-act=share]')"): bad.append('no Share button on the end card')
+         if not await pg.evaluate("!!document.querySelector('#gend .gendsp')"): bad.append('no daily line on the end card')
++        if await pg.evaluate("!!document.querySelector('#gend .gendtip')"): bad.append('tip shown on the Daily Molecule end card')
+         d = await pg.evaluate("window.__daily()")
+         if not d['rec'] or d['rec']['tries'] != 1: bad.append(f'daily result not saved: {d["rec"]}')
+         if d['streak'] != 1: bad.append(f'streak is {d["streak"]}, expected 1')
+@@ -38,6 +42,7 @@ async def main():
+         if await pg.evaluate("document.getElementById('shareModal').hidden"): bad.append('share window did not open')
+         txt = await pg.text_content('#shareText')
+         if '?c=' not in txt: bad.append('share text has no challenge link')
++        if not int(await pg.evaluate("document.getElementById('shareQR').dataset.n || 0")): bad.append('no QR code of the challenge link')
+         if await pg.evaluate("document.getElementById('shareClipBox').hidden"): bad.append('clip not offered in the share window')
+         link = [w for w in txt.split() if '?c=' in w][0]; q = link[link.index('?'):]
+         par = await pg.evaluate(f"window.__daily().parse({q!r})")
+@@ -48,6 +53,9 @@ async def main():
+         await p3.evaluate("document.getElementById('guseMic').checked=false"); await p3.click('#chalGo'); await p3.wait_for_timeout(5000)
+         gs = await p3.evaluate("(()=>{const e=document.getElementById('ghostS'); return [e.hidden, e.textContent]})()")
+         if gs != [False, '😊']: bad.append(f"friend's run not shown as 😊 during the challenge: {gs}")
++        await p3.evaluate("document.getElementById('gtips').checked = true")
++        await p3.wait_for_timeout(600)
++        if await p3.evaluate("document.getElementById('szone').classList.contains('on')"): bad.append('green band shown in a friend challenge')
+         await p3.click('#gquit')
+         await pg.click('#shareClose')
+         # a drug challenge link: the invitation opens, and the same seed gives the same drug windows twice
+diff --git a/tests/test_games.py b/tests/test_games.py
+index f2ba571..40bff83 100644
+--- a/tests/test_games.py
++++ b/tests/test_games.py
+@@ -17,6 +17,10 @@ async def main():
+         await pg.evaluate("localStorage.setItem('mdlab-proto','1')"); await pg.reload(); await pg.wait_for_timeout(800)
+         await pg.click('[data-appmode=game]'); await pg.evaluate("document.getElementById('guseMic').checked=false")
+         for pid in ['p-stream', 'p-line', 'p-waves']:
++            try: await pg.wait_for_selector(f'[data-proto={pid}]', state='visible', timeout=15000)
++            except Exception:
++                diag = await pg.evaluate(f"(()=>{{const e=document.querySelector('[data-proto={pid}]'); if(!e) return 'no element'; let x=e,out=[]; while(x){{const c=getComputedStyle(x); if(c.display==='none'||x.hidden) out.push((x.id||x.className)+':'+c.display); x=x.parentElement;}} return [out, document.querySelector('.wrap').className]}})()")
++                bad.append(f'{pid}: prototype button not visible: {diag}'); continue
+             await pg.click(f'[data-proto={pid}]'); await pg.wait_for_timeout(300); await pg.evaluate("document.getElementById('gstartBox').click()"); await pg.wait_for_timeout(4500)
+             st = await pg.evaluate("(()=>{const G=window.__game(); return G ? [G.lives, G.lvl, G.score] : null})()")
+             if not st or st[0] != 3 or st[1] < 1: bad.append(f'{pid}: prototype did not start properly ({st})')
+diff --git a/tests/test_roles.py b/tests/test_roles.py
+new file mode 100644
+index 0000000..b856753
+--- /dev/null
++++ b/tests/test_roles.py
+@@ -0,0 +1,38 @@
++"""Player mode and teacher mode: the welcome choice, the header switch, ?teacher links, what each mode shows, and the lesson buttons."""
++import asyncio
++from playwright.async_api import async_playwright
++from common import browser, page, report, URL
++VIS = "(s)=>{const e=document.querySelector(s); return !!e && e.offsetParent !== null}"
++async def main():
++    bad = []; errs = []
++    async with async_playwright() as p:
++        b = await browser(p)
++        pg = await page(b, intro=True, errors=errs); await pg.wait_for_timeout(1200)
++        if not await pg.evaluate(f"({VIS})('#tTeach')"): bad.append("no 'I am a teacher' button on the welcome card")
++        await pg.click('#tTeach'); await pg.wait_for_timeout(800)
++        if not (await pg.evaluate("window.__role()"))['teacher']: bad.append('welcome button did not switch to teacher mode')
++        for s, want in [('#lessonPanel', True), ('#classBtn', True), ('#gdaily', False), ('[data-l=ice]', True)]:
++            if await pg.evaluate(f"({VIS})('{s}')") != want: bad.append(f'teacher mode: {s} visible should be {want}')
++        n = await pg.evaluate("document.querySelectorAll('#lessons .lesson').length")
++        if n != 5: bad.append(f'{n} lesson cards, expected 5')
++        await pg.click('[data-l=demix] summary'); await pg.click('[data-l=demix] [data-lgo=explore]'); await pg.wait_for_timeout(800)
++        if await pg.evaluate("document.querySelector('.wrap').dataset.sys") != 'demix': bad.append('lesson "Open in Explore" did not open the two liquids')
++        await pg.click('[data-l=scan] summary'); await pg.click('[data-l=scan] [data-lgo=scan]'); await pg.wait_for_timeout(800)
++        if not await pg.evaluate(f"({VIS})('#scanHeat')"): bad.append('lesson "Open the energy scan" did not show the scan')
++        await pg.click('[data-l=ice] summary'); await pg.click('[data-l=ice] [data-lgo=class]'); await pg.wait_for_timeout(1500)
++        if not await pg.evaluate("document.querySelector('.wrap').classList.contains('classmode')"): bad.append('lesson "Play in class mode" did not open class mode')
++        await pg.keyboard.press('Escape'); await pg.wait_for_timeout(500)
++        await pg.click('#roleBtn'); await pg.wait_for_timeout(800)
++        if (await pg.evaluate("window.__role()"))['teacher']: bad.append('header switch did not go back to player mode')
++        await pg.evaluate("localStorage.setItem('mdlab-played','12')"); await pg.reload(); await pg.wait_for_timeout(1000)
++        await pg.evaluate("document.querySelector('.modeseg [data-appmode=explore]').click()"); await pg.wait_for_timeout(800)
++        for s, want in [('#lessonPanel', False), ('#classBtn', False), ('#modelPanel', False), ('#viewPanel', False), ('[data-appmode=scan]', False), ('.rosec', False), ('#compPanel', True)]:
++            if await pg.evaluate(f"({VIS})('{s}')") != want: bad.append(f'player mode: {s} visible should be {want}')
++        if await pg.evaluate("[...document.querySelectorAll('#compPanel .row[data-show]')].some(r => getComputedStyle(r).display !== 'none')"): bad.append('player mode: model parameters shown in Explore')
++        if not await pg.evaluate("document.getElementById('tsetM').className.startsWith('tw')"): bad.append('player mode: temperature not shown as a word in Explore')
++        p2 = await page(b, intro=True, errors=errs); await p2.goto(URL + '?teacher'); await p2.wait_for_timeout(1200)
++        if not (await p2.evaluate("window.__role()"))['teacher']: bad.append('?teacher link did not open teacher mode')
++        if await p2.evaluate(f"({VIS})('#tour')"): bad.append('?teacher link still showed the welcome card')
++        await b.close()
++    report('player mode and teacher mode', bad + sorted(set(errs)))
++asyncio.run(main())

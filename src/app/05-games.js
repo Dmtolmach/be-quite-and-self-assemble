@@ -129,7 +129,7 @@
   function startGame() {
     const g = gameCfg(); if (!g) return;
     if (guide) { guide = null; coachHide(); }
-    if (needGuide(g) && !battle && !gameLevel && !classOn) { guideStart(g); return; }
+    if (needGuide(g) && !battle && !gameLevel && !classOn && !special) { guideStart(g); return; } // a friend's challenge or the Daily Molecule starts at once, without the guided lesson
     prepGame(g); coachHide(); $('greplay').hidden = true; gendClose(); postGame = null;
     game = { g, t0: eng.time, last: eng.time, ema: null, rate: g.D / GAME_SEC, peak: -Infinity, peakSec: 0, snap: null, rec: [], level: gameLevel, bump: 0, guided: afterGuide }; afterGuide = false; game.ghost = gameLevel || battle || classOn ? null : ghostLoad(g); game.speed = speedMode && !gameLevel && !battle && !classOn && speedOpen(g) ? SPEED[g.id] : null; if (game.speed) game.ghost = null;
     game.rnd = rngSeed(((eng && eng.p.seed) || 1) + 99); /* drug windows etc. follow the start's seed, so a challenge link replays them */ game.seed = (eng && eng.p.seed) || 1;
@@ -204,7 +204,7 @@
     if (G.speed) { speedEnd(G); return; }
     if (G.level) { ladderEnd(G); return; }
     const g = G.g, v = G.peak, st = starsFor(g, v), b = getBest(g), rec = b === null || v > b, gi = GAMES.indexOf(g), wasOpen = gi + 1 < GAMES.length && isOpen(gi + 1); if (rec) { setBest(g, v); ghostSave(G); } /* the new best run becomes the ghost for next time */
-    const opened = false, dg = diagnose(G, st), speedNew = SPEED[g.id] && st === 3 && !(b !== null && starsFor(g, b) === 3) && !unlockAll();
+    const chal = !!G.special, opened = false, dg = chal ? '' : diagnose(G, st), /* a friend's challenge or the Daily Molecule: no tips, it is a fair contest */ speedNew = SPEED[g.id] && st === 3 && !(b !== null && starsFor(g, b) === 3) && !unlockAll();
     if (speedNew) { speedMode = false; try { localStorage.setItem('mdlab-fresh', 'speed'); } catch (e) {} }
     const card = st === 3 ? fcGive(FC_ALL.filter((c) => c.deck.game === g.id)) : null; // three stars: a new fact card, until the deck is complete
     const S = addStat(g, v);
@@ -213,7 +213,7 @@
       if (g.value) g.value(); const rv = G.peak; $('gval').textContent = g.fmt(rv); $('gval').className = ''; $('gnow').style.left = (100 * Math.max(0, Math.min(1, rv / (g.scale || 1)))) + '%'; }
     $('gres').innerHTML = `<span class="big">${starStr(st)}</span> <b>${T('Score {s}', { s: g.fmt(v) })}</b> ${rec ? T('(new best ever!)') : T('(best ever {b})', { b: g.fmt(Math.max(b, v)) })}. ` + (dg ? dg + ' ' : '') +
       (opened ? '<b>' + T('New game unlocked: {g}!', { g: T(GAMES[gi + 1].title) }) + '</b> ' : '') +
-      (st <= 1 ? '<b>' + T('Tip:') + '</b> ' + T(g.hint) + ' ' : '') + (st === 3 ? T('Top score!') + ' ' + (card ? '<b>' + T('New card: {c}!', { c: T(card.t) }) + '</b> ' : T('You have all the cards of this game.') + ' ') : '') + T('Your average so far: {a} (games played: {n}).', { n: S.n, a: g.fmt(S.sum / S.n) });
+      (st <= 1 && !chal ? '<b>' + T('Tip:') + '</b> ' + T(g.hint) + ' ' : '') + (st === 3 ? T('Top score!') + ' ' + (card ? '<b>' + T('New card: {c}!', { c: T(card.t) }) + '</b> ' : T('You have all the cards of this game.') + ' ') : '') + T('Your average so far: {a} (games played: {n}).', { n: S.n, a: g.fmt(S.sum / S.n) });
     const sp = G.special ? specialEnd(G, v, st) : null; MONET.hook('gameEnd', { game: g.id, stars: st });
     renderPick(); drawReplay(G);
     const nx = gi + 1 < GAMES.length && isOpen(gi + 1) ? GAMES[gi + 1] : null;
