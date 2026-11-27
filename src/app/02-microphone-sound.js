@@ -54,6 +54,11 @@
     api.star = (k) => { [72, 76, 79, 84].slice(0, k + 1).forEach((m, i) => note(hz(m), 0.08 * i, 0.3, { type: 'triangle', vol: 0.13 })); note(hz(96), 0.08 * (k + 1), 0.4, { vol: 0.06 }); };
     api.slot = (k) => { note(hz([76, 79, 84][k] || 84), 0, 0.35, { type: 'triangle', vol: 0.14 }); note(hz(([76, 79, 84][k] || 84) + 12), 0.02, 0.25, { vol: 0.05 }); };
     api.none = () => { note(hz(64), 0, 0.25, { type: 'triangle', vol: 0.1 }); note(hz(60), 0.2, 0.4, { type: 'triangle', vol: 0.1 }); };
+    // class battle won: a short fanfare, then a whistle and a bang for each firework rocket
+    api.fanfare = () => { [67, 72, 76, 79, 76, 79, 84].forEach((m, i) => note(hz(m), [0, .12, .24, .36, .6, .72, .84][i], i === 6 ? 0.7 : 0.18, { type: 'triangle', vol: 0.12 })); note(hz(96), 0.84, 0.7, { vol: 0.05 }); };
+    api.whistle = () => { if (!gap(60)) return; note(hz(86 + 6 * Math.random()), 0, 0.45, { vol: 0.025, to: hz(98) }); };
+    api.bang = () => { const b = 70 + 30 * Math.random(); note(b * 2, 0, 0.45, { type: 'triangle', vol: 0.13, to: b * 0.5 });
+      for (let i = 0; i < 4; i++) note(hz(94 + 10 * Math.random()), 0.1 + 0.06 * i + 0.03 * Math.random(), 0.04, { type: 'square', vol: 0.018 }); };
     api.best = () => { [79, 84, 88, 91].forEach((m, i) => note(hz(m), 0.07 * i, 0.25, { vol: 0.09 })); };
     return api;
   })();
